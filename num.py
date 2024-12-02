@@ -64,7 +64,7 @@ def handle_callback(call):
             # حذف الأزرار بعد الضغط
             bot.edit_message_reply_markup(chat_id=call.message.chat.id, message_id=call.message.message_id, reply_markup=None)
 
-        elif call.data == "باسم":
+        elif call.data == "حيدر":
             # إرسال ملف عشوائي
             rl = random.randint(50, 118)  # تحديد رقم عشوائي ضمن النطاق
             url = f"t.me/sossosic/{rl}"  # إنشاء الرابط باستخدام الرقم العشوائي
