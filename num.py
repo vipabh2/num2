@@ -135,8 +135,13 @@ def callback_query(call):
                 reply_to_message_id=call.message.message_id
             )
             bot.edit_message_reply_markup(chat_id=call.message.chat.id, message_id=call.message.message_id, reply_markup=None)
-
     except Exception as e:
-        bot.send_message(call.message.chat.id, f"حدث خطأ: {e}")
-        print("Starting bot polling...")
-              bot.polling()
+        print(f"حدث خطأ: {e}")
+        bot.send_message(call.message.chat.id, f"حدث خطأ أثناء إرسال الصوت: {e}")
+        while True:
+            try:
+                print("Starting bot polling...")
+                bot.polling()
+            except Exception as e:
+                print(f"Error occurred: {e}")
+                print("Restarting bot polling...")
