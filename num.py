@@ -35,7 +35,7 @@ def handle_callback(call):
         if call.data == "عشوائي":
             # إرسال ملف عشوائي
             rl = random.randint(157, 306)  
-            url = f"https://t.me/iitt_5/{rl}"
+            url = f"https:/t.me/iitt_5/{rl}"
             bot.send_audio(
                 call.message.chat.id,
                 url,
@@ -46,7 +46,7 @@ def handle_callback(call):
         elif call.data == "باسم":
             # إرسال ملف عشوائي
             rl = random.randint(50, 118) 
-            url = f"https://t.me/sossosic/{rl}"
+            url = f"https:/t.me/sossosic/{rl}"
             bot.send_audio(
                 call.message.chat.id,
                 url,
@@ -57,7 +57,7 @@ def handle_callback(call):
         elif call.data == "فاقد":
             # إرسال ملف عشوائي
             rl = random.randint(5, 20) 
-            url = f"https://t.me/F2_ie/{rl}"
+            url = f"https:/t.me/F2_ie/{rl}"
             bot.send_audio(
                 call.message.chat.id,
                 url,
@@ -68,7 +68,7 @@ def handle_callback(call):
         elif call.data == "حيدر":
             # إرسال ملف عشوائي
             rl = random.randint(7, 14) 
-            url = f"https://t.me/leonil_messi10/{rl}"
+            url = f"https:/t.me/leonil_messi10/{rl}"
             bot.send_audio(
                 call.message.chat.id,
                 url,
@@ -79,7 +79,7 @@ def handle_callback(call):
         elif call.data == "مسلم":
             # إرسال ملف عشوائي
             rl = random.randint(51, 60) 
-            url = f"https://t.me/sossosic/{rl}"
+            url = f"https:/t.me/sossosic/{rl}"
             bot.send_audio(
                 call.message.chat.id,
                 url
@@ -100,7 +100,7 @@ def handle_callback(call):
         elif call.data == "نزلة":
             # إرسال ملف عشوائي
             rl = random.randint(7, 12) 
-            url = f"https://t.me/x04uc/{rl}"
+            url = f"https:/t.me/x04uc/{rl}"
             bot.send_audio(
                 call.message.chat.id,
                 url,
@@ -112,7 +112,7 @@ def handle_callback(call):
         elif call.data == "مصطفى":
             # إرسال ملف عشوائي
             rl = random.randint(29, 31) 
-            url = f"https://t.me/j8_ie/{rl}"
+            url = f"https:/t.me/j8_ie/{rl}"
             bot.send_audio(
                 call.message.chat.id,
                 url,
@@ -124,7 +124,7 @@ def handle_callback(call):
         elif call.data == "افراح":
             # إرسال ملف عشوائي
             rl = random.randint(50, 117) 
-            url = f"https://t.me/sossosic/{rl}"
+            url = f"https:/t.me/sossosic/{rl}"
             bot.send_audio(
                 call.message.chat.id,
                 url,
