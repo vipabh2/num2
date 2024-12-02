@@ -8,12 +8,7 @@ import time
 bot_token = os.getenv("BOT_TOKEN")
 bot = telebot.TeleBot(bot_token)
 
-import random
-import telebot
-from telebot import types
-from telebot.types import InlineKeyboardMarkup, InlineKeyboardButton
-import os
-import time
+
 
 def create_keyboard():
     markup = InlineKeyboardMarkup(row_width=3)
