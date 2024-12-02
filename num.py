@@ -16,15 +16,6 @@ def handle_message(message):
         InlineKeyboardButton("الخاقاني", callback_data="فاقد"),
         InlineKeyboardButton("مسلم الوائلي", callback_data="مسلم"),
         InlineKeyboardButton("منوع", callback_data="منوع"),
-        InlineKeyboardButton("مزيد من الخيارات", callback_data="مزيد")
-    ]
-    markup.add(*buttons)
-    bot.send_message(message.chat.id, "اختر لطمية 🫀", reply_markup=markup)
-
-@bot.callback_query_handler(func=lambda call: call.data == "مزيد")
-def handle_more_options(call):
-    markup = InlineKeyboardMarkup(row_width=3)
-    more_buttons = [
         InlineKeyboardButton("نزلة", callback_data="نزلة"),
         InlineKeyboardButton("مصطفى السوداني", callback_data="مصطفى"),
         InlineKeyboardButton("افراح", callback_data="افراح"),
