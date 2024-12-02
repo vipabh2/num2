@@ -141,7 +141,7 @@ def callback_query(call):
         while True:
             try:
                 print("Starting bot polling...")
-                bot.polling()
             except Exception as e:
                 print(f"Error occurred: {e}")
                 print("Restarting bot polling...")
+                bot.polling()
