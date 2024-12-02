@@ -43,7 +43,7 @@ def handle_callback(call):
         if call.data == "عشوائي":
             # إرسال ملف عشوائي
             rl = random.randint(157, 306)  # تحديد رقم عشوائي ضمن النطاق
-            url = f"https://t.me/sossosic/{rl}"  # إنشاء الرابط باستخدام الرقم العشوائي
+            url = f"t.me/sossosic/{rl}"  # إنشاء الرابط باستخدام الرقم العشوائي
             bot.send_audio(
                 call.message.chat.id,
                 url,  # التأكد من أن الرابط هو رابط مباشر لملف صوتي
@@ -55,7 +55,7 @@ def handle_callback(call):
         elif call.data == "باسم":
             # إرسال ملف عشوائي
             rl = random.randint(50, 118)  # تحديد رقم عشوائي ضمن النطاق
-            url = f"https://t.me/sossosic/{rl}"  # إنشاء الرابط باستخدام الرقم العشوائي
+            url = f"t.me/sossosic/{rl}"  # إنشاء الرابط باستخدام الرقم العشوائي
             bot.send_audio(
                 call.message.chat.id,
                 url,  # التأكد من أن الرابط هو رابط مباشر لملف صوتي
@@ -67,7 +67,7 @@ def handle_callback(call):
         elif call.data == "حيدر":
             # يمكنك إضافة المزيد من الأوامر هنا بناءً على الحاجة
             rl = random.randint(119, 150)  # مثال آخر لرقم عشوائي
-            url = f"https://t.me/sossosic/{rl}"  # تعديل الرابط بما يتناسب مع الأرقام الجديدة
+            url = f"t.me/sossosic/{rl}"  # تعديل الرابط بما يتناسب مع الأرقام الجديدة
             bot.send_audio(
                 call.message.chat.id,
                 url,
@@ -78,7 +78,7 @@ def handle_callback(call):
         elif call.data == "فاقد":
             # مثال آخر لإضافة محتوى مخصص
             rl = random.randint(200, 250)
-            url = f"https://t.me/sossosic/{rl}"
+            url = f"t.me/sossosic/{rl}"
             bot.send_audio(
                 call.message.chat.id,
                 url,
@@ -160,8 +160,8 @@ def start(message):
     markup.add(types.InlineKeyboardButton("ابدأ اللعبة", callback_data="start_game"))
     bot.send_video(
         message.chat.id,
-        "https://t.me/VIPABH/1204",
-        caption=f"اهلا [{message.from_user.first_name}](https://t.me/{username}) حياك الله! اضغط على الزر لبدء اللعبة.",
+        "t.me/VIPABH/1204",
+        caption=f"اهلا [{message.from_user.first_name}](t.me/{username}) حياك الله! اضغط على الزر لبدء اللعبة.",
         parse_mode="Markdown",
         reply_markup=markup
     )
@@ -186,7 +186,7 @@ def start_game(call):
             message_id=call.message.message_id,
             reply_markup=None
         )
-        bot.send_message(call.message.chat.id, f'عزيزي  [{call.from_user.first_name}](https://t.me/@{username}) اختر أي رقم من 1 إلى 10 🌚',  parse_mode="Markdown")
+        bot.send_message(call.message.chat.id, f'عزيزي  [{call.from_user.first_name}](t.me/@{username}) اختر أي رقم من 1 إلى 10 🌚',  parse_mode="Markdown")
         game_active = True
         attempts = 0
     else:
@@ -209,13 +209,13 @@ def handle_guess(message):
 
         if guess == number:
             bot.reply_to(message, "مُبارك فزتها بفخر 🥳")
-            won = "https://t.me/VIPABH/2"
+            won = "t.me/VIPABH/2"
             bot.send_voice(message.chat.id, won)
             bot.reply_to(message,  "🥳")
             game_active = False
         elif attempts >= max_attempts:
             bot.reply_to(message, f"للأسف، لقد نفدت محاولاتك. الرقم الصحيح هو {number}.🌚")
-            lose = "https://t.me/VIPABH/23"
+            lose = "t.me/VIPABH/23"
             bot.send_voice(message.chat.id, lose)
             game_active = False
         else:
@@ -226,7 +226,7 @@ def handle_guess(message):
 @bot.message_handler(func=lambda message: message.text in ['ميم'] or message.text in ['ميمز'])
 def send_random_file(message):
     rl = random.randint(2, 222)
-    url = f"https://t.me/iuabh/{rl}"
+    url = f"t.me/iuabh/{rl}"
     bot.send_photo(message.chat.id, url, caption="😎يسعد مسائك", reply_to_message_id=message.message_id)
 
 
