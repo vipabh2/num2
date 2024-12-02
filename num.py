@@ -19,7 +19,24 @@ categories = {
     "نزلة": (7, 12),
     "مصطفى": (29, 31),
     "افراح": (50, 117),
+
+bot_token = "YOUR_TELEGRAM_BOT_TOKEN"
+bot = TeleBot(bot_token)
+
+# قاموس يحتوي على خيارات كل فئة مع النطاق الخاص بها
+categories = {
+    "عشوائي": (157, 306),
+    "باسم": (50, 118),
+    "فاقد": (5, 20),
+    "حيدر": (7, 14),
+    "مسلم": (51, 60),
+    "منوع": (50, 117),
+    "نزلة": (7, 12),
+    "مصطفى": (29, 31),
+    "افراح": (50, 117),
 }
+
+# تسجيل وقت بدء تشغيل البوت
 start_time = time.time()
 
 @bot.message_handler(func=lambda message: True)  # معالجة أي رسالة واردة
@@ -27,23 +44,26 @@ def handle_message(message):
     try:
         # التحقق من أن الرسالة حديثة
         if message.date >= start_time:
-        # تحقق إذا كان النص في القاموس
-        if message.text in categories:
-            # استخراج النطاق الخاص بالفئة
-            start, end = categories[message.text]
-            # اختيار رقم عشوائي ضمن النطاق
-            rl = random.randint(start, end)
-            # تكوين الرابط
-            url = f"https://t.me/sossosic/{rl}"
-            # إرسال الملف الصوتي
-            bot.send_audio(
-                message.chat.id,
-                url,
-                reply_to_message_id=message.message_id
-            )
+            # تحقق إذا كان النص في القاموس
+            if message.text in categories:
+                # استخراج النطاق الخاص بالفئة
+                start, end = categories[message.text]
+                # اختيار رقم عشوائي ضمن النطاق
+                rl = random.randint(start, end)
+                # تكوين الرابط
+                url = f"https://t.me/sossosic/{rl}"
+                # إرسال الملف الصوتي
+                bot.send_audio(
+                    message.chat.id,
+                    url,
+                    reply_to_message_id=message.message_id
+                )
+            else:
+                # إذا لم يكن النص في القاموس
+                bot.send_message(message.chat.id, "الخيار غير متوفر. الرجاء اختيار فئة صالحة.")
         else:
-            # إذا لم يكن النص في القاموس
-            bot.send_message(message.chat.id, "الخيار غير متوفر. الرجاء اختيار فئة صالحة.")
+            # تجاهل الرسائل القديمة
+            print(f"تم تجاهل رسالة قديمة من المستخدم {message.chat.id}")
     except Exception as e:
         # في حالة حدوث خطأ، طباعة الرسالة وإرسال إشعار إلى المستخدم
         print(f"حدث خطأ: {e}")
