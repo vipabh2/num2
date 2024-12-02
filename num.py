@@ -64,13 +64,13 @@ def handle_callback(call):
             # حذف الأزرار بعد الضغط
             bot.edit_message_reply_markup(chat_id=call.message.chat.id, message_id=call.message.message_id, reply_markup=None)
 
-        elif call.data == "حيدر":
-            # يمكنك إضافة المزيد من الأوامر هنا بناءً على الحاجة
-            rl = random.randint(119, 150)  # مثال آخر لرقم عشوائي
-            url = f"t.me/sossosic/{rl}"  # تعديل الرابط بما يتناسب مع الأرقام الجديدة
+        elif call.data == "باسم":
+            # إرسال ملف عشوائي
+            rl = random.randint(50, 118)  # تحديد رقم عشوائي ضمن النطاق
+            url = f"t.me/sossosic/{rl}"  # إنشاء الرابط باستخدام الرقم العشوائي
             bot.send_audio(
                 call.message.chat.id,
-                url,
+                url,  # التأكد من أن الرابط هو رابط مباشر لملف صوتي
                 reply_to_message_id=call.message.message_id
             )
             bot.edit_message_reply_markup(chat_id=call.message.chat.id, message_id=call.message.message_id, reply_markup=None)
