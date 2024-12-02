@@ -66,8 +66,8 @@ def handle_callback(call):
 
         elif call.data == "حيدر":
             # إرسال ملف عشوائي
-            rl = random.randint(50, 118)  # تحديد رقم عشوائي ضمن النطاق
-            url = f"t.me/sossosic/{rl}"  # إنشاء الرابط باستخدام الرقم العشوائي
+            rl = random.randint(248, 250)  # تحديد رقم عشوائي ضمن النطاق
+            url = f"t.me/iitt_5/{rl}"  # إنشاء الرابط باستخدام الرقم العشوائي
             bot.send_audio(
                 call.message.chat.id,
                 url,  # التأكد من أن الرابط هو رابط مباشر لملف صوتي
