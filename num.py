@@ -23,7 +23,6 @@ def handle_message(message):
     ]
  
 @bot.callback_query_handler(func=lambda call: True)
-def callback_query(call):
     try:
         if call.data == "عشوائي":
             # إرسال ملف عشوائي
