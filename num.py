@@ -6,9 +6,7 @@ import os
 
 bot_token = os.getenv("BOT_TOKEN")
 bot = telebot.TeleBot(bot_token)
-
-@bot.message_handler(func=lambda message: message.text in ['لطميه', 'لطمية'])
-def handle_message(message):
+def create_keyboard():
     markup = InlineKeyboardMarkup(row_width=3)
     buttons = [
         InlineKeyboardButton("باسميات", callback_data="باسم"),
@@ -21,8 +19,18 @@ def handle_message(message):
         InlineKeyboardButton("افراح", callback_data="افراح"),
         InlineKeyboardButton("عشوائي", callback_data="عشوائي")
     ]
- 
+    markup.add(*buttons)
+    return markup
+
+# معالجة الرسالة "لطميه" أو "لطمية"
+@bot.message_handler(func=lambda message: message.text in ['لطميه', 'لطمية'])
+def handle_message(message):
+    markup = create_keyboard()
+    bot.send_message(message.chat.id, "اختر لطمية 🫀", reply_markup=markup)
+
+# معالجة الأزرار
 @bot.callback_query_handler(func=lambda call: True)
+def handle_callback(call):
     try:
         if call.data == "عشوائي":
             # إرسال ملف عشوائي
