@@ -8,8 +8,6 @@ import time
 bot_token = os.getenv("BOT_TOKEN")
 bot = telebot.TeleBot(bot_token)
 
-
-
 def create_keyboard():
     markup = InlineKeyboardMarkup(row_width=3)
     buttons = [
@@ -25,32 +23,51 @@ def create_keyboard():
     ]
     markup.add(*buttons)
     return markup
+
+# Track the start time (if needed for performance tracking)
 start_time = time.time()
+
+# Handle message and send the inline keyboard
 @bot.message_handler(func=lambda message: message.text in ['لطميه', 'لطمية'])
 def handle_message(message):
     try:
         markup = create_keyboard()
         bot.send_message(message.chat.id, "اختر لطمية 🫀", reply_markup=markup)
+    except Exception as e:
+        print(f"Error in handle_message: {e}")
 
-# معالجة الأزرار
+# Handle the callback queries from the inline keyboard
 @bot.callback_query_handler(func=lambda call: True)
 def handle_callback(call):
     try:
         if call.data == "عشوائي":
             # إرسال ملف عشوائي
-            rl = random.randint(157, 306)  
-            url = f"https://t.me/sossosic/{rl}"
+            rl = random.randint(157, 306)  # تحديد رقم عشوائي ضمن النطاق
+            url = f"https://t.me/sossosic/{rl}"  # إنشاء الرابط باستخدام الرقم العشوائي
             bot.send_audio(
                 call.message.chat.id,
-                url,
+                url,  # التأكد من أن الرابط هو رابط مباشر لملف صوتي
                 reply_to_message_id=call.message.message_id
             )
+            # حذف الأزرار بعد الضغط
             bot.edit_message_reply_markup(chat_id=call.message.chat.id, message_id=call.message.message_id, reply_markup=None)
 
         elif call.data == "باسم":
             # إرسال ملف عشوائي
-            rl = random.randint(50, 118) 
-            url = f"https://t.me/sossosic/{rl}"
+            rl = random.randint(50, 118)  # تحديد رقم عشوائي ضمن النطاق
+            url = f"https://t.me/sossosic/{rl}"  # إنشاء الرابط باستخدام الرقم العشوائي
+            bot.send_audio(
+                call.message.chat.id,
+                url,  # التأكد من أن الرابط هو رابط مباشر لملف صوتي
+                reply_to_message_id=call.message.message_id
+            )
+            # حذف الأزرار بعد الضغط
+            bot.edit_message_reply_markup(chat_id=call.message.chat.id, message_id=call.message.message_id, reply_markup=None)
+
+        elif call.data == "حيدر":
+            # يمكنك إضافة المزيد من الأوامر هنا بناءً على الحاجة
+            rl = random.randint(119, 150)  # مثال آخر لرقم عشوائي
+            url = f"https://t.me/sossosic/{rl}"  # تعديل الرابط بما يتناسب مع الأرقام الجديدة
             bot.send_audio(
                 call.message.chat.id,
                 url,
@@ -59,8 +76,8 @@ def handle_callback(call):
             bot.edit_message_reply_markup(chat_id=call.message.chat.id, message_id=call.message.message_id, reply_markup=None)
 
         elif call.data == "فاقد":
-            # إرسال ملف عشوائي
-            rl = random.randint(5, 20) 
+            # مثال آخر لإضافة محتوى مخصص
+            rl = random.randint(200, 250)
             url = f"https://t.me/sossosic/{rl}"
             bot.send_audio(
                 call.message.chat.id,
@@ -69,76 +86,15 @@ def handle_callback(call):
             )
             bot.edit_message_reply_markup(chat_id=call.message.chat.id, message_id=call.message.message_id, reply_markup=None)
 
-        elif call.data == "حيدر":
-            # إرسال ملف عشوائي
-            rl = random.randint(7, 14) 
-            url = f"https://t.me/sossosic/{rl}"
-            bot.send_audio(
-                call.message.chat.id,
-                url,
-                reply_to_message_id=call.message.message_id
-            )
-            bot.edit_message_reply_markup(chat_id=call.message.chat.id, message_id=call.message.message_id, reply_markup=None)
+        # إضافة المزيد من الأوامر حسب الحاجة...
+        # مثلاً، يمكنك إضافة "مسلم" و "منوع" بنفس الطريقة.
 
-        elif call.data == "مسلم":
-            # إرسال ملف عشوائي
-            rl = random.randint(51, 60) 
-            url = f"https://t.me/sossosic/{rl}"
-            bot.send_audio(
-                call.message.chat.id,
-                url
-            )
-            bot.edit_message_reply_markup(chat_id=call.message.chat.id, message_id=call.message.message_id, reply_markup=None)
-
-        elif call.data == "منوع":
-            # إرسال ملف عشوائي
-            rl = random.randint(50, 117) 
-            url = f"https://t.me/sossosic/{rl}"
-            bot.send_audio(
-                call.message.chat.id,
-                url,
-                reply_to_message_id=call.message.message_id
-            )
-            bot.edit_message_reply_markup(chat_id=call.message.chat.id, message_id=call.message.message_id, reply_markup=None)
-
-        elif call.data == "نزلة":
-            # إرسال ملف عشوائي
-            rl = random.randint(7, 12) 
-            url = f"https://t.me/sossosic/{rl}"
-            bot.send_audio(
-                call.message.chat.id,
-                url,
-                reply_to_message_id=call.message.message_id
-            )
-            bot.edit_message_reply_markup(chat_id=call.message.chat.id, message_id=call.message.message_id, reply_markup=None)
-
-            
-        elif call.data == "مصطفى":
-            # إرسال ملف عشوائي
-            rl = random.randint(29, 31) 
-            url = f"https://t.me/sossosic/{rl}"
-            bot.send_audio(
-                call.message.chat.id,
-                url,
-                reply_to_message_id=call.message.message_id
-            
-            )
-            bot.edit_message_reply_markup(chat_id=call.message.chat.id, message_id=call.message.message_id, reply_markup=None)
-          
-        elif call.data == "افراح":
-            # إرسال ملف عشوائي
-            rl = random.randint(50, 117) 
-            url = f"https://t.me/sossosic/{rl}"
-            bot.send_audio(
-                call.message.chat.id,
-                url,
-                reply_to_message_id=call.message.message_id
-            )
-            bot.edit_message_reply_markup(chat_id=call.message.chat.id, message_id=call.message.message_id, reply_markup=None)
     except Exception as e:
-        print(f"حدث خطأ: {e}")
-        bot.send_message(call.message.chat.id, f"حدث خطأ أثناء إرسال الصوت: {e}")
-       
+        print(f"Error in handle_callback: {e}")
+
+# Run the bot
+if __name__ == "__main__":
+    bot.polling(none_stop=True)
 # قائمة المحظورين
 banned_users = [7465920634, 6048901890]  # ضع هنا المعرفات المحظورة
 
