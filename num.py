@@ -138,5 +138,5 @@ def callback_query(call):
 
     except Exception as e:
         bot.send_message(call.message.chat.id, f"حدث خطأ: {e}")
-        print("Starting bot polling..."
+        print("Starting bot polling...")
               bot.polling()
