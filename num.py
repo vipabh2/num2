@@ -31,8 +31,7 @@ start_time = time.time()
 def handle_message(message):
     try:
         if message.date >= start_time:
-
-        markup = create_keyboard()
+            markup = create_keyboard()
         bot.send_message(message.chat.id, "اختر لطمية 🫀", reply_markup=markup)
     except Exception as e:
         print(f"Error in handle_message: {e}")
