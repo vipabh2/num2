@@ -24,13 +24,14 @@ def create_keyboard():
     markup.add(*buttons)
     return markup
 
-# Track the start time (if needed for performance tracking)
 start_time = time.time()
 
 # Handle message and send the inline keyboard
 @bot.message_handler(func=lambda message: message.text in ['لطميه', 'لطمية'])
 def handle_message(message):
     try:
+        if message.date >= start_time:
+
         markup = create_keyboard()
         bot.send_message(message.chat.id, "اختر لطمية 🫀", reply_markup=markup)
     except Exception as e:
