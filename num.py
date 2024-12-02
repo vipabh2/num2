@@ -138,14 +138,7 @@ def callback_query(call):
     except Exception as e:
         print(f"حدث خطأ: {e}")
         bot.send_message(call.message.chat.id, f"حدث خطأ أثناء إرسال الصوت: {e}")
-        while True:
-            try:
-                print("Starting bot polling...")
-            except Exception as e:
-                print(f"Error occurred: {e}")
-                print("Restarting bot polling...")
-                bot.polling()
-                
+       
 # قائمة المحظورين
 banned_users = [7465920634, 6048901890]  # ضع هنا المعرفات المحظورة
 
