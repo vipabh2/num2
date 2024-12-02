@@ -21,9 +21,7 @@ def handle_message(message):
         InlineKeyboardButton("افراح", callback_data="افراح"),
         InlineKeyboardButton("عشوائي", callback_data="عشوائي")
     ]
-    markup.add(*more_buttons)
-    bot.send_message(call.message.chat.id, "خيارات إضافية:", reply_markup=markup)
-    
+ 
 @bot.callback_query_handler(func=lambda call: True)
 def callback_query(call):
     try:
