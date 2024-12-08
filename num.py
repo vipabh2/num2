@@ -42,8 +42,8 @@ def strt(message):
         "t.me/VIPABH/1210",  
         caption=f"أهلاً [{message.from_user.first_name}](https://t.me/{username})! حياك الله. اضغط على الزر لبدء اللعبة.",
         parse_mode="Markdown",
-        reply_markup=markup
-    )
+        reply_markup=None
+  )
 
     chat_id = message.chat.id
     if chat_id not in group_game_status:
