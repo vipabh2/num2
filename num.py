@@ -66,7 +66,7 @@ def handle_start_game(call):
         group_game_status[chat_id]['joker_player'] = user_id  
         correct_answer = random.randint(1, 6) 
         group_game_status[chat_id]['correct_answer'] = correct_answer
-        bot.send_message(chat_id, f"تم تسجيلك في لعبة الزر محيبس \n ملاحظة : لفتح العضمة ارسل طك ورقم العضمة لأخذ المحبس أرسل جيب ورقم العضمة.")
+        bot.send_message(chat_id, f"تم تسجيلك في لعبة محيبس \n ملاحظة : لفتح العضمة ارسل طك ورقم العضمة لأخذ المحبس أرسل جيب ورقم العضمة.")
 
 
 @bot.message_handler(regexp=r'\جيب (\d+)')
@@ -88,7 +88,7 @@ def handle_guess(message):
                 else:
                     sender_first_name = message.from_user.first_name
                     game_board = [["❌" if i == guess - 1 else "🖐️" for i in range(6)]]
-                    bot.reply_to(chat_id, f"ضاع البات ماضن بعد تلگونة ☹️ \n{format_board(game_board, numbers_board)}")
+                    bot.reply_to(message, f"ضاع البات ماضن بعد تلگونة ☹️ \n{format_board(game_board, numbers_board)}")
                     reset_game(chat_id)
             else:
                 bot.reply_to(message, "❗ يرجى إدخال رقم صحيح بين 1 و 6.")
