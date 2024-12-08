@@ -121,6 +121,9 @@ def handle_strike(message):
                 bot.reply_to(message, f" {iuABH} \n{format_board(game_board, numbers_board)}")
         except (IndexError, ValueError):
             bot.reply_to(message, "يرجى إدخال رقم صحيح بين 1 و 6.")
+            if __name__ == "__main__":
+                bot.polling(none_stop=True)
+
 
 banned_users = [74659206340, 60489018900]  
 
@@ -261,6 +264,9 @@ def send_random_file(message):
     rl = random.randint(2, 222)
     url = f"t.me/iuabh/{rl}"
     bot.send_photo(message.chat.id, url, caption="😎يسعد مسائك", reply_to_message_id=message.message_id)
+    
+    if __name__ == "__main__":
+        bot.polling(none_stop=True)
 
 
 questions = [
