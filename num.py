@@ -83,12 +83,12 @@ def handle_guess(message):
                     points[winner_id] = points.get(winner_id, 0) + 1
                     sender_first_name = message.from_user.first_name
                     game_board = [["💍" if i == correct_answer - 1 else "🖐️" for i in range(6)]]
-                    bot.send_message(chat_id, f'🎉 الف مبروك! اللاعب ({sender_first_name}) وجد المحبس 💍!\n{format_board(game_board, numbers_board)}')
+                    bot.reply_to(chat_id, f'🎉 الف مبروك! اللاعب ({sender_first_name}) وجد المحبس 💍!\n{format_board(game_board, numbers_board)}')
                     reset_game(chat_id)
                 else:
                     sender_first_name = message.from_user.first_name
                     game_board = [["❌" if i == guess - 1 else "🖐️" for i in range(6)]]
-                    bot.send_message(chat_id, f"ضاع البات ماضن بعد تلگونة ☹️ \n{format_board(game_board, numbers_board)}")
+                    bot.reply_to(chat_id, f"ضاع البات ماضن بعد تلگونة ☹️ \n{format_board(game_board, numbers_board)}")
                     reset_game(chat_id)
             else:
                 bot.reply_to(message, "❗ يرجى إدخال رقم صحيح بين 1 و 6.")
