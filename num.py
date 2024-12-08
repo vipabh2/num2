@@ -29,7 +29,6 @@ def reset_game(chat_id):
     correct_answer = None
     group_game_status[chat_id]['is_game_started2'] = False
     group_game_status[chat_id]['joker_player'] = None
-
 @bot.message_handler(func=lambda message: message.text == 'محيبس')
 def strt(message):
     global correct_answer
@@ -43,29 +42,32 @@ def strt(message):
         caption=f"أهلاً [{message.from_user.first_name}](https://t.me/{username})! حياك الله. اضغط على الزر لبدء اللعبة.",
         parse_mode="Markdown",
         reply_markup=markup
-  )
+    )
 
+    chat_id = message.chat.id
     if chat_id not in group_game_status:
         group_game_status[chat_id] = {'is_game_started2': False, 'joker_player': None}
 
 @bot.callback_query_handler(func=lambda call: call.data == "start_game")
 def handle_start_game(call):
     bot.edit_message_reply_markup(
-    chat_id = call.message.chat.id,
-    user_id = call.from_user.id,
-    message_id=call.message.message_id,
-    reply_markup=None
+        chat_id=call.message.chat.id,
+        message_id=call.message.message_id,
+        reply_markup=None
     )
-    global correct_answer
+    chat_id = call.message.chat.id
+    user_id = call.from_user.id 
+
     if chat_id not in group_game_status:
         group_game_status[chat_id] = {'is_game_started2': False, 'joker_player': None}
 
     if not group_game_status[chat_id]['is_game_started2']:
         group_game_status[chat_id]['is_game_started2'] = True
-        group_game_status[chat_id]['joker_player'] = user_id  
-        correct_answer = random.randint(1, 6) 
-        bot.send_message(chat_id, f"اول من يضغط علئ الزر سيشارك في لعبة المحيبس ملاحظة : لفتح العضمة ارسل طك ورقم العضمة لأخذ المحبس أرسل جيب ورقم العضمة.")
-        reply_markup=None
+        group_game_status[chat_id]['joker_player'] = user_id  # تحديد اللاعب الذي بدأ اللعبة
+        correct_answer = random.randint(1, 6)  # تعيين الرقم السري عند بداية اللعبة
+        group_game_status[chat_id]['correct_answer'] = correct_answer
+        bot.send_message(chat_id, f"تم اختيار الرقم السري! اللعبة جاهزة. لفتح العضمة أرسل 'طك <رقم>'.")
+
 
 @bot.message_handler(regexp=r'\جيب (\d+)')
 def handle_guess(message):
