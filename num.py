@@ -33,7 +33,7 @@ def reset_game(chat_id):
 def strt(message):
     global correct_answer
     markup = types.InlineKeyboardMarkup()
-    markup.add(types.InlineKeyboardButton("ابدأ اللعبة", callback_data="start_game"))
+    markup.add(types.InlineKeyboardButton("ابدأ اللعبة", callback_data="startGame"))
 
     username = message.from_user.username or "unknown"
     bot.send_video(
@@ -48,7 +48,7 @@ def strt(message):
     if chat_id not in group_game_status:
         group_game_status[chat_id] = {'is_game_started2': False, 'joker_player': None}
 
-@bot.callback_query_handler(func=lambda call: call.data == "start_game")
+@bot.callback_query_handler(func=lambda call: call.data == "startGame")
 def handle_start_game(call):
     bot.edit_message_reply_markup(
         chat_id=call.message.chat.id,
