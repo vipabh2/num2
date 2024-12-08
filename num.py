@@ -52,10 +52,11 @@ def strt(message):
 @bot.callback_query_handler(func=lambda call: call.data == "start_game")
 def handle_start_game(call):
     bot.edit_message_reply_markup(
-    chat_id = call.message.chat.id
-    user_id = call.from_user.id 
+    chat_id = call.message.chat.id,
+    user_id = call.from_user.id,
     message_id=call.message.message_id,
     reply_markup=None
+    )
     global correct_answer
     if chat_id not in group_game_status:
         group_game_status[chat_id] = {'is_game_started2': False, 'joker_player': None}
