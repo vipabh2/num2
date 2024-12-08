@@ -66,7 +66,7 @@ def handle_start_game(call):
         group_game_status[chat_id]['joker_player'] = user_id  
         correct_answer = random.randint(1, 6) 
         group_game_status[chat_id]['correct_answer'] = correct_answer
-        bot.send_message(chat_id, f"اول من يضغط علئ الزر سيشارك في لعبة المحيبس ملاحظة : لفتح العضمة ارسل طك ورقم العضمة لأخذ المحبس أرسل جيب ورقم العضمة.")
+        bot.send_message(chat_id, f"تم تسجيلك في لعبة الزر محيبس \n ملاحظة : لفتح العضمة ارسل طك ورقم العضمة لأخذ المحبس أرسل جيب ورقم العضمة.")
 
 
 @bot.message_handler(regexp=r'\جيب (\d+)')
