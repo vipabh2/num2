@@ -42,7 +42,7 @@ def strt(message):
         "t.me/VIPABH/1210",  
         caption=f"أهلاً [{message.from_user.first_name}](https://t.me/{username})! حياك الله. اضغط على الزر لبدء اللعبة.",
         parse_mode="Markdown",
-        reply_markup=None
+        reply_markup=markup
   )
 
     chat_id = message.chat.id
