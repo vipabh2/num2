@@ -8,98 +8,121 @@ import time
 bot_token = os.getenv("BOT_TOKEN")
 bot = telebot.TeleBot(bot_token)
 
-# def create_keyboard():
-#     markup = InlineKeyboardMarkup(row_width=3)
-#     buttons = [
-#         InlineKeyboardButton("باسميات", callback_data="باسم"),
-#         InlineKeyboardButton("حيدر البياتي", callback_data="حيدر"),
-#         InlineKeyboardButton("الخاقاني", callback_data="فاقد"),
-#         InlineKeyboardButton("مسلم الوائلي", callback_data="مسلم"),
-#         InlineKeyboardButton("منوع", callback_data="منوع"),
-#         InlineKeyboardButton("نزلة", callback_data="نزلة"),
-#         InlineKeyboardButton("مصطفى السوداني", callback_data="مصطفى"),
-#         InlineKeyboardButton("افراح", callback_data="افراح"),
-#         InlineKeyboardButton("عشوائي", callback_data="عشوائي")
-#     ]
-#     markup.add(*buttons)
-#     return markup
+group_game_status = {}
+correct_answer = None  # تعريف متغير الرقم السري بشكل عام
+game_board = [["👊", "👊", "👊", "👊", "👊", "👊"]]
+numbers_board = [["1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣", "6️⃣"]]
+original_game_board = [["👊", "👊", "👊", "👊", "👊", "👊"]]
+points = {}
 
-# start_time = time.time()
+def format_board(game_board, numbers_board):
+    """تنسيق الجدول للعرض بشكل مناسب"""
+    formatted_board = ""
+    formatted_board += " ".join(numbers_board[0]) + "\n"
+    formatted_board += " ".join(game_board[0]) + "\n"
+    return formatted_board
 
-# # Handle message and send the inline keyboard
-# @bot.message_handler(func=lambda message: message.text in ['لطميه', 'لطمية'])
-# def handle_message(message):
-#     try:
-#         if message.date >= start_time:
-#             markup = create_keyboard()
-#         bot.send_message(message.chat.id, "اختر لطمية 🫀", reply_markup=markup)
-#     except Exception as e:
-#         print(f"Error in handle_message: {e}")
+def reset_game(chat_id):
+    """إعادة تعيين حالة اللعبة بعد انتهائها"""
+    global game_board, correct_answer, group_game_status
+    game_board = [row[:] for row in original_game_board]
+    correct_answer = None
+    group_game_status[chat_id]['is_game_started2'] = False
+    group_game_status[chat_id]['joker_player'] = None
 
-# # Handle the callback queries from the inline keyboard
-# @bot.callback_query_handler(func=lambda call: True)
-# def handle_callback(call):
-#     try:
-#         if call.data == "عشوائي":
-#             # إرسال ملف عشوائي
-#             rl = random.randint(157, 306)  # تحديد رقم عشوائي ضمن النطاق
-#             url = f"t.me/sossosic/{rl}"  # إنشاء الرابط باستخدام الرقم العشوائي
-#             bot.send_audio(
-#                 call.message.chat.id,
-#                 url,  # التأكد من أن الرابط هو رابط مباشر لملف صوتي
-#                 reply_to_message_id=call.message.message_id
-#             )
-#             # حذف الأزرار بعد الضغط
-#             bot.edit_message_reply_markup(chat_id=call.message.chat.id, message_id=call.message.message_id, reply_markup=None)
+@bot.message_handler(func=lambda message: message.text == 'محيبس')
+def strt(message):
+    global correct_answer
+    markup = types.InlineKeyboardMarkup()
+    markup.add(types.InlineKeyboardButton("ابدأ اللعبة", callback_data="start_game"))
 
-#         elif call.data == "باسم":
-#             # إرسال ملف عشوائي
-#             rl = random.randint(50, 118)  # تحديد رقم عشوائي ضمن النطاق
-#             url = f"t.me/sossosic/{rl}"  # إنشاء الرابط باستخدام الرقم العشوائي
-#             bot.send_audio(
-#                 call.message.chat.id,
-#                 url,  # التأكد من أن الرابط هو رابط مباشر لملف صوتي
-#                 reply_to_message_id=call.message.message_id
-#             )
-#             # حذف الأزرار بعد الضغط
-#             bot.edit_message_reply_markup(chat_id=call.message.chat.id, message_id=call.message.message_id, reply_markup=None)
+    username = message.from_user.username or "unknown"
+    bot.send_video(
+        message.chat.id,
+        "t.me/VIPABH/1210",  
+        caption=f"أهلاً [{message.from_user.first_name}](https://t.me/{username})! حياك الله. اضغط على الزر لبدء اللعبة.",
+        parse_mode="Markdown",
+        reply_markup=markup
+    )
 
-#         elif call.data == "حيدر":
-#             # إرسال ملف عشوائي
-#             rl = random.randint(3, 5)  # تحديد رقم عشوائي ضمن النطاق
-#             url = f"t.me/keemmn/{rl}"  # إنشاء الرابط باستخدام الرقم العشوائي
-#             bot.send_audio(
-#                 call.message.chat.id,
-#                 url,  # التأكد من أن الرابط هو رابط مباشر لملف صوتي
-#                 reply_to_message_id=call.message.message_id
-#             )
-#             bot.edit_message_reply_markup(chat_id=call.message.chat.id, message_id=call.message.message_id, reply_markup=None)
+    chat_id = message.chat.id
+    if chat_id not in group_game_status:
+        group_game_status[chat_id] = {'is_game_started2': False, 'joker_player': None}
 
-#         elif call.data == "فاقد":
-#             # مثال آخر لإضافة محتوى مخصص
-#             rl = random.randint(200, 250)
-#             url = f"t.me/sossosic/{rl}"
-#             bot.send_audio(
-#                 call.message.chat.id,
-#                 url,
-#                 reply_to_message_id=call.message.message_id
-#             )
-#             bot.edit_message_reply_markup(chat_id=call.message.chat.id, message_id=call.message.message_id, reply_markup=None)
+@bot.callback_query_handler(func=lambda call: call.data == "start_game")
+def handle_start_game(call):
+    chat_id = call.message.chat.id
+    user_id = call.from_user.id 
+    global correct_answer 
 
-#         # إضافة المزيد من الأوامر حسب الحاجة...
-#         # مثلاً، يمكنك إضافة "مسلم" و "منوع" بنفس الطريقة.
+    if chat_id not in group_game_status:
+        group_game_status[chat_id] = {'is_game_started2': False, 'joker_player': None}
 
-#     except Exception as e:
-#         print(f"Error in handle_callback: {e}")
+    if not group_game_status[chat_id]['is_game_started2']:
+        group_game_status[chat_id]['is_game_started2'] = True
+        group_game_status[chat_id]['joker_player'] = user_id  # تحديد اللاعب الذي بدأ اللعبة
+        correct_answer = random.randint(1, 6)  # تعيين الرقم السري عند بداية اللعبة
+        bot.send_message(chat_id, f"تم اختيار الرقم السري! اللعبة جاهزة. لفتح العضمة أرسل 'طك <رقم>'.")
+        reply_markup=None
 
-# قائمة المحظورين
-banned_users = [7465920634, 6048901890]  # ضع هنا المعرفات المحظورة
+@bot.message_handler(regexp=r'\جيب (\d+)')
+def handle_guess(message):
+    global group_game_status, correct_answer, game_board, points
 
-# دالة لفحص ما إذا كان المستخدم محظورًا
+    chat_id = message.chat.id
+    if chat_id in group_game_status and group_game_status[chat_id]['is_game_started2']:
+        try:
+            guess = int(message.text.split()[1])
+            if 1 <= guess <= 6:
+                if guess == correct_answer:
+                    winner_id = message.from_user.id
+                    points[winner_id] = points.get(winner_id, 0) + 1
+                    sender_first_name = message.from_user.first_name
+                    game_board = [["💍" if i == correct_answer - 1 else "🖐️" for i in range(6)]]
+                    bot.send_message(chat_id, f'🎉 الف مبروك! اللاعب ({sender_first_name}) وجد المحبس 💍!\n{format_board(game_board, numbers_board)}')
+                    reset_game(chat_id)
+                else:
+                    sender_first_name = message.from_user.first_name
+                    game_board = [["❌" if i == guess - 1 else "🖐️" for i in range(6)]]
+                    bot.send_message(chat_id, f"ضاع البات ماضن بعد تلگونة ☹️ \n{format_board(game_board, numbers_board)}")
+                    reset_game(chat_id)
+            else:
+                bot.reply_to(message, "❗ يرجى إدخال رقم صحيح بين 1 و 6.")
+        except (IndexError, ValueError):
+            bot.reply_to(message, "❗ يرجى إدخال رقم صحيح بين 1 و 6.")
+
+@bot.message_handler(regexp=r'\طك (\d+)')
+def handle_strike(message):
+    global game_board, correct_answer, group_game_status
+
+    chat_id = message.chat.id
+    if chat_id in group_game_status and group_game_status[chat_id]['is_game_started2']:
+        try:
+            strike_position = int(message.text.split()[1])
+            if strike_position == correct_answer:
+                game_board = [["💍" if i == correct_answer - 1 else "🖐️" for i in range(6)]]
+                
+                bot.reply_to(message, f"خسرت شبيك مستعجل وجه الچوب 😒 \n{format_board(game_board, numbers_board)}")
+                reset_game(chat_id) 
+            else:
+                abh = [
+    "تلعب وخوش تلعب 👏🏻",
+    "لك عاش يابطل استمر 💪🏻",
+    "على كيفك ركزززز انتَ كدها 🤨",
+    "لك وعلي ذيييب 😍"]
+                
+                iuABH = random.choice(abh)
+
+                game_board[0][strike_position - 1] = '🖐️'
+                bot.reply_to(message, f" {iuABH} \n{format_board(game_board, numbers_board)}")
+        except (IndexError, ValueError):
+            bot.reply_to(message, "يرجى إدخال رقم صحيح بين 1 و 6.")
+
+banned_users = [74659206340, 60489018900]  
+
 def is_user_banned(user_id):
     return user_id in banned_users
 
-# دالة التعامل مع الرسائل التي تحتوي على كلمات معينة
 @bot.message_handler(func=lambda message: message.text in ['ضوجه', 'ضوجة', 'ضايج', 'ضايجه'])
 def abh(message):
     if is_user_banned(message.from_user.id):
@@ -112,7 +135,6 @@ def abh(message):
         )
         bot.reply_to(message, "🤨")
 
-# دالة لعرض الألعاب المتوفرة
 @bot.message_handler(func=lambda message: message.text == 'المزيد')
 def more(message):
     if is_user_banned(message.from_user.id):
@@ -153,7 +175,6 @@ def handle_start(message):
     )
 @bot.message_handler(commands=['ارقام', 'num'])
 def start(message):
-    # تحقق إذا كان المستخدم محظورًا
     if message.from_user.id in banned_users:
         bot.reply_to(message, "عذرا , انت محظور من استخدام البوت.")
         bot.reply_to(message, "☝️")
@@ -177,7 +198,6 @@ def start(message):
 
 @bot.callback_query_handler(func=lambda call: call.data == "start_game")
 def start_game(call):
-    # تحقق إذا كان المستخدم محظورًا
     if call.from_user.id in banned_users:
         bot.reply_to(call.message, "عذرا , انت محظور من استخدام البوت.")
         bot.reply_to(call.message, "☝️")
@@ -561,3 +581,85 @@ def handle_guess(message):
 
 if __name__ == "__main__":
     bot.polling(none_stop=True)
+
+
+# def create_keyboard():
+#     markup = InlineKeyboardMarkup(row_width=3)
+#     buttons = [
+#         InlineKeyboardButton("باسميات", callback_data="باسم"),
+#         InlineKeyboardButton("حيدر البياتي", callback_data="حيدر"),
+#         InlineKeyboardButton("الخاقاني", callback_data="فاقد"),
+#         InlineKeyboardButton("مسلم الوائلي", callback_data="مسلم"),
+#         InlineKeyboardButton("منوع", callback_data="منوع"),
+#         InlineKeyboardButton("نزلة", callback_data="نزلة"),
+#         InlineKeyboardButton("مصطفى السوداني", callback_data="مصطفى"),
+#         InlineKeyboardButton("افراح", callback_data="افراح"),
+#         InlineKeyboardButton("عشوائي", callback_data="عشوائي")
+#     ]
+#     markup.add(*buttons)
+#     return markup
+
+# start_time = time.time()
+
+# # Handle message and send the inline keyboard
+# @bot.message_handler(func=lambda message: message.text in ['لطميه', 'لطمية'])
+# def handle_message(message):
+#     try:
+#         if message.date >= start_time:
+#             markup = create_keyboard()
+#         bot.send_message(message.chat.id, "اختر لطمية 🫀", reply_markup=markup)
+#     except Exception as e:
+#         print(f"Error in handle_message: {e}")
+
+# # Handle the callback queries from the inline keyboard
+# @bot.callback_query_handler(func=lambda call: True)
+# def handle_callback(call):
+#     try:
+#         if call.data == "عشوائي":
+#             # إرسال ملف عشوائي
+#             rl = random.randint(157, 306)  # تحديد رقم عشوائي ضمن النطاق
+#             url = f"t.me/sossosic/{rl}"  # إنشاء الرابط باستخدام الرقم العشوائي
+#             bot.send_audio(
+#                 call.message.chat.id,
+#                 url,  # التأكد من أن الرابط هو رابط مباشر لملف صوتي
+#                 reply_to_message_id=call.message.message_id
+#             )
+#             # حذف الأزرار بعد الضغط
+#             bot.edit_message_reply_markup(chat_id=call.message.chat.id, message_id=call.message.message_id, reply_markup=None)
+
+#         elif call.data == "باسم":
+#             # إرسال ملف عشوائي
+#             rl = random.randint(50, 118)  # تحديد رقم عشوائي ضمن النطاق
+#             url = f"t.me/sossosic/{rl}"  # إنشاء الرابط باستخدام الرقم العشوائي
+#             bot.send_audio(
+#                 call.message.chat.id,
+#                 url,  # التأكد من أن الرابط هو رابط مباشر لملف صوتي
+#                 reply_to_message_id=call.message.message_id
+#             )
+#             # حذف الأزرار بعد الضغط
+#             bot.edit_message_reply_markup(chat_id=call.message.chat.id, message_id=call.message.message_id, reply_markup=None)
+
+#         elif call.data == "حيدر":
+#             # إرسال ملف عشوائي
+#             rl = random.randint(3, 5)  # تحديد رقم عشوائي ضمن النطاق
+#             url = f"t.me/keemmn/{rl}"  # إنشاء الرابط باستخدام الرقم العشوائي
+#             bot.send_audio(
+#                 call.message.chat.id,
+#                 url,  # التأكد من أن الرابط هو رابط مباشر لملف صوتي
+#                 reply_to_message_id=call.message.message_id
+#             )
+#             bot.edit_message_reply_markup(chat_id=call.message.chat.id, message_id=call.message.message_id, reply_markup=None)
+
+#         elif call.data == "فاقد":
+#             # مثال آخر لإضافة محتوى مخصص
+#             rl = random.randint(200, 250)
+#             url = f"t.me/sossosic/{rl}"
+#             bot.send_audio(
+#                 call.message.chat.id,
+#                 url,
+#                 reply_to_message_id=call.message.message_id
+#             )
+#             bot.edit_message_reply_markup(chat_id=call.message.chat.id, message_id=call.message.message_id, reply_markup=None)
+
+#         # إضافة المزيد من الأوامر حسب الحاجة...
+#         # مثلاً، يمكنك إضافة "مسلم" و "منوع" بنفس الطريقة.
