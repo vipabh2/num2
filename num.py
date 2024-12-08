@@ -45,7 +45,6 @@ def strt(message):
         reply_markup=markup
   )
 
-    chat_id = message.chat.id
     if chat_id not in group_game_status:
         group_game_status[chat_id] = {'is_game_started2': False, 'joker_player': None}
 
