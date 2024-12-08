@@ -87,7 +87,7 @@ def handle_guess(message):
                     reset_game(chat_id)
                 else:
                     sender_first_name = message.from_user.first_name
-                    game_board = [["❌" if i == guess - 1 else "🖐️" for i in range(6)]]
+                    game_board = [["❌" if i == guess - 1 else "🖐️" for i in range(6)]]    bot.reply_to(chat_id, f"ضاع البات ماضن بعد تلگونة ☹️ \n{format_board(game_board, numbers_board)}")
                     bot.reply_to(chat_id, f"ضاع البات ماضن بعد تلگونة ☹️ \n{format_board(game_board, numbers_board)}")
                     reset_game(chat_id)
             else:
