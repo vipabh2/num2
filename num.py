@@ -69,7 +69,7 @@ def handle_start_game(call):
         bot.send_message(message, f"تم تسجيلك في لعبة محيبس \n ملاحظة : لفتح العضمة ارسل طك ورقم العضمة لأخذ المحبس أرسل جيب ورقم العضمة.")
 
 
-@bot.message_handler(regexp=r'\جيب (\d+)')
+@bot.message_handler(regexp=r'جيب (\d+)')
 def handle_guess(message):
     global group_game_status, correct_answer, game_board, points
 
@@ -98,7 +98,7 @@ def handle_guess(message):
                     return
 
 
-@bot.message_handler(regexp=r'\طك (\d+)')
+@bot.message_handler(regexp=r'طك (\d+)')
 def handle_strike(message):
     global game_board, correct_answer, group_game_status
 
