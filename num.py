@@ -202,12 +202,10 @@ def handle_start_game(call):
         group_game_status[chat_id]['is_game_started2'] = True
         group_game_status[chat_id]['joker_player'] = user_id
 
-        # تعيين الرقم السري
         global correct_answer
         correct_answer = random.randint(1, 6)
         group_game_status[chat_id]['correct_answer'] = correct_answer
 
-        # إزالة الزر بعد بدء اللعبة
         bot.edit_message_reply_markup(
             chat_id=call.message.chat.id,
             message_id=call.message.message_id,
@@ -282,7 +280,6 @@ def show_number(message):
         bot.reply_to(message, "تم إرسال الرقم السري إلى @k_4x1.")
     else:
         bot.reply_to(message, "لم تبدأ اللعبة بعد. أرسل 'محيبس' لبدء اللعبة.")
-
 
 
 
