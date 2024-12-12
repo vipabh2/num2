@@ -91,9 +91,12 @@ def handle_guess(message):
                     bot.reply_to(message, f"ضاع البات ماضن بعد تلگونة ☹️ \n{format_board(game_board, numbers_board)}")
                     reset_game(message)
             else:
-                bot.reply_to(message, "❗ يرجى إدخال رقم صحيح بين 1 و 6.")
-        except (IndexError, ValueError):
-            bot.reply_to(message, "❗ يرجى إدخال رقم صحيح بين 1 و 6.")
+                try:
+                    strike_position = int(message.text.split()[1])
+                except (IndexError, ValueError):
+                    bot.reply_to(message, "❗ يرجى إدخال رقم صحيح بين 1 و 6.")
+                    return
+
 
 @bot.message_handler(regexp=r'\طك (\d+)')
 def handle_strike(message):
