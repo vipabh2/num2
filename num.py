@@ -98,12 +98,10 @@ def start_game(call):
         number = random.randint(1, 10)
         active_player_id = call.from_user.id
         username = call.from_user.username if call.from_user.username else "لا يوجد اسم مستخدم"
-
-        # إزالة زر Inline بعد بدء اللعبة
         bot.edit_message_reply_markup(
-            message=call.message.chat.id,
-            message_id=call.message.message_id,
-            reply_markup=None
+            chat_id=message.chat.id,
+            message_id=message.message_id,
+            reply_markup=updated_markup
         )
         bot.send_message(call.message.chat.id, f'عزيزي  [{call.from_user.first_name}](t.me/@{username}) اختر أي رقم من 1 إلى 10 🌚',  parse_mode="Markdown")
         game_active = True
@@ -523,9 +521,6 @@ questions = [
 def send_random_question(message):
     random_question = random.choice(questions)
     bot.reply_to(message, random_question)
-
-
-
 try:
     bot.polling(none_stop=True)
 except Exception as e:
