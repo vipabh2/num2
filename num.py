@@ -22,13 +22,13 @@ def format_board(game_board, numbers_board):
     formatted_board += " ".join(game_board[0]) + "\n"
     return formatted_board
 
-def reset_game(chat_id):
+def reset_game(message):
     """إعادة تعيين حالة اللعبة بعد انتهائها"""
     global game_board, correct_answer, group_game_status
     game_board = [row[:] for row in original_game_board]
     correct_answer = None
-    group_game_status[chat_id]['is_game_started2'] = False
-    group_game_status[chat_id]['joker_player'] = None
+    group_game_status[message]['is_game_started2'] = False
+    group_game_status[message]['joker_player'] = None
 @bot.message_handler(func=lambda message: message.text == 'محيبس')
 def strt(message):
     global correct_answer
@@ -44,37 +44,37 @@ def strt(message):
         reply_markup=markup
     )
 
-    chat_id = message.chat.id
-    if chat_id not in group_game_status:
-        group_game_status[chat_id] = {'is_game_started2': False, 'joker_player': None}
+    message = message.chat.id
+    if message not in group_game_status:
+        group_game_status[message] = {'is_game_started2': False, 'joker_player': None}
 
 @bot.callback_query_handler(func=lambda call: call.data == "startGame")
 def handle_start_game(call):
     bot.edit_message_reply_markup(
-        chat_id=call.message.chat.id,
+        message=call.message.chat.id,
         message_id=call.message.message_id,
         reply_markup=None
     )
-    chat_id = call.message.chat.id
+    message = call.message.chat.id
     user_id = call.from_user.id 
 
-    if chat_id not in group_game_status:
-        group_game_status[chat_id] = {'is_game_started2': False, 'joker_player': None}
+    if message not in group_game_status:
+        group_game_status[message] = {'is_game_started2': False, 'joker_player': None}
 
-    if not group_game_status[chat_id]['is_game_started2']:
-        group_game_status[chat_id]['is_game_started2'] = True
-        group_game_status[chat_id]['joker_player'] = user_id  
+    if not group_game_status[message]['is_game_started2']:
+        group_game_status[message]['is_game_started2'] = True
+        group_game_status[message]['joker_player'] = user_id  
         correct_answer = random.randint(1, 6) 
-        group_game_status[chat_id]['correct_answer'] = correct_answer
-        bot.send_message(chat_id, f"تم تسجيلك في لعبة محيبس \n ملاحظة : لفتح العضمة ارسل طك ورقم العضمة لأخذ المحبس أرسل جيب ورقم العضمة.")
+        group_game_status[message]['correct_answer'] = correct_answer
+        bot.send_message(message, f"تم تسجيلك في لعبة محيبس \n ملاحظة : لفتح العضمة ارسل طك ورقم العضمة لأخذ المحبس أرسل جيب ورقم العضمة.")
 
 
 @bot.message_handler(regexp=r'\جيب (\d+)')
 def handle_guess(message):
     global group_game_status, correct_answer, game_board, points
 
-    chat_id = message.chat.id
-    if chat_id in group_game_status and group_game_status[chat_id]['is_game_started2']:
+    message = message.chat.id
+    if message in group_game_status and group_game_status[message]['is_game_started2']:
         try:
             guess = int(message.text.split()[1])
             if 1 <= guess <= 6:
@@ -83,13 +83,13 @@ def handle_guess(message):
                     points[winner_id] = points.get(winner_id, 0) + 1
                     sender_first_name = message.from_user.first_name
                     game_board = [["💍" if i == correct_answer - 1 else "🖐️" for i in range(6)]]
-                    bot.reply_to(chat_id, f'🎉 الف مبروك! اللاعب ({sender_first_name}) وجد المحبس 💍!\n{format_board(game_board, numbers_board)}')
-                    reset_game(chat_id)
+                    bot.reply_to(message, f'🎉 الف مبروك! اللاعب ({sender_first_name}) وجد المحبس 💍!\n{format_board(game_board, numbers_board)}')
+                    reset_game(message)
                 else:
                     sender_first_name = message.from_user.first_name
                     game_board = [["❌" if i == guess - 1 else "🖐️" for i in range(6)]]
                     bot.reply_to(message, f"ضاع البات ماضن بعد تلگونة ☹️ \n{format_board(game_board, numbers_board)}")
-                    reset_game(chat_id)
+                    reset_game(message)
             else:
                 bot.reply_to(message, "❗ يرجى إدخال رقم صحيح بين 1 و 6.")
         except (IndexError, ValueError):
@@ -99,15 +99,15 @@ def handle_guess(message):
 def handle_strike(message):
     global game_board, correct_answer, group_game_status
 
-    chat_id = message.chat.id
-    if chat_id in group_game_status and group_game_status[chat_id]['is_game_started2']:
+    message = message.chat.id
+    if message in group_game_status and group_game_status[message]['is_game_started2']:
         try:
             strike_position = int(message.text.split()[1])
             if strike_position == correct_answer:
                 game_board = [["💍" if i == correct_answer - 1 else "🖐️" for i in range(6)]]
                 
                 bot.reply_to(message, f"خسرت شبيك مستعجل وجه الچوب 😒 \n{format_board(game_board, numbers_board)}")
-                reset_game(chat_id) 
+                reset_game(message) 
             else:
                 abh = [
     "تلعب وخوش تلعب 👏🏻",
@@ -218,7 +218,7 @@ def start_game(call):
 
         # إزالة زر Inline بعد بدء اللعبة
         bot.edit_message_reply_markup(
-            chat_id=call.message.chat.id,
+            message=call.message.chat.id,
             message_id=call.message.message_id,
             reply_markup=None
         )
@@ -555,7 +555,7 @@ if __name__ == "__main__":
 #                 reply_to_message_id=call.message.message_id
 #             )
 #             # حذف الأزرار بعد الضغط
-#             bot.edit_message_reply_markup(chat_id=call.message.chat.id, message_id=call.message.message_id, reply_markup=None)
+#             bot.edit_message_reply_markup(message=call.message.chat.id, message_id=call.message.message_id, reply_markup=None)
 
 #         elif call.data == "باسم":
 #             # إرسال ملف عشوائي
@@ -567,7 +567,7 @@ if __name__ == "__main__":
 #                 reply_to_message_id=call.message.message_id
 #             )
 #             # حذف الأزرار بعد الضغط
-#             bot.edit_message_reply_markup(chat_id=call.message.chat.id, message_id=call.message.message_id, reply_markup=None)
+#             bot.edit_message_reply_markup(message=call.message.chat.id, message_id=call.message.message_id, reply_markup=None)
 
 #         elif call.data == "حيدر":
 #             # إرسال ملف عشوائي
@@ -578,7 +578,7 @@ if __name__ == "__main__":
 #                 url,  # التأكد من أن الرابط هو رابط مباشر لملف صوتي
 #                 reply_to_message_id=call.message.message_id
 #             )
-#             bot.edit_message_reply_markup(chat_id=call.message.chat.id, message_id=call.message.message_id, reply_markup=None)
+#             bot.edit_message_reply_markup(message=call.message.chat.id, message_id=call.message.message_id, reply_markup=None)
 
 #         elif call.data == "فاقد":
 #             # مثال آخر لإضافة محتوى مخصص
@@ -589,7 +589,7 @@ if __name__ == "__main__":
 #                 url,
 #                 reply_to_message_id=call.message.message_id
 #             )
-#             bot.edit_message_reply_markup(chat_id=call.message.chat.id, message_id=call.message.message_id, reply_markup=None)
+#             bot.edit_message_reply_markup(message=call.message.chat.id, message_id=call.message.message_id, reply_markup=None)
 
 #         # إضافة المزيد من الأوامر حسب الحاجة...
 #         # مثلاً، يمكنك إضافة "مسلم" و "منوع" بنفس الطريقة.
