@@ -284,8 +284,6 @@ def show_number(message):
         bot.reply_to(message, "لم تبدأ اللعبة بعد. أرسل 'محيبس' لبدء اللعبة.")
 
 
-if __name__ == "__main__":
-    bot.polling(none_stop=True)
 
 
 questions = [
