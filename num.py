@@ -101,7 +101,9 @@ def start_game(call):
         bot.edit_message_reply_markup(
             chat_id=message.chat.id,
             message_id=message.message_id,
-            reply_markup=updated_markup
+            reply_markup=new_markup
+)
+
         )
         bot.send_message(call.message.chat.id, f'عزيزي  [{call.from_user.first_name}](t.me/@{username}) اختر أي رقم من 1 إلى 10 🌚',  parse_mode="Markdown")
         game_active = True
