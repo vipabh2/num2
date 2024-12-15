@@ -115,7 +115,7 @@ def handle_guess(message):
 
 @bot.message_handler(func=lambda message: message.text in ['ميم'] or message.text in ['ميمز'])
 def send_random_file(message):
-    rl = random.randint(241, 242)
+    rl = random.randint(2, 242)
     url = f"t.me/iuabh/{rl}"
     bot.send_photo(message.chat.id, url, caption="😎يسعد مسائك", reply_to_message_id=message.message_id)
 
