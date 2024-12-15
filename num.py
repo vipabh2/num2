@@ -21,7 +21,6 @@ attempts = 0
 active_player_id = None
 @bot.message_handler(commands=['start'])
 def handle_start(message):
-    # تحقق إذا كان المستخدم محظورًا
     if message.from_user.id in banned_users:
         bot.reply_to(message, "عذرا , انت محظور من استخدام البوت.")
         bot.reply_to(message, "☝️")
@@ -62,8 +61,8 @@ def start(message):
 @bot.callback_query_handler(func=lambda call: call.data == "start_game")
 def start_game(call):
     if call.from_user.id in banned_users:
-        # bot.reply_to(call.message, "عذرا , انت محظور من استخدام البوت.")
-        # bot.reply_to(call.message, "☝️")
+        bot.reply_to(call.message, "عذرا , انت محظور من استخدام البوت.")
+        bot.reply_to(call.message, "☝️")
         return
 
     global game_active, number, attempts, active_player_id
