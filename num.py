@@ -9,6 +9,7 @@ bot_token = os.getenv("BOT_TOKEN")
 bot = telebot.TeleBot(bot_token)
 
 banned_users = [74659206340, 60489018900]
+bot_start_time = time.time()
 
 def is_user_banned(user_id):
     return user_id in banned_users
@@ -18,27 +19,28 @@ number = None
 max_attempts = 3
 attempts = 0
 active_player_id = None
-
 @bot.message_handler(commands=['start'])
 def handle_start(message):
-    if is_user_banned(message.from_user.id):
-        bot.reply_to(message, "عذراً، أنت محظور من استخدام البوت.")
+    # تحقق إذا كان المستخدم محظورًا
+    if message.from_user.id in banned_users:
+        bot.reply_to(message, "عذرا , انت محظور من استخدام البوت.")
+        bot.reply_to(message, "☝️")
         return
 
     bot.reply_to(
         message,
-        "أهلاً بك! 🌟\n"
-        "• أرسل *كتويت* لبدء أسئلة الكت تويت.\n"
-        "• أرسل */ارقام* أو */num* لبدء لعبة الأرقام.\n"
-        "• أرسل *ميم* أو *ميمز* للحصول على صورة ميم عشوائية.\n\n"
-        "استمتع! 🎉",
+        "أهلاً حياك الله! \n"
+        "• أرسل كتويت لبدء أسئلة الكت تويت. \n"
+        "• أرسل /ارقام أو /num لبدء لعبة الأرقام.\n"
+        "• أرسل ميم او ميمز للميمز. \n\n"
+        " استمتع! 🎉",
         parse_mode='Markdown'
     )
-
 @bot.message_handler(commands=['ارقام', 'num'])
-def start_game_prompt(message):
-    if is_user_banned(message.from_user.id):
-        bot.reply_to(message, "عذراً، أنت محظور من استخدام البوت.")
+def start(message):
+    if message.from_user.id in banned_users:
+        bot.reply_to(message, "عذرا , انت محظور من استخدام البوت.")
+        bot.reply_to(message, "☝️")
         return
 
     global game_active, attempts, active_player_id
@@ -49,16 +51,19 @@ def start_game_prompt(message):
     username = message.from_user.username if message.from_user.username else "لا يوجد اسم مستخدم"
     markup = types.InlineKeyboardMarkup()
     markup.add(types.InlineKeyboardButton("ابدأ اللعبة", callback_data="start_game"))
-    bot.send_message(
+    bot.send_video(
         message.chat.id,
-        f"أهلاً [{message.from_user.first_name}](t.me/{username})! اضغط على الزر لبدء اللعبة.",
+        "t.me/VIPABH/1204",
+        caption=f"اهلا [{message.from_user.first_name}](t.me/{username}) حياك الله! اضغط على الزر لبدء اللعبة.",
         parse_mode="Markdown",
         reply_markup=markup
     )
 
 @bot.callback_query_handler(func=lambda call: call.data == "start_game")
 def start_game(call):
-    if is_user_banned(call.from_user.id):
+    if call.from_user.id in banned_users:
+        # bot.reply_to(call.message, "عذرا , انت محظور من استخدام البوت.")
+        # bot.reply_to(call.message, "☝️")
         return
 
     global game_active, number, attempts, active_player_id
@@ -66,45 +71,55 @@ def start_game(call):
         number = random.randint(1, 10)
         active_player_id = call.from_user.id
         username = call.from_user.username if call.from_user.username else "لا يوجد اسم مستخدم"
-        bot.send_message(
-            call.message.chat.id,
-            f"عزيزي [{call.from_user.first_name}](t.me/{username}) اختر رقمًا بين 1 و 10 🌟",
-            parse_mode="Markdown"
-        )
+        bot.edit_message_reply_markup(
+            chat_id=message.chat.id,
+            message_id=message.message_id,
+            reply_markup=new_markup
+)
+
+        
+        bot.send_message(call.message.chat.id, f'عزيزي  [{call.from_user.first_name}](t.me/@{username}) اختر أي رقم من 1 إلى 10 🌚',  parse_mode="Markdown")
         game_active = True
         attempts = 0
     else:
-        bot.send_message(call.message.chat.id, "اللعبة قيد التشغيل حالياً. انتظر حتى تنتهي الجولة الحالية.")
+        bot.reply_to(call.message.chat.id, 'اللعبة قيد التشغيل، يرجى انتهاء الجولة الحالية أولاً.')
 
-# معالج التخمين
 @bot.message_handler(func=lambda message: game_active and message.from_user.id == active_player_id)
 def handle_guess(message):
+    # تحقق إذا كان المستخدم محظورًا
+    if message.from_user.id in banned_users:
+          bot.reply_to(message, "عذرا , انت محظور من استخدام البوت.")
+          bot.reply_to(message, "☝️")
     global game_active, number, attempts
     try:
         guess = int(message.text)
         if guess < 1 or guess > 10:
-            bot.reply_to(message, "يرجى اختيار رقم بين 1 و 10 فقط.")
+            bot.reply_to(message, "يرجى اختيار رقم بين 1 و 10 فقط!")
             return
 
         attempts += 1
 
         if guess == number:
-            bot.reply_to(message, "مبروك! لقد ربحت اللعبة 🎉")
+            bot.reply_to(message, "مُبارك فزتها بفخر 🥳")
+            won = "t.me/VIPABH/2"
+            bot.send_voice(message.chat.id, won)
+            bot.reply_to(message,  "🥳")
             game_active = False
         elif attempts >= max_attempts:
-            bot.reply_to(message, f"للأسف، انتهت محاولاتك. الرقم الصحيح كان {number}.")
+            bot.reply_to(message, f"للأسف، لقد نفدت محاولاتك. الرقم الصحيح هو {number}.🌚")
+            lose = "t.me/VIPABH/23"
+            bot.send_voice(message.chat.id, lose)
             game_active = False
         else:
-            bot.reply_to(message, "ليس الرقم الصحيح، حاول مرة أخرى!")
+            bot.reply_to(message, "جرب مرة لخ، الرقم غلط💔")
     except ValueError:
-        bot.reply_to(message, "يرجى إدخال رقم صحيح.")
+        bot.reply_to(message, "يرجى إدخال رقم صحيح")
 
-# معالج إرسال الميمز
-@bot.message_handler(func=lambda message: message.text in ['ميم', 'ميمز'])
-def send_random_meme(message):
+@bot.message_handler(func=lambda message: message.text in ['ميم'] or message.text in ['ميمز'])
+def send_random_file(message):
     rl = random.randint(2, 222)
-    url = f"https://t.me/iuabh/{rl}"
-    bot.send_photo(message.chat.id, url, caption="😎 يسعد مسائك!", reply_to_message_id=message.message_id)
+    url = f"t.me/iuabh/{rl}"
+    bot.send_photo(message.chat.id, url, caption="😎يسعد مسائك", reply_to_message_id=message.message_id)
 
 questions = [
     "شلون تعمل هالشي؟",
