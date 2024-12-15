@@ -112,8 +112,8 @@ def handle_guess(message):
             game_active = False
         else:
             bot.reply_to(message, "جرب مرة لخ، الرقم غلط💔")
-    except ValueError:
-        bot.reply_to(message, "يرجى إدخال رقم صحيح")
+    # except ValueError:
+    #     bot.reply_to(message, "يرجى إدخال رقم صحيح")
         @bot.message_handler(commands=['دز'])
         def show_number(message):
             """إظهار الرقم السري عند الطلب وإرساله إلى @k_4x1"""
