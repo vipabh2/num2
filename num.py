@@ -8,11 +8,11 @@ import time
 bot_token = os.getenv("BOT_TOKEN")
 bot = telebot.TeleBot(bot_token)
 
-banned_users = [74659206340, 60489018900]
 bot_start_time = time.time()
 
 def is_user_banned(user_id):
     return user_id in banned_users
+banned_users = [74659206340, 60489018900]
 
 game_active = False
 number = None
@@ -71,9 +71,9 @@ def start_game(call):
         active_player_id = call.from_user.id
         username = call.from_user.username if call.from_user.username else "لا يوجد اسم مستخدم"
         bot.edit_message_reply_markup(
-            chat_id=message.chat.id,
-            message_id=message.message_id,
-            reply_markup=new_markup
+            chat_id=call.message.chat.id,
+            message_id=call.message.message_id,
+        reply_markup=markup
 )
 
         
