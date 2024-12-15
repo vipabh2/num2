@@ -115,7 +115,7 @@ def handle_guess(message):
 
 @bot.message_handler(func=lambda message: message.text in ['ميم'] or message.text in ['ميمز'])
 def send_random_file(message):
-    rl = random.randint(240, 255)
+    rl = random.randint(2, 255)
     url = f"t.me/iuabh/{rl}"
     if url == "t.me/iuabh/242":
         bot.send_video(message.chat.id, url, caption="😎يسعد مسائك", reply_to_message_id=message.message_id)
