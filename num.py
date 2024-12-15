@@ -85,7 +85,7 @@ def start_game(call):
 
 @bot.message_handler(func=lambda message: game_active and message.from_user.id == active_player_id)
 def handle_guess(message):
-    if message.from_user.id in banned_users:
+    # if message.from_user.id in banned_users:
           # bot.reply_to(message, "عذرا , انت محظور من استخدام البوت.")
           # bot.reply_to(message, "☝️")
     global game_active, number, attempts
