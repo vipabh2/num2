@@ -129,7 +129,7 @@ def handle_guess(message):
         
 @bot.message_handler(func=lambda message: message.text in ['ميم'] or message.text in ['ميمز'])
 def send_random_file(message):
-    time.sleep(3)
+    time.sleep(2)
     rl = random.randint(2, 255)
     url = f"t.me/iuabh/{rl}"
     if url == "t.me/iuabh/242":
@@ -164,7 +164,7 @@ def send_random_file(message):
         # bot.send_photo(message.chat.id, url, caption="😎يسعد مسائك", reply_to_message_id=message.message_id)
         sent_message = bot.send_photo(message.chat.id, url, caption="😎يسعد مسائك", reply_to_message_id=message.message_id)
 
-        time.sleep(3)
+        time.sleep(30)
         bot.delete_message(message.chat.id, message.message_id)
         bot.delete_message(message.chat.id, sent_message.message_id)
         
