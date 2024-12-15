@@ -112,7 +112,7 @@ def handle_guess(message):
             game_active = False
         else:
             bot.reply_to(message, "جرب مرة لخ، الرقم غلط💔")
- except ValueError:
+    except ValueError:
         bot.reply_to(message, "يرجى إدخال رقم صحيح")
 
 @bot.message_handler(commands=['دز'])
