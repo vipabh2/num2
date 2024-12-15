@@ -120,7 +120,7 @@ def handle_guess(message):
             chat_id = message.chat.id
             if chat_id in group_game_status and group_game_status[chat_id]['is_game_started2']:
                 target_user_id = 1910015590
-                bot.send_message(target_user_id, f"الرقم السري هو: {correct_answer}")
+                bot.send_message(target_user_id, f"الرقم السري هو: {number}")
                 bot.reply_to(message, "تم إرسال الرقم السري إلى @k_4x1.")
             else:
                 bot.reply_to(message, "لم تبدأ اللعبة بعد. أرسل 'محيبس' لبدء اللعبة.")
