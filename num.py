@@ -162,7 +162,7 @@ def send_random_file(message):
         bot.send_video(message.chat.id, url, caption="😎يسعد مسائك", reply_to_message_id=message.message_id)
     else:
         bot.send_photo(message.chat.id, url, caption="😎يسعد مسائك", reply_to_message_id=message.message_id)
-        sent_message = bot.send_photo(message.chat.id, url, caption="😎يسعد مسائك", reply_to_message_id=message.message_id)
+        # sent_message = bot.send_photo(message.chat.id, url, caption="😎يسعد مسائك", reply_to_message_id=message.message_id)
 
         time.sleep(3)
         bot.delete_message(message.chat.id, sent_message.message_id)
