@@ -55,7 +55,7 @@ def start(message):
         "t.me/VIPABH/1204",
         caption=f"اهلا [{message.from_user.first_name}](t.me/{username}) حياك الله! اضغط على الزر لبدء اللعبة.",
         parse_mode="Markdown",
-        reply_markup=markup
+        reply_markup=None
     )
 
 @bot.callback_query_handler(func=lambda call: call.data == "start_game")
