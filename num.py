@@ -23,7 +23,6 @@ def abh(message):
             "جربت الألعاب؟ اكتب `المزيد` لمعرفة الخدمات المتوفرة", 
             parse_mode='Markdown'
         )
-        bot.reply_to(message, "🤨")
 
 @bot.message_handler(func=lambda message: message.text == 'المزيد')
 def more(message):
