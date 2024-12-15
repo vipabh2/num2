@@ -12,7 +12,7 @@ bot_start_time = time.time()
 
 def is_user_banned(user_id):
     return user_id in banned_users
-banned_users = [74659206340, 60489018900]
+banned_users = []
 
 game_active = False
 number = None
@@ -35,6 +35,7 @@ def handle_start(message):
         " استمتع! 🎉",
         parse_mode='Markdown'
     )
+
 @bot.message_handler(commands=['ارقام', 'num'])
 def start(message):
     if message.from_user.id in banned_users:
@@ -46,18 +47,17 @@ def start(message):
     game_active = False
     attempts = 0
     active_player_id = None
-
+    
     username = message.from_user.username if message.from_user.username else "لا يوجد اسم مستخدم"
     markup = types.InlineKeyboardMarkup()
     markup.add(types.InlineKeyboardButton("ابدأ اللعبة", callback_data="start_game"))
     bot.send_video(
         message.chat.id,
-        "t.me/VIPABH/1204",
-        caption=f"اهلا [{message.from_user.first_name}](t.me/{username}) حياك الله! اضغط على الزر لبدء اللعبة.",
+        "https://t.me/VIPABH/1204",
+        caption=f"اهلا [{message.from_user.first_name}](https://t.me/{username}) حياك الله! اضغط على الزر لبدء اللعبة.",
         parse_mode="Markdown",
-        reply_markup=None
+        reply_markup=markup
     )
-
 @bot.callback_query_handler(func=lambda call: call.data == "start_game")
 def start_game(call):
     if call.from_user.id in banned_users:
@@ -69,11 +69,13 @@ def start_game(call):
     if not game_active:
         number = random.randint(1, 10)
         active_player_id = call.from_user.id
-        username = call.from_user.username if call.from_user.username else "لا يوجد اسم مستخدم"
+        username = call.from_user.username if call.from_user.username else "لا يوجد اسم مستخدم""
+
         bot.edit_message_reply_markup(
             chat_id=call.message.chat.id,
             message_id=call.message.message_id,
-        reply_markup=markup
+            reply_markup=None
+        )
 )
 
         
