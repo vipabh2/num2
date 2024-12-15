@@ -38,8 +38,8 @@ def handle_start(message):
 @bot.message_handler(commands=['ارقام', 'num'])
 def start(message):
     if message.from_user.id in banned_users:
-        bot.reply_to(message, "عذرا , انت محظور من استخدام البوت.")
-        bot.reply_to(message, "☝️")
+        # bot.reply_to(message, "عذرا , انت محظور من استخدام البوت.")
+        # bot.reply_to(message, "☝️")
         return
 
     global game_active, attempts, active_player_id
@@ -61,8 +61,8 @@ def start(message):
 @bot.callback_query_handler(func=lambda call: call.data == "start_game")
 def start_game(call):
     if call.from_user.id in banned_users:
-        bot.reply_to(call.message, "عذرا , انت محظور من استخدام البوت.")
-        bot.reply_to(call.message, "☝️")
+        # bot.reply_to(call.message, "عذرا , انت محظور من استخدام البوت.")
+        # bot.reply_to(call.message, "☝️")
         return
 
     global game_active, number, attempts, active_player_id
