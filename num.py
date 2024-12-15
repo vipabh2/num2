@@ -69,7 +69,7 @@ def start_game(call):
     if not game_active:
         number = random.randint(1, 10)
         active_player_id = call.from_user.id
-        username = call.from_user.username if call.from_user.username else "لا يوجد اسم مستخدم""
+        username = call.from_user.username if call.from_user.username else "لا يوجد اسم مستخدم"
 
         bot.edit_message_reply_markup(
             chat_id=call.message.chat.id,
