@@ -38,8 +38,8 @@ def handle_start(message):
 @bot.message_handler(commands=['ارقام', 'num'])
 def start(message):
     if message.from_user.id in banned_users:
-        # bot.reply_to(message, "عذرا , انت محظور من استخدام البوت.")
-        # bot.reply_to(message, "☝️")
+        bot.reply_to(message, "عذرا , انت محظور من استخدام البوت.")
+        bot.reply_to(message, "☝️")
         return
 
     global game_active, attempts, active_player_id
@@ -61,8 +61,8 @@ def start(message):
 @bot.callback_query_handler(func=lambda call: call.data == "start_game")
 def start_game(call):
     if call.from_user.id in banned_users:
-        # bot.reply_to(call.message, "عذرا , انت محظور من استخدام البوت.")
-        # bot.reply_to(call.message, "☝️")
+        bot.reply_to(call.message, "عذرا , انت محظور من استخدام البوت.")
+        bot.reply_to(call.message, "☝️")
         return
 
     global game_active, number, attempts, active_player_id
@@ -85,9 +85,9 @@ def start_game(call):
 
 @bot.message_handler(func=lambda message: game_active and message.from_user.id == active_player_id)
 def handle_guess(message):
-    # if message.from_user.id in banned_users:
-          # bot.reply_to(message, "عذرا , انت محظور من استخدام البوت.")
-          # bot.reply_to(message, "☝️")
+    if message.from_user.id in banned_users:
+          bot.reply_to(message, "عذرا , انت محظور من استخدام البوت.")
+          bot.reply_to(message, "☝️")
     global game_active, number, attempts
     try:
         guess = int(message.text)
@@ -115,9 +115,9 @@ def handle_guess(message):
 
 @bot.message_handler(func=lambda message: message.text in ['ميم'] or message.text in ['ميمز'])
 def send_random_file(message):
-    rl = random.randint(2, 222)
+    rl = random.randint(240, 241)
     url = f"t.me/iuabh/{rl}"
-    bot.send_photo(message.chat.id, url, caption="😎يسعد مسائك", reply_to_message_id=message.message_id)
+    bot.send_document(message.chat.id, url, caption="😎يسعد مسائك", reply_to_message_id=message.message_id)
 
 questions = [
     "شلون تعمل هالشي؟",
