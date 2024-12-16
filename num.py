@@ -149,9 +149,6 @@ def show_number(message):
         bot.reply_to(message, "لم تبدأ اللعبة بعد. أرسل 'محيبس' لبدء اللعبة.")
 
 
-if __name__ == "__main__":
-    bot.polling(none_stop=True)
-
 
 def is_user_banned(user_id):
     return user_id in banned_users
@@ -179,7 +176,7 @@ def handle_start(message):
         parse_mode='Markdown'
     )
 
-@bot.message_handler(commands=['ارقام', 'num'])
+@bot.message_handler(commands=['num'])
 def start(message):
     if message.from_user.id in banned_users:
         bot.reply_to(message, "عذرا , انت محظور من استخدام البوت.")
