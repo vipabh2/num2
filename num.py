@@ -81,8 +81,8 @@ def handle_start_game(call):
         global number2
         number2 = random.randint(1, 6)
         group_game_status[chat_id]['number2'] = number2
-
- bot.edit_message_reply_markup(
+        
+        bot.edit_message_reply_markup(
             chat_id=call.message.chat.id,
             message_id=call.message.message_id,
             reply_markup=None 
