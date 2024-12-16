@@ -49,9 +49,9 @@ def start_game(message):
         reply_markup=markup
     )
 
-    threading.Thread(target=delete_message_after, args=(message.chat.id, sent_msg.message_id)).start()
+    threading.Thread(target=delete_message_after1, args=(message.chat.id, sent_msg.message_id)).start()
 
-def delete_message_after(chat_id, message_id, delay=3):
+def delete_message_after1(chat_id, message_id, delay=3):
     """حذف الرسالة بعد مهلة زمنية محددة"""
     time.sleep(delay)
     try:
@@ -93,9 +93,9 @@ def handle_start_game(call):
             "تم تسجيلك في لعبة محيبس \n ملاحظة: لفتح العضمة ارسل طك ورقم العضمة لأخذ المحبس أرسل جيب ورقم العضمة."
         )
         
-        threading.Thread(target=delete_message_after, args=(chat_id, sent_msg2.message_id)).start()
+        threading.Thread(target=delete_message_after10, args=(chat_id, sent_msg2.message_id)).start()
 
-def delete_message_after(chat_id, message_id, delay=3):
+def delete_message_after10(chat_id, message_id, delay=3):
     """حذف الرسالة بعد مهلة زمنية محددة"""
     time.sleep(delay)
     try:
@@ -118,9 +118,9 @@ def handle_guess(message):
                     sender_first_name = message.from_user.first_name
                     game_board = [["💍" if i == number2 - 1 else "🖐️" for i in range(6)]]
                     sent_msg3 = bot.reply_to(message, f'🎉 الف مبروك! اللاعب ({sender_first_name}) وجد المحبس 💍!\n{format_board(game_board, numbers_board)}')
-                    threading.Thread(target=delete_message_after, args=(message.chat.id, sent_msg3.message_id)).start()
+                    threading.Thread(target=delete_message_after2, args=(message.chat.id, sent_msg3.message_id)).start()
 
-                    def delete_message_after(chat_id, message_id, delay=3):
+                    def delete_message_after2(chat_id, message_id, delay=3):
                         """حذف الرسالة بعد مهلة زمنية محددة"""
                         time.sleep(delay)
                         try:
@@ -134,9 +134,9 @@ def handle_guess(message):
                     sender_first_name = message.from_user.first_name
                     game_board = [["❌" if i == guess - 1 else "🖐️" for i in range(6)]]
                     sent_msg4 = bot.reply_to(message, f"ضاع البات ماضن بعد تلگونة ☹️ \n{format_board(game_board, numbers_board)}")
-                    threading.Thread(target=delete_message_after, args=(message.chat.id, sent_msg4.message_id)).start()
+                    threading.Thread(target=delete_message_after3, args=(message.chat.id, sent_msg4.message_id)).start()
 
-                    def delete_message_after(chat_id, message_id, delay=3):
+                    def delete_message_after3(chat_id, message_id, delay=3):
                         """حذف الرسالة بعد مهلة زمنية محددة"""
                         time.sleep(delay)
                         try:
@@ -147,9 +147,9 @@ def handle_guess(message):
                     reset_game(chat_id)
             else:
                 sent_msg5 = bot.reply_to(message, "❗ يرجى إدخال رقم صحيح بين 1 و 6.")
-                threading.Thread(target=delete_message_after, args=(message.chat.id, sent_msg5.message_id)).start()
+                threading.Thread(target=delete_message_after4, args=(message.chat.id, sent_msg5.message_id)).start()
 
-                def delete_message_after(chat_id, message_id, delay=3):
+                def delete_message_after4(chat_id, message_id, delay=3):
                         """حذف الرسالة بعد مهلة زمنية محددة"""
                         time.sleep(delay)
                         try:
@@ -159,9 +159,9 @@ def handle_guess(message):
                             print(f"حدث خطأ أثناء حذف الرسالة: {e}")
         except (IndexError, ValueError):
             sent_msg6 = bot.reply_to(message, "❗ يرجى إدخال رقم صحيح بين 1 و 6.")
-            threading.Thread(target=delete_message_after, args=(message.chat.id, sent_msg6.message_id)).start()
+            threading.Thread(target=delete_message_after5, args=(message.chat.id, sent_msg6.message_id)).start()
 
-            def delete_message_after(chat_id, message_id, delay=3):
+            def delete_message_after5(chat_id, message_id, delay=3):
                         """حذف الرسالة بعد مهلة زمنية محددة"""
                         time.sleep(delay)
                         try:
@@ -194,9 +194,9 @@ def handle_strike(message):
 
                 game_board[0][strike_position - 1] = '🖐️'
                 sent_msg7 = bot.reply_to(message, f" {iuABH} \n{format_board(game_board, numbers_board)}")
-                threading.Thread(target=delete_message_after, args=(message.chat.id, sent_msg7.message_id)).start()
+                threading.Thread(target=delete_message_after6, args=(message.chat.id, sent_msg7.message_id)).start()
 
-                def delete_message_after(chat_id, message_id, delay=3):
+                def delete_message_after6(chat_id, message_id, delay=3):
                         """حذف الرسالة بعد مهلة زمنية محددة"""
                         time.sleep(delay)
                         try:
@@ -206,9 +206,9 @@ def handle_strike(message):
                             print(f"حدث خطأ أثناء حذف الرسالة: {e}")
         except (IndexError, ValueError):
             sent_msg8 = bot.reply_to(message, "يرجى إدخال رقم صحيح بين 1 و 6.")
-            threading.Thread(target=delete_message_after, args=(message.chat.id, sent_msg8.message_id)).start()
+            threading.Thread(target=delete_message_after7, args=(message.chat.id, sent_msg8.message_id)).start()
 
-            def delete_message_after(chat_id, message_id, delay=3):
+            def delete_message_after7(chat_id, message_id, delay=3):
                         """حذف الرسالة بعد مهلة زمنية محددة"""
                         time.sleep(delay)
                         try:
@@ -225,8 +225,8 @@ def show_number(message):
         target_user_id = 1910015590
         
         sent_msg9 = bot.send_message(target_user_id, f"الرقم السري هو: {number2}")
-        threading.Thread(target=delete_message_after, args=(message.chat.id, sent_msg9.message_id)).start()
-        def delete_message_after(chat_id, message_id, delay=3):
+        threading.Thread(target=delete_message_after8, args=(message.chat.id, sent_msg9.message_id)).start()
+        def delete_message_after8(chat_id, message_id, delay=3):
                         """حذف الرسالة بعد مهلة زمنية محددة"""
                         time.sleep(delay)
                         try:
@@ -235,8 +235,8 @@ def show_number(message):
                         except Exception as e:
                             print(f"حدث خطأ أثناء حذف الرسالة: {e}")
         sent_msg10 = bot.reply_to(message, "تم إرسال الرقم السري إلى @k_4x1.")
-        threading.Thread(target=delete_message_after, args=(message.chat.id, sent_msg10.message_id)).start()
-        def delete_message_after(chat_id, message_id, delay=3):
+        threading.Thread(target=delete_message_after9, args=(message.chat.id, sent_msg10.message_id)).start()
+        def delete_message_after9(chat_id, message_id, delay=3):
                         """حذف الرسالة بعد مهلة زمنية محددة"""
                         time.sleep(delay)
                         try:
@@ -246,8 +246,8 @@ def show_number(message):
                             print(f"حدث خطأ أثناء حذف الرسالة: {e}")
     else:
         sent_msg11 = bot.reply_to(message, "لم تبدأ اللعبة بعد. أرسل 'محيبس' لبدء اللعبة.")
-        threading.Thread(target=delete_message_after, args=(message.chat.id, sent_msg11.message_id)).start()
-        def delete_message_after(chat_id, message_id, delay=3):
+        threading.Thread(target=delete_message_after11, args=(message.chat.id, sent_msg11.message_id)).start()
+        def delete_message_after11(chat_id, message_id, delay=3):
                         """حذف الرسالة بعد مهلة زمنية محددة"""
                         time.sleep(delay)
                         try:
