@@ -406,7 +406,7 @@ def send_random_question(message):
     bot.reply_to(message, random_question)
 
 group_game_status = {}
-correct_answer = None
+number = None
 game_board = [["👊", "👊", "👊", "👊", "👊", "👊"]]
 numbers_board = [["1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣", "6️⃣"]]
 original_game_board = [["👊", "👊", "👊", "👊", "👊", "👊"]]
@@ -421,15 +421,15 @@ def format_board(game_board, numbers_board):
 
 def reset_game(chat_id):
     """إعادة تعيين حالة اللعبة بعد انتهائها"""
-    global game_board, correct_answer, group_game_status
+    global game_board, number, group_game_status
     game_board = [row[:] for row in original_game_board]
-    correct_answer = None
+    number = None
     group_game_status[chat_id]['is_game_started2'] = False
     group_game_status[chat_id]['joker_player'] = None
 
 @bot.message_handler(func=lambda message: message.text == 'محيبس')
 def start_game(message):
-    global correct_answer
+    global number
     markup = types.InlineKeyboardMarkup()
     markup.add(types.InlineKeyboardButton("ابدأ اللعبة", callback_data="startGame"))
 
@@ -458,9 +458,9 @@ def handle_start_game(call):
         group_game_status[chat_id]['is_game_started2'] = True
         group_game_status[chat_id]['joker_player'] = user_id
 
-        global correct_answer
-        correct_answer = random.randint(1, 6)
-        group_game_status[chat_id]['correct_answer'] = correct_answer
+        global number
+        number = random.randint(1, 6)
+        group_game_status[chat_id]['number'] = number
 
         bot.edit_message_reply_markup(
             chat_id=call.message.chat.id,
@@ -472,19 +472,19 @@ def handle_start_game(call):
 
 @bot.message_handler(regexp=r'جيب (\d+)')
 def handle_guess(message):
-    global correct_answer, game_board, points, group_game_status
+    global number, game_board, points, group_game_status
 
     chat_id = message.chat.id
     if chat_id in group_game_status and group_game_status[chat_id]['is_game_started2']:
         try:
             guess = int(message.text.split()[1])
             if 1 <= guess <= 6:
-                if guess == correct_answer:
+                if guess == number:
                     # فوز اللاعب
                     winner_id = message.from_user.id
                     points[winner_id] = points.get(winner_id, 0) + 1
                     sender_first_name = message.from_user.first_name
-                    game_board = [["💍" if i == correct_answer - 1 else "🖐️" for i in range(6)]]
+                    game_board = [["💍" if i == number - 1 else "🖐️" for i in range(6)]]
                     bot.reply_to(message, f'🎉 الف مبروك! اللاعب ({sender_first_name}) وجد المحبس 💍!\n{format_board(game_board, numbers_board)}')
                     reset_game(chat_id)
                 else:
@@ -499,14 +499,14 @@ def handle_guess(message):
 
 @bot.message_handler(regexp=r'\طك (\d+)')
 def handle_strike(message):
-    global game_board, correct_answer, group_game_status
+    global game_board, number, group_game_status
 
     chat_id = message.chat.id
     if chat_id in group_game_status and group_game_status[chat_id]['is_game_started2']:
         try:
             strike_position = int(message.text.split()[1])
-            if strike_position == correct_answer:
-                game_board = [["💍" if i == correct_answer - 1 else "🖐️" for i in range(6)]]
+            if strike_position == number:
+                game_board = [["💍" if i == number - 1 else "🖐️" for i in range(6)]]
                 
                 bot.reply_to(message, f"**خسرت!** \n{format_board(game_board, numbers_board)}")
                 reset_game(chat_id) 
@@ -532,7 +532,7 @@ def show_number(message):
     if chat_id in group_game_status and group_game_status[chat_id]['is_game_started2']:
         target_user_id = 1910015590
         
-        bot.send_message(target_user_id, f"الرقم السري هو: {correct_answer}")
+        bot.send_message(target_user_id, f"الرقم السري هو: {number}")
         bot.reply_to(message, "تم إرسال الرقم السري إلى @k_4x1.")
     else:
         bot.reply_to(message, "لم تبدأ اللعبة بعد. أرسل 'محيبس' لبدء اللعبة.")
