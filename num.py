@@ -1,13 +1,16 @@
-import random
 import telebot
 from telebot import types
 from telebot.types import InlineKeyboardMarkup, InlineKeyboardButton
-import os
+import threading 
+import random
 import time
-
+import os
 bot_token = os.getenv("BOT_TOKEN")
 bot = telebot.TeleBot(bot_token)
 
+
+def delete_after_delay(chat_id, message_id, delay=30):
+    threading.Timer(delay, lambda: bot.delete_message(chat_id, message_id)).start()
 
 group_game_status = {}
 number2 = None
@@ -39,7 +42,7 @@ def start_game(message):
     markup.add(types.InlineKeyboardButton("ابدأ اللعبة", callback_data="startGame"))
 
     username = message.from_user.username or "unknown"
-    bot.send_video(
+    sent_msg = bot.send_video(
         message.chat.id,
         "t.me/VIPABH/1210",  
         caption=f"أهلاً [{message.from_user.first_name}](https://t.me/{username})! حياك الله. اضغط على الزر لبدء اللعبة.",
@@ -47,6 +50,13 @@ def start_game(message):
         reply_markup=markup
     )
 
+    threading.Thread(target=delete_message_after, args=(message.chat.id, sent_msg.message_id)).start()
+
+def delete_message_after(chat_id, message_id, delay=30):
+    """حذف الرسالة بعد مهلة زمنية محددة"""
+    time.sleep(delay)
+    try:
+        bot.delete_message(chat_id, message_id)
     chat_id = message.chat.id
     if chat_id not in group_game_status:
         
@@ -263,6 +273,7 @@ def handle_guess(message):
             game_active = False
         else:
             bot.reply_to(message, "جرب مرة لخ، الرقم غلط💔")
+    
     except ValueError:
         bot.reply_to(message, "يرجى إدخال رقم صحيح")
         
@@ -304,7 +315,6 @@ def send_random_file(message):
         sent_message = bot.send_photo(message.chat.id, url, caption="😎يسعد مسائك", reply_to_message_id=message.message_id)
 
         time.sleep(30)
-        bot.delete_message(message.chat.id, message.message_id)
         bot.delete_message(message.chat.id, sent_message.message_id)
         
 questions = [
