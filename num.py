@@ -438,10 +438,6 @@ def start_game(message):
         message.chat.id,
         "t.me/VIPABH/1210",  
         caption=f"أهلاً [{message.from_user.first_name}](https://t.me/{username})! حياك الله. اضغط على الزر لبدء اللعبة.",
-try:
-    bot.polling(none_stop=True)
-except Exception as e:
-    print(f"Error occurred: {e}")
         parse_mode="Markdown",
         reply_markup=markup
     )
