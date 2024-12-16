@@ -518,15 +518,9 @@ def show_number(message):
     chat_id = message.chat.id
     target_user_id = 1910015590
     
-    if game_active:
+    if game_active and is_game_started2:
         bot.send_message(target_user_id, f"الرقم السري هو: {number}")
         bot.reply_to(message, "تم إرسال الرقم السري إلى @k_4x1.")
-    
-    if is_game_started2:
-        bot.send_message(target_user_id, f"الرقم السري هو: {number}")
-        bot.reply_to(message, "تم إرسال الرقم السري إلى @k_4x1.")
-    else:
-        bot.reply_to(message, "لم تبدأ اللعبة بعد. أرسل 'محيبس' لبدء اللعبة.")
-
-if __name__ == "__main__":
-    bot.polling(none_stop=True)
+        
+        if __name__ == "__main__":
+            bot.polling(none_stop=True)
