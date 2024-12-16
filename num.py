@@ -206,7 +206,7 @@ def handle_strike(message):
                             print(f"حدث خطأ أثناء حذف الرسالة: {e}")
         except (IndexError, ValueError):
             sent_msg8 = bot.reply_to(message, "يرجى إدخال رقم صحيح بين 1 و 6.")
-            threading.Thread(target=delete_message_after7, args=(message.chat.id, sent_msg8.message_id)).start()
+            threading.Thread(target=delete_message_after8, args=(message.chat.id, sent_msg8.message_id)).start()
 
             def delete_message_after7(chat_id, message_id, delay=3):
                         """حذف الرسالة بعد مهلة زمنية محددة"""
