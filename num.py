@@ -55,7 +55,7 @@ def start_game(message):
 def delete_message_after(chat_id, message_id, delay=30):
     """حذف الرسالة بعد مهلة زمنية محددة"""
     time.sleep(delay)
-   try:
+    try:
     bot.delete_message(chat_id, message_id) 
     chat_id = message.chat.id  
 except Exception as e:
