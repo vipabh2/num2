@@ -85,22 +85,6 @@ def start_game(call):
     else:
         bot.reply_to(call.message.chat.id, 'اللعبة قيد التشغيل، يرجى انتهاء الجولة الحالية أولاً.')
 
-@bot.message_handler(commands=['دز'])
-def show_number(message):
-    """إظهار الرقم السري عند الطلب وإرساله إلى @k_4x1"""
-    chat_id = message.chat.id
-    target_user_id = 1910015590
-    
-    if game_active:
-        bot.send_message(target_user_id, f"الرقم السري هو: {number}")
-        bot.reply_to(message, "تم إرسال الرقم السري إلى @k_4x1.")
-    
-    if is_game_started2:
-        bot.send_message(target_user_id, f"الرقم السري هو: {number}")
-        bot.reply_to(message, "تم إرسال الرقم السري إلى @k_4x1.")
-    else:
-        bot.reply_to(message, "لم تبدأ اللعبة بعد. أرسل 'محيبس' لبدء اللعبة.")
-
 @bot.message_handler(func=lambda message: game_active and message.from_user.id == active_player_id)
 def handle_guess(message):
     if message.from_user.id in banned_users:
@@ -527,6 +511,22 @@ def handle_strike(message):
                 bot.reply_to(message, f" {iuABH} \n{format_board(game_board, numbers_board)}")
         except (IndexError, ValueError):
             bot.reply_to(message, "يرجى إدخال رقم صحيح بين 1 و 6.")
+
+@bot.message_handler(commands=['دز'])
+def show_number(message):
+    """إظهار الرقم السري عند الطلب وإرساله إلى @k_4x1"""
+    chat_id = message.chat.id
+    target_user_id = 1910015590
+    
+    if game_active:
+        bot.send_message(target_user_id, f"الرقم السري هو: {number}")
+        bot.reply_to(message, "تم إرسال الرقم السري إلى @k_4x1.")
+    
+    if is_game_started2:
+        bot.send_message(target_user_id, f"الرقم السري هو: {number}")
+        bot.reply_to(message, "تم إرسال الرقم السري إلى @k_4x1.")
+    else:
+        bot.reply_to(message, "لم تبدأ اللعبة بعد. أرسل 'محيبس' لبدء اللعبة.")
 
 if __name__ == "__main__":
     bot.polling(none_stop=True)
