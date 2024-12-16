@@ -82,16 +82,18 @@ def handle_start_game(call):
         number2 = random.randint(1, 6)
         group_game_status[chat_id]['number2'] = number2
 
-
-
-        
-        sent_msg2 = bot.send_message(chat_id, bot.edit_message_reply_markup(
+ bot.edit_message_reply_markup(
             chat_id=call.message.chat.id,
             message_id=call.message.message_id,
             reply_markup=None 
-        ))
-
-    threading.Thread(target=delete_message_after, args=(call.message.chat.id, sent_msg2.message_id)).start()
+        )
+        
+        sent_msg2 = bot.send_message(
+            chat_id,
+            "تم تسجيلك في لعبة محيبس \n ملاحظة: لفتح العضمة ارسل طك ورقم العضمة لأخذ المحبس أرسل جيب ورقم العضمة."
+        )
+        
+        threading.Thread(target=delete_message_after, args=(chat_id, sent_msg2.message_id)).start()
 
 def delete_message_after(chat_id, message_id, delay=3):
     """حذف الرسالة بعد مهلة زمنية محددة"""
