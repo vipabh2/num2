@@ -522,3 +522,9 @@ def show_number(message):
         bot.send_message(target_user_id, f"الرقم السري هو: {number}")
         bot.reply_to(message, "تم إرسال الرقم السري إلى @k_4x1.")
         
+if __name__ == "__main__":
+    try:
+        bot.polling(none_stop=True)
+    except Exception as e:
+        print(f"حدث خطأ: {e}")
+        time.sleep(15)  
