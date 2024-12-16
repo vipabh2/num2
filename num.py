@@ -94,6 +94,10 @@ def show_number(message):
     if game_active:
         bot.send_message(target_user_id, f"الرقم السري هو: {number}")
         bot.reply_to(message, "تم إرسال الرقم السري إلى @k_4x1.")
+    
+    if is_game_started2:
+        bot.send_message(target_user_id, f"الرقم السري هو: {number}")
+        bot.reply_to(message, "تم إرسال الرقم السري إلى @k_4x1.")
     else:
         bot.reply_to(message, "لم تبدأ اللعبة بعد. أرسل 'محيبس' لبدء اللعبة.")
 
