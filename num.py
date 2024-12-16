@@ -227,23 +227,23 @@ def show_number(message):
         sent_msg9 = bot.send_message(target_user_id, f"الرقم السري هو: {number2}")
         threading.Thread(target=delete_message_after8, args=(message.chat.id, sent_msg9.message_id)).start()
         def delete_message_after8(chat_id, message_id, delay=3):
-                        """حذف الرسالة بعد مهلة زمنية محددة"""
-                        time.sleep(delay)
-                        try:
-                            bot.delete_message(chat_id, message_id)
-                            chat_id = message.chat.id
-                        except Exception as e:
-                            print(f"حدث خطأ أثناء حذف الرسالة: {e}")
-        sent_msg10 = bot.reply_to(message, "تم إرسال الرقم السري إلى @k_4x1.")
-        threading.Thread(target=delete_message_after9, args=(message.chat.id, sent_msg10.message_id)).start()
-        def delete_message_after9(chat_id, message_id, delay=3):
-                        """حذف الرسالة بعد مهلة زمنية محددة"""
-                        time.sleep(delay)
-                        try:
-                            bot.delete_message(chat_id, message_id)
-                            chat_id = message.chat.id
-                        except Exception as e:
-                            print(f"حدث خطأ أثناء حذف الرسالة: {e}")
+            """حذف الرسالة بعد مهلة زمنية محددة"""
+            time.sleep(delay)
+            try:
+                bot.delete_message(chat_id, message_id)
+                chat_id = message.chat.id
+            except Exception as e:
+                print(f"حدث خطأ أثناء حذف الرسالة: {e}")
+                sent_msg10 = bot.reply_to(message, "تم إرسال الرقم السري إلى @k_4x1.")
+                threading.Thread(target=delete_message_after9, args=(message.chat.id, sent_msg10.message_id)).start()
+                def delete_message_after9(chat_id, message_id, delay=3):
+                    """حذف الرسالة بعد مهلة زمنية محددة"""
+                    time.sleep(delay)
+                    try:
+                        bot.delete_message(chat_id, message_id)
+                        chat_id = message.chat.id
+                    except Exception as e:
+                        print(f"حدث خطأ أثناء حذف الرسالة: {e}")
     else:
         sent_msg11 = bot.reply_to(message, "لم تبدأ اللعبة بعد. أرسل 'محيبس' لبدء اللعبة.")
         threading.Thread(target=delete_message_after11, args=(message.chat.id, sent_msg11.message_id)).start()
