@@ -9,7 +9,7 @@ bot_token = os.getenv("BOT_TOKEN")
 bot = telebot.TeleBot(bot_token)
 
 
-def delete_after_delay(chat_id, message_id, delay=30):
+def delete_after_delay99(chat_id, message_id, delay=30):
     threading.Timer(delay, lambda: bot.delete_message(chat_id, message_id)).start()
 
 group_game_status = {}
