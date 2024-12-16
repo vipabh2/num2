@@ -93,7 +93,7 @@ def show_number(message):
         bot.send_message(target_user_id, f"الرقم السري هو: {number}")
         bot.reply_to(message, "تم إرسال الرقم السري إلى @k_4x1.")
     else:
-        bot.reply_to(message, "لم تبدأ اللعبة بعد. أرسل 'محيبس' لبدء اللعبة.")
+        bot.reply_to(message, "لم تبدأ اللعبة بعد. أرسل '/num' لبدء اللعبة.")
                 
 @bot.message_handler(func=lambda message: game_active and message.from_user.id == active_player_id)
 def handle_guess(message):
