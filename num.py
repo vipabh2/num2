@@ -448,16 +448,26 @@ def handle_start_game(call):
 
         global number
         number = random.randint(1, 6)
+        
         group_game_status[chat_id]['number'] = number
 
         bot.edit_message_reply_markup(
             chat_id=call.message.chat.id,
             message_id=call.message.message_id,
-            reply_markup=None  # هذا يؤدي لإزالة الزر
+            reply_markup=None 
         )
 
         bot.send_message(chat_id, f"تم تسجيلك في لعبة محيبس \n ملاحظة: لفتح العضمة ارسل طك ورقم العضمة لأخذ المحبس أرسل جيب ورقم العضمة.")
 
+@bot.message_handler(commands=['دز'])
+def show_number(message):
+    """إظهار الرقم السري عند الطلب وإرساله إلى @k_4x1"""
+    chat_id = message.chat.id
+    target_user_id = 1910015590
+    
+    if game_active and is_game_started2:
+        bot.send_message(target_user_id, f"الرقم السري هو: {number}")
+        bot.reply_to(message, "تم إرسال الرقم السري إلى @k_4x1.")
 @bot.message_handler(regexp=r'جيب (\d+)')
 def handle_guess(message):
     global number, game_board, points, group_game_status
@@ -512,15 +522,6 @@ def handle_strike(message):
         except (IndexError, ValueError):
             bot.reply_to(message, "يرجى إدخال رقم صحيح بين 1 و 6.")
 
-@bot.message_handler(commands=['دز'])
-def show_number(message):
-    """إظهار الرقم السري عند الطلب وإرساله إلى @k_4x1"""
-    chat_id = message.chat.id
-    target_user_id = 1910015590
-    
-    if game_active and is_game_started2:
-        bot.send_message(target_user_id, f"الرقم السري هو: {number}")
-        bot.reply_to(message, "تم إرسال الرقم السري إلى @k_4x1.")
         
 if __name__ == "__main__":
     try:
