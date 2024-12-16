@@ -56,10 +56,10 @@ def delete_message_after(chat_id, message_id, delay=30):
     """حذف الرسالة بعد مهلة زمنية محددة"""
     time.sleep(delay)
     try:
-    bot.delete_message(chat_id, message_id) 
-    chat_id = message.chat.id  
-except Exception as e:
-    print(f"حدث خطأ أثناء حذف الرسالة: {e}")
+        bot.delete_message(chat_id, message_id)
+        chat_id = message.chat.id
+    except Exception as e:
+        print(f"حدث خطأ أثناء حذف الرسالة: {e}")
 
     if chat_id not in group_game_status:
         
