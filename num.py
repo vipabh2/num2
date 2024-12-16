@@ -84,16 +84,18 @@ def start_game(call):
         attempts = 0
     else:
         bot.reply_to(call.message.chat.id, 'اللعبة قيد التشغيل، يرجى انتهاء الجولة الحالية أولاً.')
-        @bot.message_handler(commands=['دز'])
-        def show_number(message):
-            """إظهار الرقم السري عند الطلب وإرساله إلى @k_4x1"""
-            chat_id = message.chat.id
-            if chat_id in group_game_status and group_game_status[chat_id]['is_game_started2']:
-                target_user_id = 1910015590
-                bot.send_message(target_user_id, f"الرقم السري هو: {number}")
-                bot.reply_to(message, "تم إرسال الرقم السري إلى @k_4x1.")
-            else:
-                bot.reply_to(message, "لم تبدأ اللعبة بعد. أرسل 'محيبس' لبدء اللعبة.")
+        
+@bot.message_handler(commands=['دز'])
+def show_number(message):
+    """إظهار الرقم السري عند الطلب وإرساله إلى @k_4x1"""
+    chat_id = message.chat.id
+    target_user_id = 1910015590
+    if game_active:
+        bot.send_message(target_user_id, f"الرقم السري هو: {number}")
+        bot.reply_to(message, "تم إرسال الرقم السري إلى @k_4x1.")
+    else:
+        bot.reply_to(message, "لم تبدأ اللعبة بعد. أرسل 'محيبس' لبدء اللعبة.")
+                
 @bot.message_handler(func=lambda message: game_active and message.from_user.id == active_player_id)
 def handle_guess(message):
     if message.from_user.id in banned_users:
