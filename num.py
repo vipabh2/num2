@@ -6,8 +6,7 @@ import random
 import time
 import os
 bot_token = os.getenv("BOT_TOKEN")
-bot = telebot.TeleBot(bot_token)
-
+bot = telebot.TeleBot('bot_token', timeout=5)
 
 def is_user_banned(user_id):
     return user_id in banned_users
