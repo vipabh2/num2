@@ -1,12 +1,14 @@
 import telebot
 from telebot import types
 from telebot.types import InlineKeyboardMarkup, InlineKeyboardButton
+from telebot import apihelper
 import threading 
 import random
 import time
 import os
 bot_token = os.getenv("BOT_TOKEN")
-bot = telebot.TeleBot('bot_token', timeout=5)
+bot = telebot.TeleBot('bot_token')
+apihelper.TIMEOUT = 5
 
 def is_user_banned(user_id):
     return user_id in banned_users
