@@ -6,8 +6,8 @@ import threading
 import random
 import time
 import os
-token = os.getenv("BOT_TOKEN")
-bot = telebot.TeleBot("token")
+BOT_TOKEN = os.getenv("BOT_TOKEN")
+bot = telebot.TeleBot("BOT_TOKEN")
 apihelper.TIMEOUT = 5
 
 def is_user_banned(user_id):
