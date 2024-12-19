@@ -8,6 +8,11 @@ import time
 import os
 response = requests.get('https://api.telegram.org', timeout=120)
 
+if response.status_code == 200:
+    print("تم الاتصال بنجاح!")
+else:
+    print(f"فشل الاتصال، رمز الحالة: {response.status_code}")
+
 bot_token = os.getenv('BOT_TOKEN')
 bot = telebot.TeleBot(bot_token)
 
@@ -448,7 +453,7 @@ furl = ('171', '172', '173', '174')
 @bot.message_handler(func=lambda message: message.text in ['لطمية'] or message.text in ['لطميه'])
 def vipabh(message):
     current_time = datetime.now()
-    message_time = datetime.fromtimestamp(message.date)  # تحويل وقت الرسالة
+    message_time = datetime.fromtimestamp(message.date) 
     time_difference = (current_time - message_time).total_seconds()
     if time_difference > 20:
         return 
@@ -572,9 +577,4 @@ def send_mus(call):
         )
 
     
-if __name__ == "__main__":
-    try:
-        bot.polling(none_stop=True)
-    except Exception as e:
-        print(f"حدث خطأ: {e}")
-        time.sleep(15)  
+bot.polling(none_stop=True) 
