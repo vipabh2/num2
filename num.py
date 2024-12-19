@@ -51,7 +51,7 @@ def handle_start(message):
 @bot.message_handler(commands=['num'])
 def start(message):
     current_time = datetime.now()
-    message_time = datetime.fromtimestamp(message.date)  # تحويل وقت الرسالة
+    message_time = datetime.fromtimestamp(message.date)  
     time_difference = (current_time - message_time).total_seconds()
 
     if time_difference > 20:
@@ -181,9 +181,7 @@ def send_random_file(message):
         # bot.send_photo(message.chat.id, url, caption="😎يسعد مسائك", reply_to_message_id=message.message_id)
         sent_message = bot.send_photo(message.chat.id, url, caption="😎يسعد مسائك", reply_to_message_id=message.message_id)
 
-        time.sleep(30)
-        bot.delete_message(message.chat.id, sent_message.message_id)
-        
+       
 questions = [
     "شلون تعمل هالشي؟",
     "شلون تقضي وقتك بالفراغ؟",
