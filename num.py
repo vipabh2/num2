@@ -427,32 +427,23 @@ nurl = ('164', '165', '166', '167', '168', '169', '170')
 furl = ('171', '172', '173', '174')
 
 
-@bot.message_handler(func=lambda message: message.text in ['لطمية'] or message.text in ['لطميه'])
+
+@bot.message_handler(func=lambda message: message.text in ['لطمية'] or message.text in ['لطميه'] )
 def vipabh(message):
     username = message.from_user.username if message.from_user.username else "لا يوجد اسم مستخدم"
-    
-    # إنشاء الـ InlineKeyboardMarkup مع الأزرار
     markup = types.InlineKeyboardMarkup()
     markup.add(types.InlineKeyboardButton("باسم", callback_data="باسم"))
     markup.add(types.InlineKeyboardButton("الخاقاني", callback_data="الخاقاني"))
     markup.add(types.InlineKeyboardButton("مسلم", callback_data="مسلم"))
     markup.add(types.InlineKeyboardButton("نزلة", callback_data="نزلة"))
     markup.add(types.InlineKeyboardButton("فاقد", callback_data="فاقد"))
-    
-    # إرسال الفيديو مع الرسالة
-    video_message = bot.send_video(
+    bot.send_video(
         message.chat.id,
         "https://t.me/VIPABH/1212",  
         caption=f"اهلا [{message.from_user.first_name}](https://t.me/{username}) حياك الله! اضغط على الرادود.",
         parse_mode="Markdown",
         reply_markup=markup
     )
-    
-    # تأجيل حذف الرسالة. يتم حذف الرسالة بعد إرسال الفيديو
-
-    
-
-
 
 def send_audio_from_f_list(call):
     rl = random.choice(furl)  
@@ -461,16 +452,10 @@ def send_audio_from_f_list(call):
     bot.send_audio(
         chat_id=call.message.chat.id,
         audio=audio_url,
+        # caption=f"{audio_url}", 
         caption="᯽︙اذكر القائم",
-        parse_mode="html",
-        reply_to_message_id=message.message_id 
+        parse_mode="html"
     )
-    # لا يتم حذف رسالة "لطمية" فقط الحذف يتم بعد إرسال الصوت
-    bot.delete_message(
-        chat_id=call.message.chat.id,
-        message_id=call.message.message_id
-    )
-
 
 def send_audio_from_n_list(call):
     rl = random.choice(nurl)  
@@ -479,13 +464,9 @@ def send_audio_from_n_list(call):
     bot.send_audio(
         chat_id=call.message.chat.id,
         audio=audio_url,
+        # caption=f"{audio_url}", 
         caption="᯽︙اذكر القائم",
-        parse_mode="html",
-        reply_to_message_id=message.message_id 
-    )
-    bot.delete_message(
-        chat_id=call.message.chat.id,
-        message_id=call.message.message_id
+        parse_mode="html"
     )
 
 
@@ -496,15 +477,10 @@ def send_audio_from_basim_list(call):
     bot.send_audio(
         chat_id=call.message.chat.id,
         audio=audio_url,
+        # caption=f"{audio_url}", 
         caption="᯽︙اذكر القائم",
-        parse_mode="html",
-        reply_to_message_id=message.message_id 
+        parse_mode="html"
     )
-    bot.delete_message(
-        chat_id=message.chat.id,
-        message_id=video_message.message_id
-    )
-
 
 def send_audio_from_mohmurl_list(call):
     rl = random.choice(mohmurl)  
@@ -513,15 +489,10 @@ def send_audio_from_mohmurl_list(call):
     bot.send_audio(
         chat_id=call.message.chat.id,
         audio=audio_url,
+        # caption=f"{audio_url}", 
         caption="᯽︙اذكر القائم",
-        parse_mode="html",
-        reply_to_message_id=message.message_id 
+        parse_mode="html"
     )
-    bot.delete_message(
-        chat_id=call.message.chat.id,
-        message_id=call.message.message_id
-    )
-
 
 def send_audio_from_mus_list(call):
     rl = random.choice(musurl) 
@@ -531,14 +502,9 @@ def send_audio_from_mus_list(call):
         chat_id=call.message.chat.id,
         audio=audio_url,
         caption="᯽︙اذكر القائم",
-        parse_mode="html",
-        reply_to_message_id=message.message_id 
+        # caption=f"{audio_url}", 
+        parse_mode="html"
     )
-    bot.delete_message(
-        chat_id=call.message.chat.id,
-        message_id=call.message.message_id
-    )
-
 
 @bot.callback_query_handler(func=lambda call: call.data == "باسم")
 def send_basim(call):
@@ -547,16 +513,7 @@ def send_basim(call):
         chat_id=call.message.chat.id,
         message_id=call.message.message_id,
         reply_markup=None
-    )
-
-    try:
-        bot.delete_message(
-            chat_id=call.message.chat.id,
-            message_id=call.message.message_id
         )
-    except Exception as e:
-        print(f"Error deleting message: {e}")
-
 @bot.callback_query_handler(func=lambda call: call.data == "الخاقاني")
 def send_khaqani(call):
     send_audio_from_mohmurl_list(call)
@@ -564,16 +521,7 @@ def send_khaqani(call):
         chat_id=call.message.chat.id,
         message_id=call.message.message_id,
         reply_markup=None
-    )
-
-    try:
-        bot.delete_message(
-            chat_id=call.message.chat.id,
-            message_id=call.message.message_id
         )
-    except Exception as e:
-        print(f"Error deleting message: {e}")
-
 @bot.callback_query_handler(func=lambda call: call.data == "مسلم")
 def send_mus(call):
     send_audio_from_mus_list(call)
@@ -581,16 +529,7 @@ def send_mus(call):
         chat_id=call.message.chat.id,
         message_id=call.message.message_id,
         reply_markup=None
-    )
-
-    try:
-        bot.delete_message(
-            chat_id=call.message.chat.id,
-            message_id=call.message.message_id
         )
-    except Exception as e:
-        print(f"Error deleting message: {e}")
-
 @bot.callback_query_handler(func=lambda call: call.data == "نزلة")
 def send_mus(call):
     send_audio_from_n_list(call)
@@ -598,35 +537,20 @@ def send_mus(call):
         chat_id=call.message.chat.id,
         message_id=call.message.message_id,
         reply_markup=None
-    )
-    
-    try:
-        bot.delete_message(
-            chat_id=call.message.chat.id,
-            message_id=call.message.message_id
         )
-    except Exception as e:
-        print(f"Error deleting message: {e}")
 
 @bot.callback_query_handler(func=lambda call: call.data == "فاقد")
 def send_mus(call):
     send_audio_from_f_list(call)
-    
     bot.edit_message_reply_markup(
         chat_id=call.message.chat.id,
         message_id=call.message.message_id,
         reply_markup=None
-    )
-    
-    try:
-        bot.delete_message(
-            chat_id=call.message.chat.id,
-            message_id=call.message.message_id
         )
-    except Exception as e:
-        print(f"Error deleting message: {e}")
-
-    
+    bot.delete_message(
+        chat_id=message.chat.id,
+        message_id=message.message_id
+    )
 if __name__ == "__main__":
     try:
         bot.polling(none_stop=True)
