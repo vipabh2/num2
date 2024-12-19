@@ -462,7 +462,8 @@ def send_audio_from_f_list(call):
         chat_id=call.message.chat.id,
         audio=audio_url,
         caption="᯽︙اذكر القائم",
-        parse_mode="html"
+        parse_mode="html",
+        reply_to_message_id=message.message_id 
     )
     # لا يتم حذف رسالة "لطمية" فقط الحذف يتم بعد إرسال الصوت
     bot.delete_message(
@@ -479,7 +480,8 @@ def send_audio_from_n_list(call):
         chat_id=call.message.chat.id,
         audio=audio_url,
         caption="᯽︙اذكر القائم",
-        parse_mode="html"
+        parse_mode="html",
+        reply_to_message_id=message.message_id 
     )
     bot.delete_message(
         chat_id=call.message.chat.id,
@@ -495,7 +497,8 @@ def send_audio_from_basim_list(call):
         chat_id=call.message.chat.id,
         audio=audio_url,
         caption="᯽︙اذكر القائم",
-        parse_mode="html"
+        parse_mode="html",
+        reply_to_message_id=message.message_id 
     )
     bot.delete_message(
         chat_id=call.message.chat.id,
@@ -511,7 +514,8 @@ def send_audio_from_mohmurl_list(call):
         chat_id=call.message.chat.id,
         audio=audio_url,
         caption="᯽︙اذكر القائم",
-        parse_mode="html"
+        parse_mode="html",
+        reply_to_message_id=message.message_id 
     )
     bot.delete_message(
         chat_id=call.message.chat.id,
@@ -527,7 +531,8 @@ def send_audio_from_mus_list(call):
         chat_id=call.message.chat.id,
         audio=audio_url,
         caption="᯽︙اذكر القائم",
-        parse_mode="html"
+        parse_mode="html",
+        reply_to_message_id=message.message_id 
     )
     bot.delete_message(
         chat_id=call.message.chat.id,
