@@ -535,7 +535,6 @@ def send_audio_from_mus_list(call):
     )
 
 
-# دوال الـ callback
 @bot.callback_query_handler(func=lambda call: call.data == "باسم")
 def send_basim(call):
     send_audio_from_basim_list(call)
@@ -544,6 +543,14 @@ def send_basim(call):
         message_id=call.message.message_id,
         reply_markup=None
     )
+
+    try:
+        bot.delete_message(
+            chat_id=call.message.chat.id,
+            message_id=call.message.message_id
+        )
+    except Exception as e:
+        print(f"Error deleting message: {e}")
 
 @bot.callback_query_handler(func=lambda call: call.data == "الخاقاني")
 def send_khaqani(call):
@@ -554,6 +561,14 @@ def send_khaqani(call):
         reply_markup=None
     )
 
+    try:
+        bot.delete_message(
+            chat_id=call.message.chat.id,
+            message_id=call.message.message_id
+        )
+    except Exception as e:
+        print(f"Error deleting message: {e}")
+
 @bot.callback_query_handler(func=lambda call: call.data == "مسلم")
 def send_mus(call):
     send_audio_from_mus_list(call)
@@ -563,6 +578,14 @@ def send_mus(call):
         reply_markup=None
     )
 
+    try:
+        bot.delete_message(
+            chat_id=call.message.chat.id,
+            message_id=call.message.message_id
+        )
+    except Exception as e:
+        print(f"Error deleting message: {e}")
+
 @bot.callback_query_handler(func=lambda call: call.data == "نزلة")
 def send_mus(call):
     send_audio_from_n_list(call)
@@ -571,6 +594,15 @@ def send_mus(call):
         message_id=call.message.message_id,
         reply_markup=None
     )
+    
+    try:
+        bot.delete_message(
+            chat_id=call.message.chat.id,
+            message_id=call.message.message_id
+        )
+    except Exception as e:
+        print(f"Error deleting message: {e}")
+
 @bot.callback_query_handler(func=lambda call: call.data == "فاقد")
 def send_mus(call):
     send_audio_from_f_list(call)
@@ -584,7 +616,7 @@ def send_mus(call):
     try:
         bot.delete_message(
             chat_id=call.message.chat.id,
-            message_id=call.message.message_id  # يمكنك تعديل هذا حسب الرسالة التي ترغب في حذفها
+            message_id=call.message.message_id
         )
     except Exception as e:
         print(f"Error deleting message: {e}")
