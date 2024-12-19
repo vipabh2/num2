@@ -9,6 +9,7 @@ import os
 # BOT_TOKEN = os.getenv("BOT_TOKEN")
 # bot = telebot.TeleBot("BOT_TOKEN")
 bot_token = os.getenv('BOT_TOKEN')
+bot = telebot.TeleBot(bot_token)
 
 apihelper.TIMEOUT = 5
 
