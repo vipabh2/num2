@@ -573,4 +573,4 @@ def send_mus(call):
         )
 
     
-bot.polling(none_stop=True, interval=0, timeout=90) 
+bot.polling(none_stop=True, interval=0, timeout=2) 
