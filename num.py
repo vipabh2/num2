@@ -2,9 +2,11 @@ import telebot
 from telebot import types
 from telebot.types import InlineKeyboardMarkup, InlineKeyboardButton
 import threading 
+import requests
 import random
 import time
 import os
+response = requests.get('https://api.telegram.org', timeout=120)
 
 bot_token = os.getenv('BOT_TOKEN')
 bot = telebot.TeleBot(bot_token)
