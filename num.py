@@ -1,7 +1,6 @@
 import telebot
 from telebot import types
 from telebot.types import InlineKeyboardMarkup, InlineKeyboardButton
-import threading 
 import requests
 import random
 import time
