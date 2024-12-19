@@ -1,17 +1,14 @@
 import telebot
 from telebot import types
 from telebot.types import InlineKeyboardMarkup, InlineKeyboardButton
-from telebot import apihelper
 import threading 
 import random
 import time
 import os
-# BOT_TOKEN = os.getenv("BOT_TOKEN")
-# bot = telebot.TeleBot("BOT_TOKEN")
+
 bot_token = os.getenv('BOT_TOKEN')
 bot = telebot.TeleBot(bot_token)
 
-apihelper.TIMEOUT = 5
 
 def is_user_banned(user_id):
     return user_id in banned_users
@@ -455,8 +452,8 @@ def send_audio_from_f_list(call):
     bot.send_audio(
         chat_id=call.message.chat.id,
         audio=audio_url,
-        caption=f"{audio_url}", 
-        # caption="᯽︙اذكر القائم",
+        # caption=f"{audio_url}", 
+        caption="᯽︙اذكر القائم",
         parse_mode="html"
     )
 
@@ -467,8 +464,8 @@ def send_audio_from_n_list(call):
     bot.send_audio(
         chat_id=call.message.chat.id,
         audio=audio_url,
-        caption=f"{audio_url}", 
-        # caption="᯽︙اذكر القائم",
+        # caption=f"{audio_url}", 
+        caption="᯽︙اذكر القائم",
         parse_mode="html"
     )
 
@@ -480,8 +477,8 @@ def send_audio_from_basim_list(call):
     bot.send_audio(
         chat_id=call.message.chat.id,
         audio=audio_url,
-        caption=f"{audio_url}", 
-        # caption="᯽︙اذكر القائم",
+        # caption=f"{audio_url}", 
+        caption="᯽︙اذكر القائم",
         parse_mode="html"
     )
 
@@ -492,8 +489,8 @@ def send_audio_from_mohmurl_list(call):
     bot.send_audio(
         chat_id=call.message.chat.id,
         audio=audio_url,
-        caption=f"{audio_url}", 
-        # caption="᯽︙اذكر القائم",
+        # caption=f"{audio_url}", 
+        caption="᯽︙اذكر القائم",
         parse_mode="html"
     )
 
@@ -504,8 +501,8 @@ def send_audio_from_mus_list(call):
     bot.send_audio(
         chat_id=call.message.chat.id,
         audio=audio_url,
-        # caption="᯽︙اذكر القائم",
-        caption=f"{audio_url}", 
+        caption="᯽︙اذكر القائم",
+        # caption=f"{audio_url}", 
         parse_mode="html"
     )
 
