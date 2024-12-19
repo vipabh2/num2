@@ -532,7 +532,7 @@ def send_audio_from_mus_list(call):
         audio=audio_url,
         caption="᯽︙اذكر القائم",
         parse_mode="html",
-        reply_to_message_id=call.message.message_id 
+        reply_to_message_id=message.message_id 
     )
     bot.delete_message(
         chat_id=call.message.chat.id,
