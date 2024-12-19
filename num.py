@@ -449,13 +449,10 @@ def vipabh(message):
     )
     
     # تأجيل حذف الرسالة. يتم حذف الرسالة بعد إرسال الفيديو
-    bot.delete_message(
-        chat_id=message.chat.id,
-        message_id=video_message.message_id
+
     )
 
 
-# دوال إرسال الصوت المختلفة:
 
 def send_audio_from_f_list(call):
     rl = random.choice(furl)  
@@ -582,6 +579,9 @@ def send_mus(call):
         chat_id=call.message.chat.id,
         message_id=call.message.message_id,
         reply_markup=None
+        bot.delete_message(
+        chat_id=message.chat.id,
+        message_id=video_message.message_id
     )
 
 
