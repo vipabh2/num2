@@ -427,23 +427,34 @@ nurl = ('164', '165', '166', '167', '168', '169', '170')
 furl = ('171', '172', '173', '174')
 
 
-
 @bot.message_handler(func=lambda message: message.text in ['لطمية'] or message.text in ['لطميه'] )
 def vipabh(message):
     username = message.from_user.username if message.from_user.username else "لا يوجد اسم مستخدم"
+    
+    # إنشاء الـ InlineKeyboardMarkup مع الأزرار
     markup = types.InlineKeyboardMarkup()
     markup.add(types.InlineKeyboardButton("باسم", callback_data="باسم"))
     markup.add(types.InlineKeyboardButton("الخاقاني", callback_data="الخاقاني"))
     markup.add(types.InlineKeyboardButton("مسلم", callback_data="مسلم"))
     markup.add(types.InlineKeyboardButton("نزلة", callback_data="نزلة"))
     markup.add(types.InlineKeyboardButton("فاقد", callback_data="فاقد"))
-    bot.send_video(
+    
+    # إرسال الفيديو مع الرسالة
+    video_message = bot.send_video(
         message.chat.id,
         "https://t.me/VIPABH/1212",  
         caption=f"اهلا [{message.from_user.first_name}](https://t.me/{username}) حياك الله! اضغط على الرادود.",
         parse_mode="Markdown",
         reply_markup=markup
     )
+    
+    # حذف الرسالة التي تحتوي على النص "لطمية"
+    bot.delete_message(
+        chat_id=message.chat.id,
+        message_id=message.message_id
+    )
+
+# دوال إرسال الصوت المختلفة:
 
 def send_audio_from_f_list(call):
     rl = random.choice(furl)  
@@ -452,9 +463,12 @@ def send_audio_from_f_list(call):
     bot.send_audio(
         chat_id=call.message.chat.id,
         audio=audio_url,
-        # caption=f"{audio_url}", 
         caption="᯽︙اذكر القائم",
         parse_mode="html"
+    )
+    bot.delete_message(
+        chat_id=call.message.chat.id,
+        message_id=call.message.message_id
     )
 
 def send_audio_from_n_list(call):
@@ -464,11 +478,13 @@ def send_audio_from_n_list(call):
     bot.send_audio(
         chat_id=call.message.chat.id,
         audio=audio_url,
-        # caption=f"{audio_url}", 
         caption="᯽︙اذكر القائم",
         parse_mode="html"
     )
-
+    bot.delete_message(
+        chat_id=call.message.chat.id,
+        message_id=call.message.message_id
+    )
 
 def send_audio_from_basim_list(call):
     rl = random.choice(furl)  
@@ -477,9 +493,12 @@ def send_audio_from_basim_list(call):
     bot.send_audio(
         chat_id=call.message.chat.id,
         audio=audio_url,
-        # caption=f"{audio_url}", 
         caption="᯽︙اذكر القائم",
         parse_mode="html"
+    )
+    bot.delete_message(
+        chat_id=call.message.chat.id,
+        message_id=call.message.message_id
     )
 
 def send_audio_from_mohmurl_list(call):
@@ -489,9 +508,12 @@ def send_audio_from_mohmurl_list(call):
     bot.send_audio(
         chat_id=call.message.chat.id,
         audio=audio_url,
-        # caption=f"{audio_url}", 
         caption="᯽︙اذكر القائم",
         parse_mode="html"
+    )
+    bot.delete_message(
+        chat_id=call.message.chat.id,
+        message_id=call.message.message_id
     )
 
 def send_audio_from_mus_list(call):
@@ -502,10 +524,14 @@ def send_audio_from_mus_list(call):
         chat_id=call.message.chat.id,
         audio=audio_url,
         caption="᯽︙اذكر القائم",
-        # caption=f"{audio_url}", 
         parse_mode="html"
     )
+    bot.delete_message(
+        chat_id=call.message.chat.id,
+        message_id=call.message.message_id
+    )
 
+# دوال الـ callback
 @bot.callback_query_handler(func=lambda call: call.data == "باسم")
 def send_basim(call):
     send_audio_from_basim_list(call)
@@ -513,7 +539,8 @@ def send_basim(call):
         chat_id=call.message.chat.id,
         message_id=call.message.message_id,
         reply_markup=None
-        )
+    )
+
 @bot.callback_query_handler(func=lambda call: call.data == "الخاقاني")
 def send_khaqani(call):
     send_audio_from_mohmurl_list(call)
@@ -521,7 +548,8 @@ def send_khaqani(call):
         chat_id=call.message.chat.id,
         message_id=call.message.message_id,
         reply_markup=None
-        )
+    )
+
 @bot.callback_query_handler(func=lambda call: call.data == "مسلم")
 def send_mus(call):
     send_audio_from_mus_list(call)
@@ -529,7 +557,8 @@ def send_mus(call):
         chat_id=call.message.chat.id,
         message_id=call.message.message_id,
         reply_markup=None
-        )
+    )
+
 @bot.callback_query_handler(func=lambda call: call.data == "نزلة")
 def send_mus(call):
     send_audio_from_n_list(call)
@@ -537,7 +566,7 @@ def send_mus(call):
         chat_id=call.message.chat.id,
         message_id=call.message.message_id,
         reply_markup=None
-        )
+    )
 
 @bot.callback_query_handler(func=lambda call: call.data == "فاقد")
 def send_mus(call):
@@ -546,10 +575,8 @@ def send_mus(call):
         chat_id=call.message.chat.id,
         message_id=call.message.message_id,
         reply_markup=None
-        )
-    bot.delete_message(
-        chat_id=message.chat.id,
-        message_id=message.message_id
+    )
+
     )
 if __name__ == "__main__":
     try:
