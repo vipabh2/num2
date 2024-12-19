@@ -521,15 +521,15 @@ def send_mus(call):
 @bot.callback_query_handler(func=lambda call: call.data == "نزلة")
 def send_mus(call):
     send_audio_from_n_list(call)
-
-@bot.callback_query_handler(func=lambda call: call.data == "فاقد")
-def send_mus(call):
-    send_audio_from_f_list(call)
     bot.edit_message_reply_markup(
         chat_id=call.message.chat.id,
         message_id=call.message.message_id,
         reply_markup=None
         )
+
+@bot.callback_query_handler(func=lambda call: call.data == "فاقد")
+def send_mus(call):
+    send_audio_from_f_list(call)
         
 if __name__ == "__main__":
     try:
