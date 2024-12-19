@@ -6,7 +6,7 @@ import requests
 import random
 import time
 import os
-response = requests.get('https://api.telegram.org', timeout=90)
+response = requests.get('https://api.telegram.org', timeout=120)
 
 
 bot_token = os.getenv('BOT_TOKEN')
@@ -573,4 +573,8 @@ def send_mus(call):
         )
 
     
-bot.polling(none_stop=True, interval=0, timeout=2) 
+try:
+    bot.polling(none_stop=True, interval=0, timeout=120)
+except Exception as e:
+    print(f"حدث خطأ: {e}")
+    time.sleep(5) 
