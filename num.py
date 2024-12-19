@@ -427,7 +427,7 @@ nurl = ('164', '165', '166', '167', '168', '169', '170')
 furl = ('171', '172', '173', '174')
 
 
-@bot.message_handler(func=lambda message: message.text in ['لطمية'] or message.text in ['لطميه'] )
+@bot.message_handler(func=lambda message: message.text in ['لطمية'] or message.text in ['لطميه'])
 def vipabh(message):
     username = message.from_user.username if message.from_user.username else "لا يوجد اسم مستخدم"
     
@@ -448,11 +448,12 @@ def vipabh(message):
         reply_markup=markup
     )
     
-    # حذف الرسالة التي تحتوي على النص "لطمية"
+    # تأجيل حذف الرسالة. يتم حذف الرسالة بعد إرسال الفيديو
     bot.delete_message(
         chat_id=message.chat.id,
         message_id=message.message_id
     )
+
 
 # دوال إرسال الصوت المختلفة:
 
@@ -466,10 +467,12 @@ def send_audio_from_f_list(call):
         caption="᯽︙اذكر القائم",
         parse_mode="html"
     )
+    # لا يتم حذف رسالة "لطمية" فقط الحذف يتم بعد إرسال الصوت
     bot.delete_message(
         chat_id=call.message.chat.id,
         message_id=call.message.message_id
     )
+
 
 def send_audio_from_n_list(call):
     rl = random.choice(nurl)  
@@ -486,6 +489,7 @@ def send_audio_from_n_list(call):
         message_id=call.message.message_id
     )
 
+
 def send_audio_from_basim_list(call):
     rl = random.choice(furl)  
     audio_url = f"https://t.me/sossosic/{rl}"  
@@ -500,6 +504,7 @@ def send_audio_from_basim_list(call):
         chat_id=call.message.chat.id,
         message_id=call.message.message_id
     )
+
 
 def send_audio_from_mohmurl_list(call):
     rl = random.choice(mohmurl)  
@@ -516,6 +521,7 @@ def send_audio_from_mohmurl_list(call):
         message_id=call.message.message_id
     )
 
+
 def send_audio_from_mus_list(call):
     rl = random.choice(musurl) 
     audio_url = f"https://t.me/sossosic/{rl}" 
@@ -530,6 +536,7 @@ def send_audio_from_mus_list(call):
         chat_id=call.message.chat.id,
         message_id=call.message.message_id
     )
+
 
 # دوال الـ callback
 @bot.callback_query_handler(func=lambda call: call.data == "باسم")
@@ -576,6 +583,7 @@ def send_mus(call):
         message_id=call.message.message_id,
         reply_markup=None
     )
+
 
     
 if __name__ == "__main__":
