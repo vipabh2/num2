@@ -549,7 +549,7 @@ def send_mus(call):
         )
     bot.delete_message(
         chat_id=message.chat.id,
-        message_id=message.message_id
+        message_id=call.message.message_id
     )
 if __name__ == "__main__":
     try:
