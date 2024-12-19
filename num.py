@@ -547,10 +547,9 @@ def send_mus(call):
         message_id=call.message.message_id,
         reply_markup=None
         )
-    time.sleep(3) 
     bot.delete_message(
         chat_id=message.chat.id,
-        message_id=video_message.message_id
+        message_id=message.message_id
     )
 if __name__ == "__main__":
     try:
