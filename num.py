@@ -571,18 +571,23 @@ def send_mus(call):
         message_id=call.message.message_id,
         reply_markup=None
     )
-
 @bot.callback_query_handler(func=lambda call: call.data == "فاقد")
 def send_mus(call):
     send_audio_from_f_list(call)
+    
     bot.edit_message_reply_markup(
         chat_id=call.message.chat.id,
         message_id=call.message.message_id,
-        reply_markup=None,
+        reply_markup=None
+    )
+    
+    try:
         bot.delete_message(
-        chat_id=message.chat.id,
-        message_id=video_message.message_id
-    ),)
+            chat_id=call.message.chat.id,
+            message_id=call.message.message_id  # يمكنك تعديل هذا حسب الرسالة التي ترغب في حذفها
+        )
+    except Exception as e:
+        print(f"Error deleting message: {e}")
 
     
 if __name__ == "__main__":
