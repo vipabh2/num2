@@ -501,8 +501,8 @@ def send_audio_from_basim_list(call):
         reply_to_message_id=message.message_id 
     )
     bot.delete_message(
-        chat_id=call.message.chat.id,
-        message_id=call.message.message_id
+        chat_id=message.chat.id,
+        message_id=video_message.message_id
     )
 
 
