@@ -6,7 +6,7 @@ import requests
 import random
 import time
 import os
-response = requests.get('https://api.telegram.org', timeout=120)
+response = requests.get('https://api.telegram.org', timeout=90)
 
 
 bot_token = os.getenv('BOT_TOKEN')
