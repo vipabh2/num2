@@ -547,10 +547,8 @@ def send_mus(call):
         message_id=call.message.message_id,
         reply_markup=None
         )
-    bot.delete_message(
-        chat_id=message.chat.id,
-        message_id=call.message.message_id
-    )
+
+    
 if __name__ == "__main__":
     try:
         bot.polling(none_stop=True)
