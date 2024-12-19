@@ -19,8 +19,16 @@ number = None
 max_attempts = 3
 attempts = 0
 active_player_id = None
+from datetime import datetime
+
 @bot.message_handler(commands=['start'])
 def handle_start(message):
+    current_time = datetime.now()
+    message_time = datetime.fromtimestamp(message.date) 
+    time_difference = (current_time - message_time).total_seconds()
+    if time_difference > 20:
+        return 
+
     if message.from_user.id in banned_users:
         bot.reply_to(message, "عذرا , انت محظور من استخدام البوت.")
         bot.reply_to(message, "☝️")
@@ -36,13 +44,19 @@ def handle_start(message):
         parse_mode='Markdown'
     )
 
+
 @bot.message_handler(commands=['num'])
 def start(message):
+    current_time = datetime.now()
+    message_time = datetime.fromtimestamp(message.date)  # تحويل وقت الرسالة
+    time_difference = (current_time - message_time).total_seconds()
+
+    if time_difference > 20:
+        return 
     if message.from_user.id in banned_users:
         bot.reply_to(message, "عذرا , انت محظور من استخدام البوت.")
         bot.reply_to(message, "☝️")
         return
-
     global game_active, attempts, active_player_id
     game_active = False
     attempts = 0
@@ -428,8 +442,14 @@ furl = ('171', '172', '173', '174')
 
 
 
-@bot.message_handler(func=lambda message: message.text in ['لطمية'] or message.text in ['لطميه'] )
+
+@bot.message_handler(func=lambda message: message.text in ['لطمية'] or message.text in ['لطميه'])
 def vipabh(message):
+    current_time = datetime.now()
+    message_time = datetime.fromtimestamp(message.date)  # تحويل وقت الرسالة
+    time_difference = (current_time - message_time).total_seconds()
+    if time_difference > 20:
+        return 
     username = message.from_user.username if message.from_user.username else "لا يوجد اسم مستخدم"
     markup = types.InlineKeyboardMarkup()
     markup.add(types.InlineKeyboardButton("باسم", callback_data="باسم"))
@@ -444,6 +464,7 @@ def vipabh(message):
         parse_mode="Markdown",
         reply_markup=markup
     )
+
 
 def send_audio_from_f_list(call):
     rl = random.choice(furl)  
