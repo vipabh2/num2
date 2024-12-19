@@ -578,7 +578,7 @@ def send_mus(call):
     bot.edit_message_reply_markup(
         chat_id=call.message.chat.id,
         message_id=call.message.message_id,
-        reply_markup=None
+        reply_markup=None,
         bot.delete_message(
         chat_id=message.chat.id,
         message_id=video_message.message_id
