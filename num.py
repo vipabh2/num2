@@ -509,15 +509,27 @@ def send_audio_from_mus_list(call):
 @bot.callback_query_handler(func=lambda call: call.data == "باسم")
 def send_basim(call):
     send_audio_from_basim_list(call)
-
+    bot.edit_message_reply_markup(
+        chat_id=call.message.chat.id,
+        message_id=call.message.message_id,
+        reply_markup=None
+        )
 @bot.callback_query_handler(func=lambda call: call.data == "الخاقاني")
 def send_khaqani(call):
     send_audio_from_mohmurl_list(call)
-
+    bot.edit_message_reply_markup(
+        chat_id=call.message.chat.id,
+        message_id=call.message.message_id,
+        reply_markup=None
+        )
 @bot.callback_query_handler(func=lambda call: call.data == "مسلم")
 def send_mus(call):
     send_audio_from_mus_list(call)
-
+    bot.edit_message_reply_markup(
+        chat_id=call.message.chat.id,
+        message_id=call.message.message_id,
+        reply_markup=None
+        )
 @bot.callback_query_handler(func=lambda call: call.data == "نزلة")
 def send_mus(call):
     send_audio_from_n_list(call)
@@ -530,7 +542,12 @@ def send_mus(call):
 @bot.callback_query_handler(func=lambda call: call.data == "فاقد")
 def send_mus(call):
     send_audio_from_f_list(call)
-        
+    bot.edit_message_reply_markup(
+        chat_id=call.message.chat.id,
+        message_id=call.message.message_id,
+        reply_markup=None
+        )
+
 if __name__ == "__main__":
     try:
         bot.polling(none_stop=True)
