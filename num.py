@@ -8,10 +8,6 @@ import time
 import os
 response = requests.get('https://api.telegram.org', timeout=120)
 
-if response.status_code == 200:
-    print("تم الاتصال بنجاح!")
-else:
-    print(f"فشل الاتصال، رمز الحالة: {response.status_code}")
 
 bot_token = os.getenv('BOT_TOKEN')
 bot = telebot.TeleBot(bot_token)
