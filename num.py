@@ -451,7 +451,7 @@ def vipabh(message):
     # تأجيل حذف الرسالة. يتم حذف الرسالة بعد إرسال الفيديو
     bot.delete_message(
         chat_id=message.chat.id,
-        message_id=message.message_id
+        message_id=video_message.message_id
     )
 
 
