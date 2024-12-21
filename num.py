@@ -156,25 +156,22 @@ def show_number(message):
                     if guess < 1 or guess > 10:
                         bot.reply_to(message, "يرجى اختيار رقم بين 1 و 10 فقط!")
                         return
-
-        attempts += 1
-
-        if guess == number:
-            bot.reply_to(message, "🎉 مُبارك! لقد فزت!")
-            won = "https://t.me/VIPABH/2"  # رابط الصوت للفوز
-            bot.send_voice(message.chat.id, won)
-            game_active = False
-        elif attempts >= max_attempts:
-            bot.reply_to(message, f"للأسف، لقد نفدت محاولاتك. الرقم الصحيح هو {number}. 🌚")
-            lose = "https://t.me/VIPABH/23"  # رابط الصوت للخسارة
-            bot.send_voice(message.chat.id, lose)
-            game_active = False
-        else:
-            remaining_attempts = max_attempts - attempts
-            bot.reply_to(message, f"الرقم غير صحيح. حاول مجددًا! لديك {remaining_attempts} محاولة متبقية.")
-    
-    except ValueError:
-        bot.reply_to(message, "يرجى إدخال رقم صحيح بين 1 و 10.")
+                        attempts += 1
+                        if guess == number:
+                            bot.reply_to(message, "🎉 مُبارك! لقد فزت!")
+                            won = "https://t.me/VIPABH/2"  # رابط الصوت للفوز
+                            bot.send_voice(message.chat.id, won)
+                            game_active = False
+                            elif attempts >= max_attempts:
+                            bot.reply_to(message, f"للأسف، لقد نفدت محاولاتك. الرقم الصحيح هو {number}. 🌚")
+                            lose = "https://t.me/VIPABH/23"  # رابط الصوت للخسارة
+                            bot.send_voice(message.chat.id, lose)
+                                game_active = False
+                        else:
+                            remaining_attempts = max_attempts - attempts
+                            bot.reply_to(message, f"الرقم غير صحيح. حاول مجددًا! لديك {remaining_attempts} محاولة متبقية.")
+                except ValueError:
+                    bot.reply_to(message, "يرجى إدخال رقم صحيح بين 1 و 10.")
 
 @bot.message_handler(func=lambda message: message.text in ['ميم', 'ميمز'])
 def send_random_file(message):
