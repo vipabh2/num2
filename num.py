@@ -145,18 +145,17 @@ def show_number(message):
     else:
         bot.reply_to(message, "لم تبدأ اللعبة بعد. أرسل '/num' لبدء اللعبة.")
         @bot.message_handler(func=lambda message: game_active and message.from_user.id == active_player_id)
-def handle_guess(message):
-    """معالجة التخمينات أثناء اللعبة."""
-    global game_active, number, attempts
-    if message.from_user.id in banned_users:
-        bot.reply_to(message, "عذرًا، أنت محظور من استخدام البوت.")
-        return
-    
-    try:
-        guess = int(message.text)
-        if guess < 1 or guess > 10:
-            bot.reply_to(message, "يرجى اختيار رقم بين 1 و 10 فقط!")
-            return
+        def handle_guess(message):
+            """معالجة التخمينات أثناء اللعبة."""
+            global game_active, number, attempts
+            if message.from_user.id in banned_users:
+                bot.reply_to(message, "عذرًا، أنت محظور من استخدام البوت.")
+                return
+                try:
+                    guess = int(message.text)
+                    if guess < 1 or guess > 10:
+                        bot.reply_to(message, "يرجى اختيار رقم بين 1 و 10 فقط!")
+                        return
 
         attempts += 1
 
