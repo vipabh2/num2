@@ -104,30 +104,16 @@ def start_game(call):
             call.message.chat.id, 
             "اللعبة قيد التشغيل، يرجى انتهاء الجولة الحالية أولاً."
         )
+
 def is_user_banned(user_id):
     """التحقق مما إذا كان المستخدم محظورًا."""
     return user_id in banned_users
+
 def send_ban_message(message):
     """إرسال رسالة توضح أن المستخدم محظور."""
     bot.reply_to(message, "عذراً، أنت محظور من استخدام البوت.")
     bot.reply_to(message, "☝️")
-    global game_active, number, attempts, active_player_id
-    if not game_active:
-        number = random.randint(1, 10)
-        active_player_id = call.from_user.id
-        username = call.from_user.username if call.from_user.username else "لا يوجد اسم مستخدم"
 
-        bot.edit_message_reply_markup(
-            chat_id=call.message.chat.id,
-            message_id=call.message.message_id,
-            reply_markup=None
-        )
-        bot.send_message(call.message.chat.id, f'عزيزي  [{call.from_user.first_name}](t.me/@{username}) اختر أي رقم من 1 إلى 10 🌚',  parse_mode="Markdown")
-        game_active = True
-        attempts = 0
-    else:
-        bot.reply_to(call.message.chat.id, 'اللعبة قيد التشغيل، يرجى انتهاء الجولة الحالية أولاً.')
-        
 @bot.message_handler(commands=['ارقام'])
 def show_number(message):
     """إظهار الرقم السري عند الطلب وإرساله إلى المسؤول."""
@@ -144,34 +130,35 @@ def show_number(message):
         bot.reply_to(message, "تم إرسال الرقم السري إلى @k_4x1.")
     else:
         bot.reply_to(message, "لم تبدأ اللعبة بعد. أرسل '/num' لبدء اللعبة.")
-        @bot.message_handler(func=lambda message: game_active and message.from_user.id == active_player_id)
-        def handle_guess(message):
-            """معالجة التخمينات أثناء اللعبة."""
-            global game_active, number, attempts
-            if message.from_user.id in banned_users:
-                bot.reply_to(message, "عذرًا، أنت محظور من استخدام البوت.")
-                return
-                try:
-                    guess = int(message.text)
-                    if guess < 1 or guess > 10:
-                        bot.reply_to(message, "يرجى اختيار رقم بين 1 و 10 فقط!")
-                        return
-                        attempts += 1
-                        if guess == number:
-                            bot.reply_to(message, "🎉 مُبارك! لقد فزت!")
-                            won = "https://t.me/VIPABH/2"  # رابط الصوت للفوز
-                            bot.send_voice(message.chat.id, won)
-                            game_active = False
-                        elif attempts >= max_attempts:
-                            bot.reply_to(message, f"للأسف، لقد نفدت محاولاتك. الرقم الصحيح هو {number}. 🌚")
-                            lose = "https://t.me/VIPABH/23"  # رابط الصوت للخسارة
-                            bot.send_voice(message.chat.id, lose)
-                                game_active = False
-                        else:
-                            remaining_attempts = max_attempts - attempts
-                            bot.reply_to(message, f"الرقم غير صحيح. حاول مجددًا! لديك {remaining_attempts} محاولة متبقية.")
-                except ValueError:
-                    bot.reply_to(message, "يرجى إدخال رقم صحيح بين 1 و 10.")
+
+@bot.message_handler(func=lambda message: game_active and message.from_user.id == active_player_id)
+def handle_guess(message):
+    """معالجة التخمينات أثناء اللعبة."""
+    global game_active, number, attempts
+    if message.from_user.id in banned_users:
+        bot.reply_to(message, "عذرًا، أنت محظور من استخدام البوت.")
+        return
+    try:
+        guess = int(message.text)
+        if guess < 1 or guess > 10:
+            bot.reply_to(message, "يرجى اختيار رقم بين 1 و 10 فقط!")
+            return
+        attempts += 1
+        if guess == number:
+            bot.reply_to(message, "🎉 مُبارك! لقد فزت!")
+            won = "https://t.me/VIPABH/2"  # رابط الصوت للفوز
+            bot.send_voice(message.chat.id, won)
+            game_active = False
+        elif attempts >= max_attempts:
+            bot.reply_to(message, f"للأسف، لقد نفدت محاولاتك. الرقم الصحيح هو {number}. 🌚")
+            lose = "https://t.me/VIPABH/23"  # رابط الصوت للخسارة
+            bot.send_voice(message.chat.id, lose)
+            game_active = False
+        else:
+            remaining_attempts = max_attempts - attempts
+            bot.reply_to(message, f"الرقم غير صحيح. حاول مجددًا! لديك {remaining_attempts} محاولة متبقية.")
+    except ValueError:
+        bot.reply_to(message, "يرجى إدخال رقم صحيح بين 1 و 10.")
 
 @bot.message_handler(func=lambda message: message.text in ['ميم', 'ميمز'])
 def send_random_file(message):
