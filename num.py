@@ -162,7 +162,7 @@ def show_number(message):
                             won = "https://t.me/VIPABH/2"  # رابط الصوت للفوز
                             bot.send_voice(message.chat.id, won)
                             game_active = False
-                            elif attempts >= max_attempts:
+                        elif attempts >= max_attempts:
                             bot.reply_to(message, f"للأسف، لقد نفدت محاولاتك. الرقم الصحيح هو {number}. 🌚")
                             lose = "https://t.me/VIPABH/23"  # رابط الصوت للخسارة
                             bot.send_voice(message.chat.id, lose)
