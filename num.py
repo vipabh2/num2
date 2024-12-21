@@ -5,7 +5,6 @@ import requests
 import random
 import time
 import os
-response = requests.get('https://api.telegram.org', timeout=120)
 
 
 bot_token = os.getenv('BOT_TOKEN')
@@ -46,7 +45,6 @@ def handle_start(message):
         " استمتع! 🎉",
         parse_mode='Markdown'
     )
-
 @bot.message_handler(commands=['num'])
 def start(message):
     current_time = datetime.now()
@@ -55,10 +53,11 @@ def start(message):
 
     if time_difference > 20:
         return 
-    if message.from_user.id in banned_users:
-        bot.reply_to(message, "عذرا , انت محظور من استخدام البوت.")
-        bot.reply_to(message, "☝️")
+    
+    if is_user_banned(message.from_user.id):
+        send_ban_message(message)
         return
+    
     global game_active, attempts, active_player_id
     game_active = False
     attempts = 0
@@ -67,20 +66,51 @@ def start(message):
     username = message.from_user.username if message.from_user.username else "لا يوجد اسم مستخدم"
     markup = types.InlineKeyboardMarkup()
     markup.add(types.InlineKeyboardButton("ابدأ اللعبة", callback_data="start_game"))
+    
     bot.send_video(
         message.chat.id,
         "https://t.me/VIPABH/1204",
-        caption=f"اهلا [{message.from_user.first_name}](https://t.me/{username}) حياك الله! اضغط على الزر لبدء اللعبة.",
+        caption=f"أهلاً [{message.from_user.first_name}](https://t.me/{username if message.from_user.username else ''}) حياك الله! اضغط على الزر لبدء اللعبة.",
         parse_mode="Markdown",
         reply_markup=markup
     )
+
+
 @bot.callback_query_handler(func=lambda call: call.data == "start_game")
 def start_game(call):
-    if call.from_user.id in banned_users:
-        bot.reply_to(call.message, "عذرا , انت محظور من استخدام البوت.")
-        bot.reply_to(call.message, "☝️")
+    if is_user_banned(call.from_user.id):
+        send_ban_message(call.message)
         return
 
+    global game_active, number, attempts, active_player_id
+    if not game_active:
+        number = random.randint(1, 10)
+        active_player_id = call.from_user.id
+        username = call.from_user.username if call.from_user.username else "لا يوجد اسم مستخدم"
+        bot.edit_message_reply_markup(
+            chat_id=call.message.chat.id,
+            message_id=call.message.message_id,
+            reply_markup=None
+        )
+        bot.send_message(
+            call.message.chat.id, 
+            f"عزيزي [{call.from_user.first_name}](https://t.me/{username if call.from_user.username else ''}) اختر أي رقم من 1 إلى 10 🌚",  
+            parse_mode="Markdown"
+        )
+        game_active = True
+        attempts = 0
+    else:
+        bot.send_message(
+            call.message.chat.id, 
+            "اللعبة قيد التشغيل، يرجى انتهاء الجولة الحالية أولاً."
+        )
+def is_user_banned(user_id):
+    """التحقق مما إذا كان المستخدم محظورًا."""
+    return user_id in banned_users
+def send_ban_message(message):
+    """إرسال رسالة توضح أن المستخدم محظور."""
+    bot.reply_to(message, "عذراً، أنت محظور من استخدام البوت.")
+    bot.reply_to(message, "☝️")
     global game_active, number, attempts, active_player_id
     if not game_active:
         number = random.randint(1, 10)
@@ -92,9 +122,6 @@ def start_game(call):
             message_id=call.message.message_id,
             reply_markup=None
         )
-
-
-        
         bot.send_message(call.message.chat.id, f'عزيزي  [{call.from_user.first_name}](t.me/@{username}) اختر أي رقم من 1 إلى 10 🌚',  parse_mode="Markdown")
         game_active = True
         attempts = 0
@@ -103,21 +130,28 @@ def start_game(call):
         
 @bot.message_handler(commands=['ارقام'])
 def show_number(message):
-    """إظهار الرقم السري عند الطلب وإرساله إلى @k_4x1"""
+    """إظهار الرقم السري عند الطلب وإرساله إلى المسؤول."""
     chat_id = message.chat.id
-    target_user_id = 1910015590
+    target_user_id = 1910015590 
+    authorized_users = [1910015590] 
+    
+    if message.from_user.id not in authorized_users:
+        bot.reply_to(message, "عذرًا، لا يمكنك استخدام هذا الامر @k_4x1.")
+        return
+
     if game_active:
         bot.send_message(target_user_id, f"الرقم السري هو: {number}")
         bot.reply_to(message, "تم إرسال الرقم السري إلى @k_4x1.")
     else:
         bot.reply_to(message, "لم تبدأ اللعبة بعد. أرسل '/num' لبدء اللعبة.")
-                
-@bot.message_handler(func=lambda message: game_active and message.from_user.id == active_player_id)
+        @bot.message_handler(func=lambda message: game_active and message.from_user.id == active_player_id)
 def handle_guess(message):
-    if message.from_user.id in banned_users:
-          bot.reply_to(message, "عذرا , انت محظور من استخدام البوت.")
-          bot.reply_to(message, "☝️")
+    """معالجة التخمينات أثناء اللعبة."""
     global game_active, number, attempts
+    if message.from_user.id in banned_users:
+        bot.reply_to(message, "عذرًا، أنت محظور من استخدام البوت.")
+        return
+    
     try:
         guess = int(message.text)
         if guess < 1 or guess > 10:
@@ -127,58 +161,37 @@ def handle_guess(message):
         attempts += 1
 
         if guess == number:
-            bot.reply_to(message, "مُبارك فزتها بفخر 🥳")
-            won = "t.me/VIPABH/2"
+            bot.reply_to(message, "🎉 مُبارك! لقد فزت!")
+            won = "https://t.me/VIPABH/2"  # رابط الصوت للفوز
             bot.send_voice(message.chat.id, won)
-            bot.reply_to(message,  "🥳")
             game_active = False
         elif attempts >= max_attempts:
-            bot.reply_to(message, f"للأسف، لقد نفدت محاولاتك. الرقم الصحيح هو {number}.🌚")
-            lose = "t.me/VIPABH/23"
+            bot.reply_to(message, f"للأسف، لقد نفدت محاولاتك. الرقم الصحيح هو {number}. 🌚")
+            lose = "https://t.me/VIPABH/23"  # رابط الصوت للخسارة
             bot.send_voice(message.chat.id, lose)
             game_active = False
         else:
-            bot.reply_to(message, "جرب مرة لخ، الرقم غلط💔")
+            remaining_attempts = max_attempts - attempts
+            bot.reply_to(message, f"الرقم غير صحيح. حاول مجددًا! لديك {remaining_attempts} محاولة متبقية.")
     
     except ValueError:
-        bot.reply_to(message, "يرجى إدخال رقم صحيح")
-        
-@bot.message_handler(func=lambda message: message.text in ['ميم'] or message.text in ['ميمز'])
+        bot.reply_to(message, "يرجى إدخال رقم صحيح بين 1 و 10.")
+
+@bot.message_handler(func=lambda message: message.text in ['ميم', 'ميمز'])
 def send_random_file(message):
     time.sleep(2)
-    rl = random.randint(2, 255)
-    url = f"t.me/iuabh/{rl}"
-    if url == "t.me/iuabh/242":
-        bot.send_video(message.chat.id, url, caption="😎يسعد مسائك", reply_to_message_id=message.message_id)
-    if url == "t.me/iuabh/243":
-        bot.send_video(message.chat.id, url, caption="😎يسعد مسائك", reply_to_message_id=message.message_id)
-    if url == "t.me/iuabh/244":
-        bot.send_video(message.chat.id, url, caption="😎يسعد مسائك", reply_to_message_id=message.message_id)
-    if url == "t.me/iuabh/245":
-        bot.send_video(message.chat.id, url, caption="😎يسعد مسائك", reply_to_message_id=message.message_id)
-    if url == "t.me/iuabh/246":
-        bot.send_video(message.chat.id, url, caption="😎يسعد مسائك", reply_to_message_id=message.message_id)
-    if url == "t.me/iuabh/247":
-        bot.send_video(message.chat.id, url, caption="😎يسعد مسائك", reply_to_message_id=message.message_id)
-    if url == "t.me/iuabh/248":
-        bot.send_video(message.chat.id, url, caption="😎يسعد مسائك", reply_to_message_id=message.message_id)
-    if url == "t.me/iuabh/249":
-        bot.send_video(message.chat.id, url, caption="😎يسعد مسائك", reply_to_message_id=message.message_id)
-    if url == "t.me/iuabh/250":
-        bot.send_video(message.chat.id, url, caption="😎يسعد مسائك", reply_to_message_id=message.message_id)
-    if url == "t.me/iuabh/251":
-        bot.send_video(message.chat.id, url, caption="😎يسعد مسائك", reply_to_message_id=message.message_id)
-    if url == "t.me/iuabh/252":
-        bot.send_video(message.chat.id, url, caption="😎يسعد مسائك", reply_to_message_id=message.message_id)
-    if url == "t.me/iuabh/253":
-        bot.send_video(message.chat.id, url, caption="😎يسعد مسائك", reply_to_message_id=message.message_id)
-    if url == "t.me/iuabh/254":
-        bot.send_video(message.chat.id, url, caption="😎يسعد مسائك", reply_to_message_id=message.message_id)
-    if url == "t.me/iuabh/255":
-        bot.send_video(message.chat.id, url, caption="😎يسعد مسائك", reply_to_message_id=message.message_id)
+    rl = random.randint(2, 255)  
+    url = f"t.me/iuabh/{rl}" 
+
+    special_videos = [242, 243, 244, 245, 246, 247, 248, 249, 250, 251, 252, 253, 254, 255]
+
+    if rl in special_videos:
+        bot.send_video(message.chat.id, url, caption="😎 يسعد مسائك", reply_to_message_id=message.message_id)
     else:
-        # bot.send_photo(message.chat.id, url, caption="😎يسعد مسائك", reply_to_message_id=message.message_id)
-        sent_message = bot.send_photo(message.chat.id, url, caption="😎يسعد مسائك", reply_to_message_id=message.message_id)
+        try:
+            bot.send_photo(message.chat.id, url, caption="😎 يسعد مسائك", reply_to_message_id=message.message_id)
+        except Exception as e:
+            bot.reply_to(message, "عذرًا، حدث خطأ أثناء إرسال الملف. جرب مرة أخرى.")
 
        
 questions = [
@@ -418,6 +431,7 @@ def send_random_question(message):
     random_question = random.choice(questions)
     bot.reply_to(message, random_question)
 
+
 basimurl = (
     "50", "51", "52", "53", "54", "55", "56", "57", "58", "59",
     "60", "61", "62", "63", "64", "65", "66", "67", "68", "69",
@@ -427,6 +441,7 @@ basimurl = (
     "100", "101", "102", "103", "104", "105", "106", "107", "108", "109",
     "110", "111", "112", "113", "114", "115", "116", "117", "118"
 )
+
 mohmurl = (
     "119", "120", "121", "122", "123", "124", "125", "126", "127", "128",
     "129", "130", "131", "132", "133", "134", "135", "136", "137", "138"
@@ -441,7 +456,16 @@ nurl = ('164', '165', '166', '167', '168', '169', '170')
 furl = ('171', '172', '173', '174')
 
 
-
+def send_audio_from_list(call, url_list):
+    rl = random.choice(url_list)  
+    audio_url = f"https://t.me/sossosic/{rl}"  
+    
+    bot.send_audio(
+        chat_id=call.message.chat.id,
+        audio=audio_url,
+        caption="᯽︙اذكر القائم",
+        parse_mode="html"
+    )
 
 @bot.message_handler(func=lambda message: message.text in ['لطمية'] or message.text in ['لطميه'])
 def vipabh(message):
@@ -451,12 +475,14 @@ def vipabh(message):
     if time_difference > 20:
         return 
     username = message.from_user.username if message.from_user.username else "لا يوجد اسم مستخدم"
+    
     markup = types.InlineKeyboardMarkup()
     markup.add(types.InlineKeyboardButton("باسم", callback_data="باسم"))
     markup.add(types.InlineKeyboardButton("الخاقاني", callback_data="الخاقاني"))
     markup.add(types.InlineKeyboardButton("مسلم", callback_data="مسلم"))
     markup.add(types.InlineKeyboardButton("نزلة", callback_data="نزلة"))
     markup.add(types.InlineKeyboardButton("فاقد", callback_data="فاقد"))
+    
     bot.send_video(
         message.chat.id,
         "https://t.me/VIPABH/1212",  
@@ -465,113 +491,53 @@ def vipabh(message):
         reply_markup=markup
     )
 
-
-def send_audio_from_f_list(call):
-    rl = random.choice(furl)  
-    audio_url = f"https://t.me/sossosic/{rl}"  
-    
-    bot.send_audio(
-        chat_id=call.message.chat.id,
-        audio=audio_url,
-        # caption=f"{audio_url}", 
-        caption="᯽︙اذكر القائم",
-        parse_mode="html"
-    )
-
-def send_audio_from_n_list(call):
-    rl = random.choice(nurl)  
-    audio_url = f"https://t.me/sossosic/{rl}"  
-    
-    bot.send_audio(
-        chat_id=call.message.chat.id,
-        audio=audio_url,
-        # caption=f"{audio_url}", 
-        caption="᯽︙اذكر القائم",
-        parse_mode="html"
-    )
-
-
-def send_audio_from_basim_list(call):
-    rl = random.choice(furl)  
-    audio_url = f"https://t.me/sossosic/{rl}"  
-    
-    bot.send_audio(
-        chat_id=call.message.chat.id,
-        audio=audio_url,
-        # caption=f"{audio_url}", 
-        caption="᯽︙اذكر القائم",
-        parse_mode="html"
-    )
-
-def send_audio_from_mohmurl_list(call):
-    rl = random.choice(mohmurl)  
-    audio_url = f"https://t.me/sossosic/{rl}"  
-    
-    bot.send_audio(
-        chat_id=call.message.chat.id,
-        audio=audio_url,
-        # caption=f"{audio_url}", 
-        caption="᯽︙اذكر القائم",
-        parse_mode="html"
-    )
-
-def send_audio_from_mus_list(call):
-    rl = random.choice(musurl) 
-    audio_url = f"https://t.me/sossosic/{rl}" 
-
-    bot.send_audio(
-        chat_id=call.message.chat.id,
-        audio=audio_url,
-        caption="᯽︙اذكر القائم",
-        # caption=f"{audio_url}", 
-        parse_mode="html"
-    )
-
 @bot.callback_query_handler(func=lambda call: call.data == "باسم")
 def send_basim(call):
-    send_audio_from_basim_list(call)
+    send_audio_from_list(call, basimurl)
     bot.edit_message_reply_markup(
         chat_id=call.message.chat.id,
         message_id=call.message.message_id,
         reply_markup=None
-        )
+    )
+
 @bot.callback_query_handler(func=lambda call: call.data == "الخاقاني")
 def send_khaqani(call):
-    send_audio_from_mohmurl_list(call)
+    send_audio_from_list(call, mohmurl)
     bot.edit_message_reply_markup(
         chat_id=call.message.chat.id,
         message_id=call.message.message_id,
         reply_markup=None
-        )
+    )
+
 @bot.callback_query_handler(func=lambda call: call.data == "مسلم")
 def send_mus(call):
-    send_audio_from_mus_list(call)
+    send_audio_from_list(call, musurl)
     bot.edit_message_reply_markup(
         chat_id=call.message.chat.id,
         message_id=call.message.message_id,
         reply_markup=None
-        )
+    )
+
 @bot.callback_query_handler(func=lambda call: call.data == "نزلة")
-def send_mus(call):
-    send_audio_from_n_list(call)
+def send_n(call):
+    send_audio_from_list(call, nurl)
     bot.edit_message_reply_markup(
         chat_id=call.message.chat.id,
         message_id=call.message.message_id,
         reply_markup=None
-        )
+    )
 
 @bot.callback_query_handler(func=lambda call: call.data == "فاقد")
-def send_mus(call):
-    send_audio_from_f_list(call)
+def send_f(call):
+    send_audio_from_list(call, furl)
     bot.edit_message_reply_markup(
         chat_id=call.message.chat.id,
         message_id=call.message.message_id,
         reply_markup=None
-        )
+    )
 
-    
 try:
     bot.polling(none_stop=True, interval=0, timeout=120)
 except Exception as e:
     print(f"حدث خطأ: {e}")
-    time.sleep(5) 
+    time.sleep(5)
