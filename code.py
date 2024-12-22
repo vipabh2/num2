@@ -70,6 +70,8 @@ def handle_start_game(call):
             message_id=call.message.message_id,
             reply_markup=None 
         )
+        chat_id=call.message.chat.id
+
 sent_msg2 = bot.send_message(
     chat_id,
     "تم تسجيلك في لعبة محيبس \n ملاحظة: لفتح العضمة ارسل طك ورقم العضمة لأخذ المحبس أرسل جيب ورقم العضمة."
