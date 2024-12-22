@@ -146,22 +146,20 @@ if chat_id in group_game_status and group_game_status[chat_id]['game_active']:
 def handle_strike(message):
     global game_board, number2, group_game_status
     chat_id = message.chat.id
-
-if chat_id in group_game_status and group_game_status[chat_id]['game_active']:
+    if chat_id in group_game_status and group_game_status[chat_id]['game_active']:
         try:
             strike_position = int(message.text.split()[1])
             if strike_position == number2:
                 game_board = [["💍" if i == number2 - 1 else "🖐️" for i in range(6)]
-           bot.reply_to(message, f"**خسرت!** \n{format_board(game_board, numbers_board)}")
-                reset_game(chat_id) 
-            else:
-                abh = [
-    "تلعب وخوش تلعب 👏🏻",
-    "لك عاش يابطل استمر 💪🏻",
-    "على كيفك ركزززز انتَ كدها 🤨",
-    "لك وعلي ذيييب 😍"]                   
-
-iuABH = random.choice(abh)
+                              bot.reply_to(message, f"**خسرت!** \n{format_board(game_board, numbers_board)}")
+                              reset_game(chat_id) 
+                              else:
+                              abh = [
+                    "تلعب وخوش تلعب 👏🏻",
+                    "لك عاش يابطل استمر 💪🏻",
+                    "على كيفك ركزززز انتَ كدها 🤨",
+                    "لك وعلي ذيييب 😍"]                   
+                iuABH = random.choice(abh)
                 game_board[0][strike_position - 1] = '🖐️'
                 sent_msg7 = bot.reply_to(message, f" {iuABH} \n{format_board(game_board, numbers_board)}")
                 threading.Thread(target=delete_message_after6, args=(message.chat.id, sent_msg7.message_id)).start()
