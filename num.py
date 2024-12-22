@@ -617,13 +617,13 @@ def delete_message_after1(chat_id, message_id, delay=3):
 def handle_start_game(call):
     chat_id = call.message.chat.id
     user_id = call.from_user.id
-if not group_game_status[chat_id]['game_active']:
-group_game_status[chat_id]['game_active'] = True
+    if not group_game_status[chat_id]['game_active']:
+        group_game_status[chat_id]['game_active'] = True
         group_game_status[chat_id]['active_player_id'] = user_id
-global number2
+        global number2
         number2 = random.randint(1, 6)
         group_game_status[chat_id]['number2'] = number2
-bot.edit_message_reply_markup(
+        bot.edit_message_reply_markup(
             chat_id=call.message.chat.id,
             message_id=call.message.message_id,
             reply_markup=None 
