@@ -663,7 +663,7 @@ if chat_id in group_game_status and group_game_status[chat_id]['game_active']:
                             chat_id = message.chat.id
                         except Exception as e:
                             print(f"حدث خطأ أثناء حذف الرسالة: {e}")
-reset_game(chat_id)
+                            reset_game(chat_id)
                 else:
                     sender_first_name = message.from_user.first_name
                     game_board = [["❌" if i == guess - 1 else "🖐️" for i in range(6)]]
