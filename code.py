@@ -150,7 +150,7 @@ def handle_strike(message):
         try:
             strike_position = int(message.text.split()[1])
             if strike_position == number2:
-                game_board = [["💍" if i == number2 - 1 else "🖐️" for i in range(6)]
+                game_board = [["💍" if i == number2 - 1 else "🖐️" for i in range(6)]]
                               bot.reply_to(message, f"**خسرت!** \n{format_board(game_board, numbers_board)}")
                               reset_game(chat_id) 
                               else:
