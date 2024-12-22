@@ -1,11 +1,13 @@
-import asyncio
-from pytgcalls import idle
-from config import call_py
-from JEPTHON313.التشغيل import arq
+import os
+import time
+import random
+import telebot
+from datetime import datetime
+from telebot import types
 async def main():
     await call_py.start()
     print("""    ------------------
-   | ميوزك جيبثون الان شغال ! |
+   | البوت الان شغال ! |
     ------------------"""    )
     await idle()
     await arq.close()
