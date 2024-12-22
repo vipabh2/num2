@@ -71,8 +71,8 @@ def handle_start_game(call):
             reply_markup=None 
         )
 sent_msg2 = bot.send_message(
-            chat_id,
-            "تم تسجيلك في لعبة محيبس \n ملاحظة: لفتح العضمة ارسل طك ورقم العضمة لأخذ المحبس أرسل جيب ورقم العضمة."
+    chat_id,
+    "تم تسجيلك في لعبة محيبس \n ملاحظة: لفتح العضمة ارسل طك ورقم العضمة لأخذ المحبس أرسل جيب ورقم العضمة."
         )
 threading.Thread(target=delete_message_after10, args=(chat_id, sent_msg2.message_id)).start()
 def delete_message_after10(chat_id, message_id, delay=3):
