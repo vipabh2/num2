@@ -554,19 +554,19 @@ def send_random_file(message):
         # bot.send_photo(message.chat.id, url, caption="😎يسعد مسائك", reply_to_message_id=message.message_id)
         sent_message = bot.send_photo(message.chat.id, url, caption="😎يسعد مسائك", reply_to_message_id=message.message_id)
 
-ALLOWED_USER_ID = 1910015590
 @bot.message_handler(func=lambda message: message.from_user.id == ALLOWED_USER_ID and message.text.startswith("نشر"))
 def send_to_all_groups(message):
-    message_text = " ".join(message.text.split()[1:])  
+    message_text = " ".join(message.text.split()[1:]) 
 
-    for chat in bot.get_chat_administrators(message.chat.id):
-        if chat.chat.type == "group":
-            try:
+    for chat in bot.get_chat_administrators(message.chat.id):  
+        try:
+            chat_info = bot.get_chat(chat.id) 
+            if chat_info.type in ["group", "supergroup"]:  
                 bot.send_message(chat.id, text=message_text)
-                print(f"تم إرسال الرسالة إلى المجموعة: {chat.title}")
-                time.sleep(1) 
-            except Exception as e:
-                print(f"حدث خطأ أثناء إرسال الرسالة إلى {chat.title}: {e}")
+                print(f"تم إرسال الرسالة إلى المجموعة: {chat_info.title}")
+                time.sleep(1)  
+        except Exception as e:
+            print(f"حدث خطأ أثناء إرسال الرسالة إلى {chat_info.title}: {e}")
 
 def is_user_banned(user_id):
     return user_id in banned_users
