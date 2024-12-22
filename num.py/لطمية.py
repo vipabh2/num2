@@ -162,8 +162,5 @@ def send_mus(call):
         )
 
     
-try:
-    bot.polling(none_stop=True, interval=0, timeout=120)
-except Exception as e:
-    print(f"حدث خطأ: {e}")
-    time.sleep(5) 
+if __name__ == "__main__":
+    bot.polling(none_stop=True)
