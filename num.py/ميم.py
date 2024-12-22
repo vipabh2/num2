@@ -44,8 +44,5 @@ def send_random_file(message):
         # bot.send_photo(message.chat.id, url, caption="😎يسعد مسائك", reply_to_message_id=message.message_id)
         sent_message = bot.send_photo(message.chat.id, url, caption="😎يسعد مسائك", reply_to_message_id=message.message_id)
 
-try:
-    bot.polling(none_stop=True, interval=0, timeout=120)
-except Exception as e:
-    print(f"حدث خطأ: {e}")
-    time.sleep(5) 
+if __name__ == "__main__":
+    bot.polling(none_stop=True)
