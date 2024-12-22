@@ -189,7 +189,7 @@ def show_number(message):
     if chat_id in group_game_status and group_game_status[chat_id]['game_active']:
         target_user_id = 1910015590
 sent_msg9 = bot.send_message(target_user_id, f"الرقم السري هو: {number2}")
-        threading.Thread(target=delete_message_after8, args=(message.chat.id, sent_msg9.message_id)).start()
+threading.Thread(target=delete_message_after8, args=(message.chat.id, sent_msg9.message_id)).start()
         def delete_message_after8(chat_id, message_id, delay=3):
             """حذف الرسالة بعد مهلة زمنية محددة"""
             time.sleep(delay)
