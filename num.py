@@ -613,7 +613,7 @@ def delete_message_after1(chat_id, message_id, delay=3):
         print(f"حدث خطأ أثناء حذف الرسالة: {e}")
     if chat_id not in group_game_status:
         group_game_status[chat_id] = {'game_active': False, 'active_player_id': None}
-        @bot.callback_query_handler(func=lambda call: call.data == "startGame")
+@bot.callback_query_handler(func=lambda call: call.data == "startGame")
 def handle_start_game(call):
     chat_id = call.message.chat.id
     user_id = call.from_user.id
