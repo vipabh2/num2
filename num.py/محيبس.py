@@ -2,8 +2,6 @@ import os
 import random
 import telebot
 from telebot import types
-bot = telebot.TeleBot("7273443857:AAFt8PtcI_gdYp0QbtcJH1Tu1oFJn9-H0yk")
-
 
 group_game_status = {}
 correct_answer = None
