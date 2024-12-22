@@ -568,122 +568,136 @@ def send_to_all_groups(message):
             except Exception as e:
                 print(f"حدث خطأ أثناء إرسال الرسالة إلى {chat.title}: {e}")
 
+def is_user_banned(user_id):
+    return user_id in banned_users
+banned_users = []
 
-group_game_status = {}
-number2 = None
-game_board = [["👊", "👊", "👊", "👊", "👊", "👊"]]
-numbers_board = [["1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣", "6️⃣"]]
-original_game_board = [["👊", "👊", "👊", "👊", "👊", "👊"]]
-points = {}
+game_active = False
+number = None
+max_attempts = 3
+attempts = 0
+active_player_id = None
+from datetime import datetime
 
-def format_board(game_board, numbers_board):
-    """تنسيق الجدول للعرض بشكل مناسب"""
-    formatted_board = ""
-    formatted_board += " ".join(numbers_board[0]) + "\n"
-    formatted_board += " ".join(game_board[0]) + "\n"
-    return formatted_board
+@bot.message_handler(commands=['start'])
+def handle_start(message):
+    current_time = datetime.now()
+    message_time = datetime.fromtimestamp(message.date) 
+    time_difference = (current_time - message_time).total_seconds()
+    if time_difference > 20:
+        return 
 
-def reset_game(chat_id):
-    """إعادة تعيين حالة اللعبة بعد انتهائها"""
-    global game_board, number2, group_game_status
-    game_board = [row[:] for row in original_game_board]
-    number2 = None
-    group_game_status[chat_id]['game_active'] = False
-    group_game_status[chat_id]['active_player_id'] = None
+    if message.from_user.id in banned_users:
+        bot.reply_to(message, "عذرا , انت محظور من استخدام البوت.")
+        bot.reply_to(message, "☝️")
+        return
 
-@bot.message_handler(func=lambda message: message.text == 'محيبس')
-def start_game(message):
-    global number2
+    bot.reply_to(
+        message,
+        "أهلاً حياك الله! \n"
+        "• أرسل `كتويت` لبدء أسئلة الكت تويت. \n"
+        "• أرسل /num لبدء لعبة الأرقام.\n"
+        "• أرسل `لطمية` ل ارسال لطمية \n"
+        "• أرسل `ميم` او `ميمز` للميمز. \n\n"
+        " استمتع! 🎉",
+        parse_mode='Markdown'
+    )
+    
+@bot.message_handler(commands=['num'])
+def start(message):
+    current_time = datetime.now()
+    message_time = datetime.fromtimestamp(message.date)  
+    time_difference = (current_time - message_time).total_seconds()
+
+    if time_difference > 20:
+        return 
+    if message.from_user.id in banned_users:
+        bot.reply_to(message, "عذرا , انت محظور من استخدام البوت.")
+        bot.reply_to(message, "☝️")
+        return
+    global game_active, attempts, active_player_id
+    game_active = False
+    attempts = 0
+    active_player_id = None
+    
+    username = message.from_user.username if message.from_user.username else "لا يوجد اسم مستخدم"
     markup = types.InlineKeyboardMarkup()
-    markup.add(types.InlineKeyboardButton("ابدأ اللعبة", callback_data="startGame"))
-    username = message.from_user.username or "unknown"
-    sent_msg = bot.send_video(
+    markup.add(types.InlineKeyboardButton("ابدأ اللعبة", callback_data="start_game"))
+    bot.send_video(
         message.chat.id,
-        "t.me/VIPABH/1210",  
-        caption=f"أهلاً [{message.from_user.first_name}](https://t.me/{username})! حياك الله. اضغط على الزر لبدء اللعبة.",
+        "https://t.me/VIPABH/1204",
+        caption=f"اهلا [{message.from_user.first_name}](https://t.me/{username}) حياك الله! اضغط على الزر لبدء اللعبة.",
         parse_mode="Markdown",
         reply_markup=markup
     )
+@bot.callback_query_handler(func=lambda call: call.data == "start_game")
+def start_game(call):
+    if call.from_user.id in banned_users:
+        bot.reply_to(call.message, "عذرا , انت محظور من استخدام البوت.")
+        bot.reply_to(call.message, "☝️")
+        return
 
-@bot.callback_query_handler(func=lambda call: call.data == "startGame")
-def handle_start_game(call):
-    chat_id = call.message.chat.id
-    user_id = call.from_user.id
-    if chat_id not in group_game_status:
-        group_game_status[chat_id] = {'game_active': False, 'active_player_id': None}
-    if not group_game_status[chat_id]['game_active']:
-        group_game_status[chat_id]['game_active'] = True
-        group_game_status[chat_id]['active_player_id'] = user_id
-        global number2
-        number2 = random.randint(1, 6)
-        group_game_status[chat_id]['number2'] = number2
+    global game_active, number, attempts, active_player_id
+    if not game_active:
+        number = random.randint(1, 10)
+        active_player_id = call.from_user.id
+        username = call.from_user.username if call.from_user.username else "لا يوجد اسم مستخدم"
+
         bot.edit_message_reply_markup(
             chat_id=call.message.chat.id,
             message_id=call.message.message_id,
-            reply_markup=None 
-        )
-        sent_msg2 = bot.send_message(
-            chat_id,
-            "تم تسجيلك في لعبة محيبس \n ملاحظة: لفتح العضمة ارسل طك ورقم العضمة لأخذ المحبس أرسل جيب ورقم العضمة."
+            reply_markup=None
         )
 
-@bot.message_handler(regexp=r'جيب (\d+)')
-def handle_guess(message):
-    global number2, game_board, points, group_game_status
-    chat_id = message.chat.id
-    if chat_id in group_game_status and group_game_status[chat_id]['game_active']:
-        try:
-            guess = int(message.text.split()[1])
-            if 1 <= guess <= 6:
-                if guess == number2:
-                    winner_id = message.from_user.id
-                    points[winner_id] = points.get(winner_id, 0) + 1
-                    sender_first_name = message.from_user.first_name
-                    game_board = [["💍" if i == number2 - 1 else "🖐️" for i in range(6)]]
-                    sent_msg3 = bot.reply_to(message, f'🎉 الف مبروك! اللاعب ({sender_first_name}) وجد المحبس 💍!\n{format_board(game_board, numbers_board)}')
-                    reset_game(chat_id)
-                else:
-                    sender_first_name = message.from_user.first_name
-                    game_board = [["❌" if i == guess - 1 else "🖐️" for i in range(6)]]
-                    sent_msg4 = bot.reply_to(message, f"ضاع البات ماضن بعد تلگونة ☹️ \n{format_board(game_board, numbers_board)}")
-                    reset_game(chat_id)
-            else:
-                sent_msg5 = bot.reply_to(message, "❗ يرجى إدخال رقم صحيح بين 1 و 6.")
-        except (IndexError, ValueError):
-            sent_msg6 = bot.reply_to(message, "❗ يرجى إدخال رقم صحيح بين 1 و 6.")
-@bot.message_handler(regexp=r'طك (\d+)')
-def handle_strike(message):
-    global game_board, number2, group_game_status
-    chat_id = message.chat.id
-    if chat_id in group_game_status and group_game_status[chat_id]['game_active']:
-        try:
-            strike_position = int(message.text.split()[1])
-            if strike_position == number2:
-                game_board = [["💍" if i == number2 - 1 else "🖐️" for i in range(6)]]
-                bot.reply_to(message, f"**خسرت!** \n{format_board(game_board, numbers_board)}")
-                reset_game(chat_id) 
-            else:
-                abh = [
-                    "تلعب وخوش تلعب 👏🏻",
-                    "لك عاش يابطل استمر 💪🏻",
-                    "على كيفك ركزززز انتَ كدها 🤨",
-                    "لك وعلي ذيييب 😍"]                   
-                iuABH = random.choice(abh)
-                game_board[0][strike_position - 1] = '🖐️'
-                sent_msg7 = bot.reply_to(message, f" {iuABH} \n{format_board(game_board, numbers_board)}")
-        except (IndexError, ValueError):
-            sent_msg8 = bot.reply_to(message, "يرجى إدخال رقم صحيح بين 1 و 6.")
 
-@bot.message_handler(commands=['محيبس'])
+        
+        bot.send_message(call.message.chat.id, f'عزيزي  [{call.from_user.first_name}](t.me/@{username}) اختر أي رقم من 1 إلى 10 🌚',  parse_mode="Markdown")
+        game_active = True
+        attempts = 0
+    else:
+        bot.reply_to(call.message.chat.id, 'اللعبة قيد التشغيل، يرجى انتهاء الجولة الحالية أولاً.')
+        
+@bot.message_handler(commands=['ارقام'])
 def show_number(message):
     """إظهار الرقم السري عند الطلب وإرساله إلى @k_4x1"""
     chat_id = message.chat.id
-    if chat_id in group_game_status and group_game_status[chat_id]['game_active']:
-        target_user_id = 1910015590
-        sent_msg9 = bot.send_message(target_user_id, f"الرقم السري هو: {number2}")
-        sent_msg10 = bot.reply_to(message, "تم إرسال الرقم السري إلى @k_4x1.")
+    target_user_id = 1910015590
+    if game_active:
+        bot.send_message(target_user_id, f"الرقم السري هو: {number}")
+        bot.reply_to(message, "تم إرسال الرقم السري إلى @k_4x1.")
     else:
-        sent_msg11 = bot.reply_to(message, "لم تبدأ اللعبة بعد. أرسل 'محيبس' لبدء اللعبة.")
+        bot.reply_to(message, "لم تبدأ اللعبة بعد. أرسل '/num' لبدء اللعبة.")
+                
+@bot.message_handler(func=lambda message: game_active and message.from_user.id == active_player_id)
+def handle_guess(message):
+    if message.from_user.id in banned_users:
+          bot.reply_to(message, "عذرا , انت محظور من استخدام البوت.")
+          bot.reply_to(message, "☝️")
+    global game_active, number, attempts
+    try:
+        guess = int(message.text)
+        if guess < 1 or guess > 10:
+            bot.reply_to(message, "يرجى اختيار رقم بين 1 و 10 فقط!")
+            return
+
+        attempts += 1
+
+        if guess == number:
+            bot.reply_to(message, "مُبارك فزتها بفخر 🥳")
+            won = "t.me/VIPABH/2"
+            bot.send_voice(message.chat.id, won)
+            bot.reply_to(message,  "🥳")
+            game_active = False
+        elif attempts >= max_attempts:
+            bot.reply_to(message, f"للأسف، لقد نفدت محاولاتك. الرقم الصحيح هو {number}.🌚")
+            lose = "t.me/VIPABH/23"
+            bot.send_voice(message.chat.id, lose)
+            game_active = False
+        else:
+            bot.reply_to(message, "جرب مرة لخ، الرقم غلط💔")
+    
+    except ValueError:
+        bot.reply_to(message, "يرجى إدخال رقم صحيح")
 
 if __name__ == "__main__":
     while True:
