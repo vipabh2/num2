@@ -12,7 +12,7 @@ bot = telebot.TeleBot(bot_token)
 @bot.message_handler(func=lambda message: message.text.strip().lower() in ['عاشوراء'])
 def ashouau(message):
     url = "https://t.me/VIPABH/1213"  
-    bot.send_photo(message.chat.id, url, caption="تقبل الله صالح الأعمال")
+    bot.send_photo(message.chat.id, url, caption="تقبل الله صالح الأعمال", reply_to_message_id=message.message_id)
     
 group_game_status = {}
 number2 = None
