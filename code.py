@@ -17,13 +17,13 @@ def ashouau(message):
 
 group_game_status = {}
 
-points = {}
-def escape_markdown(text):
-    """تعقيم النصوص لاستخدام Markdown."""
-    escape_chars = ['_', '*', '[', ']', '(', ')', '~', '`', '>', '#', '+', '-', '=', '|', '{', '}', '.', '!']
-    for char in escape_chars:
-        text = text.replace(char, f"\\{char}")
-    return text  # هذه الدالة لا علاقة لها بـ bot.message_handler
+# points = {}
+# def escape_markdown(text):
+#     """تعقيم النصوص لاستخدام Markdown."""
+#     escape_chars = ['_', '*', '[', ']', '(', ')', '~', '`', '>', '#', '+', '-', '=', '|', '{', '}', '.', '!']
+#     for char in escape_chars:
+#         text = text.replace(char, f"\\{char}")
+#     return text  # هذه الدالة لا علاقة لها بـ bot.message_handler
 
 @bot.message_handler(func=lambda message: message.text == 'توب')
 def show_top_points(message):
