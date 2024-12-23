@@ -135,9 +135,8 @@ def escape_markdown(text):
     for char in escape_chars:
         text = text.replace(char, f"\\{char}")
     return text
-    
-    except Exception as e:
-        bot.reply_to(message, f"⚠️ حدث خطأ أثناء عرض النقاط: {e}")
+except Exception as e:
+bot.reply_to(message, f"⚠️ حدث خطأ أثناء عرض النقاط: {e}")
         
 @bot.message_handler(func=lambda message: message.text == 'محيبس')
 def start_game(message):
