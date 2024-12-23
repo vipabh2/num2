@@ -18,6 +18,13 @@ def ashouau(message):
 group_game_status = {}
 
 points = {}
+def escape_markdown(text):
+    """تعقيم النصوص لاستخدام Markdown."""
+    escape_chars = ['_', '*', '[', ']', '(', ')', '~', '`', '>', '#', '+', '-', '=', '|', '{', '}', '.', '!']
+    for char in escape_chars:
+        text = text.replace(char, f"\\{char}")
+    return text  # هذه الدالة لا علاقة لها بـ bot.message_handler
+
 @bot.message_handler(func=lambda message: message.text == 'توب')
 def show_top_points(message):
     try:
@@ -31,7 +38,7 @@ def show_top_points(message):
         # إنشاء قائمة لأفضل 10 لاعبين
         top_list = "🏆 *أفضل اللاعبين:*\n"
         for rank, (username, score) in enumerate(sorted_points[:10], start=1):
-            username_safe = escape_markdown(username)  # تعقيم اسم المستخدم
+            username_safe = escape_markdown(username) 
             top_list += f"{rank}. @{username_safe}: {score} نقطة\n"
         
         bot.reply_to(message, top_list, parse_mode="MarkdownV2")
