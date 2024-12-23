@@ -9,7 +9,7 @@ import os
 
 bot_token = os.getenv('BOT_TOKEN')
 bot = telebot.TeleBot(bot_token)
-@bot.message_handler(func=lambda message: message.text.strip().lower() in ['عاشوراء', 'زيارة عاشوراء', 'زياره عاشوراء'])
+@bot.message_handler(func=lambda message: message.text.strip().lower() in ['عاشوراء'])
 def ashouau(message):
     url = "https://t.me/VIPABH/1213"  
     bot.send_photo(message.chat.id, url, caption="تقبل الله صالح الأعمال")
