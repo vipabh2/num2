@@ -9,9 +9,11 @@ import os
 
 bot_token = os.getenv('BOT_TOKEN')
 bot = telebot.TeleBot(bot_token)
-
-
-
+@bot.message_handler(func=lambda message: message.text.strip().lower() in ['عاشوراء', 'زيارة عاشوراء', 'زياره عاشوراء'])
+def ashouau(message):
+    url = "https://t.me/VIPABH/1213"  
+    bot.send_photo(message.chat.id, url, caption="تقبل الله صالح الأعمال")
+    
 group_game_status = {}
 number2 = None
 game_board = [["👊", "👊", "👊", "👊", "👊", "👊"]]
@@ -698,10 +700,8 @@ def handle_guess(message):
     
     except ValueError:
         bot.reply_to(message, "يرجى إدخال رقم صحيح")
-        @bot.message_handler(func=lambda message: message.text.strip().lower() in ['عاشوراء', 'زيارة عاشوراء', 'زياره عاشوراء'])
-        def ashouau(message):
-            url = "https://t.me/VIPABH/1213"  # تأكد من أن هذا الرابط يشير إلى صورة مباشرة
-            bot.send_photo(message.chat.id, url, caption="تقبل الله صالح الأعمال")
+        
+       
 
 if __name__ == "__main__":
     while True:
