@@ -5,7 +5,6 @@ import requests
 import random
 import time
 import os
-from telebot.util import escape_markdown
 
 
 
