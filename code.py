@@ -129,22 +129,20 @@ points = {}
 
 # عرض النقاط لأفضل اللاعبين
 @bot.message_handler(func=lambda message: message.text == 'توب')
+
+
 def show_top_players(message):
     if not points:
         bot.reply_to(message, "لا توجد نقاط مسجلة بعد!")
         return
+        sorted_points = sorted(points.items(), key=lambda x: x[1], reverse=True)
     
-    # ترتيب اللاعبين حسب النقاط
-    sorted_points = sorted(points.items(), key=lambda x: x[1], reverse=True)
-    
-    # إنشاء قائمة لأفضل 10 لاعبين (أو أقل حسب عدد اللاعبين)
-    top_list = "🏆 **أفضل اللاعبين:**\n"
+    top_list = "🏆 *أفضل اللاعبين:*\n"
     for rank, (username, score) in enumerate(sorted_points[:10], start=1):
-        top_list += f"{rank}. @{username}: {score} نقطة\n"
+        username_safe = escape_markdown(username, version=2)  # تعقيم اسم المستخدم
+        top_list += f"{rank}. @{username_safe}: {score} نقطة\n"
     
-    bot.reply_to(message, top_list, parse_mode="Markdown")
-
-# وظائف اللعبة
+    bot.reply_to(message, top_list, parse_mode="MarkdownV2")
 @bot.message_handler(func=lambda message: message.text == 'محيبس')
 def start_game(message):
     global number2
