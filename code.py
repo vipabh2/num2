@@ -135,28 +135,6 @@ def escape_markdown(text):
     for char in escape_chars:
         text = text.replace(char, f"\\{char}")
     return text
-
-@bot.message_handler(commands=['top_points'])
-def show_top_players(message):
-    if not points:
-        bot.reply_to(message, "❗ لا توجد نقاط مسجلة بعد!")
-        return
-    
-    try:
-        # ترتيب اللاعبين حسب النقاط
-        sorted_points = sorted(points.items(), key=lambda x: x[1], reverse=True)
-        
-        # إنشاء قائمة لأفضل 10 لاعبين (أو أقل حسب عدد اللاعبين)
-        top_list = "🏆 *أفضل اللاعبين:*\n"
-        for rank, (username, score) in enumerate(sorted_points[:10], start=1):
-            username_safe = escape_markdown(username)  # تعقيم اسم المستخدم
-            top_list += f"{rank}. @{username_safe}: {score} نقطة\n"
-        
-        bot.reply_to(message, top_list, parse_mode="MarkdownV2")
-    
-    except Exception as e:
-        bot.reply_to(message, f"⚠️ حدث خطأ أثناء عرض النقاط: {e}")
-
     
     except Exception as e:
         bot.reply_to(message, f"⚠️ حدث خطأ أثناء عرض النقاط: {e}")
