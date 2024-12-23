@@ -701,7 +701,7 @@ def handle_guess(message):
         @bot.message_handler(func=lambda message: message.text.strip().lower() in ['عاشوراء', 'زيارة عاشوراء', 'زياره عاشوراء'])
         def ashouau(message):
             url = "https://t.me/VIPABH/1213"  # تأكد من أن هذا الرابط يشير إلى صورة مباشرة
-            bot.send_photo(message.chat.id, url, caption="تقبل الله صالح الأعمال", reply_to_message_id=message.message_id)
+            bot.send_photo(message.chat.id, url, caption="تقبل الله صالح الأعمال")
 
 if __name__ == "__main__":
     while True:
