@@ -128,7 +128,7 @@ group_game_status = {}
 points = {}
 
 # عرض النقاط لأفضل اللاعبين
-@bot.message_handler(commands=['top_points'])
+@bot.message_handler(func=lambda message: message.text == 'توب')
 def show_top_players(message):
     if not points:
         bot.reply_to(message, "لا توجد نقاط مسجلة بعد!")
