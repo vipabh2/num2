@@ -120,8 +120,6 @@ def ashouau(message):
 #                 sent_msg7 = bot.reply_to(message, f" {iuABH} \n{format_board(game_board, numbers_board)}")
 #         except (IndexError, ValueError):
 #             sent_msg8 = bot.reply_to(message, "يرجى إدخال رقم صحيح بين 1 و 6.")
-from telebot import types
-import random
 
 # متغير لتخزين حالة اللعبة لكل مجموعة
 group_game_status = {}
@@ -133,18 +131,27 @@ points = {}
 @bot.message_handler(func=lambda message: message.text == 'توب')
 
 
+@bot.message_handler(commands=['top_points'])
 def show_top_players(message):
     if not points:
-        bot.reply_to(message, "لا توجد نقاط مسجلة بعد!")
+        bot.reply_to(message, "❗ لا توجد نقاط مسجلة بعد!")
         return
+    
+    # ترتيب اللاعبين حسب النقاط
+    try:
         sorted_points = sorted(points.items(), key=lambda x: x[1], reverse=True)
+        
+        # إنشاء قائمة لأفضل 10 لاعبين (أو أقل حسب عدد اللاعبين)
+        top_list = "🏆 *أفضل اللاعبين:*\n"
+        for rank, (username, score) in enumerate(sorted_points[:10], start=1):
+            username_safe = escape_markdown(username, version=2)  # تعقيم اسم المستخدم
+            top_list += f"{rank}. @{username_safe}: {score} نقطة\n"
+        
+        bot.reply_to(message, top_list, parse_mode="MarkdownV2")
     
-    top_list = "🏆 *أفضل اللاعبين:*\n"
-    for rank, (username, score) in enumerate(sorted_points[:10], start=1):
-        username_safe = escape_markdown(username, version=2)  # تعقيم اسم المستخدم
-        top_list += f"{rank}. @{username_safe}: {score} نقطة\n"
-    
-    bot.reply_to(message, top_list, parse_mode="MarkdownV2")
+    except Exception as e:
+        bot.reply_to(message, f"⚠️ حدث خطأ أثناء عرض النقاط: {e}")
+        
 @bot.message_handler(func=lambda message: message.text == 'محيبس')
 def start_game(message):
     global number2
