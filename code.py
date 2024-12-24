@@ -19,16 +19,34 @@ group_game_status = {}
 points = {}
 
 
-def escape_markdown(text):
-    """تعقيم النصوص لاستخدام Markdown."""
-    escape_chars = ['_', '*', '[', ']', '(', ')', '~', '`', '>', '#', '+', '-', '=', '|', '{', '}', '.', '!']
-    for char in escape_chars:
-        text = text.replace(char, f"\\{char}")
-    return text
+# def escape_markdown(text):
+#     """تعقيم النصوص لاستخدام Markdown."""
+#     escape_chars = ['_', '*', '[', ']', '(', ')', '~', '`', '>', '#', '+', '-', '=', '|', '{', '}', '.', '!']
+#     for char in escape_chars:
+#         text = text.replace(char, f"\\{char}")
+#     return text
 
 
+# @bot.message_handler(func=lambda message: message.text == 'توب')
+# def initialize_database():
+#     try:
+#         conn = sqlite3.connect('game_points.db') 
+#         cursor = conn.cursor()
+        
+#         cursor.execute('''
+#             CREATE TABLE IF NOT EXISTS players (
+#                 id INTEGER PRIMARY KEY AUTOINCREMENT,
+#                 username TEXT NOT NULL,
+#                 points INTEGER NOT NULL DEFAULT 0
+#             )
+#         ''')
+        
+#         conn.commit()
+#         conn.close()
+#     except Exception as e:
+#         print(f"⚠️ حدث خطأ أثناء تهيئة قاعدة البيانات: {e}")
 @bot.message_handler(func=lambda message: message.text == 'توب')
-def initialize_database():
+def initialize_database(message):
     try:
         conn = sqlite3.connect('game_points.db') 
         cursor = conn.cursor()
@@ -43,8 +61,11 @@ def initialize_database():
         
         conn.commit()
         conn.close()
+
+        bot.reply_to(message, "✅ تم تهيئة قاعدة البيانات بنجاح!")  # رد على المستخدم لإعلامه بالنجاح
     except Exception as e:
-        print(f"⚠️ حدث خطأ أثناء تهيئة قاعدة البيانات: {e}")
+        bot.reply_to(message, f"⚠️ حدث خطأ أثناء تهيئة قاعدة البيانات: {e}")  # إرسال الخطأ للمستخدم
+
         
 @bot.message_handler(func=lambda message: message.text == 'محيبس')
 def start_game(message):
