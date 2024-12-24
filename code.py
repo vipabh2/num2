@@ -18,6 +18,16 @@ def ashouau(message):
 group_game_status = {}
 points = {}
 
+
+def escape_markdown(text):
+    """تعقيم النصوص لاستخدام Markdown."""
+    escape_chars = ['_', '*', '[', ']', '(', ')', '~', '`', '>', '#', '+', '-', '=', '|', '{', '}', '.', '!']
+    for char in escape_chars:
+        text = text.replace(char, f"\\{char}")
+    return text
+
+
+@bot.message_handler(func=lambda message: message.text == 'توب')
 def initialize_database():
     try:
         conn = sqlite3.connect('game_points.db') 
@@ -35,40 +45,6 @@ def initialize_database():
         conn.close()
     except Exception as e:
         print(f"⚠️ حدث خطأ أثناء تهيئة قاعدة البيانات: {e}")
-
-def escape_markdown(text):
-    """تعقيم النصوص لاستخدام Markdown."""
-    escape_chars = ['_', '*', '[', ']', '(', ')', '~', '`', '>', '#', '+', '-', '=', '|', '{', '}', '.', '!']
-    for char in escape_chars:
-        text = text.replace(char, f"\\{char}")
-    return text
-
-
-@bot.message_handler(func=lambda message: message.text == 'توب')
-def show_top_points(message):
-    try:
-        conn = sqlite3.connect('game_points.db')
-        cursor = conn.cursor()
-        
-  
-        cursor.execute('SELECT username, points FROM players ORDER BY points DESC LIMIT 10')
-        top_players = cursor.fetchall()
-        
-        if not top_players:
-            bot.reply_to(message, "❗ لا توجد نقاط مسجلة بعد!")
-            return
-        
-        top_list = "🏆 *أفضل اللاعبين:*\n"
-        for rank, (username, score) in enumerate(top_players, start=1):
-            username_safe = escape_markdown(username or "unknown") 
-            top_list += f"{rank}. @{username_safe}: {score} نقطة\n"
-        
-        bot.reply_to(message, top_list, parse_mode="MarkdownV2")
-        conn.close()
-    
-    except Exception as e:
-        bot.reply_to(message, f"⚠️ حدث خطأ أثناء عرض النقاط: {e}")
-
         
 @bot.message_handler(func=lambda message: message.text == 'محيبس')
 def start_game(message):
