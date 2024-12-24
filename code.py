@@ -45,26 +45,35 @@ points = {}
 #         conn.close()
 #     except Exception as e:
 #         print(f"⚠️ حدث خطأ أثناء تهيئة قاعدة البيانات: {e}")
+
 @bot.message_handler(func=lambda message: message.text == 'توب')
-def initialize_database(message):
+def show_top_10(message):
     try:
-        conn = sqlite3.connect('game_points.db') 
+        conn = sqlite3.connect('game_points.db')
         cursor = conn.cursor()
         
         cursor.execute('''
-            CREATE TABLE IF NOT EXISTS players (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                username TEXT NOT NULL,
-                points INTEGER NOT NULL DEFAULT 0
-            )
+            SELECT username, points FROM players
+            ORDER BY points DESC
+            LIMIT 10
         ''')
         
-        conn.commit()
-        conn.close()
+        top_players = cursor.fetchall()
+        
+        if top_players:
+            leaderboard = "🏆 **أفضل 10 لاعبين**:\n"
+            for index, (username, points) in enumerate(top_players, 1):
+                leaderboard += f"{index}. {username} - {points} نقاط\n"
+        else:
+            leaderboard = "⚠️ لا توجد بيانات للاعبين في قاعدة البيانات."
+        
+        bot.reply_to(message, leaderboard)
 
-        bot.reply_to(message, "✅ تم تهيئة قاعدة البيانات بنجاح!")  # رد على المستخدم لإعلامه بالنجاح
+        conn.close()
+    
     except Exception as e:
-        bot.reply_to(message, f"⚠️ حدث خطأ أثناء تهيئة قاعدة البيانات: {e}")  # إرسال الخطأ للمستخدم
+        bot.reply_to(message, f"⚠️ حدث خطأ أثناء جلب النقاط: {e}")
+
 
         
 @bot.message_handler(func=lambda message: message.text == 'محيبس')
