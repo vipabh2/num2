@@ -17,7 +17,6 @@ def ashouau(message):
 group_game_status = {}
 points = {}
 
-# دالة لتعقيم النصوص لاستخدام MarkdownV2
 def escape_markdown(text):
     """تعقيم النصوص لاستخدام Markdown."""
     escape_chars = ['_', '*', '[', ']', '(', ')', '~', '`', '>', '#', '+', '-', '=', '|', '{', '}', '.', '!']
@@ -25,24 +24,28 @@ def escape_markdown(text):
         text = text.replace(char, f"\\{char}")
     return text
 
-# معالج الرسائل لعرض أفضل اللاعبين
+
 @bot.message_handler(func=lambda message: message.text == 'توب')
 def show_top_points(message):
     try:
-        if not points:  # تحقق إذا كانت النقاط فارغة
+        conn = sqlite3.connect('game_points.db')
+        cursor = conn.cursor()
+        
+  
+        cursor.execute('SELECT username, points FROM players ORDER BY points DESC LIMIT 10')
+        top_players = cursor.fetchall()
+        
+        if not top_players:
             bot.reply_to(message, "❗ لا توجد نقاط مسجلة بعد!")
             return
         
-        # ترتيب النقاط حسب القيم تنازليًا
-        sorted_points = sorted(points.items(), key=lambda x: x[1], reverse=True)
-        
-        # إنشاء قائمة بأفضل 10 لاعبين
         top_list = "🏆 *أفضل اللاعبين:*\n"
-        for rank, (username, score) in enumerate(sorted_points[:10], start=1):
-            username_safe = escape_markdown(username)  # تعقيم اسم المستخدم
+        for rank, (username, score) in enumerate(top_players, start=1):
+            username_safe = escape_markdown(username or "unknown") 
             top_list += f"{rank}. @{username_safe}: {score} نقطة\n"
         
         bot.reply_to(message, top_list, parse_mode="MarkdownV2")
+        conn.close()
     
     except Exception as e:
         bot.reply_to(message, f"⚠️ حدث خطأ أثناء عرض النقاط: {e}")
