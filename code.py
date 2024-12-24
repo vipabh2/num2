@@ -18,6 +18,24 @@ def ashouau(message):
 group_game_status = {}
 points = {}
 
+def initialize_database():
+    try:
+        conn = sqlite3.connect('game_points.db') 
+        cursor = conn.cursor()
+        
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS players (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                username TEXT NOT NULL,
+                points INTEGER NOT NULL DEFAULT 0
+            )
+        ''')
+        
+        conn.commit()
+        conn.close()
+    except Exception as e:
+        print(f"⚠️ حدث خطأ أثناء تهيئة قاعدة البيانات: {e}")
+
 def escape_markdown(text):
     """تعقيم النصوص لاستخدام Markdown."""
     escape_chars = ['_', '*', '[', ']', '(', ')', '~', '`', '>', '#', '+', '-', '=', '|', '{', '}', '.', '!']
