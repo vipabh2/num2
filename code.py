@@ -609,7 +609,8 @@ def handle_start(message):
         " استمتع! 🎉",
         parse_mode='Markdown'
     )
-    
+user_points = {}
+
 @bot.message_handler(commands=['num'])
 def start(message):
     current_time = datetime.now()
@@ -690,6 +691,9 @@ def handle_guess(message):
         attempts += 1
 
         if guess == number:
+            if message.from_user.id not in user_points:
+                user_points[message.from_user.id] = 0  
+            user_points[message.from_user.id] += 1 
             bot.reply_to(message, "مُبارك فزتها بفخر 🥳")
             won = "t.me/VIPABH/2"
             bot.send_voice(message.chat.id, won)
