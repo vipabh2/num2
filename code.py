@@ -706,6 +706,13 @@ def handle_guess(message):
     except ValueError:
         bot.reply_to(message, "يرجى إدخال رقم صحيح")
         
+@bot.message_handler(func=lambda message: message.text == 'ن')
+def show_points(message):
+    """إظهار النقاط للمستخدم إذا كانت اللعبة نشطة."""
+    if message.from_user.id in user_points:
+        bot.reply_to(message, f"نقاطك: {user_points[message.from_user.id]}")
+    else:
+        bot.reply_to(message, "أنت لست في لعبة حالياً أو لم تبدأ اللعبة بعد. أرسل '/num' لبدء اللعبة.")
        
 
 if __name__ == "__main__":
