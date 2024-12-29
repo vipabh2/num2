@@ -574,6 +574,7 @@ def send_to_all_groups(message):
         except Exception as e:
             print(f"حدث خطأ أثناء إرسال الرسالة إلى {chat_info.title}: {e}")
 
+
 def is_user_banned(user_id):
     return user_id in banned_users
 banned_users = []
