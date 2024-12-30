@@ -13,7 +13,6 @@ from bs4 import BeautifulSoup
 bot_token = os.getenv('BOT_TOKEN')
 bot = telebot.TeleBot(bot_token)
 
-
 url = "https://ar.wikipedia.org/w/api.php"
 
 searching_state = {}
@@ -71,6 +70,12 @@ def start_search(message):
     bot.reply_to(message, "من فضلك أدخل الكلمة التي تريد البحث عنها:")
     searching_state[message.chat.id] = True 
 
+
+    search_term = message.text.strip().lower().replace('ابحث عام', '').strip()
+    if not search_term:
+        bot.reply_to(message.chat.id, "من فضلك أدخل الكلمة التي تريد البحث عنها بعد 'ابحث عن'.")
+        return
+
     params = {
         "action": "query",
         "list": "search",
@@ -101,7 +106,6 @@ def start_search(message):
         bot.reply_to(message, f"حدث خطأ: {response.status_code}")
 
     searching_state[message.chat.id] = False  # Turn off the waiting state
-
 
 @bot.message_handler(func=lambda message: message.text.strip().lower() in ['عاشوراء'])
 def ashouau(message):
