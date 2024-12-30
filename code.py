@@ -113,6 +113,12 @@ def ashouau(message):
     bot.send_photo(message.chat.id, url, caption="تقبل الله صالح الأعمال", reply_to_message_id=message.message_id)
 
 
+@bot.message_handler(func=lambda message: message.text.strip().lower() in ['عاشوراء'])
+def ashouau(message):
+    url = "https://t.me/VIPABH/1213"  
+    bot.send_photo(message.chat.id, url, caption="تقبل الله صالح الأعمال", reply_to_message_id=message.message_id)
+
+
 group_game_status = {}
 number2 = None
 game_board = [["👊", "👊", "👊", "👊", "👊", "👊"]]
@@ -166,7 +172,7 @@ def handle_start_game(call):
             message_id=call.message.message_id,
             reply_markup=None 
         )
-        sent_msg2 = bot.reply_to(
+        sent_msg2 = bot.send_message(
             chat_id,
             "تم تسجيلك في لعبة محيبس \n ملاحظة: لفتح العضمة ارسل طك ورقم العضمة لأخذ المحبس أرسل جيب ورقم العضمة."
         )
@@ -224,7 +230,7 @@ def show_number(message):
     chat_id = message.chat.id
     if chat_id in group_game_status and group_game_status[chat_id]['game_active']:
         target_user_id = 1910015590
-        sent_msg9 = bot.reply_to(target_user_id, f"الرقم السري هو: {number2}")
+        sent_msg9 = bot.send_message(target_user_id, f"الرقم السري هو: {number2}")
         sent_msg10 = bot.reply_to(message, "تم إرسال الرقم السري إلى @k_4x1.")
     else:
         sent_msg11 = bot.reply_to(message, "لم تبدأ اللعبة بعد. أرسل 'محيبس' لبدء اللعبة.")
@@ -664,7 +670,7 @@ def send_to_all_groups(message):
         try:
             chat_info = bot.get_chat(chat.id) 
             if chat_info.type in ["group", "supergroup"]:  
-                bot.reply_to(chat.id, text=message_text)
+                bot.send_message(chat.id, text=message_text)
                 print(f"تم إرسال الرسالة إلى المجموعة: {chat_info.title}")
                 time.sleep(1)  
         except Exception as e:
@@ -755,7 +761,7 @@ def start_game(call):
 
 
         
-        bot.reply_to(call.message.chat.id, f'عزيزي  [{call.from_user.first_name}](t.me/@{username}) اختر أي رقم من 1 إلى 10 🌚',  parse_mode="Markdown")
+        bot.send_message(call.message.chat.id, f'عزيزي  [{call.from_user.first_name}](t.me/@{username}) اختر أي رقم من 1 إلى 10 🌚',  parse_mode="Markdown")
         game_active = True
         attempts = 0
     else:
@@ -767,7 +773,7 @@ def show_number(message):
     chat_id = message.chat.id
     target_user_id = 1910015590
     if game_active:
-        bot.reply_to(target_user_id, f"الرقم السري هو: {number}")
+        bot.send_message(target_user_id, f"الرقم السري هو: {number}")
         bot.reply_to(message, "تم إرسال الرقم السري إلى @k_4x1.")
     else:
         bot.reply_to(message, "لم تبدأ اللعبة بعد. أرسل '/num' لبدء اللعبة.")
