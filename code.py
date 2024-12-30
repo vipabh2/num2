@@ -20,7 +20,7 @@ def cut(message):
     search_term = message.text.strip().lower().replace('ابحث عن', '').strip()
 
     if not search_term:
-        bot.send_message(message.chat.id, "من فضلك أدخل الكلمة التي تريد البحث عنها بعد 'ابحث عن'.")
+        # bot.reply_to(message.chat.id, "من فضلك أدخل الكلمة التي تريد البحث عنها بعد 'ابحث عن'.")
         return
     
     params = {
@@ -38,7 +38,7 @@ def cut(message):
         data = response.json()
         if 'query' in data and 'search' in data['query']:
             if not data['query']['search']:
-                bot.send_message(message.chat.id, "لا يوجد نتائج لهذا البحث.")
+                bot.reply_to(message.chat.id, "لا يوجد نتائج لهذا البحث.")
             else:
                 found_exact_match = False
                 for result in data['query']['search']:
@@ -48,32 +48,32 @@ def cut(message):
                         snippet = snippet[:1000] + "..." if len(snippet) > 1000 else snippet
                         article_url = f"https://ar.wikipedia.org/wiki/{result['title']}"
                         
-                        bot.send_message(message.chat.id, f"عنوان المقال: \n {result['title']}\n"
+                        bot.reply_to(message.chat.id, f"عنوان المقال: \n {result['title']}\n"
                                                           f"المقال: \n {snippet}\n"
                                                           f"{'-' * 40}")
                 
                 if not found_exact_match:
-                    bot.send_message(
+                    bot.reply_to(
                         message.chat.id,
                         f"لا يوجد نتائج تطابق {search_term} \n لكن جرب `ابحث عام {search_term}`",
                         parse_mode="Markdown"
                                      )
         else:
-            bot.send_message(message.chat.id, "حدث خطأ في استجابة API.")
+            bot.reply_to(message.chat.id, "حدث خطأ في استجابة API.")
     else:
-        bot.send_message(message.chat.id, f"حدث خطأ في الاتصال بـ Wikipedia. حاول مرة أخرى لاحقًا.")
+        bot.reply_to(message.chat.id, f"حدث خطأ في الاتصال بـ Wikipedia. حاول مرة أخرى لاحقًا.")
             
 searching_state = {}
 
 @bot.message_handler(func=lambda message: message.text.strip().lower().startswith('ابحث عام'))
 def start_search(message):
-    bot.send_message(message.chat.id, "من فضلك أدخل الكلمة التي تريد البحث عنها:")
+    bot.reply_to(message.chat.id, "من فضلك أدخل الكلمة التي تريد البحث عنها:")
     searching_state[message.chat.id] = True 
 
 
     search_term = message.text.strip().lower().replace('ابحث عام', '').strip()
     if not search_term:
-        bot.send_message(message.chat.id, "من فضلك أدخل الكلمة التي تريد البحث عنها بعد 'ابحث عن'.")
+        bot.reply_to(message.chat.id, "من فضلك أدخل الكلمة التي تريد البحث عنها بعد 'ابحث عن'.")
         return
 
     params = {
@@ -91,19 +91,19 @@ def start_search(message):
         data = response.json()
         if 'query' in data and 'search' in data['query']:
             if not data['query']['search']:
-                bot.send_message(message.chat.id, "لم يتم العثور على نتائج لهذا البحث.")
+                bot.reply_to(message.chat.id, "لم يتم العثور على نتائج لهذا البحث.")
             else:
                 for result in data['query']['search']:
                     snippet = BeautifulSoup(result['snippet'], "html.parser").get_text()
                     snippet = snippet[:1000] + "..." if len(snippet) > 1000 else snippet
                     article_url = f"https://ar.wikipedia.org/wiki/{result['title']}"
-                    bot.send_message(message.chat.id, f"عنوان المقال: \n {result['title']}\n"
+                    bot.reply_to(message.chat.id, f"عنوان المقال: \n {result['title']}\n"
                                      f"المقال: \n {snippet}\n"
                                      f"{'-' * 40}")
         else:
-            bot.send_message(message.chat.id, "حدث خطأ في استجابة API.")
+            bot.reply_to(message.chat.id, "حدث خطأ في استجابة API.")
     else:
-        bot.send_message(message.chat.id, f"حدث خطأ: {response.status_code}")
+        bot.reply_to(message.chat.id, f"حدث خطأ: {response.status_code}")
 
     searching_state[message.chat.id] = False
 
@@ -167,7 +167,7 @@ def handle_start_game(call):
             message_id=call.message.message_id,
             reply_markup=None 
         )
-        sent_msg2 = bot.send_message(
+        sent_msg2 = bot.reply_to(
             chat_id,
             "تم تسجيلك في لعبة محيبس \n ملاحظة: لفتح العضمة ارسل طك ورقم العضمة لأخذ المحبس أرسل جيب ورقم العضمة."
         )
@@ -225,7 +225,7 @@ def show_number(message):
     chat_id = message.chat.id
     if chat_id in group_game_status and group_game_status[chat_id]['game_active']:
         target_user_id = 1910015590
-        sent_msg9 = bot.send_message(target_user_id, f"الرقم السري هو: {number2}")
+        sent_msg9 = bot.reply_to(target_user_id, f"الرقم السري هو: {number2}")
         sent_msg10 = bot.reply_to(message, "تم إرسال الرقم السري إلى @k_4x1.")
     else:
         sent_msg11 = bot.reply_to(message, "لم تبدأ اللعبة بعد. أرسل 'محيبس' لبدء اللعبة.")
@@ -665,7 +665,7 @@ def send_to_all_groups(message):
         try:
             chat_info = bot.get_chat(chat.id) 
             if chat_info.type in ["group", "supergroup"]:  
-                bot.send_message(chat.id, text=message_text)
+                bot.reply_to(chat.id, text=message_text)
                 print(f"تم إرسال الرسالة إلى المجموعة: {chat_info.title}")
                 time.sleep(1)  
         except Exception as e:
@@ -756,7 +756,7 @@ def start_game(call):
 
 
         
-        bot.send_message(call.message.chat.id, f'عزيزي  [{call.from_user.first_name}](t.me/@{username}) اختر أي رقم من 1 إلى 10 🌚',  parse_mode="Markdown")
+        bot.reply_to(call.message.chat.id, f'عزيزي  [{call.from_user.first_name}](t.me/@{username}) اختر أي رقم من 1 إلى 10 🌚',  parse_mode="Markdown")
         game_active = True
         attempts = 0
     else:
@@ -768,7 +768,7 @@ def show_number(message):
     chat_id = message.chat.id
     target_user_id = 1910015590
     if game_active:
-        bot.send_message(target_user_id, f"الرقم السري هو: {number}")
+        bot.reply_to(target_user_id, f"الرقم السري هو: {number}")
         bot.reply_to(message, "تم إرسال الرقم السري إلى @k_4x1.")
     else:
         bot.reply_to(message, "لم تبدأ اللعبة بعد. أرسل '/num' لبدء اللعبة.")
