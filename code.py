@@ -71,13 +71,6 @@ def start_search(message):
     bot.reply_to(message, "من فضلك أدخل الكلمة التي تريد البحث عنها:")
     searching_state[message.chat.id] = True 
 
-@bot.message_handler(func=lambda message: searching_state.get(message.chat.id, False))
-def search(message):
-    search_term = message.text.strip()  
-    if not search_term:
-        bot.reply_to(message, "من فضلك أدخل الكلمة التي تريد البحث عنها بعد 'ابحث عام'.")
-        return
-
     params = {
         "action": "query",
         "list": "search",
