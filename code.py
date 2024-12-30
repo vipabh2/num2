@@ -13,14 +13,17 @@ from bs4 import BeautifulSoup
 bot_token = os.getenv('BOT_TOKEN')
 bot = telebot.TeleBot(bot_token)
 
+
 url = "https://ar.wikipedia.org/w/api.php"
+
+searching_state = {}
 
 @bot.message_handler(func=lambda message: message.text.strip().lower().startswith('ابحث عن'))
 def cut(message):
     search_term = message.text.strip().lower().replace('ابحث عن', '').strip()
 
     if not search_term:
-        # bot.reply_to(message.chat.id, "من فضلك أدخل الكلمة التي تريد البحث عنها بعد 'ابحث عن'.")
+        bot.reply_to(message, "من فضلك أدخل الكلمة التي تريد البحث عنها بعد 'ابحث عن'.")
         return
     
     params = {
@@ -29,7 +32,7 @@ def cut(message):
         "srsearch": search_term,
         "format": "json",
         "utf8": 1,
-        "srlimit": 3 
+        "srlimit": 3  
     }
     
     response = requests.get(url, params=params)
@@ -38,7 +41,7 @@ def cut(message):
         data = response.json()
         if 'query' in data and 'search' in data['query']:
             if not data['query']['search']:
-                bot.reply_to(message.chat.id, "لا يوجد نتائج لهذا البحث.")
+                bot.reply_to(message, "لا يوجد نتائج لهذا البحث.")
             else:
                 found_exact_match = False
                 for result in data['query']['search']:
@@ -48,32 +51,31 @@ def cut(message):
                         snippet = snippet[:1000] + "..." if len(snippet) > 1000 else snippet
                         article_url = f"https://ar.wikipedia.org/wiki/{result['title']}"
                         
-                        bot.reply_to(message.chat.id, f"عنوان المقال: \n {result['title']}\n"
-                                                          f"المقال: \n {snippet}\n"
-                                                          f"{'-' * 40}")
+                        bot.reply_to(message, f"عنوان المقال: \n {result['title']}\n"
+                                              f"المقال: \n {snippet}\n"
+                                              f"{'-' * 40}")
                 
                 if not found_exact_match:
                     bot.reply_to(
-                        message.chat.id,
+                        message,
                         f"لا يوجد نتائج تطابق {search_term} \n لكن جرب `ابحث عام {search_term}`",
                         parse_mode="Markdown"
                                      )
         else:
-            bot.reply_to(message.chat.id, "حدث خطأ في استجابة API.")
+            bot.reply_to(message, "حدث خطأ في استجابة API.")
     else:
-        bot.reply_to(message.chat.id, f"حدث خطأ في الاتصال بـ Wikipedia. حاول مرة أخرى لاحقًا.")
-            
-searching_state = {}
+        bot.reply_to(message, f"حدث خطأ في الاتصال بـ Wikipedia. حاول مرة أخرى لاحقًا.")
 
 @bot.message_handler(func=lambda message: message.text.strip().lower().startswith('ابحث عام'))
 def start_search(message):
-    bot.reply_to(message.chat.id, "من فضلك أدخل الكلمة التي تريد البحث عنها:")
+    bot.reply_to(message, "من فضلك أدخل الكلمة التي تريد البحث عنها:")
     searching_state[message.chat.id] = True 
 
-
-    search_term = message.text.strip().lower().replace('ابحث عام', '').strip()
+@bot.message_handler(func=lambda message: searching_state.get(message.chat.id, False))
+def search(message):
+    search_term = message.text.strip()  
     if not search_term:
-        bot.reply_to(message.chat.id, "من فضلك أدخل الكلمة التي تريد البحث عنها بعد 'ابحث عن'.")
+        bot.reply_to(message, "من فضلك أدخل الكلمة التي تريد البحث عنها بعد 'ابحث عام'.")
         return
 
     params = {
@@ -82,7 +84,7 @@ def start_search(message):
         "srsearch": search_term,
         "format": "json",
         "utf8": 1,
-        "srlimit": 3 
+        "srlimit": 3  
     }
 
     response = requests.get(url, params=params)
@@ -91,19 +93,19 @@ def start_search(message):
         data = response.json()
         if 'query' in data and 'search' in data['query']:
             if not data['query']['search']:
-                bot.reply_to(message.chat.id, "لم يتم العثور على نتائج لهذا البحث.")
+                bot.reply_to(message, "لم يتم العثور على نتائج لهذا البحث.")
             else:
                 for result in data['query']['search']:
                     snippet = BeautifulSoup(result['snippet'], "html.parser").get_text()
                     snippet = snippet[:1000] + "..." if len(snippet) > 1000 else snippet
                     article_url = f"https://ar.wikipedia.org/wiki/{result['title']}"
-                    bot.reply_to(message.chat.id, f"عنوان المقال: \n {result['title']}\n"
-                                     f"المقال: \n {snippet}\n"
-                                     f"{'-' * 40}")
+                    bot.reply_to(message, f"عنوان المقال: \n {result['title']}\n"
+                                         f"المقال: \n {snippet}\n"
+                                         f"{'-' * 40}")
         else:
-            bot.reply_to(message.chat.id, "حدث خطأ في استجابة API.")
+            bot.reply_to(message, "حدث خطأ في استجابة API.")
     else:
-        bot.reply_to(message.chat.id, f"حدث خطأ: {response.status_code}")
+        bot.reply_to(message, f"حدث خطأ: {response.status_code}")
 
     searching_state[message.chat.id] = False
 
