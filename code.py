@@ -48,7 +48,7 @@ def cut(message):
                     if result['title'].lower() == search_term:
                         found_exact_match = True
                         snippet = BeautifulSoup(result['snippet'], "html.parser").get_text()
-                        snippet = snippet[:1000] + "..." if len(snippet) > 1000 else snippet
+                        snippet = snippet[:1000] + "..." if len(snippet) > 1000 else snippet  # 1000 حرف هنا
                         article_url = f"https://ar.wikipedia.org/wiki/{result['title']}"
                         
                         bot.reply_to(message, f"عنوان المقال: \n {result['title']}\n"
@@ -71,9 +71,11 @@ def start_search(message):
     bot.reply_to(message, "من فضلك أدخل الكلمة التي تريد البحث عنها:")
     searching_state[message.chat.id] = True 
 
-    search_term = message.text.strip().lower().replace('ابحث عام', '').strip()
+@bot.message_handler(func=lambda message: searching_state.get(message.chat.id, False))
+def search(message):
+    search_term = message.text.strip()  
     if not search_term:
-        bot.reply_to(message.chat.id, "من فضلك أدخل الكلمة التي تريد البحث عنها بعد 'ابحث عن'.")
+        bot.reply_to(message, "من فضلك أدخل الكلمة التي تريد البحث عنها بعد 'ابحث عام'.")
         return
 
     params = {
@@ -95,7 +97,7 @@ def start_search(message):
             else:
                 for result in data['query']['search']:
                     snippet = BeautifulSoup(result['snippet'], "html.parser").get_text()
-                    snippet = snippet[:1000] + "..." if len(snippet) > 1000 else snippet
+                    snippet = snippet[:400] + "..." if len(snippet) > 400 else snippet  # 400 حرف هنا
                     article_url = f"https://ar.wikipedia.org/wiki/{result['title']}"
                     bot.reply_to(message, f"عنوان المقال: \n {result['title']}\n"
                                          f"المقال: \n {snippet}\n"
@@ -105,7 +107,7 @@ def start_search(message):
     else:
         bot.reply_to(message, f"حدث خطأ: {response.status_code}")
 
-    searching_state[message.chat.id] = False
+    searching_state[message.chat.id] = False  # Turn off the waiting state
 
 
 @bot.message_handler(func=lambda message: message.text.strip().lower() in ['عاشوراء'])
