@@ -67,13 +67,13 @@ def cut(message):
 
 @bot.message_handler(func=lambda message: message.text.strip().lower().startswith('ابحث عام'))
 def start_search(message):
-    bot.reply_to(message, "من فضلك أدخل الكلمة التي تريد البحث عنها:")
+    # bot.reply_to(message, "من فضلك أدخل الكلمة التي تريد البحث عنها:")
     searching_state[message.chat.id] = True 
 
 
     search_term = message.text.strip().lower().replace('ابحث عام', '').strip()
     if not search_term:
-        # bot.reply_to(message.chat.id, "من فضلك أدخل الكلمة التي تريد البحث عنها بعد 'ابحث عن'.")
+        bot.reply_to(message.chat.id, "من فضلك أدخل الكلمة التي تريد البحث عنها بعد 'ابحث عن'.")
         return
 
     params = {
