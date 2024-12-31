@@ -73,7 +73,7 @@ def start_search(message):
 
     search_term = message.text.strip().lower().replace('ابحث عام', '').strip()
     if not search_term:
-        bot.reply_to(message.chat.id, "من فضلك أدخل الكلمة التي تريد البحث عنها بعد 'ابحث عن'.")
+        # bot.reply_to(message.chat.id, "من فضلك أدخل الكلمة التي تريد البحث عنها بعد 'ابحث عن'.")
         return
 
     params = {
