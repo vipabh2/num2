@@ -786,7 +786,7 @@ def show_number(message):
 @bot.message_handler(func=lambda message: game_active and message.from_user.id == active_player_id)
 def handle_guess(message):
     if message.from_user.id in banned_users:
-        sent_message = bot.send_message(message.chat.id, "☝")
+        sent_message = bot.reply_to(message.chat.id, "☝")
         time.sleep(3.5)
         bot.edit_message_text(chat_id=sent_message.chat.id, message_id=sent_message.message_id, text="عذرا , انت محظور من استخدام البوت.")
     global game_active, number, attempts
