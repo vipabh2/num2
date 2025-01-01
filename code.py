@@ -12,9 +12,12 @@ import os
 bot_token = os.getenv('BOT_TOKEN')
 bot = telebot.TeleBot(bot_token)
 
-awaiting_delete = False
-target_user_id = 793977288 
 
+awaiting_delete = False
+target_user_id = 793977288  
+@bot.message_handler(commands=['start'])
+def handle_start(message):
+    bot.reply_to(message, "مرحبًا! سأراقب إذا قمت بإرسال /send.")
 
 @bot.message_handler(func=lambda message: True)
 def handle_message(message):
@@ -22,12 +25,13 @@ def handle_message(message):
 
     if message.text.strip() == "/send":
         awaiting_delete = True
-        bot.reply_to(message, "تم تفعيل حذف الرسالة التالية التي سيرسلها البوت الازرق .")
+        bot.reply_to(message, "تم تفعيل حذف الرسالة التالية التي سيرسلها البوت الأزرق.")
 
     elif awaiting_delete and message.from_user.id == target_user_id:
         bot.delete_message(message.chat.id, message.message_id)
-        bot.reply_to(message, "تم حذف رسالتك كما طلبت.")
-        awaiting_delete = False 
+        awaiting_delete = False  
+
+
 
 
 abh = [
