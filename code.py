@@ -1,14 +1,14 @@
+from models import add_or_update_user, add_point_to_winner, get_user_score
 import telebot
 from telebot import types
-import telebot.types 
+import telebot.types
+from bs4 import BeautifulSoup
 import requests
 import random
 import time
+from datetime import datetime
 import os
-from models import add_or_update_user, add_point_to_winner, get_user_score
-import telebot
-import requests
-from bs4 import BeautifulSoup
+
 
 bot_token = os.getenv('BOT_TOKEN')
 bot = telebot.TeleBot(bot_token)
@@ -678,8 +678,12 @@ def send_random_file(message):
         sent_message = bot.send_photo(message.chat.id, url, caption="😎يسعد مسائك", reply_to_message_id=message.message_id)
 
 
-# user_points = {}
-banned_users = [1910015590] 
+banned_users = [1910015590]
+game_active = False
+number = None
+max_attempts = 3
+attempts = 0
+active_player_id = None
 
 @bot.message_handler(commands=['start'])
 def handle_start(message):
@@ -707,6 +711,7 @@ def handle_start(message):
         " استمتع! 🎉",
         parse_mode='Markdown'
     )
+user_points = {}
 
 @bot.message_handler(commands=['num'])
 def start(message):
@@ -799,6 +804,7 @@ def handle_guess(message):
     
     except ValueError:
         bot.reply_to(message, "يرجى إدخال رقم صحيح")
+
         
 
 @bot.message_handler(func=lambda message: message.text == 'نقاطي')
