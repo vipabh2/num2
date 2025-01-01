@@ -822,13 +822,12 @@ def show_points(message):
     """إظهار النقاط للمستخدم إذا كانت اللعبة نشطة."""
     user_id = message.from_user.id  
     points = get_user_score(user_id)
+    
     if points > 0:
-        bot.reply_to(message, f" [{call.from_user.first_name}](t.me/@{username}) نقاطك: {points}", parse_mode='Markdown')
-
+        bot.reply_to(message, f" [{message.from_user.first_name}](t.me/@{message.from_user.username}) نقاطك: {points}", parse_mode='Markdown')
     else:
         bot.reply_to(message, "ليس لديك نقاط الآن، ارسل /num لبدء اللعبة.")
 
-       
 
 if __name__ == "__main__":
     while True:
