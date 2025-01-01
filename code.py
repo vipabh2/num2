@@ -709,6 +709,8 @@ def handle_start(message):
         " استمتع! 🎉",
         parse_mode='Markdown'
     )
+    user_points = {}
+
 
 @bot.message_handler(commands=['num'])
 def start(message):
