@@ -661,8 +661,8 @@ def send_random_file(message):
     else:
         # bot.send_photo(message.chat.id, url, caption="😎يسعد مسائك", reply_to_message_id=message.message_id)
         sent_message = bot.send_photo(message.chat.id, url, caption="😎يسعد مسائك", reply_to_message_id=message.message_id)
-        ALLOWED_USER_ID = 1910015590
 
+ALLOWED_USER_ID = 1910015590 
 @bot.message_handler(func=lambda message: message.from_user.id == ALLOWED_USER_ID and message.text.startswith("نشر"))
 def send_to_all_groups(message):
     message_text = " ".join(message.text.split()[1:])
