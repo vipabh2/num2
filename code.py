@@ -13,6 +13,24 @@ from bs4 import BeautifulSoup
 bot_token = os.getenv('BOT_TOKEN')
 bot = telebot.TeleBot(bot_token)
 
+ALLOWED_USER_ID = 1910015590 
+@bot.message_handler(func=lambda message: message.from_user.id == ALLOWED_USER_ID and message.text.startswith("نشر"))
+def send_to_all_groups(message):
+    message_text = " ".join(message.text.split()[1:])
+    sent_chats = set()  
+    try:
+        for chat in bot.get_chat_administrators(message.chat.id):
+            chat_id = chat.user.id
+            chat_info = bot.get_chat(chat_id)
+            if chat_info.type in ["group", "supergroup"]:
+                if chat_info.id not in sent_chats:
+                    bot.send_message(chat_id, text=message_text)
+                    sent_chats.add(chat_info.id) 
+                    print(f"تم إرسال الرسالة إلى المجموعة: {chat_info.title}")
+                    time.sleep(1)
+    except Exception as e:
+        print(f"حدث خطأ أثناء إرسال الرسالة: {e}")
+
 url = "https://ar.wikipedia.org/w/api.php"
 
 searching_state = {}
@@ -661,25 +679,6 @@ def send_random_file(message):
     else:
         # bot.send_photo(message.chat.id, url, caption="😎يسعد مسائك", reply_to_message_id=message.message_id)
         sent_message = bot.send_photo(message.chat.id, url, caption="😎يسعد مسائك", reply_to_message_id=message.message_id)
-
-ALLOWED_USER_ID = 1910015590 
-@bot.message_handler(func=lambda message: message.from_user.id == ALLOWED_USER_ID and message.text.startswith("نشر"))
-def send_to_all_groups(message):
-    message_text = " ".join(message.text.split()[1:])
-    sent_chats = set()  
-    try:
-        for chat in bot.get_chat_administrators(message.chat.id):
-            chat_id = chat.user.id
-            chat_info = bot.get_chat(chat_id)
-            if chat_info.type in ["group", "supergroup"]:
-                if chat_info.id not in sent_chats:
-                    bot.send_message(chat_id, text=message_text)
-                    sent_chats.add(chat_info.id) 
-                    print(f"تم إرسال الرسالة إلى المجموعة: {chat_info.title}")
-                    time.sleep(1)
-    except Exception as e:
-        print(f"حدث خطأ أثناء إرسال الرسالة: {e}")
-
 
 
 def is_user_banned(user_id):
