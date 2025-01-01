@@ -676,8 +676,9 @@ def send_random_file(message):
     else:
         # bot.send_photo(message.chat.id, url, caption="😎يسعد مسائك", reply_to_message_id=message.message_id)
         sent_message = bot.send_photo(message.chat.id, url, caption="😎يسعد مسائك", reply_to_message_id=message.message_id)
-
-
+def is_user_banned(user_id):
+    return user_id in banned_users
+user_points = {}
 banned_users = []
 game_active = False
 number = None
