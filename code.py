@@ -678,7 +678,7 @@ def send_random_file(message):
         sent_message = bot.send_photo(message.chat.id, url, caption="😎يسعد مسائك", reply_to_message_id=message.message_id)
 
 
-banned_users = [1910015590]
+banned_users = []
 game_active = False
 number = None
 max_attempts = 3
@@ -709,7 +709,6 @@ def handle_start(message):
         " استمتع! 🎉",
         parse_mode='Markdown'
     )
-# user_points = {}
 
 @bot.message_handler(commands=['num'])
 def start(message):
