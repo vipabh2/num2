@@ -5,7 +5,7 @@ import requests
 import random
 import time
 import os
-from models import add_or_update_user, add_point_to_winner, get_user_score # type: ignore
+from models import add_or_update_user, add_point_to_winner, get_user_score
 import telebot
 import requests
 from bs4 import BeautifulSoup
