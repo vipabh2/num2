@@ -19,7 +19,7 @@ abh = [
     "قُل",
     "😶"
 ]
-@bot.message_handler(func=lambda message: message.text.strip().lower().startswith('مخفي', 'المخفي', 'انيموس', 'Anymous' ))
+@bot.message_handler(func=lambda message: message.text.strip().lower().startswith(('مخفي', 'المخفي', 'انيموس', 'anymous')))
 def reply(messag):
     vipabh = random.choice(abh)
 bot.reply_to(message, vipabh)
