@@ -9,9 +9,30 @@ import time
 from datetime import datetime
 import os
 
-
 bot_token = os.getenv('BOT_TOKEN')
 bot = telebot.TeleBot(bot_token)
+import telebot
+from telebot import types
+
+bot = telebot.TeleBot('YOUR_BOT_TOKEN')
+
+awaiting_delete = False
+target_user_id = 793977288 
+
+
+@bot.message_handler(func=lambda message: True)
+def handle_message(message):
+    global awaiting_delete
+
+    if message.text.strip() == "/send":
+        awaiting_delete = True
+        bot.reply_to(message, "تم تفعيل حذف الرسالة التالية التي سيرسلها البوت الازرق .")
+
+    elif awaiting_delete and message.from_user.id == target_user_id:
+        bot.delete_message(message.chat.id, message.message_id)
+        bot.reply_to(message, "تم حذف رسالتك كما طلبت.")
+        awaiting_delete = False 
+
 
 abh = [
     "ها",
