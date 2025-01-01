@@ -13,17 +13,16 @@ bot_token = os.getenv('BOT_TOKEN')
 bot = telebot.TeleBot(bot_token)
 
 
-awaiting_delete = False
-target_user_id = 793977288 
 
-
+@bot.message_handler(func=lambda message: message.text == '/send')
+def handle_send(message):
+    global awaiting_delete
+    awaiting_delete = True
 @bot.message_handler(func=lambda message: True)
 def handle_message(message):
     global awaiting_delete
 
-    if message.text.strip() == "/send":
-        awaiting_delete = True
-    elif awaiting_delete and message.from_user.id == target_user_id:
+    if awaiting_delete and message.from_user.id == target_user_id:
         bot.delete_message(message.chat.id, message.message_id)
         awaiting_delete = False 
 
