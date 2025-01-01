@@ -12,6 +12,17 @@ from bs4 import BeautifulSoup
 
 bot_token = os.getenv('BOT_TOKEN')
 bot = telebot.TeleBot(bot_token)
+abh = [
+    "ها",
+    "شرايد",
+    "تفظل",
+    "قُل",
+    "😶"
+]
+@bot.message_handler(func=lambda message: message.text.strip().lower().startswith('مخفي', 'المخفي', 'انيموس', 'Anymous' ))
+def reply():
+    vipabh = random.choice(abh)
+bot.reply_to(message, vipabh)
 
 url = "https://ar.wikipedia.org/w/api.php"
 
@@ -19,7 +30,7 @@ searching_state = {}
 
 @bot.message_handler(func=lambda message: message.text.strip().lower().startswith('ابحث عن'))
 def cut(message):
-    search_term = message.text.strip().lower().replace('ابحث عن', '').strip()
+    search_term = message.text.strip().lower().replace('ابحث عن').strip()
 
     if not search_term:
         bot.reply_to(message, "من فضلك أدخل الكلمة التي تريد البحث عنها بعد 'ابحث عن'.")
