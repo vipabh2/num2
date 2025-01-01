@@ -18,13 +18,16 @@ abh = [
     "شرايد",
     "تفظل",
     "قُل",
-    "😶"
+    "😶",
+    "https://t.me/VIPABH/1214"
 ]
 @bot.message_handler(func=lambda message: message.text.strip().lower().startswith(('مخفي', 'المخفي', 'انيموس', 'anymous')))
 def reply(message):
     vipabh = random.choice(abh)
-    bot.reply_to(message, vipabh)
-    
+    if vipabh.startswith("http"):
+        bot.send_voice(message.chat.id, vipabh, reply_to_message_id=message.message_id)
+    else:
+        bot.reply_to(message, vipabh)
 url = "https://ar.wikipedia.org/w/api.php"
 
 searching_state = {}
