@@ -719,7 +719,11 @@ def start(message):
 
     if time_difference > 20:
         return 
-
+    if message.from_user.id in banned_users:
+        sent_message = bot.reply_to(message, "☝")        
+        time.sleep(3.5)
+        bot.edit_message_text(chat_id=sent_message.chat.id, message_id=sent_message.message_id, text="عذرا , انت محظور من استخدام البوت.")
+        return
     global game_active, attempts, active_player_id
     game_active = False
     attempts = 0
