@@ -12,6 +12,7 @@ from bs4 import BeautifulSoup
 
 bot_token = os.getenv('BOT_TOKEN')
 bot = telebot.TeleBot(bot_token)
+
 abh = [
     "ها",
     "شرايد",
@@ -20,10 +21,10 @@ abh = [
     "😶"
 ]
 @bot.message_handler(func=lambda message: message.text.strip().lower().startswith(('مخفي', 'المخفي', 'انيموس', 'anymous')))
-def reply(messag):
+def reply(message):
     vipabh = random.choice(abh)
-bot.reply_to(message.chat_id, vipabh)
-
+    bot.reply_to(message, vipabh)
+    
 url = "https://ar.wikipedia.org/w/api.php"
 
 searching_state = {}
