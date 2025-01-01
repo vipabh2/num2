@@ -678,31 +678,25 @@ def send_random_file(message):
         sent_message = bot.send_photo(message.chat.id, url, caption="😎يسعد مسائك", reply_to_message_id=message.message_id)
 
 
-def is_user_banned(user_id):
-    return user_id in banned_users
-banned_users = [1910015590]
-
-game_active = False
-number = None
-max_attempts = 3
-attempts = 0
-active_player_id = None
-from datetime import datetime
+# user_points = {}
+banned_users = [1910015590] 
 
 @bot.message_handler(commands=['start'])
 def handle_start(message):
     current_time = datetime.now()
     message_time = datetime.fromtimestamp(message.date) 
     time_difference = (current_time - message_time).total_seconds()
+
     if time_difference > 20:
         return 
-
     if message.from_user.id in banned_users:
         sent_message = bot.reply_to(message, "☝")        
         time.sleep(3.5)
         bot.edit_message_text(chat_id=sent_message.chat.id, message_id=sent_message.message_id, text="عذرا , انت محظور من استخدام البوت.")
         return
-
+    
+    bot.reply_to(message, "أهلاً بك في البوت! 😊")
+    
     bot.reply_to(
         message,
         "أهلاً حياك الله! \n"
@@ -713,7 +707,6 @@ def handle_start(message):
         " استمتع! 🎉",
         parse_mode='Markdown'
     )
-user_points = {}
 
 @bot.message_handler(commands=['num'])
 def start(message):
@@ -723,11 +716,7 @@ def start(message):
 
     if time_difference > 20:
         return 
-    if message.from_user.id in banned_users:
-        sent_message = bot.send_message(message.chat.id, "☝")
-        time.sleep(3.5)
-        bot.edit_message_text(chat_id=sent_message.chat.id, message_id=sent_message.message_id, text="عذرا , انت محظور من استخدام البوت.")
-        return
+
     global game_active, attempts, active_player_id
     game_active = False
     attempts = 0
@@ -745,12 +734,6 @@ def start(message):
     )
 @bot.callback_query_handler(func=lambda call: call.data == "start_game")
 def start_game(call):
-    if call.from_user.id in banned_users:
-        sent_message = bot.send_message(message.chat.id, "☝")
-        time.sleep(3.5)
-        bot.edit_message_text(chat_id=sent_message.chat.id, message_id=sent_message.message_id, text="عذرا , انت محظور من استخدام البوت.")
-        return
-        
     global game_active, number, attempts, active_player_id
     if not game_active:
         number = random.randint(1, 10)
@@ -784,11 +767,6 @@ def show_number(message):
                 
 @bot.message_handler(func=lambda message: game_active and message.from_user.id == active_player_id)
 def handle_guess(message):
-    if message.from_user.id in banned_users:
-        sent_message = bot.send_message(message.chat.id, "☝")
-        time.sleep(3.5)
-        bot.edit_message_text(chat_id=sent_message.chat.id, message_id=sent_message.message_id, text="عذرا , انت محظور من استخدام البوت.")
-        return
     global game_active, number, attempts
     try:
         guess = int(message.text)
