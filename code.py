@@ -1,11 +1,11 @@
 import telebot
 from telebot import types
-from telebot.types import InlineKeyboardMarkup, InlineKeyboardButton
+import telebot.types 
 import requests
 import random
 import time
 import os
-import sqlite3
+from models import add_or_update_user, add_point_to_winner, get_user_score # type: ignore
 import telebot
 import requests
 from bs4 import BeautifulSoup
@@ -793,14 +793,18 @@ def handle_guess(message):
         attempts += 1
 
         if guess == number:
-            if message.from_user.id not in user_points:
+            add_or_update_user(message.from_user.id, message.from_user.username)
+        add_point_to_winner(message.from_user.id)
+
+        points = get_user_score(message.from_user.id)
+        if message.from_user.id not in user_points:
                 user_points[message.from_user.id] = 0  
-            user_points[message.from_user.id] += 1 
-            bot.reply_to(message, "مُبارك فزتها بفخر 🥳")
-            won = "t.me/VIPABH/2"
-            bot.send_voice(message.chat.id, won)
-            bot.reply_to(message,  "🥳")
-            game_active = False
+                user_points[message.from_user.id] += 1 
+                bot.reply_to(message, "مُبارك فزتها بفخر 🥳")
+                won = "t.me/VIPABH/2"
+                bot.send_voice(message.chat.id, won)
+                bot.reply_to(message,  "🥳")
+                game_active = False
         elif attempts >= max_attempts:
             bot.reply_to(message, f"للأسف، لقد نفدت محاولاتك. الرقم الصحيح هو {number}.🌚")
             lose = "t.me/VIPABH/23"
@@ -812,13 +816,17 @@ def handle_guess(message):
     except ValueError:
         bot.reply_to(message, "يرجى إدخال رقم صحيح")
         
+
 @bot.message_handler(func=lambda message: message.text == 'ن')
 def show_points(message):
     """إظهار النقاط للمستخدم إذا كانت اللعبة نشطة."""
-    if message.from_user.id in user_points:
-        bot.reply_to(message, f"نقاطك: {user_points[message.from_user.id]}")
+    user_id = message.from_user.id  
+    points = get_user_score(user_id)
+    if points > 0:
+        bot.reply_to(message, f"نقاطك: {points}")
     else:
-        bot.reply_to(message, "ليس لديك نقاط الان , ارسل /num لبدء اللعبة")
+        bot.reply_to(message, "ليس لديك نقاط الآن، ارسل /num لبدء اللعبة.")
+
        
 
 if __name__ == "__main__":
