@@ -824,7 +824,7 @@ def show_points(message):
     points = get_user_score(user_id)
     
     if points > 0:
-        bot.reply_to(message, f" [{message.from_user.first_name}](t.me/@{message.from_user.username}) نقاطك: {points}", parse_mode='Markdown')
+        bot.reply_to(message, f" عزيزي [{message.from_user.first_name}](t.me/@{message.from_user.username}) نقاطك: {points}", parse_mode='Markdown')
     else:
         bot.reply_to(message, "ليس لديك نقاط الآن، ارسل /num لبدء اللعبة.")
 
