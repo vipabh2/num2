@@ -22,7 +22,7 @@ abh = [
 @bot.message_handler(func=lambda message: message.text.strip().lower().startswith(('مخفي', 'المخفي', 'انيموس', 'anymous')))
 def reply(messag):
     vipabh = random.choice(abh)
-bot.reply_to(message, vipabh)
+bot.reply_to(message.chat_id, vipabh)
 
 url = "https://ar.wikipedia.org/w/api.php"
 
