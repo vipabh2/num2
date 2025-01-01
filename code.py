@@ -699,8 +699,6 @@ def handle_start(message):
         bot.edit_message_text(chat_id=sent_message.chat.id, message_id=sent_message.message_id, text="عذرا , انت محظور من استخدام البوت.")
         return
     
-    bot.reply_to(message, "أهلاً بك في البوت! 😊")
-    
     bot.reply_to(
         message,
         "أهلاً حياك الله! \n"
@@ -711,7 +709,7 @@ def handle_start(message):
         " استمتع! 🎉",
         parse_mode='Markdown'
     )
-user_points = {}
+# user_points = {}
 
 @bot.message_handler(commands=['num'])
 def start(message):
@@ -807,7 +805,7 @@ def handle_guess(message):
 
         
 
-@bot.message_handler(func=lambda message: message.text == 'نقاطي')
+@bot.message_handler(func=lambda message: message.text == 'النقاط')
 def show_points(message):
     """إظهار النقاط للمستخدم إذا كانت اللعبة نشطة."""
     user_id = message.from_user.id  
