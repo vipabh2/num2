@@ -13,11 +13,6 @@ bot_token = os.getenv('BOT_TOKEN')
 bot = telebot.TeleBot(bot_token)
 
 
-import telebot
-from telebot import types
-
-bot = telebot.TeleBot('YOUR_BOT_TOKEN')
-
 awaiting_delete = False
 target_user_id = 793977288 
 
