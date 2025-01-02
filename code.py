@@ -15,29 +15,16 @@ bot = telebot.TeleBot(bot_token)
 
 
 user_id_to_delete = 1910015590
-delete_messages = False 
-first_message = None 
-
 @bot.message_handler(commands=['send'])
-def del_command(message):
-    global delete_messages, first_message
-    delete_messages = True
-    first_message = None 
-    bot.send_message(message.chat.id, "تم تفعيل حذف أول رسالة من المستخدم.")
+def del(message):
 
-@bot.message_handler(func=lambda message: delete_messages and message.from_user.id == user_id_to_delete)
+@bot.message_handler(func=lambda message: message.from_user.id == user_id_to_delete)
 def delete_user_messages(message):
-    global first_message
-    if not first_message:
-        first_message = message
-    else:
-        try:
-    
-            bot.delete_message(first_message.chat.id, first_message.message_id)
-            bot.send_message(message.chat.id, "تم حذف أول رسالة من المستخدم.")
-            first_message = None 
-        except Exception as e:
-            print(f"حدث خطأ أثناء محاولة حذف الرسالة: {e}")
+    try:
+        bot.delete_message(message.chat.id, message.message_id)
+        print(f"تم حذف الرسالة من المستخدم {user_id_to_delete} بنجاح.")
+    except Exception as e:
+        print(f"حدث خطأ أثناء محاولة حذف الرسالة: {e}")
 
 
 
