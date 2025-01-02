@@ -11,4 +11,4 @@ BASE = declarative_base()
 SessionLocal = sessionmaker(bind=engine)
 SESSION = SessionLocal()
 if not DATABASE_URL:
-    print("(رابط قاعده البيانات غير موجود"
+    print("(رابط قاعده البيانات غير موجود"))
