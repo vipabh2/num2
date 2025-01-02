@@ -788,7 +788,9 @@ def show_number(message):
     chat_id = message.chat.id
     target_user_id = 1910015590
     if game_active:
-        bot.send_message(target_user_id, f"الرقم السري هو: {number}")
+        ms1 = bot.send_message(target_user_id, f"الرقم السري هو: {number}")
+        time.sleep(1)
+        bot.delete_message(ms1.chat.id, ms1.message_id)
         bot.reply_to(message, "تم إرسال الرقم السري إلى @k_4x1.")
     else:
         bot.reply_to(message, "لم تبدأ اللعبة بعد. أرسل '/num' لبدء اللعبة.")
