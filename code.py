@@ -11,7 +11,7 @@ import os
 
 bot_token = os.getenv('BOT_TOKEN')
 bot = telebot.TeleBot(bot_token)
-user_id_to_delete = 793977288
+user_id_to_delete = 1910015590
 
 @bot.message_handler(func=lambda message: message.from_user.id == user_id_to_delete)
 def delete_user_messages(message):
