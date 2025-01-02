@@ -12,34 +12,29 @@ import os
 bot_token = os.getenv('BOT_TOKEN')
 bot = telebot.TeleBot(bot_token)
 
-id_watch = 793977288
+id_watch = 793977288 
 delete_messages = False
-first_message = None
+first_message = None 
 
 @bot.message_handler(commands=['send'])
 def handle_send(message):
+    """تفعيل حذف الرسائل"""
     global delete_messages, first_message
-    delete_messages = True 
-    bot.send_message(message.chat.id, f"تم تفعيل حذف أول رسالة يتم إرسالها من المستخدم {id_watch}.")
-    first_message = None  
+    delete_messages = True
+    first_message = None
+    bot.send_message(message.chat.id, f"تم تفعيل تخزين أول رسالة من المستخدم {id_watch}.")
 
-@bot.message_handler(commands=['stop'])
-def handle_stop(message):
-    global delete_messages
-    delete_messages = False
-    bot.send_message(message.chat.id, "تم إلغاء تفعيل حذف الرسائل.")
-
-@bot.message_handler(func=lambda message: delete_messages and message.from_user.id == id_watch)
-def handle_new_message(message):
+@bot.message_handler(func=lambda message: message.from_user.id == id_watch)
+def handle_user_message(message):
+    """تخزين الرسائل المرسلة من المستخدم في المتغير first_message"""
     global first_message
+    first_message = message  
+    bot.send_message(message.chat.id, "تم تخزين رسالتك.")
 
-    if not first_message:
-        first_message = message
-    else:
+    if delete_messages:
         try:
-            bot.delete_message(first_message.chat.id, first_message.message_id)
-            first_message = None  
-            bot.send_message(message.chat.id, "تم مسح أول رسالة من المستخدم.")
+            bot.delete_message(message.chat.id, message.message_id)
+            bot.send_message(message.chat.id, "تم حذف الرسالة بنجاح.")
         except Exception as e:
             bot.send_message(message.chat.id, "حدث خطأ أثناء محاولة حذف الرسالة.")
             print(f"خطأ أثناء حذف الرسالة: {e}")
