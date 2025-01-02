@@ -21,7 +21,7 @@ def handle_send(message):
     global delete_messages, first_message
     delete_messages = True 
     bot.send_message(message.chat.id, "تم تفعيل حذف أول رسالة من المستخدم 793977288.")
-    first_message = None  
+    # first_message = None  
 @bot.message_handler(func=lambda message: delete_messages and message.from_user.id == user_id_to_watch)
 def handle_new_message(message):
     global first_message
