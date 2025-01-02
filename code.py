@@ -12,32 +12,15 @@ import os
 bot_token = os.getenv('BOT_TOKEN')
 bot = telebot.TeleBot(bot_token)
 
-id_watch = 793977288 
-delete_messages = False
-first_message = None 
+user_id_to_delete = 1910015590
 
-@bot.message_handler(commands=['send'])
-def handle_send(message):
-    """تفعيل حذف الرسائل"""
-    global delete_messages, first_message
-    delete_messages = True
-    first_message = None
-    bot.send_message(message.chat.id, f"تم تفعيل تخزين أول رسالة من المستخدم {id_watch}.")
-
-@bot.message_handler(func=lambda message: message.from_user.id == id_watch)
-def handle_user_message(message):
-    """تخزين الرسائل المرسلة من المستخدم في المتغير first_message"""
-    global first_message
-    first_message = message  
-    bot.send_message(message.chat.id, "تم تخزين رسالتك.")
-
-    if delete_messages:
-        try:
-            bot.delete_message(message.chat.id, message.message_id)
-            bot.send_message(message.chat.id, "تم حذف الرسالة بنجاح.")
-        except Exception as e:
-            bot.send_message(message.chat.id, "حدث خطأ أثناء محاولة حذف الرسالة.")
-            print(f"خطأ أثناء حذف الرسالة: {e}")
+@bot.message_handler(func=lambda message: message.from_user.id == user_id_to_delete)
+def delete_user_messages(message):
+    try:
+        bot.delete_message(message.chat.id, message.message_id)
+        print(f"تم حذف الرسالة من المستخدم {user_id_to_delete} بنجاح.")
+    except Exception as e:
+        print(f"حدث خطأ أثناء محاولة حذف الرسالة: {e}")
 
 
 
