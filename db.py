@@ -10,5 +10,4 @@ engine = create_engine(DATABASE_URL, echo=False)
 BASE = declarative_base()
 SessionLocal = sessionmaker(bind=engine)
 SESSION = SessionLocal()
-if not DATABASE_URL:
-    print("رابط قاعده البيانات غير موجود")
+
