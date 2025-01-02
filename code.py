@@ -26,13 +26,15 @@ def delete_user_messages(message):
         except Exception as e:
             print(f"حدث خطأ أثناء محاولة حذف الرسالة: {e}")
 
-@bot.message_handler(func=lambda message: message.from_user.id == bot_id_to_delete)
-def delete_bot_messages(message):
+@bot.message_handler(func=lambda message: message.from_user.id != bot.id)
+def delete_other_bots_messages(message):
     try:
-        bot.delete_message(message.chat.id, message.message_id)
-        print(f"تم حذف الرسالة من البوت {bot_id_to_delete} بنجاح.")
+        if message.from_user.is_bot:
+            bot.delete_message(message.chat.id, message.message_id)
+            print(f"تم حذف رسالة البوت {message.from_user.id}.")
     except Exception as e:
-        print(f"حدث خطأ أثناء محاولة حذف الرسالة: {e}")
+        print(f"حدث خطأ أثناء محاولة حذف رسالة البوت: {e}")
+
 
 
 
