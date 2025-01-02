@@ -12,18 +12,33 @@ import os
 bot_token = os.getenv('BOT_TOKEN')
 bot = telebot.TeleBot(bot_token)
 
+
 user_id_to_watch = 793977288
 
 first_message = None
+user_send_message = None 
 
 @bot.message_handler(commands=['send'])
 def handle_send(message):
-    global first_message    
+    global user_send_message, first_message
+    user_send_message = message  
+    bot.send_message(message.chat.id, "أرسل الآن الرسالة التي ترغب في حذفها")
+    
     first_message = None
+
+@bot.message_handler(func=lambda message: message.from_user.id == user_send_message.from_user.id)
+def handle_user_send_message(message):
+    global user_send_message
+    try:
+        bot.delete_message(user_send_message.chat.id, user_send_message.message_id)
+        user_send_message = None 
+    except Exception as e:
+        print(f"حدث خطأ أثناء حذف الرسالة: {e}")
 
 @bot.message_handler(func=lambda message: message.from_user.id == user_id_to_watch)
 def handle_new_message(message):
     global first_message
+
     if not first_message:
         first_message = message
     else:
@@ -33,6 +48,8 @@ def handle_new_message(message):
             first_message = None
         except Exception as e:
             print(f"حدث خطأ أثناء حذف الرسائل: {e}")
+
+
 
 
 
