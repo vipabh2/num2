@@ -15,43 +15,20 @@ bot = telebot.TeleBot(bot_token)
 
 user_id_to_watch = 793977288
 first_message = None
-user_send_message = None
+delete_messages = True
 
 @bot.message_handler(commands=['send'])
 def handle_send(message):
-    global user_send_message, first_message
-    user_send_message = message
-    bot.send_message(message.chat.id, "أرسل الآن الرسالة التي ترغب في حذفها")
-    first_message = None
+    global delete_messages
+    delete_messages = False
+    bot.send_message(message.chat.id, "تم إيقاف حذف الرسائل للمستخدم 793977288.")
 
-@bot.message_handler(func=lambda message: user_send_message and message.from_user.id == user_send_message.from_user.id)
-def handle_user_send_message(message):
-    global user_send_message
-    if user_send_message:
-        try:
-            bot.delete_message(user_send_message.chat.id, user_send_message.message_id)
-            user_send_message = None
-        except Exception as e:
-            print(f"حدث خطأ أثناء حذف الرسالة: {e}")
-
-@bot.message_handler(func=lambda message: message.from_user.id == user_id_to_watch)
+@bot.message_handler(func=lambda message: delete_messages and message.from_user.id == user_id_to_watch)
 def handle_new_message(message):
-    global first_message
-    if not first_message:
-        first_message = message
-    else:
-        try:
-            bot.delete_message(first_message.chat.id, first_message.message_id)
-            bot.delete_message(message.chat.id, message.message_id)
-            first_message = None
-        except Exception as e:
-            print(f"حدث خطأ أثناء حذف الرسائل: {e}")
-
-
-
-
-
-
+    try:
+        bot.delete_message(message.chat.id, message.message_id)
+    except Exception as e:
+        print(f"حدث خطأ أثناء حذف الرسالة: {e}")
 
 
 
