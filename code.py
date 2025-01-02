@@ -13,18 +13,13 @@ bot_token = os.getenv('BOT_TOKEN')
 bot = telebot.TeleBot(bot_token)
 
 
-
-@bot.message_handler(func=lambda message: message.text == '/send')
+@bot.message_handler(commands=['send'])
 def handle_send(message):
-    global awaiting_delete
-    awaiting_delete = True
-@bot.message_handler(func=lambda message: True)
-def handle_message(message):
-    global awaiting_delete
-
-    if awaiting_delete and message.from_user.id == target_user_id:
-        bot.delete_message(message.chat.id, message.message_id)
-        awaiting_delete = False 
+    def wait_for_message(msg):
+        return msg.from_user.id == message.from_user.id
+    bot.send_message(message.chat.id, "أرسل الآن الرسالة التي ترغب في حذفها")
+    new_message = bot.wait_for_message(func=wait_for_message)
+    bot.delete_message(new_message.chat.id, new_message.message_id)
 
 
 abh = [
