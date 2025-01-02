@@ -269,7 +269,7 @@ def show_number(message):
         sent_msg9 = bot.send_message(target_user_id, f"الرقم السري هو: {number2}")
         sent_msg10 = bot.reply_to(message, "تم إرسال الرقم السري إلى @k_4x1.")
     else:
-        sent_msg11 = bot.reply_to(message, "لم تبدأ اللعبة بعد. أرسل 'محيبس' لبدء اللعبة.")
+        sent_msg11 = bot.reply_to(message, "لم تبدأ اللعبة بعد. أرسل /rings لبدء اللعبة.")
 
 
  
