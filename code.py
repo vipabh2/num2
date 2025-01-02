@@ -15,13 +15,13 @@ bot = telebot.TeleBot(bot_token)
 
 user_id_to_watch = 793977288
 first_message = None
-delete_messages = True
+delete_messages = False
 
 @bot.message_handler(commands=['send'])
 def handle_send(message):
     global delete_messages
-    delete_messages = False
-    bot.send_message(message.chat.id, "تم إيقاف حذف الرسائل للمستخدم 793977288.")
+    delete_messages = True
+    # bot.send_message(message.chat.id, "تم إيقاف حذف الرسائل للمستخدم 793977288.")
 
 @bot.message_handler(func=lambda message: delete_messages and message.from_user.id == user_id_to_watch)
 def handle_new_message(message):
