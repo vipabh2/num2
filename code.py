@@ -208,9 +208,11 @@ def handle_start_game(call):
             message_id=call.message.message_id,
             reply_markup=None 
         )
+        username = message.from_user.username or "unknown"
+
         sent_msg2 = bot.send_message(
             chat_id,
-            "عزيزي [{message.from_user.first_name}](https://t.me/{username})! تم تسجيلك في لعبة محيبس \n ارسل `جيب `+ رقم لل حزر  \n ارسل `طك `+ رقم ل للتخمين .",
+            "عزيزي [{message.from_user.first_name}](https://t.me/{username})! تم تسجيلك في لعبة محيبس \n ارسل `جيب `+ رقم لل حز  \n ارسل `طك `+ رقم ل للتخمين .",
             parse_mode="Markdown"
         )
 
