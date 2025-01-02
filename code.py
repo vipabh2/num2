@@ -210,7 +210,8 @@ def handle_start_game(call):
         )
         sent_msg2 = bot.send_message(
             chat_id,
-            "تم تسجيلك في لعبة محيبس \n ملاحظة: لفتح العضمة ارسل طك ورقم العضمة لأخذ المحبس أرسل جيب ورقم العضمة."
+            "عزيزي [{message.from_user.first_name}](https://t.me/{username})! تم تسجيلك في لعبة محيبس \n ارسل `جيب `+ رقم لل حزر  \n ارسل `طك `+ رقم ل للتخمين .",
+            parse_mode="Markdown"
         )
 
 @bot.message_handler(regexp=r'جيب (\d+)')
