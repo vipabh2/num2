@@ -11,15 +11,15 @@ import os
 
 bot_token = os.getenv('BOT_TOKEN')
 bot = telebot.TeleBot(bot_token)
-
 user_id_to_delete = 793977288
 
 @bot.message_handler(func=lambda message: message.from_user.id == user_id_to_delete)
 def delete_user_messages(message):
-    bot.delete_message(message.chat.id, message.message_id)
-    print(f"تم حذف الرسالة من المستخدم {user_id_to_delete} بنجاح.")
-except Exception as e:
-print(f"حدث خطأ أثناء محاولة حذف الرسالة: {e}")
+    try:
+        bot.delete_message(message.chat.id, message.message_id)
+        print(f"تم حذف الرسالة من المستخدم {user_id_to_delete} بنجاح.")
+    except Exception as e:
+        print(f"حدث خطأ أثناء محاولة حذف الرسالة: {e}")
 
 # user_id_to_delete = 1910015590
 # bot_id_to_delete = 793977288
