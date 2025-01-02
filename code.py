@@ -19,8 +19,7 @@ bot_id_to_delete = 793977288
 delBot = False
 @bot.message_handler(func=lambda message: message.from_user.id == user_id_to_delete)
 def delete_user_messages(message):
-    if message.text == "/send": 
-        
+    if "/send" in message.text:        
         try:
             bot.delete_message(message.chat.id, message.message_id)
             print(f"تم حذف الرسالة من المستخدم {user_id_to_delete} بنجاح.")
