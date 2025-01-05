@@ -17,13 +17,6 @@ api_hash = os.getenv('API_HASH')
 bot_token = os.getenv('BOT_TOKEN') 
 client = TelegramClient('n', api_id, api_hash).start(bot_token=bot_token)
 #######################################################################################
-
-import random
-from telethon import TelegramClient, events
-
-# Ensure you have initialized your Telegram client properly
-client = TelegramClient('session_name', api_id, api_hash)
-
 abh = [
     "ها",
     "شرايد",
@@ -33,10 +26,7 @@ abh = [
     "https://t.me/VIPABH/1214"
 ]
 
-@client.on(events.NewMessage(func=lambda e: e.text and (
-    'مخفي' in e.text.strip().lower() or 
-    'المخفي' in e.text.strip().lower() or 
-    'انيموس' in e.text.strip().lower())))
+@client.on(events.NewMessage(func=lambda e: e.text and any(word in e.text.strip().lower() for word in ['مخفي', 'المخفي', 'انيموس'])))
 async def reply(event):
     vipabh = random.choice(abh)
     # if vipabh.startswith("http"):
