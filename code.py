@@ -1,39 +1,22 @@
+from telethon import TelegramClient, events, Button
 from models import add_or_update_user, add_point_to_winner, get_user_score
-import telebot
-from telebot import types
-import telebot.types
 from bs4 import BeautifulSoup
 import requests
 import random
 import time
 from datetime import datetime
 import os
-
-bot_token = os.getenv('BOT_TOKEN')
-bot = telebot.TeleBot(bot_token)
-
-# user_id_to_delete = 1910015590
-# bot_id_to_delete = 793977288
-# delBot = False
-# @bot.message_handler(func=lambda message: message.from_user.id == user_id_to_delete)
-# def delete_user_messages(message):
-#     if "/send" in message.text:        
-#         try:
-#             bot.delete_message(message.chat.id, message.message_id)
-#             print(f"تم حذف الرسالة من المستخدم {user_id_to_delete} بنجاح.")
-#         except Exception as e:
-#             print(f"حدث خطأ أثناء محاولة حذف الرسالة: {e}")
-
-# @bot.message_handler(func=lambda message: message.from_user.id != bot.id)
-# def delete_other_bots_messages(message):
-#     try:
-#         if message.from_user.is_bot:
-#             bot.delete_message(message.chat.id, message.message_id)
-#             print(f"تم حذف رسالة البوت {message.from_user.id}.")
-#     except Exception as e:
-#         print(f"حدث خطأ أثناء محاولة حذف رسالة البوت: {e}")
-
-
+import random
+import asyncio
+from telethon import TelegramClient, events
+from telethon.tl.types import InputMediaPhoto
+from telethon.tl.custom import Button
+#########
+api_id = os.getenv('API_ID')      
+api_hash = os.getenv('API_HASH')  
+bot_token = os.getenv('BOT_TOKEN') 
+client = TelegramClient('n', api_id, api_hash).start(bot_token=bot_token)
+#######################################################################################
 abh = [
     "ها",
     "شرايد",
@@ -42,25 +25,27 @@ abh = [
     "😶",
     "https://t.me/VIPABH/1214"
 ]
-@bot.message_handler(func=lambda message: message.text.strip().lower().startswith(('مخفي', 'المخفي', 'انيموس', 'anymous')))
-def reply(message):
+########################################################
+@client.on(events.NewMessage(func=lambda e: e.text and (
+    'مخفي' in e.text.strip().lower() or 
+    'المخفي' in e.text.strip().lower() or
+    'انيموس' in e.text.strip().lower())))
+async def reply(event):
     vipabh = random.choice(abh)
     if vipabh.startswith("http"):
-        bot.send_voice(message.chat.id, vipabh, reply_to_message_id=message.message_id)
+        await event.reply(file=vipabh)
     else:
-        bot.reply_to(message, vipabh)
+        await event.reply(vipabh)
+########################################################
 url = "https://ar.wikipedia.org/w/api.php"
-
 searching_state = {}
-
-@bot.message_handler(func=lambda message: message.text.strip().lower().startswith('ابحث عن'))
-def cut(message):
-    search_term = message.text.strip().lower().replace('ابحث عن').strip()
+@client.on(events.NewMessage(func=lambda e: e.text and e.text.strip().lower().startswith('ابحث عن')))
+async def cut(event):
+    search_term = event.text.strip().lower().replace('ابحث عن', '').strip()
 
     if not search_term:
-        bot.reply_to(message, "من فضلك أدخل الكلمة التي تريد البحث عنها بعد 'ابحث عن'.")
+        await event.reply("من فضلك أدخل الكلمة التي تريد البحث عنها بعد 'ابحث عن'.")
         return
-    
     params = {
         "action": "query",
         "list": "search",
@@ -69,14 +54,12 @@ def cut(message):
         "utf8": 1,
         "srlimit": 3  
     }
-    
-    response = requests.get(url, params=params)
-        
+    response = requests.get(url, params=params)   
     if response.status_code == 200:
         data = response.json()
         if 'query' in data and 'search' in data['query']:
             if not data['query']['search']:
-                bot.reply_to(message, "لا يوجد نتائج لهذا البحث.")
+                await event.reply("لا يوجد نتائج لهذا البحث.")
             else:
                 found_exact_match = False
                 for result in data['query']['search']:
@@ -86,32 +69,28 @@ def cut(message):
                         snippet = snippet[:1000] + "..." if len(snippet) > 1000 else snippet  # 1000 حرف هنا
                         article_url = f"https://ar.wikipedia.org/wiki/{result['title']}"
                         
-                        bot.reply_to(message, f"عنوان المقال: \n {result['title']}\n"
-                                              f"المقال: \n {snippet}\n"
-                                              f"{'-' * 40}")
+                        await event.reply(f"عنوان المقال: \n {result['title']}\n"
+                                          f"المقال: \n {snippet}\n"
+                                          f"{'-' * 40}")
                 
                 if not found_exact_match:
-                    bot.reply_to(
-                        message,
+                    await event.reply(
                         f"لا يوجد نتائج تطابق {search_term} \n لكن جرب `ابحث عام {search_term}`",
                         parse_mode="Markdown"
-                                     )
+                                     )                    
         else:
-            bot.reply_to(message, "حدث خطأ في استجابة API.")
+            await event.reply("حدث خطأ في استجابة API.")
     else:
-        bot.reply_to(message, f"حدث خطأ في الاتصال بـ Wikipedia. حاول مرة أخرى لاحقًا.")
-
-@bot.message_handler(func=lambda message: message.text.strip().lower().startswith('ابحث عام'))
-def start_search(message):
-    # bot.reply_to(message, "من فضلك أدخل الكلمة التي تريد البحث عنها:")
-    searching_state[message.chat.id] = True 
-
-
-    search_term = message.text.strip().lower().replace('ابحث عام', '').strip()
+        await event.reply(f"حدث خطأ في الاتصال بـ Wikipedia. حاول مرة أخرى لاحقًا.")
+##########################################################################        
+searching_state = {}
+@client.on(events.NewMessage(func=lambda e: e.text and e.text.strip().lower().startswith('ابحث عام')))
+async def start_search(event):
+    searching_state[event.chat.id] = True
+    search_term = event.text.strip().lower().replace('ابحث عام', '').strip()
     if not search_term:
-        bot.reply_to(message.chat.id, "من فضلك أدخل الكلمة التي تريد البحث عنها بعد 'ابحث عن'.")
+        await event.reply("من فضلك أدخل الكلمة التي تريد البحث عنها بعد 'ابحث عام'.")
         return
-
     params = {
         "action": "query",
         "list": "search",
@@ -120,41 +99,32 @@ def start_search(message):
         "utf8": 1,
         "srlimit": 3  
     }
-
     response = requests.get(url, params=params)
-    
     if response.status_code == 200:
         data = response.json()
         if 'query' in data and 'search' in data['query']:
             if not data['query']['search']:
-                bot.reply_to(message, "لم يتم العثور على نتائج لهذا البحث.")
+                await event.reply("لم يتم العثور على نتائج لهذا البحث.")
             else:
                 for result in data['query']['search']:
                     snippet = BeautifulSoup(result['snippet'], "html.parser").get_text()
                     snippet = snippet[:400] + "..." if len(snippet) > 400 else snippet  # 400 حرف هنا
                     article_url = f"https://ar.wikipedia.org/wiki/{result['title']}"
-                    bot.reply_to(message, f"عنوان المقال: \n {result['title']}\n"
-                                         f"المقال: \n {snippet}\n"
-                                         f"{'-' * 40}")
+                    
+                    await event.reply(f"عنوان المقال: \n {result['title']}\n"
+                                      f"المقال: \n {snippet}\n"
+                                      f"{'-' * 40}")
         else:
-            bot.reply_to(message, "حدث خطأ في استجابة API.")
+            await event.reply("حدث خطأ في استجابة API.")
     else:
-        bot.reply_to(message, f"حدث خطأ: {response.status_code}")
-
-    searching_state[message.chat.id] = False  # Turn off the waiting state
-
-@bot.message_handler(func=lambda message: message.text.strip().lower() in ['عاشوراء'])
-def ashouau(message):
-    url = "https://t.me/VIPABH/1213"  
-    bot.send_photo(message.chat.id, url, caption="تقبل الله صالح الأعمال", reply_to_message_id=message.message_id)
-
-
-@bot.message_handler(func=lambda message: message.text.strip().lower() in ['عاشوراء'])
-def ashouau(message):
-    url = "https://t.me/VIPABH/1213"  
-    bot.send_photo(message.chat.id, url, caption="تقبل الله صالح الأعمال", reply_to_message_id=message.message_id)
-
-
+        await event.reply(f"حدث خطأ: {response.status_code}")
+    searching_state[event.chat.id] = False
+############################################################    
+@client.on(events.NewMessage(func=lambda e: e.text and e.text.strip().lower() in ['عاشوراء']))
+async def ashouau(event):
+    pic = "links/abh.jpg"
+    await client.send_file(event.chat_id, pic, caption="تقبل الله صالح الأعمال")
+########################################################################
 group_game_status = {}
 number2 = None
 game_board = [["👊", "👊", "👊", "👊", "👊", "👊"]]
@@ -177,342 +147,100 @@ def reset_game(chat_id):
     group_game_status[chat_id]['game_active'] = False
     group_game_status[chat_id]['active_player_id'] = None
 
-@bot.message_handler(commands=['rings'])
-def start_game(message):
-    global number2
-    markup = types.InlineKeyboardMarkup()
-    markup.add(types.InlineKeyboardButton("ابدأ اللعبة", callback_data="startGame"))
-    username = message.from_user.username or "unknown"
-    sent_msg = bot.send_video(
-        message.chat.id,
-        "t.me/VIPABH/1210",  
-        caption=f"أهلاً [{message.from_user.first_name}](https://t.me/{username})! حياك الله. اضغط على الزر لبدء اللعبة.",
+group_game_status = {}
+###############################################
+@client.on(events.NewMessage(pattern='/rings'))
+async def start_game(event):
+    username = event.sender.username or "unknown"
+    markup = [[Button.inline("ابدأ اللعبة", b"startGame")]]
+    await event.reply(
+        f"أهلاً [{event.sender.first_name}](https://t.me/{username})! حياك الله. اضغط على الزر لبدء اللعبة.",
+        file="https://t.me/VIPABH/1210",  
         parse_mode="Markdown",
-        reply_markup=markup
+        buttons=markup
     )
-
-@bot.callback_query_handler(func=lambda call: call.data == "startGame")
-def handle_start_game(call):
-    chat_id = call.message.chat.id
-    user_id = call.from_user.id
+    
+@client.on(events.CallbackQuery(func=lambda call: call.data == b"startGame"))
+async def handle_start_game(event):
+    chat_id = event.chat_id
+    user_id = event.sender_id
+    username = event.sender.username or "unknown"
+    
     if chat_id not in group_game_status:
-        group_game_status[chat_id] = {'game_active': False, 'active_player_id': None}
+        group_game_status[chat_id] = {'game_active': False, 'active_player_id': None}    
     if not group_game_status[chat_id]['game_active']:
         group_game_status[chat_id]['game_active'] = True
         group_game_status[chat_id]['active_player_id'] = user_id
+    
         global number2
         number2 = random.randint(1, 6)
         group_game_status[chat_id]['number2'] = number2
-        bot.edit_message_reply_markup(
-            chat_id=call.message.chat.id,
-            message_id=call.message.message_id,
-            reply_markup=None 
-        )
-        username = call.from_user.username or "unknown"
-        sent_msg2 = bot.send_message(
-            chat_id,
-            f"عزيزي [{call.from_user.first_name}](https://t.me/@{username})! تم تسجيلك في لعبة محيبس \nارسل `جيب `+ رقم للحزر \n ارسل `طك `+ رقم للتخمين.",
+        await event.edit(buttons=None)
+        await event.respond(
+            f"عزيزي [{event.sender.first_name}](https://t.me/@{username})! تم تسجيلك في لعبة محيبس \nارسل `جيب ` + رقم للحزر \n ارسل `طك ` + رقم للتخمين.",
             parse_mode="Markdown"
-            )
-            
-
-@bot.message_handler(regexp=r'جيب (\d+)')
-def handle_guess(message):
+        )
+##################################################
+@client.on(events.NewMessage(pattern=r'جيب (\d+)'))
+async def handle_guess(event):
     global number2, game_board, points, group_game_status
-    chat_id = message.chat.id
+    chat_id = event.chat_id
     if chat_id in group_game_status and group_game_status[chat_id]['game_active']:
         try:
-            guess = int(message.text.split()[1])
-            if 1 <= guess <= 6:
+            guess = int(event.text.split()[1])  
+            if 1 <= guess <= 6:  
                 if guess == number2:
-                    winner_id = message.from_user.id
-                    points[winner_id] = points.get(winner_id, 0) + 1
-                    sender_first_name = message.from_user.first_name
+                    winner_id = event.sender_id 
+                    points[winner_id] = points.get(winner_id, 0) + 1 
+                    sender_first_name = event.sender.first_name
                     game_board = [["💍" if i == number2 - 1 else "🖐️" for i in range(6)]]
-                    sent_msg3 = bot.reply_to(message, f'🎉 الف مبروك! اللاعب ({sender_first_name}) وجد المحبس 💍!\n{format_board(game_board, numbers_board)}')
+                    await event.reply(f'🎉 الف مبروك! اللاعب ({sender_first_name}) وجد المحبس 💍!\n{format_board(game_board, numbers_board)}')
                     reset_game(chat_id)
                 else:
-                    sender_first_name = message.from_user.first_name
+                    sender_first_name = event.sender.first_name
                     game_board = [["❌" if i == guess - 1 else "🖐️" for i in range(6)]]
-                    sent_msg4 = bot.reply_to(message, f"ضاع البات ماضن بعد تلگونة ☹️ \n{format_board(game_board, numbers_board)}")
+                    await event.reply(f"ضاع البات ماضن بعد تلگونة ☹️ \n{format_board(game_board, numbers_board)}")
                     reset_game(chat_id)
             else:
-                sent_msg5 = bot.reply_to(message, "❗ يرجى إدخال رقم صحيح بين 1 و 6.")
+                await event.reply("❗ يرجى إدخال رقم صحيح بين 1 و 6.")  # إذا كان الرقم خارج النطاق
         except (IndexError, ValueError):
-            sent_msg6 = bot.reply_to(message, "❗ يرجى إدخال رقم صحيح بين 1 و 6.")
-@bot.message_handler(regexp=r'طك (\d+)')
-def handle_strike(message):
+            await event.reply("❗ يرجى إدخال رقم صحيح بين 1 و 6.")  # إذا كانت المدخلات غير صحيحة
+
+@client.on(events.NewMessage(pattern=r'طك (\d+)'))
+async def handle_strike(event):
     global game_board, number2, group_game_status
-    chat_id = message.chat.id
+    chat_id = event.chat_id
     if chat_id in group_game_status and group_game_status[chat_id]['game_active']:
         try:
-            strike_position = int(message.text.split()[1])
+            strike_position = int(event.text.split()[1])  
             if strike_position == number2:
                 game_board = [["💍" if i == number2 - 1 else "🖐️" for i in range(6)]]
-                bot.reply_to(message, f"**خسرت!** \n{format_board(game_board, numbers_board)}")
-                reset_game(chat_id) 
+                await event.reply(f"**خسرت!** \n{format_board(game_board, numbers_board)}")
+                reset_game(chat_id)
             else:
                 abh = [
                     "تلعب وخوش تلعب 👏🏻",
                     "لك عاش يابطل استمر 💪🏻",
                     "على كيفك ركزززز انتَ كدها 🤨",
-                    "لك وعلي ذيييب 😍"]                   
+                    "لك وعلي ذيييب 😍"
+                ]
                 iuABH = random.choice(abh)
                 game_board[0][strike_position - 1] = '🖐️'
-                sent_msg7 = bot.reply_to(message, f" {iuABH} \n{format_board(game_board, numbers_board)}")
+                await event.reply(f" {iuABH} \n{format_board(game_board, numbers_board)}")
         except (IndexError, ValueError):
-            sent_msg8 = bot.reply_to(message, "يرجى إدخال رقم صحيح بين 1 و 6.")
-
-@bot.message_handler(commands=['محيبس'])
-def show_number(message):
+            await event.reply("❗ يرجى إدخال رقم صحيح بين 1 و 6.")
+##############################################            
+@client.on(events.NewMessage(pattern='/محيبس'))
+async def show_number(event):
     """إظهار الرقم السري عند الطلب وإرساله إلى @k_4x1"""
-    chat_id = message.chat.id
+    chat_id = event.chat_id
     if chat_id in group_game_status and group_game_status[chat_id]['game_active']:
-        target_user_id = 1910015590
-        sent_msg9 = bot.send_message(target_user_id, f"الرقم السري هو: {number2}")
-        sent_msg10 = bot.reply_to(message, "تم إرسال الرقم السري إلى @k_4x1.")
+        target_user_id = 1910015590  
+        await client.send_message(target_user_id, f"الرقم السري هو: {number2}")
+        await event.reply("تم إرسال الرقم السري إلى @k_4x1.")
     else:
-        sent_msg11 = bot.reply_to(message, "لم تبدأ اللعبة بعد. أرسل /rings لبدء اللعبة.")
-
-
- 
-questions = [
-    "شلون تعمل هالشي؟",
-    "شلون تقضي وقتك بالفراغ؟",
-    "شلون تتحكم بالضغط؟",
-    "شلون تكون صبور؟",
-    "شلون تحافظ على التركيز؟",
-    "شلون تكون قوي نفسياً؟",
-    "شلون تسيطر على الغضب؟",
-    "شلون تدير وقتك بشكل فعال؟",
-    "شلون تكون ناجح في حياتك المهنية؟",
-    "شلون تطور مهاراتك الشخصية؟",
-    "شلون تدير الضغوطات في العمل؟",
-    "شلون تدير الامور المالية؟",
-    "شلون تتعلم لغة جديدة؟",
-    "شلون تكون مبدع في عملك؟",
-    "شلون تطور علاقاتك الاجتماعية؟",
-    "شلون تتغلب على التحديات؟",
-    "شلون تنظم حياتك بشكل منظم؟",
-    "شلون تحافظ على صحتك؟",
-    "شلون تحمي نفسك من الإجهاد؟",
-    "شلون تعتني بنفسك بشكل جيد؟",
-    "شلون تكون متفائل في الحياة؟",
-    "شلون تدير الوقت بين العمل والحياة الشخصية؟",
-    "شلون تتعامل مع الشكوك والتوتر؟",
-    "شلون تعطي قيمة لوقتك؟",
-    "شلون تدير التوتر في العلاقات العائلية؟",
-    "شلون تتعلم من الاخطاء؟",
-    "شلون تدير الصعوبات في الحياة؟",
-    "شلون تكون منظم في حياتك اليومية؟",
-    "شلون تحسن من تركيزك وانتباهك؟",
-    "شلون تطور مهاراتك الشخصية والاجتماعية؟",
-    "شلون تدير العمل في فريق؟",
-    "شلون تحسن من قدراتك التواصلية؟",
-    "شلون تكون منظم في الدراسة؟",
-    "شلون تكون فعال في استخدام التكنولوجيا؟",
-    "شلون تحافظ على توازنك بين العمل والحياة الشخصية؟",
-    "شلون تتعلم مهارات جديدة بسرعة؟",
-    "شلون تكون ملهماً للآخرين؟",
-    "شلون تدير الخلافات في العمل؟",
-    "شلون تكون مؤثراً في العروض التقديمية؟",
-    "شلون تحسن من قدراتك التفكير الإبداعي؟",
-    "شلون تطور قدراتك القيادية؟",
-    "شلون تكون متفائل في ظروف صعبة؟",
-    "شلون تدير التحولات في الحياة؟",
-    "شلون تتعلم من النجاحات والإخفاقات؟",
-    "شلون تكون مستعداً للتغيير؟",
-    "شلون تستمتع بالحياة؟",
-    "شلون تكون إنساناً محبوباً ومحترماً؟",
-    "شلون تتعلم من خبرات الآخرين؟",
-    "شلون تطور مهاراتك في التعلم الذاتي؟",
-    "شلون تحسن من قدراتك على اتخاذ القرارات؟",
-    "شلون تكون مبادراً في العمل؟",
-    "شلون تطور مهاراتك في حل المشكلات؟",
-    "شلون تستفيد من النقد البناء؟",
-    "شلون تطور ثقتك بالنفس؟",
-    "شلون تتعامل مع التغييرات في العمل؟",
-    "شلون تطور مهاراتك في التعاون والعمل الجماعي؟",
-    "شلون تتعامل مع الضغوطات في الحياة؟",
-    "شلونك؟",
-    "شنو اسمك؟",
-    "شنو جنسيتك؟",
-    "شنو عمرك؟",
-    "شنو لونك المفضل؟",
-    "شنو طبخة تحبها اكثر؟",
-    "شنو هوايتك المفضلة؟",
-    "شنو مكان سفرة اللي تحلم تروحله؟",
-    "شنو نوع السيارة اللي تفضلها؟",
-    "شنو نوع الموسيقى اللي تحب تستمع لها؟",
-    "شنو تحب تسوي في وقت الفراغ؟",
-    "شنو اكلتك المفضلة في الفطور؟",
-    "شنو اكلتك المفضلة في الغدا؟",
-    "شنو اكلتك المفضلة في العشا؟",
-    "شنو نوع الشاي اللي تحب تشربه؟",
-    "شنو نوع القهوة اللي تحب تشربها؟",
-    "شنو اكثر شيء مميز في ثقافة العراق؟",
-    "شنو نوع الافلام اللي تحب تشوفها؟",
-    "شنو البلدة العربية اللي تفضل تزورها؟",
-    "شنو نوع الهدية اللي تحب تتلقاها؟",
-    "شنو اهم شيء بالنسبة إليك في الصداقة؟",
-    "شنو الشيء اللي تشوفه عند العراقيين بشكل خاص؟",
-    "شنو الاكلة العراقية المفضلة عندك؟",
-    "شنو نوع الرياضة اللي تحب تمارسها؟",
-    "شنو مكان العراقي اللي تحب تزوره في العراق؟",
-    "شنو اكثر شيء تحبه في الطبيعة؟",
-    "شنو اللون اللي يحبه العراقيين كثير؟",
-    "شنو الشيء اللي يستفزك بسرعة؟",
-    "شنو الشيء اللي يخليك تفرح؟",
-    "شنو الشيء اللي تحس إنه اكثر شيء يعبر عن الهوية العراقية؟",
-    "شنو نوع الهاتف اللي تستخدمه؟",
-    "شنو الشيء اللي تحس فيه إنه مفقود في المجتمع العراقي؟",
-    "شنو اكثر مكان تحب تزوره في العراق؟",
-    "شنو النصيحة اللي تحب تعطيها لشخص صغير؟",
-    "شنو الشيء اللي يخليك تشعر بالراحة والهدوء؟",
-    "شنو الشيء اللي تحب تسويه بالعطلة؟",
-    "شنو الحيوان اللي تحبه اكثر؟",
-    "شنو الشيء اللي تحب تهديه لشخص عزيز عليك؟",
-    "شنو الشيء اللي تحس بإنجاز كبير إذا قمت به؟",
-    "شنو اكثر موقع التواصل الاجتماعي اللي تستخدمه؟",
-    "شنو الشيء اللي يحبه العراقيين في الاعياد والمناسبات؟",
-    "شنو الشيء اللي تحب تشوفه في العراق مطور ومتطور؟",
-    "شنو الشيء اللي تحب تشاركه مع الآخرين بشكل كبير؟",
-    "شنو اكثر موسم تحبه في العراق؟",
-    "شنو الشيء اللي تتمنى تغيره في العراق؟",
-    "شنو الشيء اللي تحب تستثمر فيه وقتك وجهدك؟",
-    "شنو الشيء اللي يميز العراق والعراقيين برايك؟",
-    "شنو نوع الفن اللي تحب تستمتع به؟",
-    "شنو الشيء اللي تحب تتعلمه في المستقبل؟",
-    "شنو اكثر شيء تحبه في الشتاء؟",
-    "شنو الشيء اللي يرفع معنوياتك بشكل سريع؟",
-    "شنو الشيء اللي تحب تهديه لنفسك؟",
-    "شنو الشيء اللي تتمنى تحققه في حياتك؟",
-     "منو افضل صديق عندك؟",
-    "منو شخصيتك المفضلة في الافلام؟",
-    "منو الشخص اللي تحب تسافر معه؟",
-    "منو الشخص اللي بتستشيره في قراراتك؟",
-    "منو اكثر شخص تحب تشوفه كل يوم؟",
-    "منو اكثر شخص غريب بتعرفه؟",
-    "منو الشخص اللي تحب تحجي معه لساعات؟",
-    "منو اكثر شخص قدوة بحياتك؟",
-    "منو الشخص اللي تثق فيه بشكل كامل؟",
-    "منو اكثر شخص ملهم في حياتك؟",
-    "منو الشخص اللي تتمنى تشوفه اليوم؟",
-    "منو الشخص اللي تحب تكون جارك؟",
-    "منو الشخص اللي بتتحدث معه كل يوم؟",
-    "منو الشخص اللي بتشتاقله كثير؟",
-    "منو الشخص اللي بتعتمد عليه في الصعوبات؟",
-    "منو الشخص اللي تحب تشاركه اسرارك؟",
-    "منو الشخص اللي بتقدر قيمته في حياتك؟",
-    "منو الشخص اللي تحب تطلب منه المشورة؟",
-    "منو الشخص اللي تحب تكون معه في المشاكل؟",
-    "منو الشخص اللي بتحسه اكثر شخص يفهمك؟",
-    "منو الشخص اللي تحب تحتفل معه في الاعياد؟",
-    "منو الشخص اللي تتوقعه اكثر شخص بيرحل عنك؟",
-    "منو الشخص اللي تحب تشترك معه في الهوايات؟",
-    "منو الشخص اللي تحب تشوفه بعد غياب طويل؟",
-    "منو الشخص اللي تتمنى تقدمله هدية مميزة؟",
-    "منو الشخص اللي تحب تذهب معه في رحلة استكشافية؟",
-    "منو الشخص اللي تحب تحجي معه عن مشاكلك العاطفية؟",
-    "منو الشخص اللي تتمنى تكون له نفس قدراتك ومهاراتك؟",
-    "منو الشخص اللي تحب تقابله وتشتغل معه في المستقبل؟",
-    "منو الشخص اللي تحب تحتفل معه بنجاحك وإنجازاتك؟",
-    "منو الشخص اللي بتتذكره بكل سعادة عندما تراجع صورك القديمة؟",
-    "منو الشخص اللي تحب تشاركه تجاربك ومغامراتك في الحياة؟",
-    "منو الشخص اللي تحب تسمع نصائحه وتطبقها في حياتك؟",
-    "منو الشخص اللي تحب تشوفه ضحكته بين الفينة والاخرى؟",
-    "منو الشخص اللي تعتبره اكثر شخص يدعمك ويحفزك على تحقيق اهدافك؟",
-    "منو الشخص اللي تحب تشوفه محقق نجاحاته ومستقبله المشرق؟",
-    "منو الشخص اللي تحب تشكره على وجوده في حياتك ودعمه المستمر؟",
-    "منو الشخص اللي تحب تقدمله هدية تذكارية لتخليك تذكره للابد؟",
-    "منو الشخص اللي تحب تشكره على دعمه الكبير لك في مشوارك الدراسي؟",
-    "منو الشخص اللي تتمنى تعرفه في المستقبل وتصير صداقتكم مميزة؟",
-    "منو الشخص اللي تحب تشاركه لحظات الفرح والسعادة في حياتك؟",
-    "منو الشخص اللي تعتبره اكثر شخص يستحق منك كل الحب والاحترام؟",
-    "منو الشخص اللي تحب تشاركه اسرارك وتحجي له كل شيء بدون تردد؟",
-    "منو الشخص اللي تتمنى تحضر معه حفلة موسيقية لفرقتك المفضلة؟",
-    "منو الشخص اللي تحب تتنافس معه في لعبة او رياضة تحبها؟",
-    "منو الشخص اللي تحب تشوفه مبتسماً ومتفائلاً في الحياة؟",
-    "شوكت تفتح المحل؟",
-    "شوكت بتروح على العمل؟",
-    "شوكت تكون مستعد للمقابلة؟",
-    "شوكت بتنوم بالليل؟",
-    "شوكت بتصحى بالصبح؟",
-    "شوكت بتسافر؟",
-    "شوكت بتعود من العمل؟",
-    "شوكت بتعمل رياضة؟",
-    "شوكت بتذاكر للامتحان؟",
-    "شوكت بتنظف البيت؟",
-    "شوكت بتقرا الكتاب؟",
-    "شوكت تكون فاضي للتسوق؟",
-    "شوكت بتنطر الباص؟",
-    "شوكت بتعود من السفر؟",
-    "شوكت بتشتري الهدية؟",
-    "شوكت بتتقابل مع صديقك؟",
-    "شوكت بتحضر الحفلة؟",
-    "شوكت بتتعشى؟",
-    "شوكت بتتناول الفطور؟",
-    "شوكت بتسافر في العطلة؟",
-    "شوكت بترجع للمنزل؟",
-    "شوكت تخلص المشروع؟",
-    "شوكت بتتخرج من الجامعة؟",
-    "شوكت بتبدا العمل؟",
-    "شوكت بتفتح المحل؟",
-    "شوكت تنتهي الدورة التدريبية؟",
-    "شوكت بتتزوج؟",
-    "شوكت بترتب الغرفة؟",
-    "شوكت تتعلم الموسيقى؟",
-    "شوكت بترتب الوثائق؟",
-    "شوكت بتسجل في النادي الرياضي؟",
-    "شوكت تستلم الطلبية؟",
-    "شوكت بتشوف الطبيب؟",
-    "شوكت بتتناول الغداء؟",
-    "شوكت تكون مستعد للسفر؟",
-    "شوكت بتكمل المشروع؟",
-    "شوكت تخلص الواجب؟",
-    "شوكت تحصل على النتيجة؟",
-    "شوكت تتعلم اللغة الجديدة؟",
-    "شوكت بتحضر المؤتمر؟",
-    "شوكت بتنهي الكتاب؟",
-    "شوكت بتفتح المطعم؟",
-    "شوكت بتسافر في الإجازة؟",
-    "شوكت بتبدا التدريب؟",
-    "شوكت تخلص المشروع الفني؟",
-    "شوكت تنتهي الجلسة؟",
-    "شوكت تتعلم الطبخ؟",
-    "شوكت تستلم الشهادة؟",
-    "شوكت بتبدا الرحلة؟",
-    "شوكت بتنهي الاعمال المنزلية؟",
-    "شوكت تكون فاضي للقراءة؟",
-    "شوكت تستلم السيارة الجديدة؟",
-    "شوكت بتتناول العشاء؟",
-    "وين رايح؟",
-    "وين تسكن؟",
-    "وين بتشتغل؟",
-    "وين بتروح في ايام العطلة؟",
-    "وين تحب تسافر في العطلات؟",
-    "وين تحب تروح مع الاصدقاء؟",
-    "وين تكون في الساعة الثامنة صباحاً؟",
-    "وين تكون في الساعة العاشرة مساءً؟",
-    "وين تحب تتناول الإفطار؟",
-    "وين تحب تتسوق؟",
-    "وين تحب تتناول العشاء؟",
-    "وين تكون في الساعة الثانية ظهراً؟",
-    "وين تحب تمضي امسياتك؟",
-    "وين تحب تقضي ايام العطلة؟",
-    "وين تحب تزور المعالم السياحية؟",
-    "وين تحب تشتري الهدايا؟",
-    "وين تحب تتمرن وتمارس الرياضة؟",
-    "وين تحب تذهب للتسوق؟",
-    "وين تحب تقضي وقتك مع العائلة؟",
-    "وين تكون في الساعة الخامسة مساءً؟"
-]
-
-@bot.message_handler(func=lambda message: message.text in ['كتويت'])
-def send_random_question(message):
-    random_question = random.choice(questions)
-    bot.reply_to(message, random_question)
-
+        await event.reply("لم تبدأ اللعبة بعد. أرسل /rings لبدء اللعبة.")
+############################################################
 basimurl = (
     "50", "51", "52", "53", "54", "55", "56", "57", "58", "59",
     "60", "61", "62", "63", "64", "65", "66", "67", "68", "69",
@@ -536,172 +264,52 @@ nurl = ('164', '165', '166', '167', '168', '169', '170')
 furl = ('171', '172', '173', '174')
 
 
-
-
-@bot.message_handler(func=lambda message: message.text in ['لطمية'] or message.text in ['لطميه'])
-def vipabh(message):
-    current_time = datetime.now()
-    message_time = datetime.fromtimestamp(message.date) 
-    time_difference = (current_time - message_time).total_seconds()
-    if time_difference > 20:
-        return 
-    username = message.from_user.username if message.from_user.username else "لا يوجد اسم مستخدم"
-    markup = types.InlineKeyboardMarkup()
-    markup.add(types.InlineKeyboardButton("باسم", callback_data="باسم"))
-    markup.add(types.InlineKeyboardButton("الخاقاني", callback_data="الخاقاني"))
-    markup.add(types.InlineKeyboardButton("مسلم", callback_data="مسلم"))
-    markup.add(types.InlineKeyboardButton("نزلة", callback_data="نزلة"))
-    markup.add(types.InlineKeyboardButton("فاقد", callback_data="فاقد"))
-    bot.send_video(
-        message.chat.id,
-        "https://t.me/VIPABH/1212",  
-        caption=f"اهلا [{message.from_user.first_name}](https://t.me/{username}) حياك الله! اضغط على الرادود.",
-        parse_mode="Markdown",
-        reply_markup=markup
+async def send_audio_from_list(call, url_list):
+    rl = random.choice(url_list)
+    audio_url = f"https://t.me/sossosic/{rl}"
+    await call.respond(
+        file=audio_url
     )
 
 
-def send_audio_from_f_list(call):
-    rl = random.choice(furl)  
-    audio_url = f"https://t.me/sossosic/{rl}"  
-    
-    bot.send_audio(
-        chat_id=call.message.chat.id,
-        audio=audio_url,
-        # caption=f"{audio_url}", 
-        caption="᯽︙اذكر القائم",
-        parse_mode="html"
+@client.on(events.NewMessage(func=lambda event: event.text in ['لطمية', 'لطميه']))
+async def vipabh(event):
+    username = event.sender.username or "لا يوجد اسم مستخدم"
+    markup = [
+        [Button.inline("باسم", b"basim")],
+        [Button.inline("الخاقاني", b"moh")],
+        [Button.inline("مسلم", b"mus")],
+        [Button.inline("نزلة", b"nzla")],
+        [Button.inline("فاقد", b"faqed")]
+    ]
+
+    await event.respond(
+        f"اهلا [{event.sender.first_name}](https://t.me/{username}) حياك الله! اضغط على الرادود.",
+        file="https://t.me/VIPABH/1212",
+        buttons=markup,
+        parse_mode="Markdown"
     )
-
-def send_audio_from_n_list(call):
-    rl = random.choice(nurl)  
-    audio_url = f"https://t.me/sossosic/{rl}"  
-    
-    bot.send_audio(
-        chat_id=call.message.chat.id,
-        audio=audio_url,
-        # caption=f"{audio_url}", 
-        caption="᯽︙اذكر القائم",
-        parse_mode="html"
-    )
-
-
-def send_audio_from_basim_list(call):
-    rl = random.choice(furl)  
-    audio_url = f"https://t.me/sossosic/{rl}"  
-    
-    bot.send_audio(
-        chat_id=call.message.chat.id,
-        audio=audio_url,
-        # caption=f"{audio_url}", 
-        caption="᯽︙اذكر القائم",
-        parse_mode="html"
-    )
-
-def send_audio_from_mohmurl_list(call):
-    rl = random.choice(mohmurl)  
-    audio_url = f"https://t.me/sossosic/{rl}"  
-    
-    bot.send_audio(
-        chat_id=call.message.chat.id,
-        audio=audio_url,
-        # caption=f"{audio_url}", 
-        caption="᯽︙اذكر القائم",
-        parse_mode="html"
-    )
-
-def send_audio_from_mus_list(call):
-    rl = random.choice(musurl) 
-    audio_url = f"https://t.me/sossosic/{rl}" 
-
-    bot.send_audio(
-        chat_id=call.message.chat.id,
-        audio=audio_url,
-        caption="᯽︙اذكر القائم",
-        # caption=f"{audio_url}", 
-        parse_mode="html"
-    )
-
-@bot.callback_query_handler(func=lambda call: call.data == "باسم")
-def send_basim(call):
-    send_audio_from_basim_list(call)
-    bot.edit_message_reply_markup(
-        chat_id=call.message.chat.id,
-        message_id=call.message.message_id,
-        reply_markup=None
-        )
-@bot.callback_query_handler(func=lambda call: call.data == "الخاقاني")
-def send_khaqani(call):
-    send_audio_from_mohmurl_list(call)
-    bot.edit_message_reply_markup(
-        chat_id=call.message.chat.id,
-        message_id=call.message.message_id,
-        reply_markup=None
-        )
-@bot.callback_query_handler(func=lambda call: call.data == "مسلم")
-def send_mus(call):
-    send_audio_from_mus_list(call)
-    bot.edit_message_reply_markup(
-        chat_id=call.message.chat.id,
-        message_id=call.message.message_id,
-        reply_markup=None
-        )
-@bot.callback_query_handler(func=lambda call: call.data == "نزلة")
-def send_mus(call):
-    send_audio_from_n_list(call)
-    bot.edit_message_reply_markup(
-        chat_id=call.message.chat.id,
-        message_id=call.message.message_id,
-        reply_markup=None
-        )
-
-@bot.callback_query_handler(func=lambda call: call.data == "فاقد")
-def send_mus(call):
-    send_audio_from_f_list(call)
-    bot.edit_message_reply_markup(
-        chat_id=call.message.chat.id,
-        message_id=call.message.message_id,
-        reply_markup=None
-        )
-  
-@bot.message_handler(func=lambda message: message.text in ['ميم'] or message.text in ['ميمز'])
-def send_random_file(message):
-    time.sleep(2)
-    rl = random.randint(2, 255)
-    url = f"t.me/iuabh/{rl}"
-    if url == "t.me/iuabh/242":
-        bot.send_video(message.chat.id, url, caption="😎يسعد مسائك", reply_to_message_id=message.message_id)
-    if url == "t.me/iuabh/243":
-        bot.send_video(message.chat.id, url, caption="😎يسعد مسائك", reply_to_message_id=message.message_id)
-    if url == "t.me/iuabh/244":
-        bot.send_video(message.chat.id, url, caption="😎يسعد مسائك", reply_to_message_id=message.message_id)
-    if url == "t.me/iuabh/245":
-        bot.send_video(message.chat.id, url, caption="😎يسعد مسائك", reply_to_message_id=message.message_id)
-    if url == "t.me/iuabh/246":
-        bot.send_video(message.chat.id, url, caption="😎يسعد مسائك", reply_to_message_id=message.message_id)
-    if url == "t.me/iuabh/247":
-        bot.send_video(message.chat.id, url, caption="😎يسعد مسائك", reply_to_message_id=message.message_id)
-    if url == "t.me/iuabh/248":
-        bot.send_video(message.chat.id, url, caption="😎يسعد مسائك", reply_to_message_id=message.message_id)
-    if url == "t.me/iuabh/249":
-        bot.send_video(message.chat.id, url, caption="😎يسعد مسائك", reply_to_message_id=message.message_id)
-    if url == "t.me/iuabh/250":
-        bot.send_video(message.chat.id, url, caption="😎يسعد مسائك", reply_to_message_id=message.message_id)
-    if url == "t.me/iuabh/251":
-        bot.send_video(message.chat.id, url, caption="😎يسعد مسائك", reply_to_message_id=message.message_id)
-    if url == "t.me/iuabh/252":
-        bot.send_video(message.chat.id, url, caption="😎يسعد مسائك", reply_to_message_id=message.message_id)
-    if url == "t.me/iuabh/253":
-        bot.send_video(message.chat.id, url, caption="😎يسعد مسائك", reply_to_message_id=message.message_id)
-    if url == "t.me/iuabh/254":
-        bot.send_video(message.chat.id, url, caption="😎يسعد مسائك", reply_to_message_id=message.message_id)
-    if url == "t.me/iuabh/255":
-        bot.send_video(message.chat.id, url, caption="😎يسعد مسائك", reply_to_message_id=message.message_id)
-    else:
-        # bot.send_photo(message.chat.id, url, caption="😎يسعد مسائك", reply_to_message_id=message.message_id)
-        sent_message = bot.send_photo(message.chat.id, url, caption="😎يسعد مسائك", reply_to_message_id=message.message_id)
-def is_user_banned(user_id):
-    return user_id in banned_users
+@client.on(events.CallbackQuery(data=b"basim"))
+async def send_basim(call):
+    await send_audio_from_list(call, basimurl)
+    await call.edit(buttons=None)
+@client.on(events.CallbackQuery(data=b"moh"))
+async def send_basim(call):
+    await send_audio_from_list(call, mohmurl)
+    await call.edit(buttons=None)
+@client.on(events.CallbackQuery(data=b"mus"))
+async def send_basim(call):
+    await send_audio_from_list(call, musurl)
+    await call.edit(buttons=None)
+@client.on(events.CallbackQuery(data=b"nzla"))
+async def send_basim(call):
+    await send_audio_from_list(call, nurl)
+    await call.edit(buttons=None)
+@client.on(events.CallbackQuery(data=b"faqed"))
+async def send_basim(call):
+    await send_audio_from_list(call, furl)
+    await call.edit(buttons=None)
+###########################################
 user_points = {}
 banned_users = []
 game_active = False
@@ -709,23 +317,18 @@ number = None
 max_attempts = 3
 attempts = 0
 active_player_id = None
-
-@bot.message_handler(commands=['start'])
-def handle_start(message):
-    current_time = datetime.now()
-    message_time = datetime.fromtimestamp(message.date) 
-    time_difference = (current_time - message_time).total_seconds()
-
-    if time_difference > 20:
-        return 
-    if message.from_user.id in banned_users:
-        sent_message = bot.reply_to(message, "☝")        
-        time.sleep(3.5)
-        bot.edit_message_text(chat_id=sent_message.chat.id, message_id=sent_message.message_id, text="عذرا , انت محظور من استخدام البوت.")
+def is_user_banned(user_id):
+    return user_id in banned_users
+@client.on(events.NewMessage(pattern='/start'))
+async def handle_start(event):
+    if is_user_banned(event.sender_id):
+        sent_message = await event.reply("☝")
+        await asyncio.sleep(3.5)
+        await client.edit_message(
+            sent_message.chat_id, sent_message.id, text="عذرا , انت محظور من استخدام البوت."
+        )
         return
-    
-    bot.reply_to(
-        message,
+    await event.reply(
         "أهلاً حياك الله! \n"
         "• أرسل `ميم` او `ميمز` للميمز. \n"
         "• أرسل `لطمية` ل ارسال لطمية \n"
@@ -734,129 +337,172 @@ def handle_start(message):
         "• أرسل `ابحث عن` لعمل بحث في ويكيبيديا \n"
         "• أرسل `النقاط` ل رؤية نقاطك في لعبة /num \n"
         "• أرسل `ابحث عام` يعمل بحث لكن ليس دقيق ب 3 نتائج \n\n"
-        " استمتع! 🎉",
-        parse_mode='Markdown'
+        "استمتع! 🎉",
+        parse_mode='markdown'
     )
-    user_points = {}
 
 
-@bot.message_handler(commands=['num'])
-def start(message):
-    current_time = datetime.now()
-    message_time = datetime.fromtimestamp(message.date)  
-    time_difference = (current_time - message_time).total_seconds()
+game_active = False
+number = None
+attempts = 0
+active_player_id = None
+def is_user_banned(user_id):
+    return False
 
-    if time_difference > 20:
-        return 
-    if message.from_user.id in banned_users:
-        sent_message = bot.reply_to(message, "☝")        
-        time.sleep(3.5)
-        bot.edit_message_text(chat_id=sent_message.chat.id, message_id=sent_message.message_id, text="عذرا , انت محظور من استخدام البوت.")
+@client.on(events.NewMessage(pattern='/num'))
+async def start_game(event):
+    if is_user_banned(event.sender_id):
+        sent_message = await event.reply("☝")
+        await asyncio.sleep(3.5)
+        await client.edit_message(sent_message.chat_id, sent_message.id, text="عذرا , انت محظور من استخدام البوت.")
         return
-    global game_active, attempts, active_player_id
-    game_active = False
-    attempts = 0
-    active_player_id = None
     
-    username = message.from_user.username if message.from_user.username else "لا يوجد اسم مستخدم"
-    markup = types.InlineKeyboardMarkup()
-    markup.add(types.InlineKeyboardButton("ابدأ اللعبة", callback_data="start_game"))
-    bot.send_video(
-        message.chat.id,
-        "https://t.me/VIPABH/1204",
-        caption=f"اهلا [{message.from_user.first_name}](https://t.me/{username}) حياك الله! اضغط على الزر لبدء اللعبة.",
+    username = event.sender.username if event.sender.username else "لا يوجد اسم مستخدم"
+    markup = [[Button.inline("ابدأ اللعبة", b"start_game")]]
+    await event.reply(
+        f"أهلاً [{event.sender.first_name}](https://t.me/{username})! حياك الله. اضغط على الزر لبدء اللعبة.",
+        file="https://t.me/VIPABH/1204",  
         parse_mode="Markdown",
-        reply_markup=markup
-    )
-@bot.callback_query_handler(func=lambda call: call.data == "start_game")
-def start_game(call):
+        buttons=markup
+    )    
+
+@client.on(events.CallbackQuery(data=b"start_game"))
+async def start_new_game(event):
     global game_active, number, attempts, active_player_id
-    if not game_active:
-        number = random.randint(1, 10)
-        active_player_id = call.from_user.id
-        username = call.from_user.username if call.from_user.username else "لا يوجد اسم مستخدم"
-
-        bot.edit_message_reply_markup(
-            chat_id=call.message.chat.id,
-            message_id=call.message.message_id,
-            reply_markup=None
-        )
-
-
-        
-        bot.send_message(call.message.chat.id, f'عزيزي  [{call.from_user.first_name}](t.me/@{username}) اختر أي رقم من 1 إلى 10 🌚',  parse_mode="Markdown")
-        game_active = True
-        attempts = 0
-    else:
-        bot.reply_to(call.message.chat.id, 'اللعبة قيد التشغيل، يرجى انتهاء الجولة الحالية أولاً.')
-        
-@bot.message_handler(commands=['ارقام'])
-def show_number(message):
-    """إظهار الرقم السري عند الطلب وإرساله إلى @k_4x1"""
-    chat_id = message.chat.id
-    target_user_id = 1910015590
     if game_active:
-        ms1 = bot.send_message(target_user_id, f"الرقم السري هو: {number}")
-        time.sleep(10)
-        bot.delete_message(ms1.chat.id, ms1.message_id)
-        bot.reply_to(message, "تم إرسال الرقم السري إلى @k_4x1.")
-    else:
-        bot.reply_to(message, "لم تبدأ اللعبة بعد. أرسل /num لبدء اللعبة.")
-                
-@bot.message_handler(func=lambda message: game_active and message.from_user.id == active_player_id)
-def handle_guess(message):
+        await event.reply('اللعبة قيد التشغيل حالياً، يرجى إنهاء الجولة الحالية أولاً.')
+        return
+    
+    number = random.randint(1, 10)
+    active_player_id = event.sender_id
+    username = event.sender.username if event.sender.username else "لا يوجد اسم مستخدم"
+    await event.edit(buttons=None)
+    await event.reply(
+        f'عزيزي [{event.sender.first_name}](t.me/{username})! اختر رقمًا بين 1 و 10 🌚',
+        parse_mode="Markdown"
+    )
+
+@client.on(events.NewMessage(func=lambda event: game_active and event.sender_id == active_player_id))
+async def handle_guess(event):
     global game_active, number, attempts
+    if not game_active:
+        await event.reply("اللعبة ليست نشطة حاليًا، ابدأ لعبة جديدة.")
+        return
+
     try:
-        guess = int(message.text)
-        if guess < 1 or guess > 10:
-            bot.reply_to(message, "يرجى اختيار رقم بين 1 و 10 فقط!")
-            return
-
-        attempts += 1
-
-        if guess == number:
-            add_or_update_user(message.from_user.id, message.from_user.username)
-        add_point_to_winner(message.from_user.id)
-
-        points = get_user_score(message.from_user.id)
-        if message.from_user.id not in user_points:
-                user_points[message.from_user.id] = 0  
-                user_points[message.from_user.id] += 1 
-                bot.reply_to(message, "مُبارك فزتها بفخر 🥳")
-                won = "t.me/VIPABH/2"
-                bot.send_voice(message.chat.id, won)
-                bot.reply_to(message,  "🥳")
-                game_active = False
-        elif attempts >= max_attempts:
-            bot.reply_to(message, f"للأسف، لقد نفدت محاولاتك. الرقم الصحيح هو {number}.🌚")
-            lose = "t.me/VIPABH/23"
-            bot.send_voice(message.chat.id, lose)
-            game_active = False
-        else:
-            bot.reply_to(message, "جرب مرة لخ، الرقم غلط💔")
-    
+        guess = int(event.text)
     except ValueError:
-        bot.reply_to(message, "يرجى إدخال رقم صحيح")
+        await event.reply("يرجى إدخال رقم صحيح بين 1 و 10.")
+        return
 
+    if guess < 1 or guess > 10:
+        await event.reply("يرجى اختيار رقم بين 1 و 10 فقط!")
+        return
+
+    attempts += 1
+
+    if guess == number:
+        points = 10
+        await event.reply(f"🎉 مُبارك! لقد فزت! نقاطك الآن: {points}.")
         
-
-@bot.message_handler(func=lambda message: message.text == 'النقاط')
-def show_points(message):
-    """إظهار النقاط للمستخدم إذا كانت اللعبة نشطة."""
-    user_id = message.from_user.id  
-    points = get_user_score(user_id)
-    
-    if points > 0:
-        bot.reply_to(message, f" عزيزي [{message.from_user.first_name}](t.me/@{message.from_user.username}) نقاطك: {points}", parse_mode='Markdown')
+        won = "t.me/VIPABH/2"
+        await event.reply(f"🎉 فزت! شاهد النتيجة هنا: {won}")
+        
+        game_active = False
+    elif attempts >= 3:
+        await event.reply(f"للأسف، لقد نفدت محاولاتك. الرقم الصحيح هو {number}.")        
+        lose = "t.me/VIPABH/23"
+        await client.send_voice(event.chat_id, lose)
+        game_active = False
     else:
-        bot.reply_to(message, "ليس لديك نقاط الآن، ارسل /num لبدء اللعبة.")
+        await event.reply("جرب مرة أخرى، الرقم غلط💔")
 
+
+game_active = False
+number = None
+attempts = 0
+max_attempts = 3
+active_player_id = None
+user_points = {}
+
+def add_or_update_user(user_id, username):
+    if user_id not in user_points:
+        user_points[user_id] = 0  
+
+def add_point_to_winner(user_id):
+    if user_id in user_points:
+        user_points[user_id] += 1 
+
+def get_user_score(user_id):
+    return user_points.get(user_id, 0)
+
+@client.on(events.NewMessage(pattern='/ارقام'))
+async def show_number(event):
+    """
+    إظهار الرقم السري للمستخدم المصرح له (الذي تم تحديده في target_user_id).
+    """
+    chat_id = event.chat_id
+    target_user_id = 1910015590 
+
+    if game_active:
+        try:
+            ms1 = await client.send_message(target_user_id, f"🔒 الرقم السري هو: {number}")
+            await event.reply("تم إرسال الرقم السري إلى @k_4x1.")
+            await asyncio.sleep(10)
+            await client.delete_messages(ms1.chat_id, ms1.id)            
+        except Exception as e:
+            await event.reply(f"حدث خطأ أثناء إرسال الرسالة: {e}")
+    else:
+        await event.reply("لم تبدأ اللعبة بعد. أرسل /num لبدء اللعبة.")
+
+@client.on(events.NewMessage(func=lambda event: game_active and event.sender_id == active_player_id))
+async def handle_guess(event):
+    global game_active, number, attempts
+    if not game_active:
+        await event.reply("اللعبة ليست نشطة حاليًا، ابدأ لعبة جديدة.")
+        return
+
+    try:
+        guess = int(event.text)
+    except ValueError:
+        await event.reply("يرجى إدخال رقم صحيح بين 1 و 10.")
+        return
+
+    if guess < 1 or guess > 10:
+        await event.reply("يرجى اختيار رقم بين 1 و 10 فقط!")
+        return
+
+    attempts += 1
+
+    if guess == number:
+        add_or_update_user(event.sender_id, event.sender.username)
+        add_point_to_winner(event.sender_id)
+        points = get_user_score(event.sender_id)
+        await event.reply(f"🎉 مُبارك! لقد فزت! نقاطك الآن: {points}.")
+        
+        won = "t.me/VIPABH/2"
+        await event.reply(f"🎉 فزت! شاهد النتيجة هنا: {won}")
+        
+        game_active = False
+    elif attempts >= max_attempts:
+        await event.reply(f"للأسف، لقد نفدت محاولاتك. الرقم الصحيح هو {number}.")
+        
+        lose = "t.me/VIPABH/23"
+        await client.send_voice(event.chat_id, lose)
+        game_active = False
+    else:
+        await event.reply("جرب مرة أخرى، الرقم غلط💔")
 
 if __name__ == "__main__":
     while True:
         try:
-            print("working...")
-            bot.polling(none_stop=True)
+            # print("✨ بدء تشغيل العميل...")
+            client.start()
+            # print("✅ العميل يعمل الآن!")
+            client.run_until_disconnected()
         except Exception as e:
-            print(f"حدث خطأ: {e}")
-            time.sleep(5) 
+            print(f"⚠️ حدث خطأ: {e}")
+            print("⏳ إعادة المحاولة بعد 5 ثوانٍ...")
+            time.sleep(5)
+
+
