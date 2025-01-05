@@ -17,22 +17,10 @@ api_hash = os.getenv('API_HASH')
 bot_token = os.getenv('BOT_TOKEN') 
 client = TelegramClient('n', api_id, api_hash).start(bot_token=bot_token)
 #######################################################################################
-abh = [
-    "ها",
-    "شرايد",
-    "تفظل",
-    "قُل",
-    "😶",
-    "https://t.me/VIPABH/1214"
-]
-
 @client.on(events.NewMessage(pattern='مخفي'))
-async def reply(event):
-    vipabh = random.choice(abh)
-    if vipabh.startswith("http"):
-        await event.reply(file=vipabh)
-    else:
-        await event.reply(vipabh)
+async def handle_start(event):
+    await event.reply("ها")
+
 
 ########################################################
 url = "https://ar.wikipedia.org/w/api.php"
