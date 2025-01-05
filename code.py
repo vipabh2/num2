@@ -44,10 +44,6 @@ async def reply(event):
     # else:
 await event.reply(vipabh)
 
-# Start the client
-client.start()
-client.run_until_disconnected()
-
 ########################################################
 url = "https://ar.wikipedia.org/w/api.php"
 searching_state = {}
