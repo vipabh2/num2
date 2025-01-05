@@ -42,7 +42,7 @@ async def reply(event):
     # if vipabh.startswith("http"):
         # await event.reply(file=vipabh)
     # else:
-        await event.reply(vipabh)
+await event.reply(vipabh)
 
 # Start the client
 client.start()
