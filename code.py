@@ -26,7 +26,7 @@ abh = [
     "https://t.me/VIPABH/1214"
 ]
 
-@client.on(events.NewMessage(func=lambda e: e.text and e.text.strip().lower().startswith('مخفي')))
+@client.on(events.NewMessage(pattern='مخفي'))
 async def reply(event):
     vipabh = random.choice(abh)
     if vipabh.startswith("http"):
