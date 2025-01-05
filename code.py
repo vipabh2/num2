@@ -18,6 +18,12 @@ bot_token = os.getenv('BOT_TOKEN')
 client = TelegramClient('n', api_id, api_hash).start(bot_token=bot_token)
 #######################################################################################
 
+import random
+from telethon import TelegramClient, events
+
+# Ensure you have initialized your Telegram client properly
+client = TelegramClient('session_name', api_id, api_hash)
+
 abh = [
     "ها",
     "شرايد",
@@ -27,13 +33,21 @@ abh = [
     "https://t.me/VIPABH/1214"
 ]
 
-@client.on(events.NewMessage(func=lambda e: e.text and 'مخفي' in e.text.strip().lower()))
+@client.on(events.NewMessage(func=lambda e: e.text and (
+    'مخفي' in e.text.strip().lower() or 
+    'المخفي' in e.text.strip().lower() or 
+    'انيموس' in e.text.strip().lower())))
 async def reply(event):
     vipabh = random.choice(abh)
-    if vipabh.startswith("http"):
-        await event.reply(file=vipabh)
-    else:
+    # if vipabh.startswith("http"):
+        # await event.reply(file=vipabh)
+    # else:
         await event.reply(vipabh)
+
+# Start the client
+client.start()
+client.run_until_disconnected()
+
 ########################################################
 url = "https://ar.wikipedia.org/w/api.php"
 searching_state = {}
