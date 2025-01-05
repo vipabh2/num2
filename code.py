@@ -25,7 +25,6 @@ abh = [
     "😶",
     "https://t.me/VIPABH/1214"
 ]
-########################################################
 @client.on(events.NewMessage(func=lambda e: e.text and (
     'مخفي' in e.text.strip().lower() or 
     'المخفي' in e.text.strip().lower() or
