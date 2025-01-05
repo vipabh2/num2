@@ -29,10 +29,10 @@ abh = [
 @client.on(events.NewMessage(func=lambda e: e.text and any(word in e.text.strip().lower() for word in ['مخفي', 'المخفي', 'انيموس'])))
 async def reply(event):
     vipabh = random.choice(abh)
-    # if vipabh.startswith("http"):
-        # await event.reply(file=vipabh)
-    # else:
-await event.reply(vipabh)
+    if vipabh.startswith("http"):
+        await event.reply(file=vipabh)
+    else:
+        await event.reply(vipabh)
 
 ########################################################
 url = "https://ar.wikipedia.org/w/api.php"
