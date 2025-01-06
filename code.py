@@ -39,6 +39,7 @@ async def reply(event):
 #################################
 @ABH.on(events.NewMessage(pattern=r'(ترجمة|ترجمه)'))
 async def handle_message(event):
+    translator = Translator()
     if event.is_reply:
         replied_message = await event.get_reply_message()
         original_text = replied_message.text 
