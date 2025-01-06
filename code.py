@@ -10,7 +10,6 @@ from datetime import datetime
 import os
 import random
 import asyncio
-from telethon import TelegramABH, events
 from telethon.tl.types import InputMediaPhoto
 from telethon.tl.custom import Button
 #########
