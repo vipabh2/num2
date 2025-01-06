@@ -38,7 +38,7 @@ async def reply(event):
 ############################################
 @ABH.on(events.NewMessage(pattern='ابن هاشم'))
 async def reply_abh(event):
-    rl = random.choice(242, 255)
+    rl = random.randint(242, 255)
     url = "https://t.me/VIPABH/{rl}"
     caption = "ابن هاشم (رض) مرات متواضع ،🌚 @K_4x1"
     await event.reply(file=url, caption=caption)
