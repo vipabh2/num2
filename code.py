@@ -28,16 +28,9 @@ abh = [
     "https://t.me/VIPABH/1214"
     "https://t.me/VIPABH/1215"
 ]
-@client.on(events.NewMessage(func=lambda e: e.text and (
-    'مخفي' in e.text.strip().lower() or 
-    'المخفي' in e.text.strip().lower() or 
-    'انيموس' in e.text.strip().lower())))
 @client.on(events.NewMessage(func=lambda e: e.text and any(word in e.text.strip().lower() for word in ['مخفي', 'المخفي', 'انيموس'])))
 async def reply(event):
     vipabh = random.choice(abh)
-    if vipabh.startswith("http"):
-        await event.reply(file=vipabh)
-    else:
     if vipabh.startswith("http"):
         await event.reply(file=vipabh)
     else:
