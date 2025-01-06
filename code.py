@@ -42,7 +42,7 @@ url = [
 @ABH.on(events.NewMessage(pattern='ابن هاشم'))
 async def reply_abh(event):
     choise = random.choice(url)
-    await event.reply(file=vipabh)
+    await event.reply(file=choise)
 ##########################################
 url = "https://ar.wikipedia.org/w/api.php"
 searching_state = {}
