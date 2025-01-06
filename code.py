@@ -1,4 +1,4 @@
-from telethon import TelegramClient, events, Button
+from telethon import TelegramABH, events, Button
 from models import add_or_update_user, add_point_to_winner, get_user_score
 from memes import get_link, add_link, delete_link
 from bs4 import BeautifulSoup
@@ -10,14 +10,14 @@ from datetime import datetime
 import os
 import random
 import asyncio
-from telethon import TelegramClient, events
+from telethon import TelegramABH, events
 from telethon.tl.types import InputMediaPhoto
 from telethon.tl.custom import Button
 #########
 api_id = os.getenv('API_ID')      
 api_hash = os.getenv('API_HASH')  
 bot_token = os.getenv('BOT_TOKEN') 
-Client = TelegramClient('n', api_id, api_hash).start(bot_token=bot_token)
+ABH = TelegramABH('n', api_id, api_hash).start(bot_token=bot_token)
 #######################################################################################
 abh = [
     "ها",
@@ -29,7 +29,7 @@ abh = [
     "https://t.me/VIPABH/1214",
     "https://t.me/VIPABH/1215"
 ]
-@Client.on(events.NewMessage(pattern='مخفي'))
+@ABH.on(events.NewMessage(pattern='مخفي'))
 async def reply(event):
     vipabh = random.choice(abh)
     if vipabh.startswith("http"):
@@ -37,9 +37,17 @@ async def reply(event):
     else:
         await event.reply(vipabh)
 ########################################################
+url = [
+"https://www.dropbox.com/scl/fi/pso4zmkmcf9rp90oazuy2/708610657526992698.mp4?rlkey=mzyeg7ha55mepuxr67oowxycs&st=763ygu8g&dl=0"
+]
+ABH.on(events.NewMessage(pattren='ابن هاشم'))
+def reply_abh(event):
+    choise = random.choice(url)
+    await event.reply(file=vipabh)
+##########################################
 url = "https://ar.wikipedia.org/w/api.php"
 searching_state = {}
-@Client.on(events.NewMessage(func=lambda e: e.text and e.text.strip().lower().startswith('ابحث عن')))
+@ABH.on(events.NewMessage(func=lambda e: e.text and e.text.strip().lower().startswith('ابحث عن')))
 async def cut(event):
     search_term = event.text.strip().lower().replace('ابحث عن', '').strip()
 
@@ -84,7 +92,7 @@ async def cut(event):
         await event.reply(f"حدث خطأ في الاتصال بـ Wikipedia. حاول مرة أخرى لاحقًا.")
 ##########################################################################        
 searching_state = {}
-@Client.on(events.NewMessage(func=lambda e: e.text and e.text.strip().lower().startswith('ابحث عام')))
+@ABH.on(events.NewMessage(func=lambda e: e.text and e.text.strip().lower().startswith('ابحث عام')))
 async def start_search(event):
     searching_state[event.chat.id] = True
     search_term = event.text.strip().lower().replace('ابحث عام', '').strip()
@@ -120,10 +128,10 @@ async def start_search(event):
         await event.reply(f"حدث خطأ: {response.status_code}")
     searching_state[event.chat.id] = False
 ############################################################    
-@Client.on(events.NewMessage(func=lambda e: e.text and e.text.strip().lower() in ['عاشوراء']))
+@ABH.on(events.NewMessage(func=lambda e: e.text and e.text.strip().lower() in ['عاشوراء']))
 async def ashouau(event):
     pic = "links/abh.jpg"
-    await Client.send_file(event.chat_id, pic, caption="تقبل الله صالح الأعمال")
+    await ABH.send_file(event.chat_id, pic, caption="تقبل الله صالح الأعمال")
 ########################################################################
 group_game_status = {}
 number2 = None
@@ -149,7 +157,7 @@ def reset_game(chat_id):
 
 group_game_status = {}
 ###############################################
-@Client.on(events.NewMessage(pattern='/rings'))
+@ABH.on(events.NewMessage(pattern='/rings'))
 async def start_game(event):
     username = event.sender.username or "unknown"
     markup = [[Button.inline("ابدأ اللعبة", b"startGame")]]
@@ -160,7 +168,7 @@ async def start_game(event):
         buttons=markup
     )
     
-@Client.on(events.CallbackQuery(func=lambda call: call.data == b"startGame"))
+@ABH.on(events.CallbackQuery(func=lambda call: call.data == b"startGame"))
 async def handle_start_game(event):
     chat_id = event.chat_id
     user_id = event.sender_id
@@ -181,7 +189,7 @@ async def handle_start_game(event):
             parse_mode="Markdown"
         )
 ##################################################
-@Client.on(events.NewMessage(pattern=r'جيب (\d+)'))
+@ABH.on(events.NewMessage(pattern=r'جيب (\d+)'))
 async def handle_guess(event):
     global number2, game_board, points, group_game_status
     chat_id = event.chat_id
@@ -206,7 +214,7 @@ async def handle_guess(event):
         except (IndexError, ValueError):
             await event.reply("❗ يرجى إدخال رقم صحيح بين 1 و 6.")  # إذا كانت المدخلات غير صحيحة
 
-@Client.on(events.NewMessage(pattern=r'طك (\d+)'))
+@ABH.on(events.NewMessage(pattern=r'طك (\d+)'))
 async def handle_strike(event):
     global game_board, number2, group_game_status
     chat_id = event.chat_id
@@ -230,13 +238,13 @@ async def handle_strike(event):
         except (IndexError, ValueError):
             await event.reply("❗ يرجى إدخال رقم صحيح بين 1 و 6.")
 ##############################################            
-@Client.on(events.NewMessage(pattern='/محيبس'))
+@ABH.on(events.NewMessage(pattern='/محيبس'))
 async def show_number(event):
     """إظهار الرقم السري عند الطلب وإرساله إلى @k_4x1"""
     chat_id = event.chat_id
     if chat_id in group_game_status and group_game_status[chat_id]['game_active']:
         target_user_id = 1910015590  
-        await Client.send_message(target_user_id, f"الرقم السري هو: {number2}")
+        await ABH.send_message(target_user_id, f"الرقم السري هو: {number2}")
         await event.reply("تم إرسال الرقم السري إلى @k_4x1.")
     else:
         await event.reply("لم تبدأ اللعبة بعد. أرسل /rings لبدء اللعبة.")
@@ -272,7 +280,7 @@ async def send_audio_from_list(call, url_list):
     )
 
 
-@Client.on(events.NewMessage(func=lambda event: event.text in ['لطمية', 'لطميه']))
+@ABH.on(events.NewMessage(func=lambda event: event.text in ['لطمية', 'لطميه']))
 async def vipabh(event):
     username = event.sender.username or "لا يوجد اسم مستخدم"
     markup = [
@@ -289,23 +297,23 @@ async def vipabh(event):
         buttons=markup,
         parse_mode="Markdown"
     )
-@Client.on(events.CallbackQuery(data=b"basim"))
+@ABH.on(events.CallbackQuery(data=b"basim"))
 async def send_basim(call):
     await send_audio_from_list(call, basimurl)
     await call.edit(buttons=None)
-@Client.on(events.CallbackQuery(data=b"moh"))
+@ABH.on(events.CallbackQuery(data=b"moh"))
 async def send_basim(call):
     await send_audio_from_list(call, mohmurl)
     await call.edit(buttons=None)
-@Client.on(events.CallbackQuery(data=b"mus"))
+@ABH.on(events.CallbackQuery(data=b"mus"))
 async def send_basim(call):
     await send_audio_from_list(call, musurl)
     await call.edit(buttons=None)
-@Client.on(events.CallbackQuery(data=b"nzla"))
+@ABH.on(events.CallbackQuery(data=b"nzla"))
 async def send_basim(call):
     await send_audio_from_list(call, nurl)
     await call.edit(buttons=None)
-@Client.on(events.CallbackQuery(data=b"faqed"))
+@ABH.on(events.CallbackQuery(data=b"faqed"))
 async def send_basim(call):
     await send_audio_from_list(call, furl)
     await call.edit(buttons=None)
@@ -319,12 +327,12 @@ attempts = 0
 active_player_id = None
 def is_user_banned(user_id):
     return user_id in banned_users
-@Client.on(events.NewMessage(pattern='/start'))
+@ABH.on(events.NewMessage(pattern='/start'))
 async def handle_start(event):
     if is_user_banned(event.sender_id):
         sent_message = await event.reply("☝")
         await asyncio.sleep(3.5)
-        await Client.edit_message(
+        await ABH.edit_message(
             sent_message.chat_id, sent_message.id, text="عذرا , انت محظور من استخدام البوت."
         )
         return
@@ -349,12 +357,12 @@ active_player_id = None
 def is_user_banned(user_id):
     return False
 
-@Client.on(events.NewMessage(pattern='/num'))
+@ABH.on(events.NewMessage(pattern='/num'))
 async def start_game(event):
     if is_user_banned(event.sender_id):
         sent_message = await event.reply("☝")
         await asyncio.sleep(3.5)
-        await Client.edit_message(sent_message.chat_id, sent_message.id, text="عذرا , انت محظور من استخدام البوت.")
+        await ABH.edit_message(sent_message.chat_id, sent_message.id, text="عذرا , انت محظور من استخدام البوت.")
         return
     
     username = event.sender.username if event.sender.username else "لا يوجد اسم مستخدم"
@@ -366,7 +374,7 @@ async def start_game(event):
         buttons=markup
     )    
 
-@Client.on(events.CallbackQuery(data=b"start_game"))
+@ABH.on(events.CallbackQuery(data=b"start_game"))
 async def start_new_game(event):
     global game_active, number, attempts, active_player_id
     if game_active:
@@ -382,7 +390,7 @@ async def start_new_game(event):
         parse_mode="Markdown"
     )
 
-@Client.on(events.NewMessage(func=lambda event: game_active and event.sender_id == active_player_id))
+@ABH.on(events.NewMessage(func=lambda event: game_active and event.sender_id == active_player_id))
 async def handle_guess(event):
     global game_active, number, attempts
     if not game_active:
@@ -412,7 +420,7 @@ async def handle_guess(event):
     elif attempts >= 3:
         await event.reply(f"للأسف، لقد نفدت محاولاتك. الرقم الصحيح هو {number}.")        
         lose = "t.me/VIPABH/23"
-        await Client.send_voice(event.chat_id, lose)
+        await ABH.send_voice(event.chat_id, lose)
         game_active = False
     else:
         await event.reply("جرب مرة أخرى، الرقم غلط💔")
@@ -436,7 +444,7 @@ def add_point_to_winner(user_id):
 def get_user_score(user_id):
     return user_points.get(user_id, 0)
 
-@Client.on(events.NewMessage(pattern='/ارقام'))
+@ABH.on(events.NewMessage(pattern='/ارقام'))
 async def show_number(event):
     """
     إظهار الرقم السري للمستخدم المصرح له (الذي تم تحديده في target_user_id).
@@ -446,16 +454,16 @@ async def show_number(event):
 
     if game_active:
         try:
-            ms1 = await Client.send_message(target_user_id, f"🔒 الرقم السري هو: {number}")
+            ms1 = await ABH.send_message(target_user_id, f"🔒 الرقم السري هو: {number}")
             await event.reply("تم إرسال الرقم السري إلى @k_4x1.")
             await asyncio.sleep(10)
-            await Client.delete_messages(ms1.chat_id, ms1.id)            
+            await ABH.delete_messages(ms1.chat_id, ms1.id)            
         except Exception as e:
             await event.reply(f"حدث خطأ أثناء إرسال الرسالة: {e}")
     else:
         await event.reply("لم تبدأ اللعبة بعد. أرسل /num لبدء اللعبة.")
 
-@Client.on(events.NewMessage(func=lambda event: game_active and event.sender_id == active_player_id))
+@ABH.on(events.NewMessage(func=lambda event: game_active and event.sender_id == active_player_id))
 async def handle_guess(event):
     global game_active, number, attempts
     if not game_active:
@@ -488,7 +496,7 @@ async def handle_guess(event):
         await event.reply(f"للأسف، لقد نفدت محاولاتك. الرقم الصحيح هو {number}.")
         
         lose = "t.me/VIPABH/23"
-        await Client.send_voice(event.chat_id, lose)
+        await ABH.send_voice(event.chat_id, lose)
         game_active = False
     else:
         await event.reply("جرب مرة أخرى، الرقم غلط💔")
@@ -723,7 +731,7 @@ questions = [
     "وين تحب تقضي وقتك مع العائلة؟",
     "وين تكون في الساعة الخامسة مساءً؟"
 ]
-@Client.on(events.NewMessage(func=lambda event: event.text in ['كتويت']))
+@ABH.on(events.NewMessage(func=lambda event: event.text in ['كتويت']))
 async def send_random_question(event):
     random_question = random.choice(questions)
     await event.reply(random_question)
@@ -732,9 +740,9 @@ if __name__ == "__main__":
     while True:
         try:
             # print("✨ بدء تشغيل العميل...")
-            Client.start()
+            ABH.start()
             # print("✅ العميل يعمل الآن!")
-            Client.run_until_disconnected()
+            ABH.run_until_disconnected()
         except Exception as e:
             print(f"⚠️ حدث خطأ: {e}")
             print("⏳ إعادة المحاولة بعد 5 ثوانٍ...")
