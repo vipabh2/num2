@@ -19,6 +19,40 @@ api_hash = os.getenv('API_HASH')
 bot_token = os.getenv('BOT_TOKEN') 
 ABH = TelegramClient('n', api_id, api_hash).start(bot_token=bot_token)
 #######################################################################################
+operations = {
+    "+": operator.add,
+    "-": operator.sub,
+    "*": operator.mul,
+    "/": operator.truediv
+}
+@ABH.on(events.NewMessage(pattern=r'احسب (\d+)\s*([\+\-\*/])\s*(\d+)'))
+@ABH.on(events.NewMessage)
+async def reply(event):
+    if event.is_reply:
+        original_message = await event.get_reply_message()
+        text = original_message.text
+    else:
+        text = event.text
+
+    match = event.pattern_match
+    if not match:
+        return
+
+    try:
+        a = int(match.group(1))
+        mark = match.group(2)
+        b = int(match.group(3))
+
+        if mark in operations:
+            result = operations[mark](a, b)
+            await event.respond(f"النتيجة: {result}")
+        else:
+            await event.respond("عملية غير مدعومة!")
+    except ZeroDivisionError:
+        await event.respond("خطأ: لا يمكن القسمة على صفر!")
+    # except Exception as e:
+    #     await event.respond(f"حدث خطأ: {e}")
+############################################
 abh = [
     "ها",
     "تفظل",
