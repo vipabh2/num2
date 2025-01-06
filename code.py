@@ -41,7 +41,7 @@ async def reply_abh(event):
     rl = random.randint(242, 255) 
     url = f"https://t.me/iuABH/{rl}" 
     caption = "ابن هاشم (رض) مرات متواضع ،🌚 @K_4x1" 
-    await event.reply(file=url, caption=caption)
+    await event.send_file(file=url, caption=caption)
 
 ##########################################
 url = "https://ar.wikipedia.org/w/api.php"
