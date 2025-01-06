@@ -35,13 +35,13 @@ async def reply(event):
         await event.reply(file=vipabh)
     else:
         await event.reply(vipabh)
-########################################################
-url = [
-"https://vimeo.com/1044260751"]
+############################################
 @ABH.on(events.NewMessage(pattern='ابن هاشم'))
 async def reply_abh(event):
-    choise = random.choice(url)
-    await event.reply(file=choise)
+    rl = random.choice(242, 255)
+    url = "https://t.me/VIPABH/{rl}"
+    caption = "ابن هاشم (رض) مرات متواضع ،🌚 @K_4x1"
+    await event.reply(file=url, caption=caption)
 ##########################################
 url = "https://ar.wikipedia.org/w/api.php"
 searching_state = {}
