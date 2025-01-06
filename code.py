@@ -36,7 +36,7 @@ async def reply(event):
     else:
         await event.reply(vipabh)
 #################################
-@Client.on(events.NewMessage(pattern=r'(ترجمة|ترجمه)'))
+@ABH.on(events.NewMessage(pattern=r'(ترجمة|ترجمه)'))
 async def handle_message(event):
     if event.is_reply:
         replied_message = await event.get_reply_message()
