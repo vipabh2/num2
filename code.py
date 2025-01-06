@@ -38,10 +38,10 @@ async def reply(event):
 ############################################
 @ABH.on(events.NewMessage(pattern='ابن هاشم'))
 async def reply_abh(event):
-    rl = random.randint(242, 255) 
+    rl = random.randint(242, 255)  
     url = f"https://t.me/iuABH/{rl}" 
-    caption = "ابن هاشم (رض) مرات متواضع ،🌚 @K_4x1" 
-    await event.send_file(file=url, caption=caption)
+    caption = "ابن هاشم (رض) مرات متواضع ،🌚 @K_4x1"
+    await event.client.send_file(event.chat_id, url, caption=caption)
 
 ##########################################
 url = "https://ar.wikipedia.org/w/api.php"
