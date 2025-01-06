@@ -4,6 +4,7 @@ from telethon.tl.types import InputMediaPhoto
 from googletrans import Translator
 from bs4 import BeautifulSoup
 from datetime import datetime
+import operator
 import requests
 import asyncio
 import random
