@@ -42,7 +42,7 @@ async def reply(event):
 
         if mark in operations:
             result = operations[mark](a, b)
-            await event.respond(f"النتيجة: {result}")
+            await event.respond(f"النتيجة `{result}`")
         else:
             await event.respond("عملية غير مدعومة!")
     except ZeroDivisionError:
