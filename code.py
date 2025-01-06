@@ -39,11 +39,9 @@ async def reply(event):
 @ABH.on(events.NewMessage(pattern='ابن هاشم'))
 async def reply_abh(event):
     rl = random.randint(242, 255)
-    url = f"https://t.me/VIPABH/{rl}"  
+    url = f"https://t.me/iuABH/{rl}" 
     caption = "ابن هاشم (رض) مرات متواضع ،🌚 @K_4x1"
-    print(url)
-    print(caption)
-    await event.reply(f"Here is the link: {url}\n{caption}")
+    await event.reply(file=url, caption=caption)
 ##########################################
 url = "https://ar.wikipedia.org/w/api.php"
 searching_state = {}
