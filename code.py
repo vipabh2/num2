@@ -23,12 +23,11 @@ abh = [
     "كول",
     "اسمعك",
     "شرايد",
-    "شرايد",
     "خلصني",
     "https://t.me/VIPABH/1214",
     "https://t.me/VIPABH/1215"
 ]
-@Client.on(events.NewMessage(pattern='مخفي'))
+@client.on(events.NewMessage(pattern='مخفي'))
 async def reply(event):
     vipabh = random.choice(abh)
     if vipabh.startswith("http"):
