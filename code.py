@@ -1,18 +1,14 @@
-from telethon import TelegramClient, events, Button
 from models import add_or_update_user, add_point_to_winner, get_user_score
-from memes import get_link, add_link, delete_link
-from bs4 import BeautifulSoup
+from telethon import TelegramClient, events, Button
+from telethon.tl.types import InputMediaPhoto
 from googletrans import Translator
+from bs4 import BeautifulSoup
+from datetime import datetime
 import requests
-import base64
+import asyncio
 import random
 import time
-from datetime import datetime
 import os
-import random
-import asyncio
-from telethon.tl.types import InputMediaPhoto
-from telethon.tl.custom import Button
 #########
 api_id = os.getenv('API_ID')      
 api_hash = os.getenv('API_HASH')  
