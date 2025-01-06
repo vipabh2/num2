@@ -36,12 +36,13 @@ async def reply(event):
     else:
         await event.reply(vipabh)
 ############################################
-@ABH.on(events.NewMessage(pattern='ابن هاشم', 'المطور'))
+@ABH.on(events.NewMessage(pattern='ابن هاشم'))
 async def reply_abh(event):
-    rl = random.randint(242, 255)  
-    url = f"https://t.me/iuABH/{rl}" 
-    caption = "ابن هاشم (رض) مرات متواضع ،🌚 @K_4x1"
-    await event.client.send_file(event.chat_id, url, caption=caption, reply_to=event.message.id)
+    if event.chat_id == 1001968219024:
+        rl = random.randint(242, 255)
+        url = f"https://t.me/iuABH/{rl}"  
+        caption = "ابن هاشم (رض) مرات متواضع ،🌚 @K_4x1" 
+        await event.client.send_file(event.chat_id, url, caption=caption, reply_to=event.message.id)    
 ##########################################
 url = "https://ar.wikipedia.org/w/api.php"
 searching_state = {}
