@@ -37,7 +37,7 @@ async def reply(event):
         await event.reply(vipabh)
 ########################################################
 url = [
-"https://vimeo.com/1044260751?share=copy"]
+"https://vimeo.com/1044260751"]
 @ABH.on(events.NewMessage(pattern='ابن هاشم'))
 async def reply_abh(event):
     choise = random.choice(url)
