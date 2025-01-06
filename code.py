@@ -21,7 +21,6 @@ operations = {
     "-": operator.sub,
     "*": operator.mul,
     "/": operator.truediv
-    "÷": operator.truediv
 }
 @ABH.on(events.NewMessage(pattern=r'احسب (\d+)\s*([\+\-\*/])\s*(\d+)'))
 @ABH.on(events.NewMessage)
