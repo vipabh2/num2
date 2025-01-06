@@ -42,11 +42,11 @@ async def reply(event):
 
         if mark in operations:
             result = operations[mark](a, b)
-            await event.respond(f"النتيجة `{result}`")
+            await event.respond(f"النتيجة `{result}`", reply_to=event.message.id)
         else:
-            await event.respond("عملية غير مدعومة!")
+            await event.respond("عملية غير مدعومة!", reply_to=event.message.id)
     except ZeroDivisionError:
-        await event.respond("خطأ: لا يمكن القسمة على صفر!")
+        await event.respond("خطأ: لا يمكن القسمة على صفر!", reply_to=event.message.id)
     # except Exception as e:
     #     await event.respond(f"حدث خطأ: {e}")
 ############################################
