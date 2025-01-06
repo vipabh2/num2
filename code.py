@@ -74,7 +74,7 @@ async def reply_abh(event):
 ###############################
 @ABH.on(events.NewMessage(pattern=r'(سلام عليكم|السلام عليكم)'))
 async def reply_abh(event):
-        await event.reply_to("عليكم السلام")    
+        await event.reply("عليكم السلام")    
 ##########################################
 url = "https://ar.wikipedia.org/w/api.php"
 searching_state = {}
