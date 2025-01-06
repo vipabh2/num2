@@ -39,6 +39,7 @@ async def reply(event):
 @ABH.on(events.NewMessage(pattern='ابن هاشم'))
 async def reply_abh(event):
     if event.chat_id == 1001968219024:
+        print(event.chat_id)
         rl = random.randint(242, 255)
         url = f"https://t.me/iuABH/{rl}"  
         caption = "ابن هاشم (رض) مرات متواضع ،🌚 @K_4x1" 
