@@ -71,6 +71,10 @@ async def reply_abh(event):
         url = f"https://t.me/iuABH/{rl}"  
         caption = "ابن هاشم (رض) مرات متواضع ،🌚 @K_4x1" 
         await event.client.send_file(event.chat_id, url, caption=caption, reply_to=event.message.id)    
+###############################
+@ABH.on(events.NewMessage(pattern=r'(سلام عليكم|السلام عليكم)'))
+async def reply_abh(event):
+        await event.reply_to("عليكم السلام")    
 ##########################################
 url = "https://ar.wikipedia.org/w/api.php"
 searching_state = {}
