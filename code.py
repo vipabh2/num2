@@ -41,7 +41,7 @@ url = [
 "https://www.dropbox.com/scl/fi/pso4zmkmcf9rp90oazuy2/708610657526992698.mp4?rlkey=mzyeg7ha55mepuxr67oowxycs&st=763ygu8g&dl=0"
 ]
 ABH.on(events.NewMessage(pattren='ابن هاشم'))
-def reply_abh(event):
+async def reply_abh(event):
     choise = random.choice(url)
     await event.reply(file=vipabh)
 ##########################################
