@@ -36,7 +36,7 @@ async def reply(event):
     else:
         await event.reply(vipabh)
 ############################################
-@ABH.on(events.NewMessage(pattern='ابن هاشم'))
+@ABH.on(events.NewMessage(pattern='ابن هاشم', 'المطور'))
 async def reply_abh(event):
     rl = random.randint(242, 255)  
     url = f"https://t.me/iuABH/{rl}" 
