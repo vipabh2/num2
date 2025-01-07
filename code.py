@@ -10,12 +10,17 @@ import asyncio
 import random
 import time
 import os
-#########
+
 api_id = os.getenv('API_ID')      
 api_hash = os.getenv('API_HASH')  
 bot_token = os.getenv('BOT_TOKEN') 
 ABH = TelegramClient('c', api_id, api_hash).start(bot_token=bot_token)
-#######################################################################################
+
+@ABH.on(events.NewMessage(pattern='احس'))
+async def ashouau(event):
+    pic = "t.me/iuABH/265"
+    await ABH.send_file(event.chat_id, pic)
+    
 operations = {
     "+": operator.add,
     "-": operator.sub,
@@ -37,7 +42,6 @@ async def calc(event):
             await event.respond("عملية غير مدعومة!", reply_to=event.message.id)
     except ZeroDivisionError:
         await event.respond("خطأ: لا يمكن القسمة على صفر!", reply_to=event.message.id)
-############################################
 abh = [
     "ها",
     "تفظل",
@@ -55,7 +59,7 @@ async def reply(event):
         await event.reply(file=vipabh)
     else:
         await event.reply(vipabh)
-#################################
+
 @ABH.on(events.NewMessage(pattern=r'(ترجمة|ترجمه)'))
 async def handle_message(event):
     translator = Translator()
@@ -69,7 +73,6 @@ async def handle_message(event):
     if not original_text:
         await event.reply("يرجى الرد على رسالة تحتوي على النص المراد ترجمته أو كتابة النص بجانب الأمر.")
         return
-
     detected_language = translator.detect(original_text)
     if detected_language.lang == "ar": 
         translated = translator.translate(original_text, dest="en")
@@ -81,7 +84,7 @@ async def handle_message(event):
         f"النص المترجم: `{translated.text}`"
     )
     await event.reply(response)
-###############################
+
 @ABH.on(events.NewMessage(pattern='ابن هاشم'))
 async def reply_abh(event):
     if event.chat_id == -1001968219024:
@@ -91,8 +94,8 @@ async def reply_abh(event):
         await event.client.send_file(event.chat_id, url, caption=caption, reply_to=event.message.id)    
     else: 
         return
-###############################
-@ABH.on(events.NewMessage(pattern='الامريكي'))
+
+@ABH.on(events.NewMessage(pattern='امريجا|الامريكي'))
 async def reply_abh(event):
     if event.chat_id == -1001968219024:
         url = "https://files.catbox.moe/p9e75j.mp4"  
@@ -100,11 +103,11 @@ async def reply_abh(event):
         await event.client.send_file(event.chat_id, url, caption=caption, reply_to=event.message.id)    
     else: 
         return
-###############################
+
 @ABH.on(events.NewMessage(pattern=r'(سلام عليكم|السلام عليكم)'))
 async def reply_abh(event):
         await event.reply("عليكم السلام")    
-#########################################
+
 @ABH.on(events.NewMessage(pattern=r'(مخفي طكة زيج|زيج)'))
 async def reply_abh(event):
     replied_message = await event.get_reply_message()
@@ -113,7 +116,7 @@ async def reply_abh(event):
     else:
         await event.reply("يجب عليك الرد على رسالة حتى يعمل هذا الأمر.")
 
-##########################################
+
 url = "https://ar.wikipedia.org/w/api.php"
 searching_state = {}
 @ABH.on(events.NewMessage(func=lambda e: e.text and e.text.strip().lower().startswith('ابحث عن')))
@@ -159,7 +162,7 @@ async def cut(event):
             await event.reply("حدث خطأ في استجابة API.")
     else:
         await event.reply(f"حدث خطأ في الاتصال بـ Wikipedia. حاول مرة أخرى لاحقًا.")
-##########################################################################        
+
 searching_state = {}
 @ABH.on(events.NewMessage(func=lambda e: e.text and e.text.strip().lower().startswith('ابحث عام')))
 async def start_search(event):
@@ -196,12 +199,12 @@ async def start_search(event):
     else:
         await event.reply(f"حدث خطأ: {response.status_code}")
     searching_state[event.chat.id] = False
-############################################################    
+
 @ABH.on(events.NewMessage(func=lambda e: e.text and e.text.strip().lower() in ['عاشوراء']))
 async def ashouau(event):
     pic = "links/abh.jpg"
     await ABH.send_file(event.chat_id, pic, caption="تقبل الله صالح الأعمال")
-########################################################################
+
 group_game_status = {}
 number2 = None
 game_board = [["👊", "👊", "👊", "👊", "👊", "👊"]]
@@ -225,7 +228,7 @@ def reset_game(chat_id):
     group_game_status[chat_id]['active_player_id'] = None
 
 group_game_status = {}
-###############################################
+
 @ABH.on(events.NewMessage(pattern='/rings'))
 async def start_game(event):
     username = event.sender.username or "unknown"
@@ -257,7 +260,7 @@ async def handle_start_game(event):
             f"عزيزي [{event.sender.first_name}](https://t.me/@{username})! تم تسجيلك في لعبة محيبس \nارسل `جيب ` + رقم للحزر \n ارسل `طك ` + رقم للتخمين.",
             parse_mode="Markdown"
         )
-##################################################
+
 @ABH.on(events.NewMessage(pattern=r'جيب (\d+)'))
 async def handle_guess(event):
     global number2, game_board, points, group_game_status
@@ -306,7 +309,7 @@ async def handle_strike(event):
                 await event.reply(f" {iuABH} \n{format_board(game_board, numbers_board)}")
         except (IndexError, ValueError):
             await event.reply("❗ يرجى إدخال رقم صحيح بين 1 و 6.")
-##############################################            
+            
 @ABH.on(events.NewMessage(pattern='/محيبس'))
 async def show_number(event):
     """إظهار الرقم السري عند الطلب وإرساله إلى @k_4x1"""
@@ -317,7 +320,7 @@ async def show_number(event):
         await event.reply("تم إرسال الرقم السري إلى @k_4x1.")
     else:
         await event.reply("لم تبدأ اللعبة بعد. أرسل /rings لبدء اللعبة.")
-############################################################
+
 basimurl = (
     "50", "51", "52", "53", "54", "55", "56", "57", "58", "59",
     "60", "61", "62", "63", "64", "65", "66", "67", "68", "69",
@@ -386,7 +389,7 @@ async def send_basim(call):
 async def send_basim(call):
     await send_audio_from_list(call, furl)
     await call.edit(buttons=None)
-###########################################
+
 user_points = {}
 banned_users = []
 game_active = False
@@ -808,9 +811,7 @@ async def send_random_question(event):
 if __name__ == "__main__":
     while True:
         try:
-            # print("✨ بدء تشغيل العميل...")
             ABH.start()
-            # print("✅ العميل يعمل الآن!")
             ABH.run_until_disconnected()
         except Exception as e:
             print(f"⚠️ حدث خطأ: {e}")
