@@ -16,6 +16,13 @@ api_hash = os.getenv('API_HASH')
 bot_token = os.getenv('BOT_TOKEN') 
 ABH = TelegramClient('c', api_id, api_hash).start(bot_token=bot_token)
 
+@ABH.on(events.NewMessage(pattern='ميمز'))
+async def mem1(event):
+    rl = random.randint(6, 268)
+    url = f"https://t.me/IUABH/{rl}"
+    
+    await event.client.send_file(event.chat_id, url, reply_to=event.message.id)
+        
 @ABH.on(events.NewMessage(pattern='احس'))
 async def mem1(event):
         url = "https://files.catbox.moe/euqqqk.jpg"  
