@@ -21,38 +21,44 @@ operations = {
     "-": operator.sub,
     "*": operator.mul,
     "/": operator.truediv
-}
-@ABH.on(events.NewMessage(pattern=r'احسب (\d+)\s*([\+\-\*/])\s*(\d+)'))
-@ABH.on(events.NewMessage)
+}@ABH.on(events.NewMessage(pattern=r'احسب (\d+)\s*([\+\-\*/÷])\s*(\d+)'))
 async def reply(event):
     if event.is_reply:
         original_message = await event.get_reply_message()
-        text = original_message.text
+        if original_message and original_message.text: 
+            text = original_message.text
+        else:
+            await event.respond("خطأ: الرسالة الأصلية لا تحتوي على نص!", reply_to=event.message.id)
+            return
     else:
-        text = event.text
-
+        if event.text: 
+            text = event.text
+        else:
+            await event.respond("خطأ: الرسالة الحالية لا تحتوي على نص!", reply_to=event.message.id)
+            return
     match = event.pattern_match
     if not match:
         return
-a = int(match.group(1))
-mark = match.group(2)
-b = int(match.group(3))
+    a = int(match.group(1))
+    mark = match.group(2)
+    b = int(match.group(3))
+    operations = {
+        "+": lambda x, y: x + y,
+        "-": lambda x, y: x - y,
+        "*": lambda x, y: x * y,
+        "/": lambda x, y: x / y,
+        "÷": lambda x, y: x / y  # دعم علامة القسمة "÷"
+    }
 
-operations = {
-    "+": lambda x, y: x + y,
-    "-": lambda x, y: x - y,
-    "*": lambda x, y: x * y,
-    "/": lambda x, y: x / y,
-    "÷": lambda x, y: x / y  
-}
-try:
-    if mark in operations:
-        result = operations[mark](a, b)
-        await event.respond(f"النتيجة: `{result}`", reply_to=event.message.id)
-    else:
-        await event.respond("عملية غير مدعومة!", reply_to=event.message.id)
-except ZeroDivisionError:
-    await event.respond("خطأ: لا يمكن القسمة على صفر!", reply_to=event.message.id)            
+    try:
+        if mark in operations:
+            result = operations[mark](a, b)
+            await event.respond(f"النتيجة: `{result}`", reply_to=event.message.id)
+        else:
+            await event.respond("عملية غير مدعومة!", reply_to=event.message.id)
+    except ZeroDivisionError:
+        await event.respond("خطأ: لا يمكن القسمة على صفر!", reply_to=event.message.id)
+    
 ############################################
 abh = [
     "ها",
