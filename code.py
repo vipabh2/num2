@@ -47,7 +47,6 @@ async def reply(event):
         "-": lambda x, y: x - y,
         "*": lambda x, y: x * y,
         "/": lambda x, y: x / y,
-        "÷": lambda x, y: x / y  # دعم علامة القسمة "÷"
     }
 
     try:
