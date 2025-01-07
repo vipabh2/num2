@@ -4,8 +4,9 @@ from telethon.tl.types import InputMediaPhoto
 from googletrans import Translator
 from bs4 import BeautifulSoup
 from datetime import datetime
-import operator
+import subprocess
 import requests
+import operator
 import asyncio
 import random
 import time
@@ -16,6 +17,12 @@ api_hash = os.getenv('API_HASH')
 bot_token = os.getenv('BOT_TOKEN') 
 ABH = TelegramClient('c', api_id, api_hash).start(bot_token=bot_token)
 #######################################################################################
+@ABH.on(events.NewMessage(pattern=r'!تحديث'))
+async def restart_bot(event):
+    await event.reply("البوت سيتم تحديثه الآن...")
+    subprocess.Popen(['python3', 'code.py'])
+    await event.reply("تم إعادة تشغيل البوت بنجاح.")
+##############
 operations = {
     "+": operator.add,
     "-": operator.sub,
