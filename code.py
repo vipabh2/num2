@@ -104,6 +104,17 @@ async def reply_abh(event):
     else: 
         return
 ###############################
+    await event.reply(response)
+###############################
+@ABH.on(events.NewMessage(pattern='الامريكي'))
+async def reply_abh(event):
+    if event.chat_id == -1001968219024:
+        url = "https://files.catbox.moe/p9e75j.mp4"  
+        caption = "@l_h_2" 
+        await event.client.send_file(event.chat_id, url, caption=caption, reply_to=event.message.id)    
+    else: 
+        return
+###############################
 @ABH.on(events.NewMessage(pattern=r'(سلام عليكم|السلام عليكم)'))
 async def reply_abh(event):
         await event.reply("عليكم السلام")    
