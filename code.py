@@ -26,6 +26,7 @@ operations = {
 @ABH.on(events.NewMessage(pattern=r'احسب (\d+)\s*([\+\-\*/÷])\s*(\d+)'))
 async def calc(event):
     try:
+        match = event.pattern_match 
         a = int(match.group(1))
         mark = match.group(2)
         b = int(match.group(3))
