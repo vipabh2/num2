@@ -121,7 +121,7 @@ async def reply_abh(event):
 async def reply_abh(event):
     replied_message = await event.get_reply_message()
     if replied_message:
-        await replied_message.reply("https://t.me/VIPABH/1215")
+        await replied_message.send_file("https://t.me/VIPABH/1215")
     else:
         await event.send_file("يجب عليك الرد على رسالة حتى يعمل هذا الأمر.")
    
