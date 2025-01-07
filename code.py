@@ -117,13 +117,13 @@ async def reply_abh(event):
 async def reply_abh(event):
         await event.reply("عليكم السلام")    
 ##########################################
-@ABH.on(events.NewMessage(pattern=r'(مخفي طكة زيج|زيج)'))
-async def reply_abh(event):
-    replied_message = await event.get_reply_message()
-    if replied_message:
-        await replied_message.send_file("https://t.me/VIPABH/1215")
-    else:
-        await event.send_file("يجب عليك الرد على رسالة حتى يعمل هذا الأمر.")
+# @ABH.on(events.NewMessage(pattern=r'(مخفي طكة زيج|زيج)'))
+# async def reply_abh(event):
+#     replied_message = await event.get_reply_message()
+#     if replied_message:
+#         await replied_message.send_file("https://t.me/VIPABH/1215")
+#     else:
+#         await event.send_file("يجب عليك الرد على رسالة حتى يعمل هذا الأمر.")
    
 ##########################################
 url = "https://ar.wikipedia.org/w/api.php"
