@@ -4,8 +4,6 @@ from telethon.tl.types import InputMediaPhoto
 from googletrans import Translator
 from bs4 import BeautifulSoup
 from datetime import datetime
-from os import system, environ
-import sys
 import requests
 import operator
 import asyncio
@@ -18,18 +16,6 @@ api_hash = os.getenv('API_HASH')
 bot_token = os.getenv('BOT_TOKEN') 
 ABH = TelegramClient('c', api_id, api_hash).start(bot_token=bot_token)
 #######################################################################################
-@ABH.on(events.NewMessage(pattern='/تحديث'))
-async def update_repo(_, message: Message):
-    chat_id = message.chat.id
-    msg = await message.reply("🔄 جاري التحديث...")
-    update_avail = updater()    
-    if update_avail:
-        await msg.edit("✅ تم التحديث\n\n• تم اعاده تشغيل البوت, سيتم التفعيل بعد دقيقه.")
-        system("git pull -f && pip3 install -r requirements.txt")
-        execle(sys.executable, sys.executable, "main.py", environ)
-        return
-        await msg.edit("البوت **تم تحديثه**", disable_web_page_preview=True)
-##############
 operations = {
     "+": operator.add,
     "-": operator.sub,
