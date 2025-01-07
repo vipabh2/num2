@@ -19,8 +19,7 @@ ABH = TelegramClient('c', api_id, api_hash).start(bot_token=bot_token)
 @ABH.on(events.NewMessage(pattern='احس'))
 async def ashouau(event):
     pic = "https://t.me/iuABH/265"
-
-    await ABH.send_file(event.chat_id, pic)
+    await event.client.send_file(event.chat_id, pic, caption=caption, reply_to=event.message.id)    
     
 operations = {
     "+": operator.add,
@@ -204,7 +203,7 @@ async def start_search(event):
 @ABH.on(events.NewMessage(func=lambda e: e.text and e.text.strip().lower() in ['عاشوراء']))
 async def ashouau(event):
     pic = "links/abh.jpg"
-    await ABH.send_file(event.chat_id, pic, caption="تقبل الله صالح الأعمال")
+    await ABH.send_file(event.chat_id, pic, caption="تقبل الله صالح الأعمال", reply_to=event.message.id)
 
 group_game_status = {}
 number2 = None
