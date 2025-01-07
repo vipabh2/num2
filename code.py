@@ -4,7 +4,8 @@ from telethon.tl.types import InputMediaPhoto
 from googletrans import Translator
 from bs4 import BeautifulSoup
 from datetime import datetime
-import subprocess
+from os import system, environ
+import sys
 import requests
 import operator
 import asyncio
@@ -17,11 +18,18 @@ api_hash = os.getenv('API_HASH')
 bot_token = os.getenv('BOT_TOKEN') 
 ABH = TelegramClient('c', api_id, api_hash).start(bot_token=bot_token)
 #######################################################################################
-@ABH.on(events.NewMessage(pattern=r'!تحديث'))
-async def restart_bot(event):
-    await event.reply("البوت سيتم تحديثه الآن...")
-    subprocess.Popen(['python3', 'code.py'])
-    await event.reply("تم إعادة تشغيل البوت بنجاح.")
+@Client.on_message(command2(["تحديث"]))
+@sudo_users_only
+async def update_repo(_, message: Message):
+    chat_id = message.chat.id
+    msg = await message.reply("🔄 جاري التحديث...")
+    update_avail = updater()    
+    if update_avail:
+        await msg.edit("✅ تم التحديث\n\n• تم اعاده تشغيل البوت, سيتم التفعيل بعد دقيقه.")
+        system("git pull -f && pip3 install -r requirements.txt")
+        execle(sys.executable, sys.executable, "main.py", environ)
+        return
+        await msg.edit("البوت **تم تحديثه**", disable_web_page_preview=True)
 ##############
 operations = {
     "+": operator.add,
@@ -116,7 +124,7 @@ async def reply_abh(event):
 async def reply_abh(event):
     replied_message = await event.get_reply_message()
     if replied_message:
-        await event.client.send_file(replied_message.peer_id, "https://t.me/VIPABH/1215", reply_to=replied_message.id)
+        await event.client.send_file(replied_message.peer_id, "https://t.me/VIPABH/1171", reply_to=replied_message.id)
     else:
         await event.reply("يجب عليك الرد على رسالة حتى يعمل هذا الأمر.")
 
