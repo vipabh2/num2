@@ -15,18 +15,19 @@ api_id = os.getenv('API_ID')
 api_hash = os.getenv('API_HASH')  
 bot_token = os.getenv('BOT_TOKEN') 
 ABH = TelegramClient('n', api_id, api_hash).start(bot_token=bot_token)
-#######################################################################################
-operations = {
+#######################################################################################operations = {
     "+": operator.add,
     "-": operator.sub,
     "*": operator.mul,
     "/": operator.truediv
 }
+
 @ABH.on(events.NewMessage(pattern=r'احسب (\d+)\s*([\+\-\*/÷])\s*(\d+)'))
+async def calc(event):
+    try:
         a = int(match.group(1))
         mark = match.group(2)
         b = int(match.group(3))
-
         if mark in operations:
             result = operations[mark](a, b)
             await event.respond(f"النتيجة {result}", reply_to=event.message.id)
@@ -34,6 +35,7 @@ operations = {
             await event.respond("عملية غير مدعومة!", reply_to=event.message.id)
     except ZeroDivisionError:
         await event.respond("خطأ: لا يمكن القسمة على صفر!", reply_to=event.message.id)
+
 ############################################
 abh = [
     "ها",
