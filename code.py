@@ -104,8 +104,6 @@ async def reply_abh(event):
     else: 
         return
 ###############################
-    await event.reply(response)
-###############################
 @ABH.on(events.NewMessage(pattern='الامريكي'))
 async def reply_abh(event):
     if event.chat_id == -1001968219024:
@@ -118,6 +116,15 @@ async def reply_abh(event):
 @ABH.on(events.NewMessage(pattern=r'(سلام عليكم|السلام عليكم)'))
 async def reply_abh(event):
         await event.reply("عليكم السلام")    
+##########################################
+@ABH.on(events.NewMessage(pattern=r'(مخفي طكة زيج|زيج)'))
+async def reply_abh(event):
+    replied_message = await event.get_reply_message()
+    if replied_message:
+        await replied_message.reply("https://t.me/VIPABH/1215")
+    else:
+        await event.send_file("يجب عليك الرد على رسالة حتى يعمل هذا الأمر.")
+   
 ##########################################
 url = "https://ar.wikipedia.org/w/api.php"
 searching_state = {}
