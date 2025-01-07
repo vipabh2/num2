@@ -32,7 +32,7 @@ async def calc(event):
         b = int(match.group(3))
         if mark in operations:
             result = operations[mark](a, b)
-            await event.respond(f"النتيجة {result}", reply_to=event.message.id)
+            await event.respond(f"النتيجة `{result}`", reply_to=event.message.id)
         else:
             await event.respond("عملية غير مدعومة!", reply_to=event.message.id)
     except ZeroDivisionError:
