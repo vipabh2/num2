@@ -121,7 +121,7 @@ async def reply_abh(event):
 async def reply_abh(event):
     replied_message = await event.get_reply_message()
     if replied_message:
-        await event.client.send_message(replied_message.chat_id, "https://t.me/VIPABH/1215", reply_to=replied_message.id)
+        await event.client.send_message(replied_message, "https://t.me/VIPABH/1215", reply_to=replied_message.id)
     else:
         await event.reply("يجب عليك الرد على رسالة حتى يعمل هذا الأمر.")   
 ##########################################
