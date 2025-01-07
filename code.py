@@ -16,7 +16,7 @@ api_hash = os.getenv('API_HASH')
 bot_token = os.getenv('BOT_TOKEN') 
 ABH = TelegramClient('c', api_id, api_hash).start(bot_token=bot_token)
         
-@ABH.on(events.NewMessage(pattern='احس'))
+@ABH.on(events.NewMessage(pattern=r'^احس$'))
 async def mem1(event):
         url = "https://files.catbox.moe/euqqqk.jpg"  
         await event.client.send_file(event.chat_id, url, reply_to=event.message.id)
@@ -103,12 +103,18 @@ async def reply_abh(event):
         await event.client.send_file(event.chat_id, url, caption=caption, reply_to=event.message.id)    
     else: 
         return
-
-@ABH.on(events.NewMessage(pattern=r'(سلام عليكم|السلام عليكم)'))
+auto = [
+        "ع س"
+        "عليكم السلام"
+        "عليكم السلام والرحمة والاكرام"
+        "عليكم سلام الله"
+        ]
+@ABH.on(events.NewMessage(pattern=r'^(سلام عليكم|السلام عليكم)$'))
 async def reply_abh(event):
-        await event.reply("عليكم السلام")    
+        abh = random.choice(auto)
+        await event.reply(abh)    
 
-@ABH.on(events.NewMessage(pattern=r'(مخفي طكة زيج|زيج)'))
+@ABH.on(events.NewMessage(pattern=r'^(مخفي طكة زيج|زيج)$'))
 async def reply_abh(event):
     replied_message = await event.get_reply_message()
     if replied_message:
