@@ -19,7 +19,7 @@ ABH = TelegramClient('c', api_id, api_hash).start(bot_token=bot_token)
 @ABH.on(events.NewMessage(pattern='احس'))
 async def ashouau(event):
     pic = "https://t.me/iuABH/265"
-    await event.client.send_file(event.chat_id, pic, caption=caption, reply_to=event.message.id)    
+    await event.client.send_file(event.chat_id, pic, reply_to=event.message.id)    
     
 operations = {
     "+": operator.add,
