@@ -16,7 +16,8 @@ api_hash = os.getenv('API_HASH')
 bot_token = os.getenv('BOT_TOKEN') 
 ABH = TelegramClient('c', api_id, api_hash).start(bot_token=bot_token)
 
-@ABH.on(events.NewMessage(pattern='احس'))    if event.chat_id == -1001968219024:
+@ABH.on(events.NewMessage(pattern='احس'))
+async def mem1(event):
         url = "https://files.catbox.moe/euqqqk.jpg"  
         await event.client.send_file(event.chat_id, url, reply_to=event.message.id)
 
