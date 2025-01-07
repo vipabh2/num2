@@ -111,7 +111,7 @@ auto = [
         ]
 @ABH.on(events.NewMessage(pattern=r'^(سلام عليكم|السلام عليكم)$'))
 async def reply_abh(event):
-        abh = random.choice(`auto`)
+        abh = random.choice(auto)
         await event.reply(abh)    
 
 @ABH.on(events.NewMessage(pattern=r'^(مخفي طكة زيج|زيج)$'))
