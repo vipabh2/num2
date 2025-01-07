@@ -18,7 +18,7 @@ api_hash = os.getenv('API_HASH')
 bot_token = os.getenv('BOT_TOKEN') 
 ABH = TelegramClient('c', api_id, api_hash).start(bot_token=bot_token)
 #######################################################################################
-@Client.on_message(command2(["تحديث"]))
+@ABH.on_message(command2(["تحديث"]))
 @sudo_users_only
 async def update_repo(_, message: Message):
     chat_id = message.chat.id
