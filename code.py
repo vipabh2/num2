@@ -16,6 +16,7 @@ api_hash = os.getenv('API_HASH')
 bot_token = os.getenv('BOT_TOKEN') 
 ABH = TelegramClient('n', api_id, api_hash).start(bot_token=bot_token)
 #######################################################################################operations = {
+operations = {
     "+": operator.add,
     "-": operator.sub,
     "*": operator.mul,
@@ -35,7 +36,6 @@ async def calc(event):
             await event.respond("عملية غير مدعومة!", reply_to=event.message.id)
     except ZeroDivisionError:
         await event.respond("خطأ: لا يمكن القسمة على صفر!", reply_to=event.message.id)
-
 ############################################
 abh = [
     "ها",
