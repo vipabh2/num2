@@ -104,12 +104,13 @@ async def reply_abh(event):
 @ABH.on(events.NewMessage(pattern=r'(سلام عليكم|السلام عليكم)'))
 async def reply_abh(event):
         await event.reply("عليكم السلام")    
-##########################################
+#########################################
 @ABH.on(events.NewMessage(pattern=r'(مخفي طكة زيج|زيج)'))
 async def reply_abh(event):
     replied_message = await event.get_reply_message()
     if replied_message:
-        await event.client.send_message(replied_message.sender_id, "https://t.me/VIPABH/1215", reply_to=replied_message.id)
+        peer = await event.client.get_input_entity(replied_message.sender_id)
+        await event.client.send_message(peer, "https://t.me/VIPABH/1215", reply_to=replied_message.id)
     else:
         await event.reply("يجب عليك الرد على رسالة حتى يعمل هذا الأمر.")
 
