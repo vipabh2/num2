@@ -387,7 +387,7 @@ active_player_id = None
 @ABH.on(events.NewMessage(pattern='/start'))
 async def handle_start(event):
         return
-    await event.reply(
+        await event.reply(
         "أهلاً حياك الله! \n"
         "• أرسل `ميم` او `ميمز` للميمز. \n"
         "• أرسل `لطمية` ل ارسال لطمية \n"
@@ -413,15 +413,15 @@ def get_user_score(user_id):
 
 @ABH.on(events.NewMessage(pattern='/num'))
 async def start_game(event):
-        return    
-    username = event.sender.username if event.sender.username else "لا يوجد اسم مستخدم"
-    markup = [[Button.inline("ابدأ اللعبة", b"start_game")]]
-    await event.reply(
-        f"أهلاً [{event.sender.first_name}](https://t.me/{username})! حياك الله. اضغط على الزر لبدء اللعبة.",
-        file="https://t.me/VIPABH/1204",  
-        parse_mode="Markdown",
-        buttons=markup
-    )
+        return
+        username = event.sender.username if event.sender.username else "لا يوجد اسم مستخدم"
+        markup = [[Button.inline("ابدأ اللعبة", b"start_game")]]
+        await event.reply(
+                f"أهلاً [{event.sender.first_name}](https://t.me/{username})! حياك الله. اضغط على الزر لبدء اللعبة.",
+                file="https://t.me/VIPABH/1204",  
+                parse_mode="Markdown",
+                buttons=markup
+        )
 @ABH.on(events.NewMessage(func=lambda event: game_active and event.sender_id == active_player_id))
 async def handle_guess(event):
     global game_active, number, attempts
