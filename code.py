@@ -412,7 +412,6 @@ def get_user_score(user_id):
 
 @ABH.on(events.NewMessage(pattern='/num'))
 async def start_game(event):
-        return
         username = event.sender.username if event.sender.username else "لا يوجد اسم مستخدم"
         markup = [[Button.inline("ابدأ اللعبة", b"start_game")]]
         await event.reply(
