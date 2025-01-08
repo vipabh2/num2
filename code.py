@@ -407,6 +407,18 @@ async def handle_start(event):
         "استمتع! 🎉",
         parse_mode='markdown'
     )
+        
+def add_or_update_user(user_id):
+    if user_id not in user_points:
+        user_points[user_id] = 0  
+            
+def add_point_to_winner(user_id):
+    if user_id in user_points:
+        user_points[user_id] += 1 
+
+def get_user_score(user_id):
+    return user_points.get(user_id, 0)
+
 @ABH.on(events.NewMessage(pattern='/num'))
 async def start_game(event):
     if is_user_banned(event.sender_id):
@@ -423,19 +435,6 @@ async def start_game(event):
         parse_mode="Markdown",
         buttons=markup
     )
-
-def add_or_update_user(user_id):
-    if user_id not in user_points:
-        user_points[user_id] = 0  
-
-def add_point_to_winner(user_id):
-    if user_id in user_points:
-        user_points[user_id] += 1 
-
-def get_user_score(user_id):
-    return user_points.get(user_id, 0)
-
-
 @ABH.on(events.NewMessage(func=lambda event: game_active and event.sender_id == active_player_id))
 async def handle_guess(event):
     global game_active, number, attempts
@@ -443,7 +442,6 @@ async def handle_guess(event):
         await event.reply("اللعبة ليست نشطة حاليًا، ابدأ لعبة جديدة.")
         return
     number = random.randint(1, 10)
-    
     try:
         guess = int(event.text)
     except ValueError:
