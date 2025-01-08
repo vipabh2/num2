@@ -404,22 +404,52 @@ def get_user_score(user_id):
     return user_points.get(user_id, 0)
 
 user_points = {}
-banned_users = []
 game_active = False
 number = None
 max_attempts = 3
 attempts = 0
+active_player_id = Nonefrom telethon import events, Button
+import random
+
+# المتغيرات العامة
+game_active = False
+number = 0
+attempts = 0
+max_attempts = 3
 active_player_id = None
+
+# دالة بدء اللعبة
 @ABH.on(events.NewMessage(pattern='/num'))
 async def start_game(event):
-        username = event.sender.username if event.sender.username else "لا يوجد اسم مستخدم"
-        markup = [[Button.inline("ابدأ اللعبة", b"start_game")]]
-        await event.reply(
-                f"أهلاً [{event.sender.first_name}](https://t.me/{username})! حياك الله. اضغط على الزر لبدء اللعبة.",
-                file="https://t.me/VIPABH/1204",  
-                parse_mode="Markdown",
-                buttons=markup
-        )
+    global game_active, number, attempts, active_player_id
+
+    # التحقق من حالة اللعبة الحالية
+    if game_active:
+        await event.reply("اللعبة قيد التشغيل بالفعل! حاول إنهاء اللعبة الحالية أولاً.")
+        return
+
+    username = event.sender.username if event.sender.username else "لا يوجد اسم مستخدم"
+    markup = [[Button.inline("ابدأ اللعبة", b"start_game")]]
+    await event.reply(
+        f"أهلاً [{event.sender.first_name}](https://t.me/{username})! حياك الله. اضغط على الزر لبدء اللعبة.",
+        file="https://t.me/VIPABH/1204",
+        parse_mode="Markdown",
+        buttons=markup
+    )
+
+@ABH.on(events.CallbackQuery(data=b"start_game"))
+async def initiate_game(event):
+    global game_active, number, attempts, active_player_id
+
+    game_active = True
+    number = random.randint(1, 10)
+    attempts = 0
+    active_player_id = event.sender_id
+
+    await event.answer("🎮 اللعبة بدأت!")
+    await event.edit("🎲 اللعبة بدأت! حاول تخمين الرقم (من 1 إلى 10).")
+
+# دالة معالجة التخمينات
 @ABH.on(events.NewMessage(func=lambda event: game_active and event.sender_id == active_player_id))
 async def handle_guess(event):
     global game_active, number, attempts
