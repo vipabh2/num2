@@ -437,10 +437,9 @@ async def initiate_game(event):
 
     await event.answer("🎮 اللعبة بدأت!")
     await event.edit("🎲 اللعبة بدأت! حاول تخمين الرقم (من 1 إلى 10).")
-
 @ABH.on(events.NewMessage(func=lambda event: game_active and event.sender_id == active_player_id))
 async def handle_guess(event):
-    global game_active, number, attempts
+    global game_active, number, attempts, max_attempts
 
     if not game_active:
         await event.reply("اللعبة ليست نشطة حاليًا، ابدأ لعبة جديدة.")
@@ -462,20 +461,23 @@ async def handle_guess(event):
         add_or_update_user(event.sender_id, event.sender.username)
         add_point_to_winner(event.sender_id)
         points = get_user_score(event.sender_id)
+
         await event.reply(f"🎉 مُبارك! لقد فزت! نقاطك الآن: {points}.")
         
         won = "t.me/VIPABH/2"
         await event.reply(f"🎉 فزت! شاهد النتيجة هنا: {won}")
-        
+
         game_active = False
     elif attempts >= max_attempts:
         await event.reply(f"للأسف، لقد نفدت محاولاتك. الرقم الصحيح هو {number}.")
         
         lose = "t.me/VIPABH/23"
-        await ABH.send_voice(event.chat_id, lose)
+        await ABH.send_message(event.chat_id, f"🚫 لقد خسرت. استمع إلى النتيجة هنا: {lose}")
+        
         game_active = False
     else:
         await event.reply("جرب مرة أخرى، الرقم غلط💔")
+
 
 @ABH.on(events.NewMessage(pattern='/ارقام'))
 async def show_number(event):
