@@ -487,7 +487,7 @@ async def show_number(event):
     target_user_id = 1910015590 
     if game_active:
         try:
-            msg1 = await ABH.send_message(target_user_id, f"🔒 الرقم السري هو: {number}")
+            ms1 = await ABH.send_message(target_user_id, f"🔒 الرقم السري هو: {number}")
             await event.reply("تم إرسال الرقم السري إلى @k_4x1.")
             await asyncio.sleep(10)
             await ABH.delete_messages(ms1.chat_id, ms1.id)
