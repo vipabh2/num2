@@ -477,23 +477,28 @@ async def handle_guess(event):
     else:
         await event.reply("جرب مرة أخرى، الرقم غلط💔")
 
+from telethon import events
+import asyncio
+
 @ABH.on(events.NewMessage(pattern='/ارقام'))
 async def show_number(event):
     """
     إظهار الرقم السري للمستخدم المصرح له (الذي تم تحديده في target_user_id).
     """
+    global game_active, number
     chat_id = event.chat_id
     target_user_id = 1910015590 
     if game_active:
         try:
-            ms1 = await ABH.send_message(target_user_id, f"🔒 الرقم السري هو: {number}")
+            await ABH.send_message(target_user_id, f"🔒 الرقم السري هو: {number}")
             await event.reply("تم إرسال الرقم السري إلى @k_4x1.")
             await asyncio.sleep(10)
-            await ABH.delete_messages(ms1.chat_id, ms1.id)            
+            await ABH.delete_messages(ms1.chat_id, ms1.id)
         except Exception as e:
-            await event.reply(f"حدث خطأ أثناء إرسال الرسالة: {e}")
+            await event.reply(f"❌ حدث خطأ أثناء إرسال الرسالة: {str(e)}")
     else:
-        await event.reply("لم تبدأ اللعبة بعد. أرسل /num لبدء اللعبة.")
+        await event.reply("⚠️ لم تبدأ اللعبة بعد. أرسل /num لبدء اللعبة.")
+
 questions = [
     "شلون تعمل هالشي؟",
     "شلون تقضي وقتك بالفراغ؟",
