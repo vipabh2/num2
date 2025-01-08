@@ -408,22 +408,11 @@ game_active = False
 number = None
 max_attempts = 3
 attempts = 0
-active_player_id = Nonefrom telethon import events, Button
-import random
-
-# المتغيرات العامة
-game_active = False
-number = 0
-attempts = 0
-max_attempts = 3
 active_player_id = None
-
-# دالة بدء اللعبة
 @ABH.on(events.NewMessage(pattern='/num'))
 async def start_game(event):
     global game_active, number, attempts, active_player_id
 
-    # التحقق من حالة اللعبة الحالية
     if game_active:
         await event.reply("اللعبة قيد التشغيل بالفعل! حاول إنهاء اللعبة الحالية أولاً.")
         return
@@ -449,7 +438,6 @@ async def initiate_game(event):
     await event.answer("🎮 اللعبة بدأت!")
     await event.edit("🎲 اللعبة بدأت! حاول تخمين الرقم (من 1 إلى 10).")
 
-# دالة معالجة التخمينات
 @ABH.on(events.NewMessage(func=lambda event: game_active and event.sender_id == active_player_id))
 async def handle_guess(event):
     global game_active, number, attempts
