@@ -458,7 +458,7 @@ async def handle_guess(event):
     attempts += 1
 
     if guess == number:
-        add_or_update_user(event.sender_id, event.sender.username)
+        add_or_update_user(event.sender_id)
         add_point_to_winner(event.sender_id)
         points = get_user_score(event.sender_id)
 
@@ -470,13 +470,13 @@ async def handle_guess(event):
         game_active = False
     elif attempts >= max_attempts:
         await event.reply(f"للأسف، لقد نفدت محاولاتك. الرقم الصحيح هو {number}.")
-        
         lose = "t.me/VIPABH/23"
         await ABH.send_message(event.chat_id, f"🚫 لقد خسرت. استمع إلى النتيجة هنا: {lose}")
         
         game_active = False
     else:
         await event.reply("جرب مرة أخرى، الرقم غلط💔")
+
 
 
 @ABH.on(events.NewMessage(pattern='/ارقام'))
