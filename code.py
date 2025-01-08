@@ -327,28 +327,11 @@ async def show_number(event):
     else:
         await event.reply("لم تبدأ اللعبة بعد. أرسل /rings لبدء اللعبة.")
 
-basimurl = (
-    "50", "51", "52", "53", "54", "55", "56", "57", "58", "59",
-    "60", "61", "62", "63", "64", "65", "66", "67", "68", "69",
-    "70", "71", "72", "73", "74", "75", "76", "77", "78", "79",
-    "80", "81", "82", "83", "84", "85", "86", "87", "88", "89",
-    "90", "91", "92", "93", "94", "95", "96", "97", "98", "99",
-    "100", "101", "102", "103", "104", "105", "106", "107", "108", "109",
-    "110", "111", "112", "113", "114", "115", "116", "117", "118"
-)
-mohmurl = (
-    "119", "120", "121", "122", "123", "124", "125", "126", "127", "128",
-    "129", "130", "131", "132", "133", "134", "135", "136", "137", "138"
-)
-
-musurl = ('139', '140', '141', '142', '143', '144', '145', '146', '147',
-            '148', '149', '150', '151', '152', '153', '154'
-            )
-
-nurl = ('164', '165', '166', '167', '168', '169', '170')
-
-furl = ('171', '172', '173', '174')
-
+mohmurl = random.randint(119, 138)
+basimurl = random.randint(50, 118)
+musurl = random.randint(139, 154)
+nurl = random.randint(164, 170)
+furl = random.randint(171, 174)
 
 async def send_audio_from_list(call, url_list):
     rl = random.choice(url_list)
@@ -356,8 +339,6 @@ async def send_audio_from_list(call, url_list):
     await call.respond(
         file=audio_url
     )
-
-
 @ABH.on(events.NewMessage(func=lambda event: event.text in ['لطمية', 'لطميه']))
 async def vipabh(event):
     username = event.sender.username or "لا يوجد اسم مستخدم"
@@ -432,8 +413,7 @@ game_active = False
 number = None
 attempts = 0
 active_player_id = None
-def is_user_banned(user_id):
-    return False
+max_attempts = 3
 
 @ABH.on(events.NewMessage(pattern='/num'))
 async def start_game(event):
@@ -450,68 +430,9 @@ async def start_game(event):
         file="https://t.me/VIPABH/1204",  
         parse_mode="Markdown",
         buttons=markup
-    )    
-
-@ABH.on(events.CallbackQuery(data=b"start_game"))
-async def start_new_game(event):
-    global game_active, number, attempts, active_player_id
-    if game_active:
-        await event.reply('اللعبة قيد التشغيل حالياً، يرجى إنهاء الجولة الحالية أولاً.')
-        return
-    
-    number = random.randint(1, 10)
-    active_player_id = event.sender_id
-    username = event.sender.username if event.sender.username else "لا يوجد اسم مستخدم"
-    await event.edit(buttons=None)
-    await event.reply(
-        f'عزيزي [{event.sender.first_name}](t.me/{username})! اختر رقمًا بين 1 و 10 🌚',
-        parse_mode="Markdown"
     )
 
-@ABH.on(events.NewMessage(func=lambda event: game_active and event.sender_id == active_player_id))
-async def handle_guess(event):
-    global game_active, number, attempts
-    if not game_active:
-        await event.reply("اللعبة ليست نشطة حاليًا، ابدأ لعبة جديدة.")
-        return
-
-    try:
-        guess = int(event.text)
-    except ValueError:
-        await event.reply("يرجى إدخال رقم صحيح بين 1 و 10.")
-        return
-
-    if guess < 1 or guess > 10:
-        await event.reply("يرجى اختيار رقم بين 1 و 10 فقط!")
-        return
-
-    attempts += 1
-
-    if guess == number:
-        points = 10
-        await event.reply(f"🎉 مُبارك! لقد فزت! نقاطك الآن: {points}.")
-        
-        won = "t.me/VIPABH/2"
-        await event.reply(f"🎉 فزت! شاهد النتيجة هنا: {won}")
-        
-        game_active = False
-    elif attempts >= 3:
-        await event.reply(f"للأسف، لقد نفدت محاولاتك. الرقم الصحيح هو {number}.")        
-        lose = "t.me/VIPABH/23"
-        await ABH.send_voice(event.chat_id, lose)
-        game_active = False
-    else:
-        await event.reply("جرب مرة أخرى، الرقم غلط💔")
-
-
-game_active = False
-number = None
-attempts = 0
-max_attempts = 3
-active_player_id = None
-user_points = {}
-
-def add_or_update_user(user_id, username):
+def add_or_update_user(user_id):
     if user_id not in user_points:
         user_points[user_id] = 0  
 
@@ -522,24 +443,6 @@ def add_point_to_winner(user_id):
 def get_user_score(user_id):
     return user_points.get(user_id, 0)
 
-@ABH.on(events.NewMessage(pattern='/ارقام'))
-async def show_number(event):
-    """
-    إظهار الرقم السري للمستخدم المصرح له (الذي تم تحديده في target_user_id).
-    """
-    chat_id = event.chat_id
-    target_user_id = 1910015590 
-
-    if game_active:
-        try:
-            ms1 = await ABH.send_message(target_user_id, f"🔒 الرقم السري هو: {number}")
-            await event.reply("تم إرسال الرقم السري إلى @k_4x1.")
-            await asyncio.sleep(10)
-            await ABH.delete_messages(ms1.chat_id, ms1.id)            
-        except Exception as e:
-            await event.reply(f"حدث خطأ أثناء إرسال الرسالة: {e}")
-    else:
-        await event.reply("لم تبدأ اللعبة بعد. أرسل /num لبدء اللعبة.")
 
 @ABH.on(events.NewMessage(func=lambda event: game_active and event.sender_id == active_player_id))
 async def handle_guess(event):
@@ -547,7 +450,8 @@ async def handle_guess(event):
     if not game_active:
         await event.reply("اللعبة ليست نشطة حاليًا، ابدأ لعبة جديدة.")
         return
-
+    number = random.randint(1, 10)
+    
     try:
         guess = int(event.text)
     except ValueError:
@@ -578,6 +482,25 @@ async def handle_guess(event):
         game_active = False
     else:
         await event.reply("جرب مرة أخرى، الرقم غلط💔")
+        
+@ABH.on(events.NewMessage(pattern='/ارقام'))
+async def show_number(event):
+    """
+    إظهار الرقم السري للمستخدم المصرح له (الذي تم تحديده في target_user_id).
+    """
+    chat_id = event.chat_id
+    target_user_id = 1910015590 
+
+    if game_active:
+        try:
+            ms1 = await ABH.send_message(target_user_id, f"🔒 الرقم السري هو: {number}")
+            await event.reply("تم إرسال الرقم السري إلى @k_4x1.")
+            await asyncio.sleep(10)
+            await ABH.delete_messages(ms1.chat_id, ms1.id)            
+        except Exception as e:
+            await event.reply(f"حدث خطأ أثناء إرسال الرسالة: {e}")
+    else:
+        await event.reply("لم تبدأ اللعبة بعد. أرسل /num لبدء اللعبة.")
 questions = [
     "شلون تعمل هالشي؟",
     "شلون تقضي وقتك بالفراغ؟",
@@ -813,7 +736,12 @@ questions = [
 async def send_random_question(event):
     random_question = random.choice(questions)
     await event.reply(random_question)
-
+    @ABH.on(events.NewMessage(pattern='النقاط'))
+    async def show_points(event):
+        user_id = event.sender_id
+        points = get_user_score(user_id)
+        await event.reply(f"نقاطك الحالية: {points}")
+        
 if __name__ == "__main__":
     while True:
         try:
