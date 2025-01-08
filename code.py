@@ -377,13 +377,6 @@ async def send_basim(call):
     await send_audio_from_list(call, furl)
     await call.edit(buttons=None)
 
-user_points = {}
-banned_users = []
-game_active = False
-number = None
-max_attempts = 3
-attempts = 0
-active_player_id = None
 @ABH.on(events.NewMessage(pattern='/start'))
 async def handle_start(event):
         await event.reply(
@@ -410,6 +403,13 @@ def add_point_to_winner(user_id):
 def get_user_score(user_id):
     return user_points.get(user_id, 0)
 
+user_points = {}
+banned_users = []
+game_active = False
+number = None
+max_attempts = 3
+attempts = 0
+active_player_id = None
 @ABH.on(events.NewMessage(pattern='/num'))
 async def start_game(event):
         username = event.sender.username if event.sender.username else "لا يوجد اسم مستخدم"
