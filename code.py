@@ -423,10 +423,11 @@ async def start_game(event):
 @ABH.on(events.NewMessage(func=lambda event: game_active and event.sender_id == active_player_id))
 async def handle_guess(event):
     global game_active, number, attempts
+
     if not game_active:
         await event.reply("اللعبة ليست نشطة حاليًا، ابدأ لعبة جديدة.")
         return
-    number = random.randint(1, 10)
+
     try:
         guess = int(event.text)
     except ValueError:
@@ -457,6 +458,7 @@ async def handle_guess(event):
         game_active = False
     else:
         await event.reply("جرب مرة أخرى، الرقم غلط💔")
+
 @ABH.on(events.NewMessage(pattern='/ارقام'))
 async def show_number(event):
     """
