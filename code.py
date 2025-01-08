@@ -384,16 +384,8 @@ number = None
 max_attempts = 3
 attempts = 0
 active_player_id = None
-def is_user_banned(user_id):
-    return user_id in banned_users
 @ABH.on(events.NewMessage(pattern='/start'))
 async def handle_start(event):
-    if is_user_banned(event.sender_id):
-        sent_message = await event.reply("☝")
-        await asyncio.sleep(3.5)
-        await ABH.edit_message(
-            sent_message.chat_id, sent_message.id, text="عذرا , انت محظور من استخدام البوت."
-        )
         return
     await event.reply(
         "أهلاً حياك الله! \n"
@@ -421,12 +413,7 @@ def get_user_score(user_id):
 
 @ABH.on(events.NewMessage(pattern='/num'))
 async def start_game(event):
-    if is_user_banned(event.sender_id):
-        sent_message = await event.reply("☝")
-        await asyncio.sleep(3.5)
-        await ABH.edit_message(sent_message.chat_id, sent_message.id, text="عذرا , انت محظور من استخدام البوت.")
-        return
-    
+        return    
     username = event.sender.username if event.sender.username else "لا يوجد اسم مستخدم"
     markup = [[Button.inline("ابدأ اللعبة", b"start_game")]]
     await event.reply(
@@ -724,11 +711,6 @@ questions = [
 async def send_random_question(event):
     random_question = random.choice(questions)
     await event.reply(random_question)
-    @ABH.on(events.NewMessage(pattern='النقاط'))
-    async def show_points(event):
-        user_id = event.sender_id
-        points = get_user_score(user_id)
-        await event.reply(f"نقاطك الحالية: {points}")
         
 if __name__ == "__main__":
     while True:
@@ -739,5 +721,3 @@ if __name__ == "__main__":
             print(f"⚠️ حدث خطأ: {e}")
             print("⏳ إعادة المحاولة بعد 5 ثوانٍ...")
             time.sleep(5)
-
-
