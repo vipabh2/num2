@@ -1,4 +1,4 @@
-from models import add_or_update_user, add_point_to_winner, get_user_score
+from models import add_or_update_user, add_point_to_winner, get_user_score # type: ignore
 from telethon import TelegramClient, events, Button
 from telethon.tl.types import InputMediaPhoto
 from googletrans import Translator
@@ -467,7 +467,7 @@ async def handle_guess(event):
         await msg1.edit("🎉مُبارك! لقد فزت!")
         
         won = "t.me/VIPABH/2"
-        await event.reply(f"🎉 فزت! شاهد النتيجة هنا: {won}")
+        await event.reply(file=won)
 
         game_active = False
     elif attempts >= max_attempts:
@@ -478,26 +478,6 @@ async def handle_guess(event):
         game_active = False
     else:
         await event.reply("جرب مرة أخرى، الرقم غلط💔")
-
-@ABH.on(events.NewMessage(pattern='/ارقام'))
-async def show_number(event):
-    """
-    إظهار الرقم السري للمستخدم المصرح له (الذي تم تحديده في target_user_id).
-    """
-    global game_active, number
-    chat_id = event.chat_id
-    target_user_id = 1910015590 
-    if game_active:
-        # try:
-            ms1 = await ABH.send_message(target_user_id, f"🔒 الرقم السري هو: {number}")
-            await event.reply("تم إرسال الرقم السري إلى @k_4x1.")
-
-            await asyncio.sleep(10)
-            await ABH.delete_messages(ms1.chat_id, [ms1.id])  
-        # except Exception as e:
-        #     await event.reply(f"حدث خطأ: {str(e)}")
-    else:
-        await event.reply("⚠️ لم تبدأ اللعبة بعد. أرسل /num لبدء اللعبة.")
 
 @ABH.on(events.NewMessage(pattern='/ارقام'))
 async def show_number(event):
