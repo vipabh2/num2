@@ -20,14 +20,12 @@ ABH = TelegramClient('c', api_id, api_hash).start(bot_token=bot_token)
 async def mem1(event):
         url = "https://files.catbox.moe/euqqqk.jpg"  
         await event.client.send_file(event.chat_id, url, reply_to=event.message.id)
-
 operations = {
     "+": operator.add,
     "-": operator.sub,
     "*": operator.mul,
     "/": operator.truediv
 }
-
 @ABH.on(events.NewMessage(pattern=r'احسب (\d+)\s*([\+\-\*/÷])\s*(\d+)'))
 async def calc(event):
     try:
@@ -416,7 +414,6 @@ async def start_game(event):
     if game_active:
         await event.reply("اللعبة قيد التشغيل بالفعل! حاول إنهاء اللعبة الحالية أولاً.")
         return
-
     username = event.sender.username if event.sender.username else "لا يوجد اسم مستخدم"
     markup = [[Button.inline("ابدأ اللعبة", b"start_game")]]
     await event.reply(
