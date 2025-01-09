@@ -496,6 +496,12 @@ async def show_number(event):
     else:
         await event.reply("⚠️ لم تبدأ اللعبة بعد. أرسل /num لبدء اللعبة.")
 
+@ABH.on(events.NewMessage(pattern='النقاط')) 
+async def show_points(event):
+    user_id = event.sender_id  
+    points = get_user_score(user_id) 
+    await event.reply(f"📊 نقاطك الحالية هي: {points} 🌟")
+
 
 questions = [
     "شلون تعمل هالشي؟",
