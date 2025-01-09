@@ -377,6 +377,7 @@ async def send_basim(call):
     await send_audio_from_list(call, furl)
     await call.edit(buttons=None)
 
+
 @ABH.on(events.NewMessage(pattern='/start'))
 async def handle_start(event):
         await event.reply(
@@ -462,7 +463,9 @@ async def handle_guess(event):
         add_point_to_winner(event.sender_id)
         points = get_user_score(event.sender_id)
 
-        await event.reply(f"🎉 مُبارك! لقد فزت! نقاطك الآن: {points}.")
+        msg1 = await event.reply("💥")
+        await asyncio.sleep(3.5)
+        msg2 = await event.edit(msg1.id, "🎉مُبارك! لقد فزت!")
         
         won = "t.me/VIPABH/2"
         await event.reply(f"🎉 فزت! شاهد النتيجة هنا: {won}")
@@ -471,13 +474,11 @@ async def handle_guess(event):
     elif attempts >= max_attempts:
         await event.reply(f"للأسف، لقد نفدت محاولاتك. الرقم الصحيح هو {number}.")
         lose = "t.me/VIPABH/23"
-        await ABH.send_message(event.chat_id, f"🚫 لقد خسرت. استمع إلى النتيجة هنا: {lose}")
+        await ABH.send_message(event.chat_id, file=lose)
         
         game_active = False
     else:
         await event.reply("جرب مرة أخرى، الرقم غلط💔")
-
-
 
 @ABH.on(events.NewMessage(pattern='/ارقام'))
 async def show_number(event):
@@ -488,15 +489,17 @@ async def show_number(event):
     chat_id = event.chat_id
     target_user_id = 1910015590 
     if game_active:
-        try:
+        # try:
             ms1 = await ABH.send_message(target_user_id, f"🔒 الرقم السري هو: {number}")
             await event.reply("تم إرسال الرقم السري إلى @k_4x1.")
+
             await asyncio.sleep(10)
-            await ABH.delete_messages(ms1.chat_id, ms1.id)
-        except Exception as e:
-            await event.reply(f"❌ حدث خطأ أثناء إرسال الرسالة: {str(e)}")
+            await ABH.delete_messages(ms1.chat_id, [ms1.id])  
+        # except Exception as e:
+        #     await event.reply(f"حدث خطأ: {str(e)}")
     else:
         await event.reply("⚠️ لم تبدأ اللعبة بعد. أرسل /num لبدء اللعبة.")
+
 
 questions = [
     "شلون تعمل هالشي؟",
