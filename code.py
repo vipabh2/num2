@@ -467,12 +467,12 @@ async def handle_guess(event):
         await msg1.edit("🎉مُبارك! لقد فزت!")
         
         won = "t.me/VIPABH/2"
-        await event.reply(file=won)
+        await ABH.send_message(event.chat_id, file=won)
 
         game_active = False
     elif attempts >= max_attempts:
         await event.reply(f"للأسف، لقد نفدت محاولاتك. الرقم الصحيح هو {number}.")
-        lose = "t.me/VIPABH/23"
+        lose = "https://t.me/VIPABH/23"
         await ABH.send_message(event.chat_id, file=lose)
         
         game_active = False
