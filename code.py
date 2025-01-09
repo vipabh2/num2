@@ -462,9 +462,6 @@ async def handle_guess(event):
         msg1 = await event.reply("💥")
         await asyncio.sleep(3)
         await msg1.edit("🎉مُبارك! لقد فزت!")
-        
-        won = "https://t.me/VIPABH/2"
-        await ABH.send_message(event.chat_id, file=won)
 
         game_active = False
     elif attempts >= max_attempts:
