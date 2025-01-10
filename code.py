@@ -16,12 +16,6 @@ api_hash = os.getenv('API_HASH')
 bot_token = os.getenv('BOT_TOKEN') 
 ABH = TelegramClient('c', api_id, api_hash).start(bot_token=bot_token)
 
-player1 = None
-player2 = None
-turn = None  
-game_board = [" " for _ in range(9)] 
-restart_confirmations = {}
-
 
 player1 = None
 player2 = None
@@ -95,6 +89,10 @@ async def make_move(event):
 
     move = int(event.data.decode("utf-8").split("_")[1])
     
+    if move < 0 or move >= len(game_board):
+        await event.answer("التحرك غير صالح! اختر مربعاً آخر.")
+        return
+
     if game_board[move] != " ":
         await event.answer("المربع هذا مشغول بالفعل! اختر مربعاً آخر.")
         return
@@ -156,7 +154,7 @@ def reset_game():
     player1 = None
     player2 = None
     turn = None
-
+    print("تم إعادة تعيين اللعبة.")
 @ABH.on(events.NewMessage(pattern=r'^احس$'))
 async def mem1(event):
         url = "https://files.catbox.moe/euqqqk.jpg"  
