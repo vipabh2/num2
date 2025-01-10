@@ -16,7 +16,6 @@ api_hash = os.getenv('API_HASH')
 bot_token = os.getenv('BOT_TOKEN') 
 ABH = TelegramClient('c', api_id, api_hash).start(bot_token=bot_token)
 
-
 player1 = None
 player2 = None
 turn = None  
@@ -58,6 +57,15 @@ async def show_board(event, winner=None):
         ]
         await event.edit(
             f"اللاعب [{winner['name']}](https://t.me/{winner['username']}) فاز باللعبة!",
+            buttons=markup,
+            parse_mode="Markdown"
+        )
+    elif " " not in game_board:
+        markup = [
+            [Button.inline("إعادة اللعبة", b"restart"), Button.inline("إلغاء", b"cancel")]
+        ]
+        await event.edit(
+            "اللعبة انتهت بالتعادل!",
             buttons=markup,
             parse_mode="Markdown"
         )
@@ -112,6 +120,8 @@ async def make_move(event):
         winner_name = t1 if winner == "X" else t2
         winner_username = username1 if winner == "X" else username2
         await show_board(event, winner={"name": winner_name, "username": winner_username})
+    elif " " not in game_board:
+        await show_board(event)
     else:
         await show_board(event)
 
@@ -130,6 +140,7 @@ def check_winner():
         if game_board[line[0]] == game_board[line[1]] == game_board[line[2]] and game_board[line[0]] != " ":
             return game_board[line[0]]  
     return None
+
 @ABH.on(events.CallbackQuery(func=lambda call: call.data == b"restart"))
 async def restart_game(event):
     global restart_confirmations, player1, player2, turn, game_board
@@ -154,7 +165,9 @@ def reset_game():
     player1 = None
     player2 = None
     turn = None
-    print("تم إعادة تعيين اللعبة.")
+if not any([player1, player2]): 
+    reset_game()    
+
 @ABH.on(events.NewMessage(pattern=r'^احس$'))
 async def mem1(event):
         url = "https://files.catbox.moe/euqqqk.jpg"  
