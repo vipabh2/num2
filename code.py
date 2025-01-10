@@ -459,7 +459,7 @@ async def handle_guess(event):
         add_point_to_winner(event.sender_id)
         points = get_user_score(event.sender_id)
 
-        msg1 = await event.reply("💥")
+        msg1 = await event.reply("🥳")
         await asyncio.sleep(3)
         await msg1.edit("🎉مُبارك! لقد فزت!")
 
