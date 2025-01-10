@@ -15,7 +15,138 @@ api_id = os.getenv('API_ID')
 api_hash = os.getenv('API_HASH')  
 bot_token = os.getenv('BOT_TOKEN') 
 ABH = TelegramClient('c', api_id, api_hash).start(bot_token=bot_token)
+
+player1 = None
+player2 = None
+turn = None  
+game_board = [" " for _ in range(9)] 
+restart_confirmations = {}
+
+
+@ABH.on(events.NewMessage(pattern='اكس او|xo'))
+async def start_message(event):
+    global player1, player2, username1, t1
+    player1 = event.sender_id
+    username1 = event.sender.username or "unknown"
+    t1 = event.sender.first_name or "unknown"
+    markup = [[Button.inline("ابدأ اللعبة", b"start")]]
+    await event.reply(
+        f"أهلاً [{event.sender.first_name}](https://t.me/{username1})! تم تسجيلك في لعبة x o انت الاعب الاول و دورك هو x.",
+        file="https://t.me/VIPABH/1216",  
+        parse_mode="Markdown",
+        buttons=markup
+    )
+
+@ABH.on(events.CallbackQuery(func=lambda call: call.data == b"start"))
+async def start_game(event):
+    global player1, player2, turn, game_board, username1, username2, t1, t2
+    player2 = event.sender_id
+    username2 = event.sender.username or "unknown"
+    t2 = event.sender.first_name or "unknown"
+    turn = player1
+    game_board = [" " for _ in range(9)]
+    await show_board(event)
+
+async def show_board(event, winner=None):
+    if winner:
+        markup = [
+            [Button.inline("إعادة اللعبة", b"restart"), Button.inline("إلغاء", b"cancel")]
+        ]
+        await event.edit(
+            f"اللاعب [{winner['name']}](https://t.me/{winner['username']}) فاز باللعبة!",
+            buttons=markup,
+            parse_mode="Markdown"
+        )
+    else:
+        markup = [
+            [Button.inline(game_board[0], b"move_0"), Button.inline(game_board[1], b"move_1"), Button.inline(game_board[2], b"move_2")],
+            [Button.inline(game_board[3], b"move_3"), Button.inline(game_board[4], b"move_4"), Button.inline(game_board[5], b"move_5")],
+            [Button.inline(game_board[6], b"move_6"), Button.inline(game_board[7], b"move_7"), Button.inline(game_board[8], b"move_8")]
+        ]
         
+        current_player = t1 if turn == player1 else t2
+        current_username = username1 if turn == player1 else username2
+        try:
+            await event.edit(
+                f"اللاعب الأول —> [{t1}](https://t.me/{username1})\nاللاعب الثاني —> [{t2}](https://t.me/{username2})\n\nدور اللاعب —> [{current_player}](https://t.me/{current_username})",
+                buttons=markup,
+                parse_mode="Markdown"
+            )
+        except Exception:
+            await event.reply(
+                f"اللاعب الأول —> [{t1}](https://t.me/{username1})\nاللاعب الثاني —> [{t2}](https://t.me/{username2})\n\nدور اللاعب —> [{current_player}](https://t.me/{current_username})",
+                buttons=markup,
+                parse_mode="Markdown"
+            )
+
+@ABH.on(events.CallbackQuery(func=lambda call: call.data.startswith(b"move_")))
+async def make_move(event):
+    global game_board, turn, t1, t2
+
+    move = int(event.data.decode("utf-8").split("_")[1])
+    
+    if game_board[move] != " ":
+        await event.answer("المربع هذا مشغول بالفعل! اختر مربعاً آخر.")
+        return
+
+    if event.sender_id == player1 and turn == player1:
+        game_board[move] = "X"
+        turn = player2  
+    elif event.sender_id == player2 and turn == player2:
+        game_board[move] = "O"
+        turn = player1 
+    else:
+        await event.answer("ليس دورك الآن!")
+        return
+
+    winner = check_winner()
+    if winner:
+        winner_name = t1 if winner == "X" else t2
+        winner_username = username1 if winner == "X" else username2
+        await show_board(event, winner={"name": winner_name, "username": winner_username})
+    else:
+        await show_board(event)
+
+def check_winner():
+    lines = [
+        [0, 1, 2],
+        [3, 4, 5],
+        [6, 7, 8],
+        [0, 3, 6],
+        [1, 4, 7],
+        [2, 5, 8],
+        [0, 4, 8],
+        [2, 4, 6]
+    ]
+    for line in lines:
+        if game_board[line[0]] == game_board[line[1]] == game_board[line[2]] and game_board[line[0]] != " ":
+            return game_board[line[0]]  
+    return None
+@ABH.on(events.CallbackQuery(func=lambda call: call.data == b"restart"))
+async def restart_game(event):
+    global restart_confirmations, player1, player2, turn, game_board
+    player_id = event.sender_id
+    restart_confirmations[player_id] = True
+
+    if player1 in restart_confirmations and player2 in restart_confirmations:
+        game_board = [" " for _ in range(9)]
+        turn = player1
+        restart_confirmations = {}
+        await show_board(event)
+    else:
+        await event.answer("في انتظار موافقة اللاعب الآخر لإعادة اللعبة.")
+
+@ABH.on(events.CallbackQuery(func=lambda call: call.data == b"cancel"))
+async def cancel_game(event):
+    await event.edit("تم إلغاء اللعبة.")
+
+def reset_game():
+    global game_board, player1, player2, turn
+    game_board = [" " for _ in range(9)]  
+    player1 = None
+    player2 = None
+    turn = None
+
 @ABH.on(events.NewMessage(pattern=r'^احس$'))
 async def mem1(event):
         url = "https://files.catbox.moe/euqqqk.jpg"  
