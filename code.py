@@ -254,6 +254,15 @@ async def reply_abh(event):
         await event.client.send_file(event.chat_id, url, caption=caption, reply_to=event.message.id)    
     else: 
         return
+
+@ABH.on(events.NewMessage(pattern='امير'))
+async def reply_abh(event):
+    if event.chat_id == -1001968219024:
+        url = "https://files.catbox.moe/k44qq6.mp4"  
+        caption = "@xcxx1x" 
+        await event.client.send_file(event.chat_id, url, caption=caption, reply_to=event.message.id)    
+    else: 
+        return
 auto = [
         "ع س",
         "عليكم السلام",
