@@ -47,7 +47,6 @@ async def start_game(event):
         await event.answer(" لا يمكنك اللعب ضد نفسك يا متوحد!")
         return
     if player2 == 7017022402:
-        await event.respond("Sociopathy لا يمكنك اللعب انت محظور المالك شخصنها وياك")
         return
     turn = player1
     game_board = [" " for _ in range(9)]
