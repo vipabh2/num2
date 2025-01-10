@@ -23,7 +23,14 @@ game_board = [" " for _ in range(9)]
 restart_confirmations = {}
 
 
-@ABH.on(events.NewMessage(pattern='اكس او|xo'))
+player1 = None
+player2 = None
+turn = None  
+game_board = [" " for _ in range(9)] 
+restart_confirmations = {}
+
+
+@ABH.on(events.NewMessage(pattern='اكس او|xo|Xo'))
 async def start_message(event):
     global player1, player2, username1, t1
     player1 = event.sender_id
@@ -43,6 +50,9 @@ async def start_game(event):
     player2 = event.sender_id
     username2 = event.sender.username or "unknown"
     t2 = event.sender.first_name or "unknown"
+    if player1 == player2:
+        await event.answer(" لا يمكنك اللعب ضد نفسك يا متوحد!")
+        return
     turn = player1
     game_board = [" " for _ in range(9)]
     await show_board(event)
