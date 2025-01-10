@@ -23,7 +23,7 @@ game_board = [" " for _ in range(9)]
 restart_confirmations = {}
 
 
-@ABH.on(events.NewMessage(pattern='اكس او|/Xo'))
+@ABH.on(events.NewMessage(pattern='اكس او|xo|Xo'))
 async def start_message(event):
     global player1, player2, username1, t1
     player1 = event.sender_id
@@ -45,6 +45,9 @@ async def start_game(event):
     t2 = event.sender.first_name or "unknown"
     if player1 == player2:
         await event.answer(" لا يمكنك اللعب ضد نفسك يا متوحد!")
+        return
+    if player2 == 7017022402:
+        await event.send_message(" Sociopathy لا يمكنك اللعب انت محظور المالك شخصنها وياك")
         return
     turn = player1
     game_board = [" " for _ in range(9)]
@@ -167,7 +170,6 @@ def reset_game():
     turn = None
 if not any([player1, player2]): 
     reset_game()    
-
 @ABH.on(events.NewMessage(pattern=r'^احس$'))
 async def mem1(event):
         url = "https://files.catbox.moe/euqqqk.jpg"  
