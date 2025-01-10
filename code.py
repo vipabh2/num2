@@ -23,7 +23,7 @@ game_board = [" " for _ in range(9)]
 restart_confirmations = {}
 
 
-@ABH.on(events.NewMessage(pattern='اكس او|xo|Xo'))
+@ABH.on(events.NewMessage(pattern='اكس او|/Xo'))
 async def start_message(event):
     global player1, player2, username1, t1
     player1 = event.sender_id
