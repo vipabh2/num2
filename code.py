@@ -1,9 +1,9 @@
 from models import add_or_update_user, add_point_to_winner, get_user_score # type: ignore
 from telethon import TelegramClient, events, Button
-from telethon.tl.types import InputMediaPhoto
+# from telethon.tl.types import InputMediaPhoto
 from googletrans import Translator
 from bs4 import BeautifulSoup
-from datetime import datetime
+# from datetime import datetime
 import requests
 import operator
 import asyncio
@@ -16,7 +16,6 @@ api_hash = os.getenv('API_HASH')
 bot_token = os.getenv('BOT_TOKEN') 
 ABH = TelegramClient('c', api_id, api_hash).start(bot_token=bot_token)
 
-# Define global variables
 game = False
 players = {}
 chance = 3
@@ -580,8 +579,10 @@ async def send_audio_from_list(call, url_list):
     await call.respond(
         file=audio_url
     )
+    
 @ABH.on(events.NewMessage(func=lambda event: event.text in ['لطمية', 'لطميه']))
 async def vipabh(event):
+    global mohmurl, basimurl, musurl, nurl, furl
     username = event.sender.username or "لا يوجد اسم مستخدم"
     markup = [
         [Button.inline("باسم", b"basim")],
