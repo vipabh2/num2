@@ -16,6 +16,13 @@ api_hash = os.getenv('API_HASH')
 bot_token = os.getenv('BOT_TOKEN') 
 ABH = TelegramClient('c', api_id, api_hash).start(bot_token=bot_token)
 
+# Define global variables
+game = False
+players = {}
+chance = 3
+number = None
+vipabh = None
+
 @ABH.on(events.NewMessage(pattern='احزر'))
 async def handler(event):
     global game, players, chance
