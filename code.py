@@ -16,12 +16,80 @@ api_hash = os.getenv('API_HASH')
 bot_token = os.getenv('BOT_TOKEN') 
 ABH = TelegramClient('c', api_id, api_hash).start(bot_token=bot_token)
 
+@ABH.on(events.NewMessage(pattern='احزر'))
+async def handler(event):
+    global game, players 
+    game = False
+    players = {}
+    await event.reply("تم بدء لعبة احزر للمشاركة ارسل كلمة `انا`")
+
+@ABH.on(events.NewMessage(pattern=r'انا'))
+async def join_game(event):
+    if event.sender_id not in players:
+        players[event.sender_id] = chance
+        await event.reply("تم اضافتك للعبة")
+    else:
+        await event.reply("انت مشترك بالفعل")
+        if len(players) == 1:
+            await event.reply("يجب ان يكون هناك شخص اخر للعبة")
+
+@ABH.on(events.NewMessage(pattern=r'الاعبين'))
+async def show_p(event):
+    
+    await event.reply(f"الاعبين: {len(players)}")
+
+@ABH.on(events.NewMessage(pattern=r'بدء'))
+async def start(event):
+    global number, game
+    if event.sender_id not in players:
+        await event.reply("أنت لست مشتركًا في اللعبة")
+        return
+    if len(players) > 5:
+        await event.reply("لا يمكن أن يكون هناك أكثر من 5 لاعبين")
+        return
+    number = random.randint(1, 10)
+    game = True
+    await event.reply("تم اختيار الرقم العشوائي بين 1 و 10 \n احزر الرقم")
+abh = [
+    "موفقين",
+    "بالتوفيق",
+    "حظ سعيد",
+    " لقد تخطيت محاولة"
+    "احسنت",
+    "منور , تريد تفوز شني"
+]
+vipabh = random.choice(abh)
+
+@ABH.on(events.NewMessage(pattern=r'\d+'))
+async def number_handler(event):
+    global game, players, number, vipabh
+    if not game:
+        await event.reply("اللعبة لم تبدأ بعد. ارسل `بدء` لبدء اللعبة.")
+        return
+    if event.sender_id in players:
+        guess = int(event.text)
+        if guess == number:
+            await event.reply("لقد حزرت الرقم! انت الفائز")
+            game = False
+        else:
+            players[event.sender_id] -= 1
+            if players[event.sender_id] == 0:
+                await event.reply("لقد استنفذت جميع محاولاتك😎 انت رابح")
+                del players[event.sender_id]
+                
+            if not players:
+                await event.reply("جميع اللاعبين خسروا. اللعبة انتهت.")
+                game = False
+            else:
+                await event.reply(random.choice(abh) + f"\n محاولاتك {players[event.sender_id]}")
+    else:
+        await event.reply("أنت لست مشتركًا في اللعبة")
+
 player1 = None
 player2 = None
 turn = None  
 game_board = [" " for _ in range(9)] 
 restart_confirmations = {}
-
 
 @ABH.on(events.NewMessage(pattern='اكس او|/xo|/Xo'))
 async def start_message(event):
