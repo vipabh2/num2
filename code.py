@@ -18,13 +18,15 @@ ABH = TelegramClient('c', api_id, api_hash).start(bot_token=bot_token)
 
 @ABH.on(events.NewMessage(pattern='احزر'))
 async def handler(event):
-    global game, players 
+    global game, players, chance
     game = False
     players = {}
+    chance = 3  # Define the number of chances each player gets
     await event.reply("تم بدء لعبة احزر للمشاركة ارسل كلمة `انا`")
 
 @ABH.on(events.NewMessage(pattern=r'انا'))
 async def join_game(event):
+    global chance
     if event.sender_id not in players:
         players[event.sender_id] = chance
         await event.reply("تم اضافتك للعبة")
@@ -33,13 +35,16 @@ async def join_game(event):
         if len(players) == 1:
             await event.reply("يجب ان يكون هناك شخص اخر للعبة")
 
-@ABH.on(events.NewMessage(pattern=r'الاعبين'))
+@ABH.on(events.NewMessage(pattern=r'الاعببين'))
 async def show_p(event):
-    
+    if game == False:
+        return
     await event.reply(f"الاعبين: {len(players)}")
 
 @ABH.on(events.NewMessage(pattern=r'بدء'))
 async def start(event):
+    if game == False:
+        return
     global number, game
     if event.sender_id not in players:
         await event.reply("أنت لست مشتركًا في اللعبة")
@@ -63,8 +68,9 @@ vipabh = random.choice(abh)
 @ABH.on(events.NewMessage(pattern=r'\d+'))
 async def number_handler(event):
     global game, players, number, vipabh
+    if game == False:
+        return
     if not game:
-        await event.reply("اللعبة لم تبدأ بعد. ارسل `بدء` لبدء اللعبة.")
         return
     if event.sender_id in players:
         guess = int(event.text)
