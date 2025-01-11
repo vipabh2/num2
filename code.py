@@ -21,7 +21,7 @@ async def handler(event):
     global game, players, chance
     game = False
     players = {}
-    chance = 3  # Define the number of chances each player has
+    chance = 3  
     await event.reply("تم بدء لعبة احزر للمشاركة ارسل كلمة `انا`")
 
 @ABH.on(events.NewMessage(pattern=r'انا'))
@@ -42,9 +42,10 @@ async def show_p(event):
 
 @ABH.on(events.NewMessage(pattern=r'بدء'))
 async def start(event):
+    global game
     if game == False:
         return
-    global number, game
+    global number
     if event.sender_id not in players:
         await event.reply("أنت لست مشتركًا في اللعبة")
         return
