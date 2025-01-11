@@ -21,12 +21,11 @@ async def handler(event):
     global game, players, chance
     game = False
     players = {}
-    chance = 3  # Define the number of chances each player gets
+    chance = 3  # Define the number of chances each player has
     await event.reply("تم بدء لعبة احزر للمشاركة ارسل كلمة `انا`")
 
 @ABH.on(events.NewMessage(pattern=r'انا'))
 async def join_game(event):
-    global chance
     if event.sender_id not in players:
         players[event.sender_id] = chance
         await event.reply("تم اضافتك للعبة")
