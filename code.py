@@ -336,7 +336,7 @@ async def reply_abh(event):
 async def reply_abh(event):
     if event.chat_id == -1001968219024:
         caption = "يمكن متواضع 🌚 @pxjpx" 
-        await event.client.send_file(event.chat_id, caption=caption, reply_to=event.message.id)    
+        await event.client.send_message(event.chat_id, caption=caption, reply_to=event.message.id)    
     else: 
         return
 
