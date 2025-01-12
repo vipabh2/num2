@@ -1,9 +1,7 @@
 from models import add_or_update_user, add_point_to_winner, get_user_score # type: ignore
 from telethon import TelegramClient, events, Button
-# from telethon.tl.types import InputMediaPhoto
 from googletrans import Translator
 from bs4 import BeautifulSoup
-# from datetime import datetime
 import requests
 import operator
 import asyncio
@@ -332,6 +330,13 @@ async def reply_abh(event):
         url = "https://files.catbox.moe/p9e75j.mp4"  
         caption = "@l_h_2" 
         await event.client.send_file(event.chat_id, url, caption=caption, reply_to=event.message.id)    
+    else: 
+        return
+@ABH.on(events.NewMessage(pattern='ياسر|ياسؤ'))
+async def reply_abh(event):
+    if event.chat_id == -1001968219024:
+        caption = "يمكن متواضع 🌚 @pxjpx" 
+        await event.client.send_file(event.chat_id, caption=caption, reply_to=event.message.id)    
     else: 
         return
 
