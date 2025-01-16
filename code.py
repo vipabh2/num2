@@ -32,7 +32,7 @@ questions_and_answers = [
     {"question": "من هو قمر عشيرة الهواشم؟", "answer": "الامام العباس"},
     {"question": "من هو كفيل زينب؟", "answer": "الامام العباس"},
     {"question": "من الذي قتل المحسن ابن علي؟", "answer": "اللعين عمر"},
-    {"question": "من هو قطيهع الكفين؟", "answer": "الامام العباس"},
+    {"question": "من هو قطيع الكفين؟", "answer": "الامام العباس"},
     {"question": "من هو شاعر قصيدة الله يا حامي الشريعة؟", "answer": "حيدر الحلي"},
     {"question": "من هو حامي الجار؟", "answer": "الامام علي"},
     {"question": "من صحب قول \n أَمْلَأَ رُكابِي فِضَّةً أَوْ ذَهَبًا إِنِّي قَتَلْتُ خَيْرَ الرِّجَالِ أَمَّا وَأَبَا؟", "answer": "سنان بن انس"},
@@ -40,27 +40,31 @@ questions_and_answers = [
     {"question": "من هو الذي دفن مع الامام الحسين؟", "answer": "عبد الله الرضيع"},
     {"question": "ما هي اسم الواقعه في يوم العاشر من محرم؟", "answer": "واقعة الطف"},
     {"question": "ما هو اسم اليوم الذي استشهد فيه الامام الحسين؟", "answer": "عاشوراء"},
-    {"question": "من هو المنتظر؟", "answer": "الامام المهدي"},
+    {"question": "من هو الحجة المنتظر؟", "answer": "الامام المهدي"},
     {"question": "كم عدد المعصومين الذي اسمهم محمد؟", "answer": "2"},
     {"question": "ما هو اسم الامام المهدي؟", "answer": "محمد ابن الحسن"}
-    # {"question": "؟", "answer": ""}
-    # {"question": "؟", "answer": ""}
-    # {"question": "؟", "answer": ""}
-    # {"question": "؟", "answer": ""}
-    # {"question": "؟", "answer": ""}
-    # {"question": "؟", "answer": ""}
-    # {"question": "؟", "answer": ""}
-    # {"question": "؟", "answer": ""}
-    # {"question": "؟", "answer": ""}
-    # {"question": "؟", "answer": ""}
-    # {"question": "؟", "answer": ""}
-    # {"question": "؟", "answer": ""}
-    # {"question": "؟", "answer": ""}
+    {"question": "ما هي بيعة الغدير؟", "answer": "تتويج الامام علي"},
+    {"question": "من هو الذي تصدق في المحبس في الصلاة؟", "answer": "الامام علي"},
+    {"question": "ما هو اسم المكان الذي تم تتويج الامام علي خليفة؟", "answer": "غدير خم"},
+    {"question": "اين دفنت ام البنين؟", "answer": "في البقيع"},
+    {"question": "متى ولادة الامام المهدي \n عجل الله فرجة الشريف؟", "answer": " 15 من شعبان"},
+    {"question": "من القائل , بين الحق والباطل 4 اصابع؟", "answer": "الامام علي "},
+    {"question": "من هو الصادق الامين؟", "answer": "النبي محمد"},
+    {"question": "من هو الرسول الاعظم؟", "answer": "الرسول محمد"},
+    {"question": "من هو قائد الغر المحجلين؟", "answer": "الامام علي"},
+    {"question": "من قائل مثلي لا يبايع مثله؟", "answer": "الامام الحسين"},
+    {"question": "الان انكسر ظهري \n قالها الحسين لكن بحق من؟", "answer": "الامام العباس"},
+    {"question": "من هو الفاروق الاعظم؟", "answer": "الامام علي"},
+    {"question": "من هو سيد الشهداء؟", "answer": "الامام الحسين"},
+    {"question": "من هو الذي اسقط عائشة في حرب الجمل؟", "answer": "الامام الحسن"},
+    {"question": "ما انصفوكِ صانوا حرائرهم واخرجوكِ \n قالها الامام علي لكن بحق من؟", "answer": "عائشة"},
+    {"question": "الخسف في البيداء هي علامة من علامات؟", "answer": "ظهور الامام"},
+    {"question": "ما هو اسم خيل الامام الحسين؟", "answer": "الميمون"},
+    {"question": "ما هو اشقئ الاولين والاخرين؟", "answer": "ابن ملجم"},
+    {"question": "من هو مفرح قلب الزهراء؟", "answer": "ابو لؤلؤة"}
 ]
-
 user_states = {}
-
-@ABH.on(events.NewMessage(pattern='اسئلة'))
+@ABH.on(events.NewMessage(pattern='اسئلة, /quist'))
 async def start(event):
     user_id = event.sender_id
     question = random.choice(questions_and_answers)
@@ -68,8 +72,7 @@ async def start(event):
         "question": question,
         "waiting_for_answer": True 
     }
-    await event.reply(f"مرحباً {event.sender.first_name}! 🌟\nسأطرح عليك سؤالاً:\n\n{question['question']}")
-
+    await event.reply(f"{question['question']}")
 @ABH.on(events.NewMessage)
 async def check_answer(event):
     user_id = event.sender_id
@@ -80,91 +83,9 @@ async def check_answer(event):
         correct_answer = current_question['answer'].lower()
 
         if user_message == correct_answer:
-            await event.reply("🎉 إجابة صحيحة! ممتاز!")
+            await event.reply("احسنت اجابة صحيحة")
             del user_states[user_id] 
-
-
-game = False
-players = {}
-chance = 3
-number = None
-vipabh = None
-
-# @ABH.on(events.NewMessage(pattern='احزر'))
-# async def handler(event):
-#     global game, players, chance
-#     game = False
-#     players = {}
-#     chance = 3  
-#     await event.reply("تم بدء لعبة احزر للمشاركة ارسل كلمة `انا`")
-
-# @ABH.on(events.NewMessage(pattern=r'انا'))
-# async def join_game(event):
-#     if event.sender_id not in players:
-#         players[event.sender_id] = chance
-#         await event.reply("تم اضافتك للعبة")
-#     else:
-#         await event.reply("انت مشترك بالفعل")
-#         if len(players) == 1:
-#             await event.reply("يجب ان يكون هناك شخص اخر للعبة")
-
-# @ABH.on(events.NewMessage(pattern=r'الاعببين'))
-# async def show_p(event):
-#     if game == False:
-#         return
-#     await event.reply(f"الاعبين: {len(players)}")
-
-# @ABH.on(events.NewMessage(pattern=r'بدء'))
-# async def start(event):
-#     global game
-#     if game == False:
-#         return
-#     global number
-#     if event.sender_id not in players:
-#         await event.reply("أنت لست مشتركًا في اللعبة")
-#         return
-#     if len(players) > 5:
-#         await event.reply("لا يمكن أن يكون هناك أكثر من 5 لاعبين")
-#         return
-#     number = random.randint(1, 10)
-#     game = True
-#     await event.reply("تم اختيار الرقم العشوائي بين 1 و 10 \n احزر الرقم")
-# abh = [
-#     "موفقين",
-#     "بالتوفيق",
-#     "حظ سعيد",
-#     " لقد تخطيت محاولة"
-#     "احسنت",
-#     "منور , تريد تفوز شني"
-# ]
-# vipabh = random.choice(abh)
-
-# @ABH.on(events.NewMessage(pattern=r'\d+'))
-# async def number_handler(event):
-#     global game, players, number, vipabh
-#     if game == False:
-#         return
-#     if not game:
-#         return
-#     if event.sender_id in players:
-#         guess = int(event.text)
-#         if guess == number:
-#             await event.reply("لقد حزرت الرقم! انت الفائز")
-#             game = False
-#         else:
-#             players[event.sender_id] -= 1
-#             if players[event.sender_id] == 0:
-#                 await event.reply("لقد استنفذت جميع محاولاتك😎 انت رابح")
-#                 del players[event.sender_id]
-                
-#             if not players:
-#                 await event.reply("جميع اللاعبين خسروا. اللعبة انتهت.")
-#                 game = False
-#             else:
-#                 await event.reply(random.choice(abh) + f"\n محاولاتك {players[event.sender_id]}")
-#     else:
-#         await event.reply("أنت لست مشتركًا في اللعبة")
-
+            
 player1 = None
 player2 = None
 turn = None  
@@ -407,6 +328,14 @@ async def reply_abh(event):
     if event.chat_id == -1001968219024:
         url = "https://files.catbox.moe/k44qq6.mp4"  
         caption = "@xcxx1x" 
+        await event.client.send_file(event.chat_id, url, caption=caption, reply_to=event.message.id)    
+    else: 
+        return
+@ABH.on(events.NewMessage(pattern='عبود'))
+async def reply_abh(event):
+    if event.chat_id == -1001968219024:
+        url = "https://files.catbox.moe/qohqtp.MP4"  
+        caption = "@UU77QQ" 
         await event.client.send_file(event.chat_id, url, caption=caption, reply_to=event.message.id)    
     else: 
         return
