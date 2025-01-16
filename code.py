@@ -67,7 +67,7 @@ async def start(event):
     await event.reply(f"{question['question']}")
 
     await event.reply(f"{question['question']}")
-@bot.on(events.NewMessage)
+@ABH.on(events.NewMessage)
 async def check_answer(event):
     user_id = event.sender_id
     user_message = event.text.strip().lower()
