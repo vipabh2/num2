@@ -18,8 +18,8 @@ ABH = TelegramClient('c', api_id, api_hash).start(bot_token=bot_token)
 questions_and_answers = [
     {"question": "من هم ال البيت؟", "answer": "هم اهل بيت رسول الله"},
 {"question": "من هو الخليفة الاول؟", "answer": ["ابا الحسن علي", "الامام علي"]}
-    {"question": "كم عدد اهل المعصومين؟", "answer": "14"},
-    {"question": "كم عدد اهل البيت؟", "answer": "12"},
+    {"question": "كم عدد اهل المعصومين؟", "answer": 14},
+    {"question": "كم عدد اهل البيت؟", "answer": 12},
     {"question": "من هو الذي دفن الامام علي؟", "answer": "شخص يشبه الامام علي"},
     {"question": "من هو الدنيئ الذي غدر الامام علي بالمسجد يوم 19 رمضان؟", "answer": "اللعين ابن ملجم"},
     {"question": "من الذي قال يا ابن راعية المعزة وعلئ من؟", "answer": "الامام الحسين , الشمر اللعين"},
