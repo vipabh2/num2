@@ -76,14 +76,6 @@ async def check_answer(event):
             if user_message in [ans.lower() for ans in correct_answer]:
                 await event.reply("احسنت اجابة صحيحة")
                 del user_states[user_id]
-            else:
-                await event.reply("اجابة خاطئة، حاول مرة اخرى.")
-        else:
-            if user_message == correct_answer.lower():
-                await event.reply("احسنت اجابة صحيحة")
-                del user_states[user_id]
-            else:
-                await event.reply("اجابة خاطئة، حاول مرة اخرى.")
 
             
 player1 = None
