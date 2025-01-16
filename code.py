@@ -60,7 +60,7 @@ questions_and_answers = [
 
 user_states = {}
 
-@bot.on(events.NewMessage(pattern='اسئلة'))
+@ABH.on(events.NewMessage(pattern='اسئلة'))
 async def start(event):
     user_id = event.sender_id
     question = random.choice(questions_and_answers)
@@ -70,7 +70,7 @@ async def start(event):
     }
     await event.reply(f"مرحباً {event.sender.first_name}! 🌟\nسأطرح عليك سؤالاً:\n\n{question['question']}")
 
-@bot.on(events.NewMessage)
+@ABH.on(events.NewMessage)
 async def check_answer(event):
     user_id = event.sender_id
     user_message = event.text.strip().lower()
