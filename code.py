@@ -9,7 +9,7 @@ bot_token = os.getenv('BOT_TOKEN')
 ABH = TelegramClient('c', api_id, api_hash).start(bot_token=bot_token)
 questions_and_answers = [
     {"question": "من هم ال البيت؟", "answer": "هم اهل بيت رسول الله"},
-    {"question": "من هو الخليفة الاول؟", "answer": ["ابا الحسن علي", "الامام علي"]},
+    {"question": "من هو الخليفة الاول؟", "answer": ["ابا الحسن علي", "الامام علي"]}
     {"question": "كم عدد المعصومين؟", "answer": 14},
     {"question": "كم عدد اهل البيت؟", "answer": 12},
     {"question": "من هو الذي دفن الامام علي؟", "answer": "شخص يشبه الامام علي"},
@@ -34,13 +34,13 @@ questions_and_answers = [
     {"question": "ما هو اسم اليوم الذي استشهد فيه الامام الحسين؟", "answer": "عاشوراء"},
     {"question": "من هو الحجة المنتظر؟", "answer": "الامام المهدي"},
     {"question": "كم عدد المعصومين الذي اسمهم محمد؟", "answer": "2"},
-    {"question": "ما هو اسم الامام المهدي؟", "answer": "محمد ابن الحسن"},
+    {"question": "ما هو اسم الامام المهدي؟", "answer": "محمد ابن الحسن"}
     {"question": "ما هي بيعة الغدير؟", "answer": "تتويج الامام علي"},
     {"question": "من هو الذي تصدق في المحبس في الصلاة؟", "answer": "الامام علي"},
     {"question": "ما هو اسم المكان الذي تم تتويج الامام علي خليفة؟", "answer": "غدير خم"},
     {"question": "اين دفنت ام البنين؟", "answer": "في البقيع"},
     {"question": "متى ولادة الامام المهدي \n عجل الله فرجة الشريف؟", "answer": " 15 من شعبان"},
-    {"question": "من القائل , بين الحق والباطل 4 اصابع؟", "answer": "الامام علي"},
+    {"question": "من القائل , بين الحق والباطل 4 اصابع؟", "answer": "الامام علي "},
     {"question": "من هو الصادق الامين؟", "answer": "النبي محمد"},
     {"question": "من هو الرسول الاعظم؟", "answer": "الرسول محمد"},
     {"question": "من هو قائد الغر المحجلين؟", "answer": "الامام علي"},
@@ -56,7 +56,7 @@ questions_and_answers = [
     {"question": "من هو مفرح قلب الزهراء؟", "answer": "ابو لؤلؤة"}
 ]
 user_states = {}
-@ABH.on(events.NewMessage(pattern='اسئلة|/quist'))
+@bot.on(events.NewMessage(pattern='اسئلة'))
 async def start(event):
     user_id = event.sender_id
     question = random.choice(questions_and_answers)
@@ -65,17 +65,20 @@ async def start(event):
         "waiting_for_answer": True 
     }
     await event.reply(f"{question['question']}")
-@ABH.on(events.NewMessage)
+
+    await event.reply(f"{question['question']}")
+@bot.on(events.NewMessage)
 async def check_answer(event):
     user_id = event.sender_id
     user_message = event.text.strip().lower()
+
     if user_id in user_states and user_states[user_id]["waiting_for_answer"]:
         current_question = user_states[user_id]["question"]
-        correct_answer = current_question['answer']
-        if isinstance(correct_answer, list):
-            if user_message in [ans.lower() for ans in correct_answer]:
-                await event.reply("احسنت اجابة صحيحة")
-                del user_states[user_id]
+        correct_answer = current_question['answer'].lower()
+
+        if user_message == correct_answer:
+            await event.reply("🎉 إجابة صحيحة! ممتاز!")
+            del user_states[user_id]                 
 
             
 player1 = None
