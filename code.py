@@ -65,8 +65,6 @@ async def start(event):
         "waiting_for_answer": True 
     }
     await event.reply(f"{question['question']}")
-
-    await event.reply(f"{question['question']}")
 @ABH.on(events.NewMessage)
 async def check_answer(event):
     user_id = event.sender_id
@@ -77,7 +75,7 @@ async def check_answer(event):
         correct_answer = current_question['answer'].lower()
 
         if user_message == correct_answer:
-            await event.reply("🎉 إجابة صحيحة! ممتاز!")
+            await event.reply("احسنت اجابة صحيحة")
             del user_states[user_id]                 
 
             
