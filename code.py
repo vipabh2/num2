@@ -323,7 +323,7 @@ async def reply_abh(event):
         await event.client.send_file(event.chat_id, url, caption=caption, reply_to=event.message.id)    
     else: 
         return
-@ABH.on(events.NewMessage(pattern='عبود'))
+@ABH.on(events.NewMessage(pattern='عبدالله|عبود'))
 async def reply_abh(event):
     if event.chat_id == -1001968219024:
         url = "https://files.catbox.moe/qohqtp.MP4"  
