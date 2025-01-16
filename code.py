@@ -1,20 +1,12 @@
 # from models import add_or_update_user, add_point_to_winner, get_user_score # type: ignore
 from telethon import TelegramClient, events, Button
+import requests, os, operator, asyncio, random
 from googletrans import Translator
 from bs4 import BeautifulSoup
-import requests
-import operator
-import asyncio
-import random
-import time
-import os
-
 api_id = os.getenv('API_ID')      
 api_hash = os.getenv('API_HASH')  
 bot_token = os.getenv('BOT_TOKEN') 
 ABH = TelegramClient('c', api_id, api_hash).start(bot_token=bot_token)
-
-
 questions_and_answers = [
     {"question": "من هم ال البيت؟", "answer": "هم اهل بيت رسول الله"},
     {"question": "من هو الخليفة الاول؟", "answer": ["ابا الحسن علي", "الامام علي"]}
