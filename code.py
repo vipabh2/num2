@@ -14,6 +14,76 @@ api_hash = os.getenv('API_HASH')
 bot_token = os.getenv('BOT_TOKEN') 
 ABH = TelegramClient('c', api_id, api_hash).start(bot_token=bot_token)
 
+
+questions_and_answers = [
+    {"question": "من هم ال البيت؟", "answer": "هم اهل بيت رسول الله"},
+    {"question": "من هو الخليفة الاول؟", "answer": "ابا الحسن علي" or "الامام علي"},
+    {"question": "كم عدد اهل المعصومين؟", "answer": "14"},
+    {"question": "كم عدد اهل البيت؟", "answer": "12"},
+    {"question": "من هو الذي دفن الامام علي؟", "answer": "شخص يشبه الامام علي"},
+    {"question": "من هو الدنيئ الذي غدر الامام علي بالمسجد يوم 19 رمضان؟", "answer": "اللعين ابن ملجم"},
+    {"question": "من الذي قال يا ابن راعية المعزة وعلئ من؟", "answer": "الامام الحسين , الشمر اللعين"},
+    {"question": "الامام الذي بعد الامام علي؟", "answer": "الحسن المجتبى"},
+    {"question": "الامام الذي بعد الامام الحسن؟", "answer": "الحسين الشهيد"},
+    {"question": "بحق من نزلت اية التطهير؟", "answer": "ال بيت رسول الله"},
+    {"question": "من هو سيف الله المسلول؟", "answer": "الامير علي"},
+    {"question": "من هو سيف الشيطان المذلول؟", "answer": "خالد"},
+    {"question": "من هم الثقلين؟", "answer": "كتاب الله واهل البيت"},
+    {"question": "من هو قمر عشيرة الهواشم؟", "answer": "الامام العباس"},
+    {"question": "من هو كفيل زينب؟", "answer": "الامام العباس"},
+    {"question": "من الذي قتل المحسن ابن علي؟", "answer": "اللعين عمر"},
+    {"question": "من هو قطيهع الكفين؟", "answer": "الامام العباس"},
+    {"question": "من هو شاعر قصيدة الله يا حامي الشريعة؟", "answer": "حيدر الحلي"},
+    {"question": "من هو حامي الجار؟", "answer": "الامام علي"},
+    {"question": "من صحب قول \n أَمْلَأَ رُكابِي فِضَّةً أَوْ ذَهَبًا إِنِّي قَتَلْتُ خَيْرَ الرِّجَالِ أَمَّا وَأَبَا؟", "answer": "سنان بن انس"},
+    {"question": "من هو سلمان المحمدي؟", "answer": "صحابي النبي و شهيد كربلاء"},
+    {"question": "من هو الذي دفن مع الامام الحسين؟", "answer": "عبد الله الرضيع"},
+    {"question": "ما هي اسم الواقعه في يوم العاشر من محرم؟", "answer": "واقعة الطف"},
+    {"question": "ما هو اسم اليوم الذي استشهد فيه الامام الحسين؟", "answer": "عاشوراء"},
+    {"question": "من هو المنتظر؟", "answer": "الامام المهدي"},
+    {"question": "كم عدد المعصومين الذي اسمهم محمد؟", "answer": "2"},
+    {"question": "ما هو اسم الامام المهدي؟", "answer": "محمد ابن الحسن"}
+    # {"question": "؟", "answer": ""}
+    # {"question": "؟", "answer": ""}
+    # {"question": "؟", "answer": ""}
+    # {"question": "؟", "answer": ""}
+    # {"question": "؟", "answer": ""}
+    # {"question": "؟", "answer": ""}
+    # {"question": "؟", "answer": ""}
+    # {"question": "؟", "answer": ""}
+    # {"question": "؟", "answer": ""}
+    # {"question": "؟", "answer": ""}
+    # {"question": "؟", "answer": ""}
+    # {"question": "؟", "answer": ""}
+    # {"question": "؟", "answer": ""}
+]
+
+user_states = {}
+
+@bot.on(events.NewMessage(pattern='اسئلة'))
+async def start(event):
+    user_id = event.sender_id
+    question = random.choice(questions_and_answers)
+    user_states[user_id] = {
+        "question": question,
+        "waiting_for_answer": True 
+    }
+    await event.reply(f"مرحباً {event.sender.first_name}! 🌟\nسأطرح عليك سؤالاً:\n\n{question['question']}")
+
+@bot.on(events.NewMessage)
+async def check_answer(event):
+    user_id = event.sender_id
+    user_message = event.text.strip().lower()
+
+    if user_id in user_states and user_states[user_id]["waiting_for_answer"]:
+        current_question = user_states[user_id]["question"]
+        correct_answer = current_question['answer'].lower()
+
+        if user_message == correct_answer:
+            await event.reply("🎉 إجابة صحيحة! ممتاز!")
+            del user_states[user_id] 
+
+
 game = False
 players = {}
 chance = 3
