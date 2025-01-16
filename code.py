@@ -56,7 +56,7 @@ questions_and_answers = [
     {"question": "من هو مفرح قلب الزهراء؟", "answer": "ابو لؤلؤة"}
 ]
 user_states = {}
-@ABH.on(events.NewMessage(pattern='اسئلة, /quist'))
+@ABH.on(events.NewMessage(pattern='اسئلة|/quist'))
 async def start(event):
     user_id = event.sender_id
     question = random.choice(questions_and_answers)
