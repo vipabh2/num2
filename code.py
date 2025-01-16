@@ -1,4 +1,4 @@
-from models import add_or_update_user, add_point_to_winner, get_user_score # type: ignore
+# from models import add_or_update_user, add_point_to_winner, get_user_score # type: ignore
 from telethon import TelegramClient, events, Button
 from googletrans import Translator
 from bs4 import BeautifulSoup
