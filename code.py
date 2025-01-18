@@ -265,7 +265,7 @@ abh = [
     "https://t.me/VIPABH/1214",
     "https://t.me/VIPABH/1215"
 ]
-@ABH.on(events.NewMessage(pattern='مخفي'))
+@ABH.on(events.NewMessage(pattern=r'^مخفي$'))
 async def reply(event):
     vipabh = random.choice(abh)
     if vipabh.startswith("http"):
