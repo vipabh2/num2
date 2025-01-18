@@ -70,13 +70,13 @@ async def check_answer(event):
     user_id = event.sender_id
     user_message = event.text.strip().lower()
 
-    if user_id in user_states and user_states[user_id]["waiting_for_answer"]:
-        current_question = user_states[user_id]["question"]
-        correct_answer = current_question['answer'].lower()
+    if user_id in user_states and user_states[user_id].get("waiting_for_answer"):
+        current_question = user_states[user_id].get("question", {})
+        correct_answer = current_question.get('answer', '').lower()
 
         if user_message == correct_answer:
-            await event.reply("احسنت اجابة صحيحة")
-            del user_states[user_id]                 
+            await event.reply("أحسنت! إجابة صحيحة.")
+            del user_states[user_id]             
 
             
 player1 = None
