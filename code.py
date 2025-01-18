@@ -307,7 +307,14 @@ async def reply_abh(event):
         await event.client.send_file(event.chat_id, url, caption=caption, reply_to=event.message.id)    
     else: 
         return
-
+@ABH.on(events.NewMessage(pattern='زهراء'))
+async def reply_abh(event):
+    if event.chat_id == -1001968219024:
+        url = "https://files.catbox.moe/729zsw.mp4"  
+        caption = "@klix_78 ( لَقَدْ كَفَرَ الّذِينَ قَالُوا إنَّ الله هُو المَسِيحُ ابْنُ مَرْيَم)." 
+        await event.client.send_file(event.chat_id, url, caption=caption, reply_to=event.message.id)    
+    else: 
+        return
 @ABH.on(events.NewMessage(pattern='امريجا|الامريكي'))
 async def reply_abh(event):
     if event.chat_id == -1001968219024:
@@ -324,27 +331,6 @@ async def reply_abh(event):
         await event.client.send_file(event.chat_id, url, caption=caption, reply_to=event.message.id)    
     else: 
         return
-import requests
-
-@ABH.on(events.NewMessage(pattern='زهراء|الكردية'))
-async def reply_abh(event):
-    if event.chat_id == -1001968219024:
-        url = "https://files.catbox.moe/729zsw.mp4"  
-        caption = "@klix_78 ( لَقَدْ كَفَرَ الّذِينَ قَالُوا إنَّ الله هُو المَسِيحُ ابْنُ مَرْيَم)."
-
-        try:
-            response = requests.head(url)
-            if response.status_code != 200:
-                print("تعذر الوصول إلى الملف عبر الرابط.")
-                return
-
-            await event.client.send_file(event.chat_id, url, caption=caption, reply_to=event.message.id)
-            print("تم إرسال الملف بنجاح.")
-        except Exception as e:
-            print(f"حدث خطأ أثناء إرسال الملف: {e}")
-    else:
-        return
-
 @ABH.on(events.NewMessage(pattern='عبدالله|عبود'))
 async def reply_abh(event):
     if event.chat_id == -1001968219024:
