@@ -1,4 +1,4 @@
-from database import ApprovedUser, get_approved_users, remove_approved_user, is_approved_user, add_approved_user
+# from database import ApprovedUser, get_approved_users, remove_approved_user, is_approved_user, add_approved_user
 from telethon import TelegramClient, events, Button
 import requests, os, operator, asyncio, random
 from googletrans import Translator
