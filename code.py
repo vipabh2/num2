@@ -46,7 +46,7 @@ async def list_approved_users(event):
                 try:
                     user = await event.client.get_entity(user_id)
                     user_name = user.username if user.username else user.first_name
-                    approved_list += f"@{user_name} - {user_id} \n"
+                    approved_list += f"{user_name} - {user_id} \n"
                 except Exception as e:
                     approved_list += f"خطأ في جلب اسم المستخدم: {user_id}\n"
             await event.reply(f"📝 قائمة المستخدمين ال VIP بالتعديلات:\n{approved_list}")
