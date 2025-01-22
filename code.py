@@ -1,4 +1,7 @@
-from database import ApprovedUser, get_approved_users, remove_approved_user, is_approved_user, add_approved_user
+try:
+    from database import ApprovedUser, get_approved_users, remove_approved_user, is_approved_user, add_approved_user
+except Exception as e:
+    print(f"حدث خطأ في الاستيراد: {e}")
 from telethon import TelegramClient, events, Button
 import requests, os, operator, asyncio, random
 from googletrans import Translator
