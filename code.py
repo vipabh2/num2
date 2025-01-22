@@ -1,6 +1,6 @@
 from database import ApprovedUser, get_approved_users, remove_approved_user, is_approved_user, add_approved_user
 from telethon import TelegramClient, events, Button
-import requests, os, operator, asyncio, random
+import requests, os, operator, asyncio, random, time
 from googletrans import Translator
 from bs4 import BeautifulSoup
 api_id = os.getenv('API_ID')      
@@ -1050,4 +1050,15 @@ questions = [
 async def send_random_question(event):
     random_question = random.choice(questions)
     await event.reply(random_question)
-ABH.run_until_disconnected()    
+while True:
+    try:
+        ABH.run_until_disconnected()
+    except Exception as e:
+        print(f"حدث خطأ: {e}")
+        print("إعادة تشغيل العميل بعد 5 ثوانٍ...")
+        time.sleep(5)
+        await restart_client()
+async def restart_client():
+    print("إعادة تشغيل العميل...")
+    await ABH.disconnect()
+    await ABH.connect()
