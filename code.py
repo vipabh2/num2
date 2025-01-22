@@ -977,16 +977,4 @@ questions = [
 async def send_random_question(event):
     random_question = random.choice(questions)
     await event.reply(random_question)
-        
-
-if __name__ == "__main__":
-    while True:
-        try:
-            ABH.start()
-            ABH.run_until_disconnected()
-        except Exception as e:
-            with ABH:
-                ABH.loop.run_until_complete(
-                    send_error_message(ABH, 1910015590, str(e))
-                )
-                asyncio.run(asyncio.sleep(5))
+ABH.run_until_disconnected()    
