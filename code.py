@@ -6,7 +6,7 @@ from bs4 import BeautifulSoup
 api_id = os.getenv('API_ID')      
 api_hash = os.getenv('API_HASH')  
 bot_token = os.getenv('BOT_TOKEN') 
-ABH = TelegramClient('c', api_id, api_hash).start(bot_token=bot_token)
+ABH = TelegramClient('code', api_id, api_hash).start(bot_token=bot_token)
 @ABH.on(events.NewMessage(pattern='^سماح$'))
 async def approve_user(event):
     if event.is_group and event.sender_id in admins:
