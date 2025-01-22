@@ -16,7 +16,7 @@ async def approve_user(event):
             group_id = event.chat_id
             user = reply_message.sender.first_name
             add_approved_user(user_id, group_id)
-            await event.reply(f"تم السماح للمستخدم {user}بالتعديل الحر .")
+            await event.reply(f"تم السماح للمستخدم {user} بالتعديل الحر .")
         else:
             await event.reply("عزيزي المشرف الفاهي... \n يرجى الرد على رسالة المستخدم الذي تريد السماح له بالتعديلات.")
     else:
