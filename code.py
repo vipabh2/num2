@@ -2,7 +2,8 @@ from database import remove_approved_user
 from database import get_approved_users
 from database import add_approved_user
 from database import is_approved_user
-from database import ApprovedUserfrom telethon import TelegramClient, events, Button
+from database import ApprovedUser
+from telethon import TelegramClient, events, Button
 import requests, os, operator, asyncio, random, time
 from googletrans import Translator
 from bs4 import BeautifulSoup
