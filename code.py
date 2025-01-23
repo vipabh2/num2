@@ -1050,15 +1050,20 @@ questions = [
 async def send_random_question(event):
     random_question = random.choice(questions)
     await event.reply(random_question)
-while True:
-    try:
-        ABH.run_until_disconnected()
-    except Exception as e:
-        print(f"حدث خطأ: {e}")
-        print("إعادة تشغيل العميل بعد 5 ثوانٍ...")
-        time.sleep(5)
-        await restart_client()
+
+async def main():
+    while True:
+        try:
+            ABH.run_until_disconnected()
+        except Exception as e:
+            print(f"حدث خطأ: {e}")
+            print("إعادة تشغيل العميل بعد 5 ثوانٍ...")
+            time.sleep(5)
+            await restart_client()
+
 async def restart_client():
     print("إعادة تشغيل العميل...")
     await ABH.disconnect()
     await ABH.connect()
+
+asyncio.run(main())
