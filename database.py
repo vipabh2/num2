@@ -10,7 +10,7 @@ class ApprovedUser(Base):
     user_id = Column(Integer, primary_key=True)
     group_id = Column(Integer, primary_key=True)
 
-engine = create_engine('sqlite:///approved_users.db', echo=True)
+engine = create_engine('sqlite:///approved_users.db', echo=False)
 
 Base.metadata.create_all(bind=engine)
 
