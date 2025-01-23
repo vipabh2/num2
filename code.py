@@ -1051,13 +1051,4 @@ async def send_random_question(event):
     random_question = random.choice(questions)
     await event.reply(random_question)
 
-async def main():
-    while True:
-        try:
-            print("working...")
-            await ABH.run_until_disconnected() 
-        except Exception as e:
-            print(f"حدث خطأ: {e}")
-            await asyncio.sleep(5)
-if __name__ == "__main__":
-    asyncio.run(main())
+ABH.run_until_disconnected() 
