@@ -1055,7 +1055,7 @@ if __name__ == "__main__":
     while True:
         try:
             print("working...")
-            bot.polling(none_stop=True)
+            ABH.polling(none_stop=True)
         except Exception as e:
             print(f"حدث خطأ: {e}")
             time.sleep(5) 
