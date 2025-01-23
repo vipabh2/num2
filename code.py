@@ -1050,17 +1050,12 @@ questions = [
 async def send_random_question(event):
     random_question = random.choice(questions)
     await event.reply(random_question)
-async def main():
+
+if __name__ == "__main__":
     while True:
         try:
-            await ABH.run_until_disconnected()  # استخدم await هنا
+            print("working...")
+            bot.polling(none_stop=True)
         except Exception as e:
             print(f"حدث خطأ: {e}")
-            print("إعادة تشغيل العميل بعد 5 ثوانٍ...")
-            await restart_client()
-
-async def restart_client():
-    print("إعادة تشغيل العميل...")
-    await ABH.disconnect()
-    await ABH.connect()
-asyncio.run(main())
+            time.sleep(5) 
