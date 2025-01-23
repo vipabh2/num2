@@ -1055,9 +1055,9 @@ async def main():
     while True:
         try:
             print("working...")
-            await ABH.run_until_disconnected()
+            await ABH.run_until_disconnected() 
         except Exception as e:
             print(f"حدث خطأ: {e}")
-            time.sleep(5)  
+            await asyncio.sleep(5)
 if __name__ == "__main__":
     asyncio.run(main())
