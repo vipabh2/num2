@@ -156,7 +156,7 @@ async def check_answer(event):
             await event.reply("أحسنت! إجابة صحيحة.")
             del user_states[user_id]
         else:
-            await event.reply("إجابة خاطئة، حاول مرة أخرى.")
+            return
 
           
 player1 = None
