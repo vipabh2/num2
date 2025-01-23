@@ -1,8 +1,8 @@
-from db import remove_approved_user
-from db import get_approved_users
-from db import add_approved_user
-from db import is_approved_user
-from db import ApprovedUserfrom telethon import TelegramClient, events, Button
+from database import remove_approved_user
+from database import get_approved_users
+from database import add_approved_user
+from database import is_approved_user
+from database import ApprovedUserfrom telethon import TelegramClient, events, Button
 import requests, os, operator, asyncio, random, time
 from googletrans import Translator
 from bs4 import BeautifulSoup
@@ -159,9 +159,7 @@ async def check_answer(event):
             await event.reply("أحسنت! إجابة صحيحة.")
             del user_states[user_id]
         else:
-            return
-
-          
+            return          
 player1 = None
 player2 = None
 turn = None  
@@ -181,7 +179,6 @@ async def start_message(event):
         parse_mode="Markdown",
         buttons=markup
     )
-
 @ABH.on(events.CallbackQuery(func=lambda call: call.data == b"start"))
 async def start_game(event):
     global player1, player2, turn, game_board, username1, username2, t1, t2
@@ -436,11 +433,12 @@ async def reply_abh(event):
 @ABH.on(events.NewMessage(pattern=r'^(مخفي طكة زيج|زيج)$'))
 async def reply_abh(event):
     replied_message = await event.get_reply_message()
+    if replied_message and replied_message.sender_id == 1910015590:
+        await event.reply("عزيزي الغبي ... \n تريدني اعفط للمطور شكلت لربك؟")
     if replied_message:
         await event.client.send_file(replied_message.peer_id, "https://t.me/VIPABH/1171", reply_to=replied_message.id)
     else:
-        await event.reply("يجب عليك الرد على رسالة حتى يعمل هذا الأمر.")
-
+        await event.reply("عزيزي الفاهي ... \n الامر يعمل بالرد , اذا عدتها وما سويت رد اعفطلك")
 
 url = "https://ar.wikipedia.org/w/api.php"
 searching_state = {}
