@@ -130,26 +130,25 @@ questions_and_answers = [
 ]
 user_states = {}
 @ABH.on(events.NewMessage(pattern='اسئلة|/quist'))
-async def start(event):
-    user_id = event.sender_id
-    question = random.choice(questions_and_answers)
-    user_states[user_id] = {
-        "question": question,
-        "waiting_for_answer": True 
-    }
-    await event.reply(f"{question['question']}")
-@ABH.on(events.NewMessage)
 async def check_answer(event):
     user_id = event.sender_id
     user_message = event.text.strip().lower()
 
     if user_id in user_states and user_states[user_id].get("waiting_for_answer"):
         current_question = user_states[user_id].get("question", {})
-        correct_answer = current_question.get('answer', '').lower()
+        correct_answer = current_question.get('answer', '')
+
+        if isinstance(correct_answer, str):
+            correct_answer = correct_answer.lower()
+        else:
+            correct_answer = str(correct_answer)
 
         if user_message == correct_answer:
             await event.reply("أحسنت! إجابة صحيحة.")
-            del user_states[user_id]             
+            del user_states[user_id]
+        else:
+            await event.reply("إجابة خاطئة، حاول مرة أخرى.")
+          
 player1 = None
 player2 = None
 turn = None  
