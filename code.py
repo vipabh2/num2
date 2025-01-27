@@ -4,7 +4,7 @@ from database import add_approved_user
 from database import is_approved_user
 from database import ApprovedUser
 from telethon import TelegramClient, events, Button
-import requests, os, operator, asyncio, random, time
+import requests, os, operator, asyncio, random, uuid
 from googletrans import Translator
 from bs4 import BeautifulSoup
 from database import store_whisper, get_whisper
@@ -12,7 +12,7 @@ api_id = os.getenv('API_ID')
 api_hash = os.getenv('API_HASH')  
 bot_token = os.getenv('BOT_TOKEN') 
 ABH = TelegramClient('code', api_id, api_hash).start(bot_token=bot_token)
-@client.on(events.InlineQuery)
+@ABH.on(events.InlineQuery)
 async def inline_query_handler(event):
     builder = event.builder
     query = event.text
@@ -25,7 +25,7 @@ async def inline_query_handler(event):
             if not username.startswith('@'):
                 username = f'@{username}'
             try:
-                reciver = await client.get_entity(username)
+                reciver = await ABH.get_entity(username)
                 reciver_id = reciver.id
                 whisper_id = str(uuid.uuid4())
                 store_whisper(whisper_id, sender, reciver_id, username, message)
@@ -48,23 +48,20 @@ async def inline_query_handler(event):
                 )
         else:
             return
-            )
         await event.answer([result])
-
-@client.on(events.CallbackQuery)
+@ABH.on(events.CallbackQuery)
 async def callback_query_handler(event):
     data = event.data.decode('utf-8')
     if data.startswith('send:'):
-        try:
-            whisper_id = data.split(':')[1]
-            whisper = get_whisper(whisper_id)
-            if whisper:
-                if event.sender_id == whisper.sender_id or event.sender_id == whisper.reciver_id:
-                    await event.answer(f"{whisper.message}", alert=True)
-                else:
-                    await event.answer("عزيزي الحشري، هذه الهمسة ليست موجهة إليك!", alert=True)
-                else:
-                    await event.answer("⚠ هذه الهمسة لم تعد متاحة أو قد تكون محذوفة.", alert=True)
+        whisper_id = data.split(':')[1]
+        whisper = get_whisper(whisper_id)
+        if whisper:
+            if event.sender_id == whisper.sender_id or event.sender_id == whisper.reciver_id:
+                await event.answer(f"{whisper.message}", alert=True)
+            else:
+                await event.answer("عزيزي الحشري، هذه الهمسة ليست موجهة إليك!", alert=True)
+
+
 questions_and_answers = [
     {"question": "من هم ال البيت؟", "answer": "هم اهل بيت رسول الله"},
     {"question": "من هو الخليفة الاول؟", "answer": ["ابا الحسن علي", "الامام علي"]},
