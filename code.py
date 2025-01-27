@@ -25,8 +25,8 @@ async def inline_query_handler(event):
             if not username.startswith('@'):
                 username = f'@{username}'
             try:
-                reciver_id = await client.get_entity(username)  # الحصول على ID المستلم
-                whisper_id = f"{sender}:{reciver_id.id}"  # إنشاء معرف خاص بالهمسة
+                reciver_id = await ABH.get_entity(username)  
+                whisper_id = f"{sender}:{reciver_id.id}"  
                 store_whisper(whisper_id, sender, reciver_id.id, username, message)
                 result = builder.article(
                     title='اضغط لارسال الهمسة',
@@ -46,6 +46,7 @@ async def inline_query_handler(event):
                 text='التنسيق غير صحيح، يرجى إرسال الهمسة بالتنسيق الصحيح: @username <message>'
             )
         await event.answer([result])
+
 @ABH.on(events.CallbackQuery)
 async def callback_query_handler(event):
     data = event.data.decode('utf-8')
@@ -59,10 +60,10 @@ async def callback_query_handler(event):
                 else:
                     await event.answer("عزيزي الحشري الهمسة ليست موجهه اليك!", alert=True)
             else:
-                return
+                await event.answer("الهمسة غير موجودة!", alert=True)
         except Exception as e:
             await event.answer(f'حدث خطأ: {str(e)}', alert=True)
-
+            
 questions_and_answers = [
     {"question": "من هم ال البيت؟", "answer": "هم اهل بيت رسول الله"},
     {"question": "من هو الخليفة الاول؟", "answer": ["ابا الحسن علي", "الامام علي"]},
