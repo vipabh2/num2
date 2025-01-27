@@ -10,7 +10,7 @@ Base = declarative_base()
 class Whisper(Base):
     __tablename__ = 'whispers'
 
-    id = Column(Integer, primary_key=True, autoincrement=True)
+    id = Column(Integer, primary_key=True, autoincrement=False)
     whisper_id = Column(String, unique=True)
     sender_id = Column(Integer)
     reciver_id = Column(Integer)
