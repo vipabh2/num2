@@ -12,7 +12,6 @@ api_id = os.getenv('API_ID')
 api_hash = os.getenv('API_HASH')  
 bot_token = os.getenv('BOT_TOKEN') 
 ABH = TelegramClient('code', api_id, api_hash).start(bot_token=bot_token)
-
 @client.on(events.InlineQuery)
 async def inline_query_handler(event):
     builder = event.builder
