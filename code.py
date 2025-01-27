@@ -36,7 +36,7 @@ async def inline_query_handler(event):
                     buttons=[
                         Button.inline(
                             text=' اضغط لعرض الهمسة', 
-                            data=f'send:{whisper_id}
+                            data=f'send:{whisper_id}'
                         )
                     ]
                 )
