@@ -12,7 +12,8 @@ api_id = os.getenv('API_ID')
 api_hash = os.getenv('API_HASH')  
 bot_token = os.getenv('BOT_TOKEN') 
 ABH = TelegramClient('code', api_id, api_hash).start(bot_token=bot_token)
-@ABH.on(events.InlineQuery)
+
+@client.on(events.InlineQuery)
 async def inline_query_handler(event):
     builder = event.builder
     query = event.text
@@ -25,45 +26,46 @@ async def inline_query_handler(event):
             if not username.startswith('@'):
                 username = f'@{username}'
             try:
-                reciver_id = await ABH.get_entity(username)  
-                whisper_id = f"{sender}:{reciver_id.id}"  
-                store_whisper(whisper_id, sender, reciver_id.id, username, message)
+                reciver = await client.get_entity(username)
+                reciver_id = reciver.id
+                whisper_id = str(uuid.uuid4())
+                store_whisper(whisper_id, sender, reciver_id, username, message)
                 result = builder.article(
-                    title='اضغط لارسال الهمسة',
+                    title='اضغط لإرسال الهمسة',
                     description=f'إرسال الرسالة إلى {username}',
                     text=f"همسة سرية إلى \n الله يثخن اللبن عمي ({username})",
-                    buttons=[Button.inline(text='tap to see', data=f'send:{username}:{message}:{sender}:{whisper_id}')])
+                    buttons=[
+                        Button.inline(
+                            text=' اضغط لعرض الهمسة', 
+                            data=f'send:{whisper_id}
+                        )
+                    ]
+                )
             except Exception as e:
                 result = builder.article(
-                    title='لرؤية المزيد حول الهمس',
-                    description="همس",
-                    text=f'خطأ: {str(e)}'
+                    title='خطأ في الإرسال',
+                    description="حدث خطأ أثناء معالجة طلبك.",
+                    # text=f' خطأ: {str(e)}'
                 )
         else:
-            result = builder.article(
-                title='خطأ في التنسيق',
-                description="يرجى استخدام التنسيق الصحيح: @username <message>",
-                text='التنسيق غير صحيح، يرجى إرسال الهمسة بالتنسيق الصحيح: @username <message>'
+            return
             )
         await event.answer([result])
 
-@ABH.on(events.CallbackQuery)
+@client.on(events.CallbackQuery)
 async def callback_query_handler(event):
     data = event.data.decode('utf-8')
     if data.startswith('send:'):
-        _, username, message, sender_id, whisper_id = data.split(':', 4)
         try:
+            whisper_id = data.split(':')[1]
             whisper = get_whisper(whisper_id)
             if whisper:
                 if event.sender_id == whisper.sender_id or event.sender_id == whisper.reciver_id:
                     await event.answer(f"{whisper.message}", alert=True)
                 else:
-                    await event.answer("عزيزي الحشري الهمسة ليست موجهه اليك!", alert=True)
-            else:
-                await event.answer("الهمسة غير موجودة!", alert=True)
-        except Exception as e:
-            await event.answer(f'حدث خطأ: {str(e)}', alert=True)
-            
+                    await event.answer("عزيزي الحشري، هذه الهمسة ليست موجهة إليك!", alert=True)
+                else:
+                    await event.answer("⚠ هذه الهمسة لم تعد متاحة أو قد تكون محذوفة.", alert=True)
 questions_and_answers = [
     {"question": "من هم ال البيت؟", "answer": "هم اهل بيت رسول الله"},
     {"question": "من هو الخليفة الاول؟", "answer": ["ابا الحسن علي", "الامام علي"]},
