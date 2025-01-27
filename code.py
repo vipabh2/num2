@@ -12,7 +12,7 @@ api_id = os.getenv('API_ID')
 api_hash = os.getenv('API_HASH')  
 bot_token = os.getenv('BOT_TOKEN') 
 ABH = TelegramClient('code', api_id, api_hash).start(bot_token=bot_token)
-@client.on(events.InlineQuery)
+@ABH.on(events.InlineQuery)
 async def inline_query_handler(event):
     builder = event.builder
     query = event.text
@@ -46,7 +46,7 @@ async def inline_query_handler(event):
                 text='التنسيق غير صحيح، يرجى إرسال الهمسة بالتنسيق الصحيح: @username <message>'
             )
         await event.answer([result])
-@client.on(events.CallbackQuery)
+@ABH.on(events.CallbackQuery)
 async def callback_query_handler(event):
     data = event.data.decode('utf-8')
     if data.startswith('send:'):
@@ -57,7 +57,7 @@ async def callback_query_handler(event):
                 if event.sender_id == whisper.sender_id or event.sender_id == whisper.reciver_id:
                     await event.answer(f"{whisper.message}", alert=True)
                 else:
-                    await event.answer("عزيزي الحشري الهمسة ليس موجهه اليك!", alert=True)
+                    await event.answer("عزيزي الحشري الهمسة ليست موجهه اليك!", alert=True)
             else:
                 return
         except Exception as e:
