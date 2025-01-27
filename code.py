@@ -7,83 +7,62 @@ from telethon import TelegramClient, events, Button
 import requests, os, operator, asyncio, random, time
 from googletrans import Translator
 from bs4 import BeautifulSoup
+from database import store_whisper, get_whisper
 api_id = os.getenv('API_ID')      
 api_hash = os.getenv('API_HASH')  
 bot_token = os.getenv('BOT_TOKEN') 
 ABH = TelegramClient('code', api_id, api_hash).start(bot_token=bot_token)
-@ABH.on(events.NewMessage(pattern='^سماح$'))
-async def approve_user(event):
-    if event.is_group and event.sender_id in admins:
-        if event.is_reply:
-            reply_message = await event.get_reply_message()
-            user_id = reply_message.sender_id
-            group_id = event.chat_id
-            user = reply_message.sender.first_name
-            add_approved_user(user_id, group_id)  # تأكد من أن دالة add_approved_user تعمل بشكل صحيح
-            await event.reply(f"تم السماح للمستخدم {user} بالتعديل الحر.")
+@client.on(events.InlineQuery)
+async def inline_query_handler(event):
+    builder = event.builder
+    query = event.text
+    sender = event.sender_id
+    if query.strip():
+        parts = query.split(' ')
+        if len(parts) >= 2:
+            message = ' '.join(parts[:-1])
+            username = parts[-1]
+            if not username.startswith('@'):
+                username = f'@{username}'
+            try:
+                reciver_id = await client.get_entity(username)  # الحصول على ID المستلم
+                whisper_id = f"{sender}:{reciver_id.id}"  # إنشاء معرف خاص بالهمسة
+                store_whisper(whisper_id, sender, reciver_id.id, username, message)
+                result = builder.article(
+                    title='اضغط لارسال الهمسة',
+                    description=f'إرسال الرسالة إلى {username}',
+                    text=f"همسة سرية إلى \n الله يثخن اللبن عمي ({username})",
+                    buttons=[Button.inline(text='tap to see', data=f'send:{username}:{message}:{sender}:{whisper_id}')])
+            except Exception as e:
+                result = builder.article(
+                    title='لرؤية المزيد حول الهمس',
+                    description="همس",
+                    text=f'خطأ: {str(e)}'
+                )
         else:
-            await event.reply("عزيزي المشرف الفاهي... \n يرجى الرد على رسالة المستخدم الذي تريد السماح له بالتعديلات.")
-    else:
-        return
-@ABH.on(events.NewMessage(pattern='^رفض$'))
-async def disapprove_user(event):
-    if event.is_group and event.sender_id in admins:
-        if event.is_reply:
-            reply_message = await event.get_reply_message()
-            user_id = reply_message.sender_id
-            group_id = event.chat_id
-            user = reply_message.sender.first_name
-            remove_approved_user(user_id, group_id)  # تأكد من أن دالة remove_approved_user تعمل بشكل صحيح
-            await event.reply(f"المستخدم {user} تم رفض تعديلاتة القادمة \n والله خطية.")
-        else:
-            await event.reply("عزيزي المشرف الاغبر... \n يرجى الرد على رسالة المستخدم الذي تريد رفضه بالتعديلات.")
-    else:
-        return
-@ABH.on(events.NewMessage(pattern='^المسموح لهم$'))
-async def list_approved_users(event):
-    senid = event.sender_id
-    if event.is_group and senid in admins:
-        approved_users = get_approved_users(event.chat_id)  # استخدم get_approved_users للحصول على المستخدمين المعتمدين
-        if approved_users:
-            approved_list = ""
-            for user_id, group_id in approved_users:
-                try:
-                    user = await event.client.get_entity(user_id)
-                    user_name = user.username if user.username else user.first_name
-                    approved_list += f"@{user_name} - {user_id} \n"
-                except Exception as e:
-                    approved_list += f"خطأ في جلب اسم المستخدم: {user_id}\n"
-            await event.reply(f"📝 قائمة المستخدمين ال VIP بالتعديلات:\n{approved_list}")
-        else:
-            await event.reply("ماكو مستخدمين VIP او HIGH CLASS حالياً \n ضيفلك كم واحد حبيبي.") 
-    else:
-        return
-admins = [
-    1910015590,
-    7176263278,
-    6783332896,
-    1494932118,
-    201728276,
-    1688194818,
-    5399306464,
-    6498922948,
-    1446637898
-]
-@ABH.on(events.MessageEdited)
-async def echo(event):
-    if event.is_group:
-        user_id = event.sender_id
-        group_id = event.chat_id
-        approved_users = get_approved_users(group_id)  # تأكد من أنك تستخدم دالة صحيحة هنا
-        approved_user_ids = [user[0] for user in approved_users]
-        if user_id in admins or user_id in approved_user_ids:
-            return
-        if event.media or ('http://' in event.message.message or 'https://' in event.message.message):
-            await event.reply("هنالك شخص عدل رسالة لكن غير معروف المقصد 🤔")
-        else:
-            return
-    else:
-        return
+            result = builder.article(
+                title='خطأ في التنسيق',
+                description="يرجى استخدام التنسيق الصحيح: @username <message>",
+                text='التنسيق غير صحيح، يرجى إرسال الهمسة بالتنسيق الصحيح: @username <message>'
+            )
+        await event.answer([result])
+@client.on(events.CallbackQuery)
+async def callback_query_handler(event):
+    data = event.data.decode('utf-8')
+    if data.startswith('send:'):
+        _, username, message, sender_id, whisper_id = data.split(':', 4)
+        try:
+            whisper = get_whisper(whisper_id)
+            if whisper:
+                if event.sender_id == whisper.sender_id or event.sender_id == whisper.reciver_id:
+                    await event.answer(f"{whisper.message}", alert=True)
+                else:
+                    await event.answer("عزيزي الحشري الهمسة ليس موجهه اليك!", alert=True)
+            else:
+                return
+        except Exception as e:
+            await event.answer(f'حدث خطأ: {str(e)}', alert=True)
+
 questions_and_answers = [
     {"question": "من هم ال البيت؟", "answer": "هم اهل بيت رسول الله"},
     {"question": "من هو الخليفة الاول؟", "answer": ["ابا الحسن علي", "الامام علي"]},
