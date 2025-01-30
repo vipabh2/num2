@@ -35,7 +35,7 @@ async def inline_query_handler(event):
                     text=همسة سرية إلى \n الله يثخن اللبن عمي 😌 ({username})",
                     buttons=[
                         Button.inline(
-                            text=' اضغط لعرض الهمسة', 
+                            text='🫵🏾 اضغط لعرض الهمسة', 
                             data=f'send:{whisper_id}'
                         )
                     ]
