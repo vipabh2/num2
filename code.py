@@ -48,7 +48,7 @@ async def inline_query_handler(event):
                 result = builder.article(
                     title='اضغط لإرسال الهمسة',
                     description=f'إرسال الرسالة إلى {username}',
-                    text="همسة سرية إلى \n الله يثخن اللبن عمي 😌 ({username})",
+                    text=f"همسة سرية إلى \n الله يثخن اللبن عمي 😌 ({username})",
                     buttons=[
                         Button.inline(
                             text='🫵🏾 اضغط لعرض الهمسة', 
