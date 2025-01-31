@@ -27,7 +27,7 @@ async def start(event):
     rl = random.randint(2, 273)
     url = f"https://t.me/IUABH/{rl}"
     cap = random.choice(c)
-    await ABH.send_file(event.chat_id, url, caption=f"{cap}")
+    await ABH.send_file(event.chat_id, url, caption=f"{cap}", reply_to=event.id)
 @ABH.on(events.InlineQuery)
 async def inline_query_handler(event):
     builder = event.builder
