@@ -12,6 +12,22 @@ api_id = os.getenv('API_ID')
 api_hash = os.getenv('API_HASH')  
 bot_token = os.getenv('BOT_TOKEN') 
 ABH = TelegramClient('code', api_id, api_hash).start(bot_token=bot_token)
+c = [
+    "ههههههه",
+    "راويني السنون الصفر",
+    "اضحك شبيك شايل الدنية علئ اجتافك",
+    "صح سخيفة بس هههه حلوه",
+    "انت طلبت الامر ليش ما ضحكت",
+    "😂",
+    "يسعدلي مسائك😀"
+]
+@ABH.on(events.NewMessage(pattern='ميم|ميمز'))
+async def start(event):
+    global c
+    rl = random.randint(2, 273)
+    url = f"https://t.me/IUABH/{rl}"
+    cap = random.choice(c)
+    await ABH.send_file(event.chat_id, url, caption=f"{cap}")
 @ABH.on(events.InlineQuery)
 async def inline_query_handler(event):
     builder = event.builder
