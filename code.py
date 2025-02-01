@@ -298,7 +298,7 @@ def reset_game():
     turn = None
 if not any([player1, player2]): 
     reset_game()    
-@ABH.on(events.NewMessage(pattern=r'^احس$'))
+@ABH.on(events.NewMessage(pattern=r'احس'))
 async def mem1(event):
         url = "https://files.catbox.moe/euqqqk.jpg"  
         await event.client.send_file(event.chat_id, url, reply_to=event.message.id)
@@ -361,15 +361,14 @@ async def handle_message(event):
         f"النص المترجم: `{translated.text}`"
     )
     await event.reply(response)
+
 @ABH.on(events.NewMessage(pattern='ابن هاشم'))
 async def reply_abh(event):
     if event.chat_id == -1001968219024:
-        uid = event.sender_id
-        if uid == 7908156943:            
-            rl = random.randint(1222, 1241)
+        rl = random.randint(1222, 1241)
         url = f"https://t.me/VIPABH/{rl}"
         caption = "ابن هاشم (رض) مرات متواضع ،🌚 @K_4x1"
-        await event.client.send_file(event.chat_id, url, caption=caption, reply_to=event.message.id)   
+        await event.client.send_file(event.chat_id, url, caption=caption, reply_to=event.message.id)    
     else:
         return
 @ABH.on(events.NewMessage(pattern='زهراء'))
