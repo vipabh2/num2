@@ -361,22 +361,15 @@ async def handle_message(event):
         f"النص المترجم: `{translated.text}`"
     )
     await event.reply(response)
-    
 @ABH.on(events.NewMessage(pattern='ابن هاشم'))
 async def reply_abh(event):
     if event.chat_id == -1001968219024:
-        iu = random.choice(["ch1", "ch2"])  
-        if iu == "ch1":  
-            rl = random.randint(1222, 1223)
-            url = f"https://t.me/VIPABH/{rl}"
-        else:  
-            rl = random.randint(242, 255)
-            url = f"https://t.me/iuABH/{rl}"  
+        rl = random.randint(1222, 1241)
+        url = f"https://t.me/VIPABH/{rl}"
         caption = "ابن هاشم (رض) مرات متواضع ،🌚 @K_4x1"
         await event.client.send_file(event.chat_id, url, caption=caption, reply_to=event.message.id)   
     else:
         return
-
 @ABH.on(events.NewMessage(pattern='زهراء'))
 async def reply_abh(event):
     if event.chat_id == -1001968219024:
