@@ -1,13 +1,9 @@
-from database import remove_approved_user
-from database import get_approved_users
-from database import add_approved_user
-from database import is_approved_user
-from database import ApprovedUser
+import requests, os, operator, asyncio, random, uuid, datetime
 from telethon import TelegramClient, events, Button
-import requests, os, operator, asyncio, random, uuid
+from database import store_whisper, get_whisper
+from hijri_converter import Gregorian
 from googletrans import Translator
 from bs4 import BeautifulSoup
-from database import store_whisper, get_whisper
 api_id = os.getenv('API_ID')      
 api_hash = os.getenv('API_HASH')  
 bot_token = os.getenv('BOT_TOKEN') 
@@ -18,8 +14,6 @@ async def start_handler(event):
     hd = Gregorian(t.year, t.month, t.day).to_hijri()
     hd_str = f"{hd.day} {hd.month_name('ar')} {hd.year} هـ"    
     await event.reply(f"{hd_str}")
-
-
 c = [
     "ههههههه",
     "😂راويني السنون الصفر",
@@ -306,7 +300,7 @@ def reset_game():
     turn = None
 if not any([player1, player2]): 
     reset_game()    
-@ABH.on(events.NewMessage(pattern=r'احس'))
+@ABH.on(events.NewMessage(pattern=r'\bاحس\b'))
 async def mem1(event):
         url = "https://files.catbox.moe/euqqqk.jpg"  
         await event.client.send_file(event.chat_id, url, reply_to=event.message.id)
