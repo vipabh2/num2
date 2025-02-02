@@ -12,12 +12,20 @@ api_id = os.getenv('API_ID')
 api_hash = os.getenv('API_HASH')  
 bot_token = os.getenv('BOT_TOKEN') 
 ABH = TelegramClient('code', api_id, api_hash).start(bot_token=bot_token)
+@ABH.on(events.NewMessage(pattern='^اليوم|تاريخ$'))
+async def start_handler(event):
+    t = datetime.datetime.now().date()
+    hd = Gregorian(t.year, t.month, t.day).to_hijri()
+    hd_str = f"{hd.day} {hd.month_name('ar')} {hd.year} هـ"    
+    await event.reply(f"{hd_str}")
+
+
 c = [
     "ههههههه",
-    "راويني السنون الصفر",
-    "اضحك شبيك شايل الدنية علئ اجتافك",
-    "صح سخيفة بس هههه حلوه",
-    "انت طلبت الامر ليش ما ضحكت",
+    "😂راويني السنون الصفر",
+    "😂اضحك شبيك شايل الدنية علئ اجتافك",
+    "😂صح سخيفة بس هههه حلوه",
+    "😂انت طلبت الامر ليش ما ضحكت",
     "😂",
     "يسعدلي مسائك😀"
 ]
