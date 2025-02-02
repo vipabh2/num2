@@ -13,7 +13,7 @@ async def start_handler(event):
     t = datetime.datetime.now().date()
     hd = Gregorian(t.year, t.month, t.day).to_hijri()
     hd_str = f"{hd.day} {hd.month_name('ar')} {hd.year} هـ"    
-    await event.reply(f"{hd_str}")
+    await event.reply(f" الهجري: \n {hd_str} \n الميلادي: \n {t}")
 c = [
     "ههههههه",
     "😂راويني السنون الصفر",
