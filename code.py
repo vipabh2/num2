@@ -45,7 +45,7 @@ async def set_user_date(event):
 @ABH.on(events.NewMessage(pattern='^كم باقي$'))
 async def check_remaining_days(event):
     user_id = event.sender_id
-    saved_date = get_saved_date(user_id)
+    saved_date = save_date(user_id)
     if saved_date:
         t = datetime.datetime.today()
         saved_date_obj = datetime.datetime.strptime(saved_date, "%Y-%m-%d").date()
