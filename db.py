@@ -6,7 +6,6 @@ DATABASE_URL = "sqlite:///user_dates.db"
 engine = create_engine(DATABASE_URL, echo=False)
 
 Base = declarative_base()
-
 Session = sessionmaker(bind=engine)
 
 class UserDates(Base):
