@@ -4,6 +4,7 @@ from database import store_whisper, get_whisper
 from hijri_converter import Gregorian
 from googletrans import Translator
 from bs4 import BeautifulSoup
+from db import save_date
 api_id = os.getenv('API_ID')      
 api_hash = os.getenv('API_HASH')  
 bot_token = os.getenv('BOT_TOKEN') 
