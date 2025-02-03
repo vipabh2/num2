@@ -8,7 +8,98 @@ api_id = os.getenv('API_ID')
 api_hash = os.getenv('API_HASH')  
 bot_token = os.getenv('BOT_TOKEN') 
 ABH = TelegramClient('code', api_id, api_hash).start(bot_token=bot_token)
-@ABH.on(events.NewMessage(pattern='^اليوم|تاريخ$'))
+@ABH.on(events.NewMessage(pattern='^/dates$'))
+async def show_dates(event):
+    btton = [[
+        Button.inline("محرم", b"m"),
+        Button.inline("رمضان", b"rm"),
+        Button.inline("شعبان", b"sh"),
+        Button.inline("رجب", b"r"),
+        Button.inline("حدد تاريخ", b"set_date")
+    ]]
+    await event.respond("اختر الشهر المناسب أو حدد تاريخ خاص 👇", buttons=btton)
+@ABH.on(events.CallbackQuery(data=b"set_date"))
+async def ask_for_date(event):
+    await event.respond("من فضلك أدخل التاريخ بصيغة YYYY-MM-DD مثال")
+@ABH.on(events.NewMessage(pattern=r'^\d{4}-\d{2}-\d{2}$'))
+async def set_user_date(event):
+    user_id = event.sender_id
+    date = event.text
+    try:
+        datetime.datetime.strptime(date, "%Y-%m-%d")
+        save_date(user_id, date)
+        await event.reply(f"تم حفظ التاريخ {date}. يمكنك الآن معرفة كم باقي.")
+    except ValueError:
+        await event.reply("التاريخ المدخل غير صالح، يرجى إدخاله بصيغة YYYY-MM-DD.")
+@ABH.on(events.NewMessage(pattern='^كم باقي$'))
+async def cunt_m(event):
+    user_id = event.sender_id
+    saved_date = get_saved_date(user_id)
+    if saved_date:
+        t = datetime.datetime.today()
+        saved_date_obj = datetime.datetime.strptime(saved_date, "%Y-%m-%d").date()
+        days_difference = (saved_date_obj - t.date()).days
+        if days_difference < 0:
+            await event.reply(f"التاريخ قد مضى منذ {abs(days_difference)} يوم")
+        else:
+            await event.reply(f"باقي {days_difference} ايام")
+    else:
+        await event.reply("لم تحدد تاريخًا بعد، يرجى تحديد تاريخ أولاً.")
+@ABH.on(events.CallbackQuery(data=b"r"))
+async def handle_r(event):
+    await event.answer()
+    await cunt_r(event) 
+@ABH.on(events.CallbackQuery(data=b"rm"))
+async def handle_r(event):
+    await event.answer()
+    await cunt_rm(event) 
+@ABH.on(events.CallbackQuery(data=b"sh"))
+async def handle_r(event):
+    await event.answer()
+    await cunt_sh(event) 
+@ABH.on(events.CallbackQuery(data=b"m"))
+async def handle_r(event):
+    await event.answer()
+    await cunt_m(event) 
+@ABH.on(events.NewMessage(pattern='^رجب$'))
+async def cunt_r(event):
+    t = datetime.datetime.today()
+    t2 = datetime.date(2025, 12, 22)
+    days_difference = (t2 - t.date()).days
+    if days_difference < 0:
+        await event.reply("الشهر قد بدأ \n يا مطوري حدث الكود @k_4x1")
+    else:
+        await event.reply(f"باقي {days_difference} ايام")
+@ABH.on(events.NewMessage(pattern='^شعبان$'))
+async def cunt_sh(event):
+    t = datetime.datetime.today()
+    t2 = datetime.date(2026, 1, 20)
+    days_difference = (t2 - t.date()).days
+    if days_difference < 0:
+        await event.reply("الشهر قد بدأ \n يا مطوري حدث الكود @k_4x1")
+    else:
+        await event.reply(f"باقي {days_difference} ايام")
+@ABH.on(events.NewMessage(pattern='^رمضان$'))
+async def cunt_rm(event):
+    t = datetime.datetime.today()
+    t2 = datetime.date(2025, 3, 1)
+    days_difference = (t2 - t.date()).days
+    if days_difference < 0:
+        await event.reply("الشهر قد بدأ \n يا مطوري حدث الكود @k_4x1")
+    else:
+        await event.reply(f"باقي {days_difference} ايام")
+@ABH.on(events.NewMessage(pattern='^محرم$'))
+async def cunt_m(event):
+    t = datetime.datetime.today()
+    t2 = datetime.date(2025, 6, 26)
+    days_difference = (t2 - t.date()).days
+    if days_difference < 0:
+        await event.reply("الشهر قد بدأ \n يا مطوري حدث الكود @k_4x1")
+    else:
+        await event.reply(f"باقي {days_difference} ايام")
+print("Bot is running...")
+ABH.run_until_disconnected()
+@ABH.on(events.NewMessage(pattern='^تاريخ$'))
 async def start_handler(event):
     t = datetime.datetime.now().date()
     hd = Gregorian(t.year, t.month, t.day).to_hijri()
