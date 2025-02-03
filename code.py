@@ -1,10 +1,10 @@
 import requests, os, operator, asyncio, random, uuid, datetime
 from telethon import TelegramClient, events, Button
 from database import store_whisper, get_whisper
+from db import save_date, get_saved_date
 from hijri_converter import Gregorian
 from googletrans import Translator
 from bs4 import BeautifulSoup
-from db import save_date
 api_id = os.getenv('API_ID')      
 api_hash = os.getenv('API_HASH')  
 bot_token = os.getenv('BOT_TOKEN') 
@@ -48,7 +48,7 @@ async def set_user_date(event):
 @ABH.on(events.NewMessage(pattern='^كم باقي$'))
 async def check_remaining_days(event):
     user_id = event.sender_id
-    saved_date = get_saved_date(user_id)  # استخدم get_saved_date لاسترجاع التاريخ
+    saved_date = get_saved_date(user_id)
     if saved_date:
         t = datetime.datetime.today()
         saved_date_obj = datetime.datetime.strptime(saved_date, "%Y-%m-%d").date()
