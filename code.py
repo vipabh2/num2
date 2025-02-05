@@ -98,6 +98,7 @@ async def start(event):
     url = f"https://t.me/IUABH/{rl}"
     cap = random.choice(c)
     await ABH.send_file(event.chat_id, url, caption=f"{cap}", reply_to=event.id)
+
 @ABH.on(events.InlineQuery)
 async def inline_query_handler(event):
     builder = event.builder
@@ -107,12 +108,17 @@ async def inline_query_handler(event):
         parts = query.split(' ')
         if len(parts) >= 2:
             message = ' '.join(parts[:-1])
-            username = parts[-1]
-            if not username.startswith('@'):
-                username = f'@{username}'
+            recipient = parts[-1]
             try:
-                reciver = await ABH.get_entity(username)
-                reciver_id = reciver.id
+                if recipient.isdigit():
+                    reciver_id = int(recipient)
+                    username = f'ID:{reciver_id}'
+                else:
+                    if not recipient.startswith('@'):
+                        recipient = f'@{recipient}'
+                    reciver = await ABH.get_entity(recipient)
+                    reciver_id = reciver.id
+                    username = recipient
                 whisper_id = str(uuid.uuid4())
                 store_whisper(whisper_id, sender, reciver_id, username, message)
                 result = builder.article(
@@ -121,7 +127,7 @@ async def inline_query_handler(event):
                     text=f"همسة سرية إلى \n الله يثخن اللبن عمي 😌 ({username})",
                     buttons=[
                         Button.inline(
-                            text='🫵🏾 اضغط لعرض الهمسة', 
+                            text='🫵🏾 اضغط لعرض الهمسة',
                             data=f'send:{whisper_id}'
                         )
                     ]
@@ -437,7 +443,7 @@ async def reply_abh(event):
     if event.chat_id == -1001968219024:
         rl = random.randint(1222, 1241)
         url = f"https://t.me/VIPABH/{rl}"
-        caption = "ابن هاشم (رض) مرات متواضع ،🌚 @K_4x1"
+        caption = "أبن هاشم (رض) مرات متواضع ،🌚 @K_4x1"
         button = [Button.url(text="الking", url="https://t.me/K_4x1")]
         await event.client.send_file(event.chat_id, url, caption=caption, reply_to=event.message.id, buttons=button)
     else:
