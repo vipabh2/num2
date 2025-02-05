@@ -438,7 +438,8 @@ async def reply_abh(event):
         rl = random.randint(1222, 1241)
         url = f"https://t.me/VIPABH/{rl}"
         caption = "ابن هاشم (رض) مرات متواضع ،🌚 @K_4x1"
-        await event.client.send_file(event.chat_id, url, caption=caption, reply_to=event.message.id)    
+        button = [Button.url(text="الking", url="https://t.me/K_4x1")]
+        await event.client.send_file(event.chat_id, url, caption=caption, reply_to=event.message.id, buttons=button)
     else:
         return
 @ABH.on(events.NewMessage(pattern='زهراء'))
