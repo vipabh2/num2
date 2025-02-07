@@ -746,7 +746,7 @@ async def handle_callback(call):
         await call.edit(buttons=None) 
     else:
         return
-@ABH.on(events.NewMessage(pattern='/start'))
+@ABH.on(events.NewMessage(pattern='^/start$'))
 async def handle_start(event):
     await event.reply(
         "أهلاً حياك الله! \n\n"
@@ -1093,4 +1093,4 @@ questions = [
 async def send_random_question(event):
     random_question = random.choice(questions)
     await event.reply(random_question)
-ABH.run_until_disconnected()
+ABH.run_until_disconnected() 
