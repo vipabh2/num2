@@ -559,7 +559,7 @@ async def reply_abh(event):
     if replied_message:
         await event.client.send_file(replied_message.peer_id, "https://t.me/recoursec/3", reply_to=replied_message)
     else:
-        await event.client.send_file("https://t.me/recoursec/3", reply_to=replied_message.id)
+        await event.reply(file="https://t.me/recoursec/3", reply_to=event.message.id)
 url = "https://ar.wikipedia.org/w/api.php"
 searching_state = {}
 @ABH.on(events.NewMessage(func=lambda e: e.text and e.text.strip().lower().startswith('ابحث عن')))
