@@ -47,7 +47,7 @@ async def take_screenshot(url, device="pc"):
         finally:
             await browser.close()
     return screenshot_path
-@ABH.on(events.NewMessage(pattern='كشف رابط (.+)'))
+@ABH.on(events.NewMessage(pattern=r'كشف رابط|سكرين (.+)'))
 async def handler(event):
     url = event.pattern_match.group(1)
     if not is_safe_url(url):
