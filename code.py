@@ -553,6 +553,13 @@ async def reply_abh(event):
         await event.client.send_file(replied_message.peer_id, "https://t.me/VIPABH/1171", reply_to=replied_message.id)
     else:
         await event.reply("عزيزي الفاهي ... \n الامر يعمل بالرد , اذا عدتها وما سويت رد اعفطلك")
+@ABH.on(events.NewMessage(pattern=r'^(ميعرف|مايعرف)$'))
+async def reply_abh(event):
+    replied_message = await event.get_reply_message()
+    if replied_message:
+        await event.client.send_file(replied_message.peer_id, "https://t.me/VIPABH/1171", reply_to=replied_message.id)
+    else:
+        await event.client.send_file(replied_message.peer_id, "https://t.me/VIPABH/1171", reply_to=replied_message.id)
 url = "https://ar.wikipedia.org/w/api.php"
 searching_state = {}
 @ABH.on(events.NewMessage(func=lambda e: e.text and e.text.strip().lower().startswith('ابحث عن')))
@@ -706,7 +713,7 @@ async def handle_guess(event):
                     game_board = [["💍" if i == number2 - 1 else "🖐️" for i in range(6)]]
                     await event.reply(f'🎉 الف مبروك! اللاعب ({sender_first_name}) وجد المحبس 💍!\n{format_board(game_board, numbers_board)}')
                     reset_game(chat_id)
-                else:
+                else: 
                     sender_first_name = event.sender.first_name
                     game_board = [["❌" if i == guess - 1 else "🖐️" for i in range(6)]]
                     await event.reply(f"ضاع البات ماضن بعد تلگونة ☹️ \n{format_board(game_board, numbers_board)}")
@@ -715,7 +722,7 @@ async def handle_guess(event):
                 await event.reply("❗ يرجى إدخال رقم صحيح بين 1 و 6.")
         except (IndexError, ValueError):
             await event.reply("❗ يرجى إدخال رقم صحيح بين 1 و 6.")
-          
+        
 @ABH.on(events.NewMessage(pattern=r'طك (\d+)'))
 async def handle_strike(event):
     global game_board, number2, group_game_status
