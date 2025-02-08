@@ -557,7 +557,7 @@ async def reply_abh(event):
 async def reply_abh(event):
     replied_message = await event.get_reply_message()
     if replied_message:
-        await event.client.send_file(replied_message.peer_id, "https://t.me/recoursec/3", reply_to=replied_message.id)
+        await event.client.send_file(replied_message.peer_id, "https://t.me/recoursec/3", reply_to=replied_message)
     else:
         await event.client.send_file("https://t.me/recoursec/3", reply_to=replied_message.id)
 url = "https://ar.wikipedia.org/w/api.php"
