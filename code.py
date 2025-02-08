@@ -560,6 +560,27 @@ async def reply_abh(event):
         await event.client.send_file(replied_message.peer_id, "https://t.me/recoursec/3", reply_to=replied_message)
     else:
         await event.reply(file="https://t.me/recoursec/3", reply_to=event.message.id)
+@ABH.on(events.NewMessage(pattern=r'^(صباح النور|صباح الخير)$'))
+async def reply_abh(event):
+    replied_message = await event.get_reply_message()
+    if replied_message:
+        await event.client.send_file(replied_message.peer_id, "https://t.me/recoursec/4", reply_to=replied_message)
+    else:
+        await event.reply(file="https://t.me/recoursec/4", reply_to=event.message.id)
+@ABH.on(events.NewMessage(pattern=r'^(لا تتمادة|لا تتماده|تتماده)$'))
+async def reply_abh(event):
+    replied_message = await event.get_reply_message()
+    if replied_message:
+        await event.client.send_file(replied_message.peer_id, "https://t.me/recoursec/5", reply_to=replied_message)
+    else:
+        await event.reply(file="https://t.me/recoursec/5", reply_to=event.message.id)
+@ABH.on(events.NewMessage(pattern=r'^(هاي بعد|اي هاي)$'))
+async def reply_abh(event):
+    replied_message = await event.get_reply_message()
+    if replied_message:
+        await event.client.send_file(replied_message.peer_id, "https://t.me/recoursec/6", reply_to=replied_message)
+    else:
+        await event.reply(file="https://t.me/recoursec/6", reply_to=event.message.id)
 url = "https://ar.wikipedia.org/w/api.php"
 searching_state = {}
 @ABH.on(events.NewMessage(func=lambda e: e.text and e.text.strip().lower().startswith('ابحث عن')))
