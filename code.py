@@ -32,12 +32,9 @@ async def chang(event):
     sender_id = event.sender_id 
     if sender_id != uid:
         await event.answer("شلون وي الحشريين احنة \n عزيزي الامر خاص بالمرسل هوه يكدر يغير فقط😏", alert=True)
-        return    
-    await event.edit(f"⌔︙رابط المستخدم: tg://user?id={user.id}")
-@ABH.on(events.CallbackQuery(data=b"recgange"))
-async def chang(event):
-    tag = user.first_name.replace("\u2060", "") if user.first_name else user.username
-    await event.edit(f"⌔︙(tg://user?id={user.id})")
+        return
+    if uid is not None and sender_id == uid:
+        await event.edit(f"⌔︙رابط المستخدم: tg://user?id={user.id}")
 BANNED_SITES = [
     "porn", "xvideos", "xnxx", "redtube", "xhamster",
     "brazzers", "youjizz", "spankbang", "erotic", "sex"
