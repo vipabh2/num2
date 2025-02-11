@@ -29,7 +29,8 @@ async def handler(event):
         buttons=[
             [Button.inline(f'👍 {votes["button1"]}', data='button1')],
             [Button.inline(f'👎 {votes["button2"]}', data='button2')]
-        ]
+        ], 
+        reply_to=event.message.id
     )
 
 @ABH.on(events.CallbackQuery(data=b'button1'))
