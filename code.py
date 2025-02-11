@@ -18,22 +18,6 @@ async def handler(event):
     global vote_text
     isabh = event.sender_id
     txt = event.pattern_match
-    if isabh != 1910015590:
-        await event.delete()
-        return
-    if txt:
-        vote_text = txt.group(1)
-    await event.respond(
-        f'{vote_text} \n `التصويت اما👍 او 👎 لمره واحده`',
-        buttons=[
-            [Button.inline(f'👍 {votes["button1"]}', data='button1')],
-            [Button.inline(f'👎 {votes["button2"]}', data='button2')]
-        ])
-@ABH.on(events.NewMessage(pattern=r'^تصويت\s+(.+)$'))
-async def handler(event):
-    global vote_text
-    isabh = event.sender_id
-    txt = event.pattern_match
     if isabh != event.sender_id:
         return
     if txt:
