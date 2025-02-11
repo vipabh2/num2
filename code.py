@@ -5,6 +5,7 @@ from telethon.tl.types import KeyboardButtonCallback
 from telethon import TelegramClient, events, Button
 from db import save_date, get_saved_date
 from hijri_converter import Gregorian
+from telethon.tl.custom import Button
 from googletrans import Translator
 from bs4 import BeautifulSoup
 api_id = os.getenv('API_ID')      
@@ -30,6 +31,7 @@ async def handler(event):
             [Button.inline(f'👎 {votes["button2"]}', data='button2')]
         ]
     )
+
 @ABH.on(events.CallbackQuery(data=b'button1'))
 async def button1_callback(event):
     user_id = event.sender_id
@@ -46,6 +48,7 @@ async def button1_callback(event):
             [Button.inline(f'👎 {votes["button2"]}', data='button2')]
         ]
     )
+
 @ABH.on(events.CallbackQuery(data=b'button2'))
 async def button2_callback(event):
     user_id = event.sender_id
