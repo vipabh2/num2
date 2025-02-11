@@ -11,6 +11,73 @@ api_id = os.getenv('API_ID')
 api_hash = os.getenv('API_HASH')  
 bot_token = os.getenv('BOT_TOKEN') 
 ABH = TelegramClient('code', api_id, api_hash).start(bot_token=bot_token)
+votes = {'button1': 0, 'button2': 0}
+voted_users = set()
+@ABH.on(events.NewMessage(pattern=r'^تصويت\s+(.+)$'))
+async def handler(event):
+    global vote_text
+    isabh = event.sender_id
+    txt = event.pattern_match
+    if isabh != 1910015590:
+        await event.delete()
+        return
+    if txt:
+        vote_text = txt.group(1)
+    await event.respond(
+        f'{vote_text} \n `التصويت اما👍 او 👎 لمره واحده`',
+        buttons=[
+            [Button.inline(f'👍 {votes["button1"]}', data='button1')],
+            [Button.inline(f'👎 {votes["button2"]}', data='button2')]
+        ])
+@ABH.on(events.NewMessage(pattern=r'^تصويت\s+(.+)$'))
+async def handler(event):
+    global vote_text
+    isabh = event.sender_id
+    txt = event.pattern_match
+    if isabh != event.sender_id:
+        return
+    if txt:
+        vote_text = txt.group(1)
+    await event.delete()
+    await event.respond(
+        f'{vote_text} \n `التصويت اما👍 او 👎 لمره واحده`',
+        buttons=[
+            [Button.inline(f'👍 {votes["button1"]}', data='button1')],
+            [Button.inline(f'👎 {votes["button2"]}', data='button2')]
+        ]
+    )
+@ABH.on(events.CallbackQuery(data=b'button1'))
+async def button1_callback(event):
+    user_id = event.sender_id
+    if user_id in voted_users:
+        await event.answer("الملحة متفيدك كبدي , التصويت لمره واحده🙂", alert=True)
+        return
+    votes['button1'] += 1
+    voted_users.add(user_id)
+    await event.answer("لقد قمت بالتصويت 👍")
+    await event.edit(
+        f'{vote_text} \n `التصويت لمره واحده`',
+        buttons=[
+            [Button.inline(f'👍 {votes["button1"]}', data='button1')],
+            [Button.inline(f'👎 {votes["button2"]}', data='button2')]
+        ]
+    )
+@ABH.on(events.CallbackQuery(data=b'button2'))
+async def button2_callback(event):
+    user_id = event.sender_id
+    if user_id in voted_users:
+        await event.answer("الملحة متفيدك كبدي , التصويت لمره واحده🙂", alert=True)
+        return
+    votes['button2'] += 1
+    voted_users.add(user_id)
+    await event.answer("لقد قمت بالتصويت 👎")
+    await event.edit(
+        f'{vote_text} \n `التصويت لمره واحده`',
+        buttons=[
+            [Button.inline(f'👍 {votes["button1"]}', data='button1')],
+            [Button.inline(f'👎 {votes["button2"]}', data='button2')]
+        ]
+    )
 @ABH.on(events.NewMessage(pattern=r'كشف ايدي (\d+)'))
 async def permalink(event):
     global user, uid
