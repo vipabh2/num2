@@ -15,60 +15,6 @@ api_id = os.getenv('API_ID')
 api_hash = os.getenv('API_HASH')  
 bot_token = os.getenv('BOT_TOKEN') 
 ABH = TelegramClient('code', api_id, api_hash).start(bot_token=bot_token)
-
-voted_users = set()
-@ABH.on(events.NewMessage(pattern=r'^تصويت\s+(.+)$'))
-async def handler(event):
-    global vote_text
-    isabh = event.sender_id
-    txt = event.pattern_match
-    if isabh != event.sender_id:
-        return
-    if txt:
-        vote_text = txt.group(1)
-    await event.delete()
-    await event.respond(
-        f'{vote_text} \n `التصويت اما👍 او 👎 لمره واحده`',
-        buttons=[
-            [Button.inline(f'👍 {votes["button1"]}', data='button1')],
-            [Button.inline(f'👎 {votes["button2"]}', data='button2')]
-        ], 
-        reply_to=event.message.id
-    )
-
-@ABH.on(events.CallbackQuery(data=b'button1'))
-async def button1_callback(event):
-    user_id = event.sender_id
-    if user_id in voted_users:
-        await event.answer("الملحة متفيدك كبدي , التصويت لمره واحده🙂", alert=True)
-        return
-    votes['button1'] += 1
-    voted_users.add(user_id)
-    await event.answer("لقد قمت بالتصويت 👍")
-    await event.edit(
-        f'{vote_text} \n `التصويت لمره واحده`',
-        buttons=[
-            [Button.inline(f'👍 {votes["button1"]}', data='button1')],
-            [Button.inline(f'👎 {votes["button2"]}', data='button2')]
-        ]
-    )
-
-@ABH.on(events.CallbackQuery(data=b'button2'))
-async def button2_callback(event):
-    user_id = event.sender_id
-    if user_id in voted_users:
-        await event.answer("الملحة متفيدك كبدي , التصويت لمره واحده🙂", alert=True)
-        return
-    votes['button2'] += 1
-    voted_users.add(user_id)
-    await event.answer("لقد قمت بالتصويت 👎")
-    await event.edit(
-        f'{vote_text} \n `التصويت لمره واحده`',
-        buttons=[
-            [Button.inline(f'👍 {votes["button1"]}', data='button1')],
-            [Button.inline(f'👎 {votes["button2"]}', data='button2')]
-        ]
-    )
 @ABH.on(events.NewMessage(pattern=r'كشف ايدي (\d+)'))
 async def permalink(event):
     global user, uid
@@ -603,7 +549,11 @@ async def reply_abh(event):
 @ABH.on(events.NewMessage(pattern='امير'))
 async def reply_abh(event):
     if event.chat_id == -1001968219024:
-        url = "https://files.catbox.moe/k44qq6.mp4"  
+        ur = ["https://files.catbox.moe/k44qq6.mp4",
+               'https://t.me/KQK4Q/23',
+               'https://t.me/KQK4Q/22'
+               ]
+        url = random.choice(ur)
         caption = "@xcxx1x" 
         await event.client.send_file(event.chat_id, url, caption=caption, reply_to=event.message.id)    
     else: 
