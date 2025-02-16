@@ -571,6 +571,7 @@ async def reply(event):
         await event.reply(file=vipabh)
     else:
         await event.reply(vipabh)
+translator = Translator()
 @ABH.on(events.NewMessage(pattern=r'(ترجمة|ترجمه)'))
 async def handle_message(event):
     if event.is_reply:
