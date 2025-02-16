@@ -15,7 +15,7 @@ api_id = os.getenv('API_ID')
 api_hash = os.getenv('API_HASH')  
 bot_token = os.getenv('BOT_TOKEN') 
 ABH = TelegramClient('code', api_id, api_hash).start(bot_token=bot_token)
-questions_and_answers = [
+questions_and_answers_s = [
     {"question": "أين أقيمت بطولة كأس العالم لكرة القدم عام 2002؟", "answer": ["كوريا الجنوبية واليابان", 'كوريا الجنوبية و اليابان']},
     {"question": "من هو اللاعب المعروف بأنه الهداف الأول في دوري أبطال أوروبا؟", "answer": ["كريستيانو رونالدو", 'رونالدو', "كرستيانو"]},
     {"question": "من اللاعب الحاصل على جائزة الكرة الذهبية في عام 2015م؟", "answer": ["كريستيانو رونالدو", 'رونالدو', "كرستيانو"]},
@@ -68,7 +68,7 @@ user_states = {}
 @ABH.on(events.NewMessage(pattern='كرة قدم|/sport'))
 async def start_s(event):
     user_id = event.sender_id
-    question = random.choice(questions_and_answers)
+    question = random.choice(questions_and_answers_s)
     user_states[user_id] = {
         "question": question,
         "waiting_for_answer": True 
