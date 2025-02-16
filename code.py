@@ -66,7 +66,7 @@ questions_and_answers = [
 ]
 user_states = {}
 @ABH.on(events.NewMessage(pattern='كرة قدم|/sport'))
-async def start(event):
+async def start_s(event):
     user_id = event.sender_id
     question = random.choice(questions_and_answers)
     user_states[user_id] = {
@@ -75,7 +75,7 @@ async def start(event):
     }
     await event.reply(f"{question['question']}")
 @ABH.on(events.NewMessage)
-async def check_answer(event):
+async def check_answer_s(event):
     user_id = event.sender_id
     user_message = event.text.strip().lower()
     if user_id in user_states and user_states[user_id].get("waiting_for_answer"):
