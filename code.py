@@ -570,32 +570,27 @@ async def reply(event):
     if vipabh.startswith("http"):
         await event.reply(file=vipabh)
     else:
-        await event.reply(vipabh)
-translator = Translator()
-@ABH.on(events.NewMessage(pattern=r'(ترجمة|ترجمه)'))
+        await event.reply(vipabh)@ABH.on(events.NewMessage(pattern=r'(ترجمة|ترجمه)'))
 async def handle_message(event):
-    try:
-        if event.is_reply:
-            replied_message = await event.get_reply_message()
-            original_text = replied_message.text
-        else:
-            command_parts = event.message.text.split(' ', 1)
-            original_text = command_parts[1] if len(command_parts) > 1 else None
-        if not original_text:
-            await event.reply("❌ يرجى الرد على رسالة تحتوي على النص المراد ترجمته أو كتابة النص بجانب الأمر.")
-            return
-        detected_language = translator.detect(original_text).lang
-        if detected_language == "ar":
-            translated = translator.translate(original_text, dest="en")
-        else:
-            translated = translator.translate(original_text, dest="ar")
-        response = (
-            f" **اللغة المكتشفة:** `{detected_language}`\n"
-            f" **النص المترجم:** `{translated.text}`"
+    if event.is_reply:
+        replied_message = await event.get_reply_message()
+        original_text = replied_message.text
+    else:
+        command_parts = event.message.text.split(' ', 1)
+        original_text = command_parts[1] if len(command_parts) > 1 else None
+    if not original_text:
+        await event.reply("عزيزي ...\n يرجئ كتابة النص مع الامر او بالرد عليه.")
+        return
+    detected_language = translator.detect(original_text).lang
+    if detected_language == "ar":
+        translated = translator.translate(original_text, dest="en")
+    else:
+        translated = translator.translate(original_text, dest="ar")
+    response = (
+        f" **اللغة المكتشفة:** `{detected_language}`\n"
+        f" **النص المترجم:** `{translated.text}`"
         )
-        await event.reply(response)
-    except Exception as e:
-        await event.reply("⚠️ حدث خطأ أثناء الترجمة، حاول مرة أخرى لاحقًا.")
+    await event.reply(response)
 @ABH.on(events.NewMessage(pattern='ابن هاشم'))
 async def reply_abh(event):
     if event.chat_id == -1001968219024:
