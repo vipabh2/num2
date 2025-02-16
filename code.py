@@ -570,7 +570,8 @@ async def reply(event):
     if vipabh.startswith("http"):
         await event.reply(file=vipabh)
     else:
-        await event.reply(vipabh)@ABH.on(events.NewMessage(pattern=r'(ترجمة|ترجمه)'))
+        await event.reply(vipabh)
+@ABH.on(events.NewMessage(pattern=r'(ترجمة|ترجمه)'))
 async def handle_message(event):
     if event.is_reply:
         replied_message = await event.get_reply_message()
