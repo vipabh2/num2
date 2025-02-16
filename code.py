@@ -596,7 +596,6 @@ async def handle_message(event):
         await event.reply(response)
     except Exception as e:
         await event.reply("⚠️ حدث خطأ أثناء الترجمة، حاول مرة أخرى لاحقًا.")
-ABH.run_until_disconnected()
 @ABH.on(events.NewMessage(pattern='ابن هاشم'))
 async def reply_abh(event):
     if event.chat_id == -1001968219024:
