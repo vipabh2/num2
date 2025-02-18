@@ -964,12 +964,12 @@ basimurl = random.randint(50, 118)
 musurl = random.randint(139, 154)
 nurl = random.randint(164, 170)
 furl = random.randint(171, 174)
-async def send_audio_from_list(call, url_list):
+
+async def send_audio_from_list(event, url_list):
     rl = random.choice(url_list)
     audio_url = f"https://t.me/sossosic/{rl}"
-    await call.respond(
-        file=audio_url
-    )
+    await event.reply(file=audio_url)
+
 banned_url = [
     9,  25, 94, 131, 175,
     26, 40, 110, 136, 194,
@@ -978,7 +978,9 @@ banned_url = [
     80, 81, 115, 150,
     82, 93, 121, 152
 ]
+
 latmiyat_range = range(50, 257)
+
 async def send_random_latmia(event):
     try:
         chosen = random.choice(list(latmiyat_range))
@@ -987,10 +989,12 @@ async def send_random_latmia(event):
         latmia_url = f"https://t.me/x04ou/{chosen}"
         await event.reply(file=latmia_url)
     except Exception as e:
-        # await event.reply(f"حدث خطأ أثناء الإرسال: {str(e)}")
-@ABH.on(events.NewMessage(pattern=r"لطمية|لطميه"))
+        await event.reply(f"حدث خطأ أثناء الإرسال: {str(e)}")
+
+@ABH.on(events.NewMessage(pattern=r"^(لطمية|لطميه)$"))
 async def handle_latmia_command(event):
     await send_random_latmia(event)
+
 @ABH.on(events.NewMessage(pattern='^/start$'))
 async def handle_start(event):
     await event.reply(
