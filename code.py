@@ -988,7 +988,7 @@ async def send_random_latmia(event):
         await event.reply(file=latmia_url)
     except Exception as e:
         # await event.reply(f"حدث خطأ أثناء الإرسال: {str(e)}")
-@ABH.on(events.NewMessage(pattern=r"^(لطمية|لطميه)$"))
+@ABH.on(events.NewMessage(pattern=r"لطمية|لطميه"))
 async def handle_latmia_command(event):
     await send_random_latmia(event)
 @ABH.on(events.NewMessage(pattern='^/start$'))
