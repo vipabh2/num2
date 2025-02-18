@@ -964,25 +964,11 @@ basimurl = random.randint(50, 118)
 musurl = random.randint(139, 154)
 nurl = random.randint(164, 170)
 furl = random.randint(171, 174)
-
 async def send_audio_from_list(call, url_list):
     rl = random.choice(url_list)
     audio_url = f"https://t.me/sossosic/{rl}"
     await call.respond(
         file=audio_url
-    )
-    
-@ABH.on(events.NewMessage(func=lambda event: event.text in ['لطمية', 'لطميه']))
-async def start(event):
-    username = event.sender.username or "لا يوجد اسم مستخدم"
-    markup = [
-        [Button.inline("إرسال لطمية عشوائية", b"send_latmia")]
-    ]
-    await event.respond(
-        f"أهلاً [{event.sender.first_name}](https://t.me/{username}) حياك الله! اضغط على الزر أدناه للحصول على لطمية عشوائية.",
-        file="https://t.me/VIPABH/1212",
-        buttons=markup,
-        parse_mode="md"
     )
 banned_url = [
     9,  25, 94, 131, 175,
@@ -991,24 +977,20 @@ banned_url = [
     77, 79, 114, 148,
     80, 81, 115, 150,
     82, 93, 121, 152
-    ]
-latmiyat_range = range(50, 226) 
-async def send_random_latmia(call):
+]
+latmiyat_range = range(50, 257)
+async def send_random_latmia(event):
     try:
-        chosen = random.choice(latmiyat_range)
+        chosen = random.choice(list(latmiyat_range))
         if chosen in banned_url:
-            return await send_random_latmia(call)
+            return await send_random_latmia(event)
         latmia_url = f"https://t.me/x04ou/{chosen}"
-        await call.reply(file=latmia_url)
+        await event.reply(file=latmia_url)
     except Exception as e:
-        await call.reply(f"حدث خطأ أثناء الإرسال: {str(e)}")
-@ABH.on(events.CallbackQuery)
-async def handle_callback(call):
-    if call.data == b"send_latmia":  
-        await send_random_latmia(call)
-        await call.edit(buttons=None) 
-    else:
-        return
+        # await event.reply(f"حدث خطأ أثناء الإرسال: {str(e)}")
+@ABH.on(events.NewMessage(pattern=r"^(لطمية|لطميه)$"))
+async def handle_latmia_command(event):
+    await send_random_latmia(event)
 @ABH.on(events.NewMessage(pattern='^/start$'))
 async def handle_start(event):
     await event.reply(
