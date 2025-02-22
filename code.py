@@ -439,7 +439,7 @@ waiting_for_answer = False
 @ABH.on(events.NewMessage(pattern='اسئلة|/quist'))
 async def start_1(event):
     global current_question, waiting_for_answer
-    current_question = random.choice(questions_and_answers_s)
+    current_question = random.choice(questions_and_answers)
     waiting_for_answer = True
     await event.reply(f"{current_question['question']}")
 
