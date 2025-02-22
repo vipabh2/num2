@@ -139,28 +139,27 @@ questions_and_answers_s = [
     {"question": "من هو ال GOAT؟", "answer": ["رونالدو"]},
     {"question": "من هو عم برسا؟", "answer": ["رونالدو"]}
 ]
-user_states = {}
+current_question = None
+waiting_for_answer = False
 @ABH.on(events.NewMessage(pattern='كرة قدم|/sport'))
 async def start_s(event):
-    user_id = event.sender_id
-    question = random.choice(questions_and_answers_s)
-    user_states[user_id] = {
-        "question": question,
-        "waiting_for_answer": True 
-    }
-    await event.reply(f"{question['question']}")
+    global current_question, waiting_for_answer
+    current_question = random.choice(questions_and_answers_s)
+    waiting_for_answer = True
+    await event.reply(f"{current_question['question']}")
+
 @ABH.on(events.NewMessage)
 async def check_answer_s(event):
-    user_id = event.sender_id
+    global current_question, waiting_for_answer
     user_message = event.text.strip().lower()
-    if user_id in user_states and user_states[user_id].get("waiting_for_answer"):
-        current_question = user_states[user_id].get("question", {})
-        correct_answer = current_question.get('answer', [])
-        if isinstance(correct_answer, list):
-            correct_answer = [answer.lower() for answer in correct_answer]
+
+    if waiting_for_answer and current_question:
+        correct_answer = [answer.lower() for answer in current_question.get('answer', [])]
+
         if user_message in correct_answer:
-            await event.reply("اجابة صحيحة احسنت.")
-            del user_states[user_id]
+            await event.reply(f"إجابة صحيحة! ✅ {event.sender.first_name} جاوب صح 👏")
+            current_question = None
+            waiting_for_answer = False
         else:
             return
 @ABH.on(events.NewMessage(pattern=r'كشف ايدي (\d+)'))
@@ -435,33 +434,29 @@ questions_and_answers = [
     {"question": "كم عدد الخوارج في واقعةالطف؟", "answer": ["70 الف", "سبعين الف", "سبعون الف"]},
     {"question": "من هو مفرح قلب الزهراء؟", "answer": "ابو لؤلؤة"}
 ]
-user_states = {}
+current_question = None
+waiting_for_answer = False
 @ABH.on(events.NewMessage(pattern='اسئلة|/quist'))
-async def start(event):
-    user_id = event.sender_id
-    question = random.choice(questions_and_answers)
-    user_states[user_id] = {
-        "question": question,
-        "waiting_for_answer": True 
-    }
-    await event.reply(f"{question['question']}")
-@ABH.on(events.NewMessage)
-async def check_answer(event):
-    user_id = event.sender_id
-    user_message = event.text.strip().lower()
-    if user_id in user_states and user_states[user_id].get("waiting_for_answer"):
-        current_question = user_states[user_id].get("question", {})
-        correct_answer = current_question.get('answer', '')
-        if isinstance(correct_answer, str):
-            correct_answer = correct_answer.lower()
-        else:
-            correct_answer = str(correct_answer)
+async def start_1(event):
+    global current_question, waiting_for_answer
+    current_question = random.choice(questions_and_answers_s)
+    waiting_for_answer = True
+    await event.reply(f"{current_question['question']}")
 
-        if user_message == correct_answer:
-            await event.reply("أحسنت! إجابة صحيحة.")
-            del user_states[user_id]
+@ABH.on(events.NewMessage)
+async def check_answer_s(event):
+    global current_question, waiting_for_answer
+    user_message = event.text.strip().lower()
+
+    if waiting_for_answer and current_question:
+        correct_answer = [answer.lower() for answer in current_question.get('answer', [])]
+
+        if user_message in correct_answer:
+            await event.reply(f"إجابة صحيح احسنت")
+            current_question = None
+            waiting_for_answer = False
         else:
-          return          
+            return         
 player1 = None
 player2 = None
 turn = None  
