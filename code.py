@@ -15,9 +15,19 @@ api_id = os.getenv('API_ID')
 api_hash = os.getenv('API_HASH')  
 bot_token = os.getenv('BOT_TOKEN') 
 ABH = TelegramClient('code', api_id, api_hash).start(bot_token=bot_token)
-@ABH.on(events.NewMessage(pattern="ابن هاشم وين؟"))
-async def t(event):
-    await event.reply("انتتقل صديق المجموعة الاخ ابن هاشم الى حسابه الجديد **الخطير حسوني**")
+choices = {"rock": "🪨حجره", "paper": "📜ورقة", "cuter": "✂️مقص"}
+@ABH.on(events.NewMessage(pattern="حجرة|/rock"))
+async def start(event):
+    buttons = [[Button.inline("🪨", b"rock"), Button.inline("✂️", b"cuter"), Button.inline("📜", b"paper")]]
+    await event.respond("اختر أحد الاختيارات🌚", buttons=buttons)
+@ABH.on(events.CallbackQuery())
+async def callback_handler(event):
+    user_choice = event.data.decode("utf-8")
+    if user_choice not in choices: return
+    bot_choice_key = random.choice(list(choices.keys()))
+    bot_choice = choices[bot_choice_key]  
+    result = "🤝تعادل!" if user_choice == bot_choice_key else "🎉فزت!" if (user_choice == "rock" and bot_choice_key == "cuter") or (user_choice == "paper" and bot_choice_key == "rock") or (user_choice == "cuter" and bot_choice_key == "paper") else "😢خسرت!"
+    await event.edit(f"📌اختيارك:{choices[user_choice]}\n🤖اختياري:{bot_choice}\n\n{result}")
     return
 banned_words = [
     "ارقه جاي", "يموط", "تموط", "موطلي", "اموط", "بورن", "الفرخ", "الفرحْ", "تيز", "كسم"
@@ -28,8 +38,7 @@ banned_words = [
     "اينيج", "بربوك", "زب", "طيزها", "عيري", "خرب الله", "العير", "بعيري", "كحبه", 
     "برابيك", "نيجني", "نيچني", "نودز", "نتلاوط", "لواط", "لوطي", "فروخ", "منيوك", 
     "انيجك", "نيجك", "كحبة", "ابن الكحبة", "ابن الكحبه", "تنيج", "اتنيج", "ينيج", 
-    "كس", "عير", "كسمك", "كسختك", "كس امك", "طيز", "طيزك", "فرخ", "كواد", 
-    
+    "كس", "عير", "كسمك", "كسختك", "كس امك", "طيز", "طيزك", "فرخ", "كواد",
     ]
 normalized_banned_words = {word: re.sub(r'(.)\1+', r'\1', word) for word in banned_words}
 def normalize_text(text):
