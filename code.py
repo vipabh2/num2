@@ -1356,4 +1356,4 @@ questions = [
 async def send_random_question(event):
     random_question = random.choice(questions)
     await event.reply(random_question)
- ABH.run_until_disconnected()
+ABH.run_until_disconnected()
