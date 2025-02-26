@@ -1,4 +1,4 @@
-from telethon.tl.types import InputMessagesFilterDocument, InputMessagesFilterPhotos, InputMessagesFilterUrl
+from telethon.tl.types import MessageMediaDocument, MessageMediaPhoto
 from telethon.tl.types import ChatBannedRights, ChannelParticipantAdmin, ChannelParticipantCreator
 from telethon.tl.functions.channels import EditBannedRequest, GetParticipantRequest
 import requests, os, operator, asyncio, random, uuid, datetime, re
@@ -22,26 +22,28 @@ ABH = TelegramClient('code', api_id, api_hash).start(bot_token=bot_token)
 excluded_user_ids = [793977288, 1421907917, 7308514832, 6387632922]
 @ABH.on(events.NewMessage(pattern="/delm"))
 async def delete_filtered_messages(event):
-    """حذف الرسائل بناءً على فلاتر محددة."""
+    """حذف الرسائل التي تحتوي على ملفات أو صور أو روابط"""
     await event.delete()
     try:
-        filters = {
-            "الملفات": InputMessagesFilterDocument,
-            "الروابط": InputMessagesFilterUrl,
-            "الصور": InputMessagesFilterPhotos
-        }
-        total_deleted = 0 
-        deleted_counts = {key: 0 for key in filters.keys()}
-        for msg_type, msg_filter in filters.items():
-            async for message in event.client.iter_messages(event.chat_id, filter=msg_filter):
-                if message.sender_id in excluded_user_ids:
-                    continue 
-                if message:
-                    await message.delete()
-                    deleted_counts[msg_type] += 1
-                    total_deleted += 1
+        total_deleted = 0
+        deleted_counts = {"الملفات": 0, "الصور": 0, "الروابط": 0}
+        async for message in event.client.iter_messages(event.chat_id):
+            if message.sender_id in excluded_user_ids:
+                continue  
+            if isinstance(message.media, MessageMediaDocument):
+                await message.delete()
+                deleted_counts["الملفات"] += 1
+                total_deleted += 1
+            elif isinstance(message.media, MessageMediaPhoto): 
+                await message.delete()
+                deleted_counts["الصور"] += 1
+                total_deleted += 1
+            elif message.text and ("http://" in message.text or "https://" in message.text): 
+                await message.delete()
+                deleted_counts["الروابط"] += 1
+                total_deleted += 1
         if total_deleted > 0:
-            details = "\n".join([f"{msg_type}: {count}" for msg_type, count in deleted_counts.items() if count > 0])
+            details = "\n".join([f"{key}: {value}" for key, value in deleted_counts.items() if value > 0])
             await event.reply(f"تم حذف {total_deleted} رسالة.\nالتفاصيل:\n{details}")
         else:
             await event.reply("لا توجد رسائل تطابق الفلاتر المحددة!")
@@ -55,7 +57,7 @@ async def ai(event):
                 replied_message = await event.get_reply_message()
                 user_input = replied_message.text.strip()
             else:
-                user_input = event.text.strip().split(" ", 1)[1]  # استخراج النص بعد "مخفي"
+                user_input = event.text.strip().split(" ", 1)[1]
             ABH_response = model.generate_content(user_input)
             await event.reply(f"**{ABH_response.text}**")
         except Exception as e:
