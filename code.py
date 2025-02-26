@@ -19,7 +19,7 @@ api_id = os.getenv('API_ID')
 api_hash = os.getenv('API_HASH')  
 bot_token = os.getenv('BOT_TOKEN') 
 ABH = TelegramClient('code', api_id, api_hash).start(bot_token=bot_token)
-@ABH.on(events.NewMessage(pattern=r'(?i)ذكاء'))
+@ABH.on(events.NewMessage(pattern=r'(?i)مخفي'))
 async def ai_aljoker(event):
     if event.text and not event.out:
         try:
