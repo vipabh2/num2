@@ -681,6 +681,8 @@ abh = [
 ]
 @ABH.on(events.NewMessage(pattern=r'^مخفي$'))
 async def reply(event):
+    if event.is_reply:
+        return
     vipabh = random.choice(abh)
     if vipabh.startswith("http"):
         await event.reply(file=vipabh)
