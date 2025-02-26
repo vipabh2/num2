@@ -19,21 +19,20 @@ api_hash = os.getenv('API_HASH')
 bot_token = os.getenv('BOT_TOKEN') 
 ABH = TelegramClient('code', api_id, api_hash).start(bot_token=bot_token)
 @ABH.on(events.NewMessage(pattern=r'(?i)مخفي'))
-async def ai_aljoker(event):
-    if event.text and not event.out:
+async def ai(event):
+    if (event.is_reply or len(event.text.strip().split()) > 1) and not event.out:
         try:
             if event.is_reply:
                 replied_message = await event.get_reply_message()
                 user_input = replied_message.text.strip()
             else:
-                user_input = event.text.strip()
+                user_input = event.text.strip().split(" ", 1)[1]  # استخراج النص بعد "مخفي"
             ABH_response = model.generate_content(user_input)
             await event.reply(f"**{ABH_response.text}**")
         except Exception as e:
             await event.reply(f"صار خطأ: {e}")
 choices = {"rock": "🪨حجره", "paper": "📜ورقة", "cuter": "✂️مقص"}
 active_games = {}
-
 @ABH.on(events.NewMessage(pattern="حجرة|/rock"))
 async def start(event):
     global n
@@ -43,13 +42,11 @@ async def start(event):
         [Button.inline("🪨", b"rock"), Button.inline("✂️", b"cuter"), Button.inline("📜", b"paper")]
     ]
     await event.respond("اختر أحد الاختيارات 🌚", buttons=buttons)
-
 async def process_choice(event, user_choice):
     game_owner = active_games.get(event.chat_id)
     if game_owner != event.sender_id:
         await event.answer("من تدخل في ما لا يعنيه لقي كلام لا يرضيه 🙄", alert=True)
         return  
-
     bot_choice_key = random.choice(list(choices.keys()))
     bot_choice = choices[bot_choice_key]  
     user_id = event.sender_id
@@ -58,17 +55,13 @@ async def process_choice(event, user_choice):
         (user_choice == "paper" and bot_choice_key == "rock") or 
         (user_choice == "cuter" and bot_choice_key == "paper")
     ) else "😢خسرت"
-
     await event.edit(f"[{n}](tg://user?id={user_id}) {choices[user_choice]}\n[مخفي](tg://user?id=7908156943) {bot_choice}\n\n{result}")
-
 @ABH.on(events.CallbackQuery(data=b"rock"))
 async def rock_callback(event):
     await process_choice(event, "rock")
-
 @ABH.on(events.CallbackQuery(data=b"cuter"))
 async def cuter_callback(event):
     await process_choice(event, "cuter")
-
 @ABH.on(events.CallbackQuery(data=b"paper"))
 async def paper_callback(event):
     await process_choice(event, "paper")
