@@ -1,4 +1,3 @@
-from telethon.tl.types import MessageMediaDocument, MessageMediaPhoto
 from telethon.tl.types import ChatBannedRights, ChannelParticipantAdmin, ChannelParticipantCreator
 from telethon.tl.functions.channels import EditBannedRequest, GetParticipantRequest
 import requests, os, operator, asyncio, random, uuid, datetime, re
@@ -19,36 +18,6 @@ api_id = os.getenv('API_ID')
 api_hash = os.getenv('API_HASH')  
 bot_token = os.getenv('BOT_TOKEN') 
 ABH = TelegramClient('code', api_id, api_hash).start(bot_token=bot_token)
-excluded_user_ids = [793977288, 1421907917, 7308514832, 6387632922]
-@ABH.on(events.NewMessage(pattern="/delm"))
-async def delete_filtered_messages(event):
-    """حذف الرسائل التي تحتوي على ملفات أو صور أو روابط"""
-    await event.delete()
-    try:
-        total_deleted = 0
-        deleted_counts = {"الملفات": 0, "الصور": 0, "الروابط": 0}
-        async for message in event.client.iter_messages(event.chat_id):
-            if message.sender_id in excluded_user_ids:
-                continue  
-            if isinstance(message.media, MessageMediaDocument):
-                await message.delete()
-                deleted_counts["الملفات"] += 1
-                total_deleted += 1
-            elif isinstance(message.media, MessageMediaPhoto): 
-                await message.delete()
-                deleted_counts["الصور"] += 1
-                total_deleted += 1
-            elif message.text and ("http://" in message.text or "https://" in message.text): 
-                await message.delete()
-                deleted_counts["الروابط"] += 1
-                total_deleted += 1
-        if total_deleted > 0:
-            details = "\n".join([f"{key}: {value}" for key, value in deleted_counts.items() if value > 0])
-            await event.reply(f"تم حذف {total_deleted} رسالة.\nالتفاصيل:\n{details}")
-        else:
-            await event.reply("لا توجد رسائل تطابق الفلاتر المحددة!")
-    except Exception as e:
-        await event.reply(f"حدث خطأ أثناء الحذف: {str(e)}")
 @ABH.on(events.NewMessage(pattern=r'(?i)مخفي'))
 async def ai(event):
     if (event.is_reply or len(event.text.strip().split()) > 1) and not event.out:
