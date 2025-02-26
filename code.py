@@ -1,4 +1,4 @@
-from telethon.errors.rpcerrorlist import UserAdminInvalidError, UserNotParticipantError, ParticipantIdInvalidError
+# from telethon.errors.rpcerrorlist import UserAdminInvalidError, UserNotParticipantError, ParticipantIdInvalidError
 from telethon.tl.types import ChatBannedRights, ChannelParticipantAdmin, ChannelParticipantCreator
 from telethon.tl.functions.channels import EditBannedRequest, GetParticipantRequest
 import requests, os, operator, asyncio, random, uuid, datetime, re
@@ -9,13 +9,29 @@ from telethon import TelegramClient, events, Button
 from db import save_date, get_saved_date #type: ignore
 from hijri_converter import Gregorian
 from telethon.tl.custom import Button
+import google.generativeai as genai
 from googletrans import Translator
 from bs4 import BeautifulSoup
-import random, os
+GEMINI = "AIzaSyA5pzOpKVcMGm6Aek82KoB3Pk94dYg3LX4"
+genai.configure(api_key=GEMINI)
+model = genai.GenerativeModel("gemini-1.5-flash")
 api_id = os.getenv('API_ID')      
 api_hash = os.getenv('API_HASH')  
 bot_token = os.getenv('BOT_TOKEN') 
 ABH = TelegramClient('code', api_id, api_hash).start(bot_token=bot_token)
+@ABH.on(events.NewMessage(pattern=r'(?i)ذكاء'))
+async def ai_aljoker(event):
+    if event.text and not event.out:
+        try:
+            if event.is_reply:
+                replied_message = await event.get_reply_message()
+                user_input = replied_message.text.strip()
+            else:
+                user_input = event.text.strip()
+            ABH_response = model.generate_content(user_input)
+            await event.reply(f"**{ABH_response.text}**")
+        except Exception as e:
+            await event.reply(f"صار خطأ: {e}")
 choices = {"rock": "🪨حجره", "paper": "📜ورقة", "cuter": "✂️مقص"}
 active_games = {}  
 @ABH.on(events.NewMessage(pattern="حجرة|/rock"))
