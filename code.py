@@ -20,7 +20,7 @@ api_hash = os.getenv('API_HASH')
 bot_token = os.getenv('BOT_TOKEN') 
 ABH = TelegramClient('code', api_id, api_hash).start(bot_token=bot_token)
 excluded_user_ids = [793977288, 1421907917, 7308514832, 6387632922]
-@ABH.on(events.NewMessage(pattern="/delall"))
+@ABH.on(events.NewMessage(pattern="/delm"))
 async def delete_filtered_messages(event):
     """حذف الرسائل بناءً على فلاتر محددة."""
     await event.delete()
