@@ -1440,4 +1440,5 @@ questions = [
 async def send_random_question(event):
     random_question = random.choice(questions)
     await event.reply(random_question)
+print('anymous is working ✓')
 ABH.run_until_disconnected()
