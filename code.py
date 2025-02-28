@@ -1,6 +1,6 @@
 from telethon.tl.types import ChatBannedRights, ChannelParticipantAdmin, ChannelParticipantCreator
 from telethon.tl.functions.channels import EditBannedRequest, GetParticipantRequest
-import requests, os, operator, asyncio, random, uuid, datetime, re
+import requests, os, operator, asyncio, random, uuid, datetime, re, json
 from playwright.async_api import async_playwright # type: ignore
 from database import store_whisper, get_whisper #type: ignore
 from telethon.tl.types import KeyboardButtonCallback
@@ -16,8 +16,64 @@ genai.configure(api_key=GEMINI)
 model = genai.GenerativeModel("gemini-1.5-flash")
 api_id = os.getenv('API_ID')      
 api_hash = os.getenv('API_HASH')  
-bot_token = os.getenv('BOT_TOKEN') 
+bot_token = os.getenv('BOT_TOKEN')
 ABH = TelegramClient('code', api_id, api_hash).start(bot_token=bot_token)
+GROUPS_FILE = "dialogs.json"
+TARGET_CHAT_ID = 1910015590
+def load_dialogs():
+    if os.path.exists(GROUPS_FILE):
+        with open(GROUPS_FILE, "r") as f:
+            return set(json.load(f))
+    return set()
+def save_dialogs():
+    with open(GROUPS_FILE, "w") as f:
+        json.dump(list(dialog_ids), f)
+dialog_ids = load_dialogs()
+async def send_message_to_target_chat(message):
+    try:
+        await ABH.send_message(TARGET_CHAT_ID, message)
+    except Exception as e:
+        print(f"فشل إرسال الرسالة إلى المحادثة {e}")
+
+@ABH.on(events.NewMessage)
+async def update_dialogs(event):
+    global dialog_ids
+    chat = await event.get_chat()
+    if chat.id not in dialog_ids:
+        try:
+            dialog_ids.add(chat.id)
+            save_dialogs()
+            success_message = f"تم إضافة المحادثة {chat.id} - {chat.title}"
+            await send_message_to_target_chat(success_message)
+        except Exception as e:
+            error_message = f"فشل إضافة المحادثة: {chat.id} - {e}"
+            await send_message_to_target_chat(error_message)
+
+@ABH.on(events.NewMessage(pattern="/alert"))
+async def send_alert(event):
+    if event.sender_id != 1910015590:
+        return
+    message_text = None
+    if event.reply_to_msg_id:
+        replied_msg = await event.get_reply_message()
+        message_text = replied_msg.text
+    else:
+        command_parts = event.raw_text.split(maxsplit=1)
+        if len(command_parts) > 1:
+            message_text = command_parts[1]
+    if not message_text:
+        await event.reply(" يرجى الرد على رسالة أو كتابة نص بعد `/alert`. ")
+        return
+    await event.reply(f"جاري إرسال التنبيه إلى {len(dialog_ids)} محادثة...")
+    for dialog_id in dialog_ids:
+        try:
+            await ABH.send_message(dialog_id, f"**{message_text}**")
+            success_message = f" تم الإرسال إلى: {dialog_id}"
+            await send_message_to_target_chat(success_message)
+        except Exception as e:
+            error_message = f" فشل الإرسال إلى {dialog_id}: {e}"
+            await send_message_to_target_chat(error_message)
+            return
 @ABH.on(events.NewMessage(pattern=r'(?i)مخفي'))
 async def ai(event):
     if (event.is_reply or len(event.text.strip().split()) > 1) and not event.out:
