@@ -20,20 +20,24 @@ bot_token = os.getenv('BOT_TOKEN')
 ABH = TelegramClient('code', api_id, api_hash).start(bot_token=bot_token)
 GROUPS_FILE = "dialogs.json"
 TARGET_CHAT_ID = 1910015590
+
 def load_dialogs():
     if os.path.exists(GROUPS_FILE):
         with open(GROUPS_FILE, "r") as f:
             return set(json.load(f))
     return set()
+
 def save_dialogs():
     with open(GROUPS_FILE, "w") as f:
         json.dump(list(dialog_ids), f)
+
 dialog_ids = load_dialogs()
+
 async def send_message_to_target_chat(message):
     try:
         await ABH.send_message(TARGET_CHAT_ID, message)
     except Exception as e:
-        print(f"فشل إرسال الرسالة إلى المحادثة {e}")
+        print(f"⚠️ فشل إرسال الرسالة: {e}")
 
 @ABH.on(events.NewMessage)
 async def update_dialogs(event):
@@ -43,15 +47,14 @@ async def update_dialogs(event):
         try:
             dialog_ids.add(chat.id)
             save_dialogs()
-            success_message = f"تم إضافة المحادثة {chat.id} - {chat.title}"
-            await send_message_to_target_chat(success_message)
+            chat_name = chat.title if hasattr(chat, 'title') else chat.first_name
+            await send_message_to_target_chat(f"✅ تم إضافة المحادثة: {chat.id} - {chat_name}")
         except Exception as e:
-            error_message = f"فشل إضافة المحادثة: {chat.id} - {e}"
-            await send_message_to_target_chat(error_message)
+            await send_message_to_target_chat(f"❌ فشل إضافة المحادثة: {chat.id} - {e}")
 
 @ABH.on(events.NewMessage(pattern="/alert"))
 async def send_alert(event):
-    if event.sender_id != 1910015590:
+    if event.sender_id != TARGET_CHAT_ID:
         return
     message_text = None
     if event.reply_to_msg_id:
@@ -62,18 +65,16 @@ async def send_alert(event):
         if len(command_parts) > 1:
             message_text = command_parts[1]
     if not message_text:
-        await event.reply(" يرجى الرد على رسالة أو كتابة نص بعد `/alert`. ")
+        await event.reply("يرجى الرد على رسالة أو كتابة نص بعد `/alert`.")
         return
-    await event.reply(f"جاري إرسال التنبيه إلى {len(dialog_ids)} محادثة...")
+    await event.reply(f"🚀 جاري إرسال التنبيه إلى {len(dialog_ids)} محادثة...")
     for dialog_id in dialog_ids:
         try:
-            await ABH.send_message(dialog_id, f"**{message_text}**")
-            success_message = f" تم الإرسال إلى: {dialog_id}"
-            await send_message_to_target_chat(success_message)
+            await ABH.send_message(dialog_id, f"📢 **{message_text}**")
+            await send_message_to_target_chat(f"✅ تم الإرسال إلى: {dialog_id}")
         except Exception as e:
-            error_message = f" فشل الإرسال إلى {dialog_id}: {e}"
-            await send_message_to_target_chat(error_message)
-            return
+            await send_message_to_target_chat(f"❌ فشل الإرسال إلى {dialog_id}: {e}")
+    await event.reply("✅ تم إرسال التنبيه لجميع المحادثات!")
 @ABH.on(events.NewMessage(pattern=r'(?i)مخفي'))
 async def ai(event):
     if (event.is_reply or len(event.text.strip().split()) > 1) and not event.out:
