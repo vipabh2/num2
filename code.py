@@ -70,7 +70,7 @@ async def send_alert(event):
     await event.reply(f"🚀 جاري إرسال التنبيه إلى {len(dialog_ids)} محادثة...")
     for dialog_id in dialog_ids:
         try:
-            await ABH.send_message(dialog_id, f"📢 **{message_text}**")
+            await ABH.send_message(dialog_id, f"**{message_text}**")
             await send_message_to_target_chat(f"✅ تم الإرسال إلى: {dialog_id}")
         except Exception as e:
             await send_message_to_target_chat(f"❌ فشل الإرسال إلى {dialog_id}: {e}")
