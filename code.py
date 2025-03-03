@@ -77,6 +77,8 @@ async def send_alert(event):
     await event.reply("✅ تم إرسال التنبيه لجميع المحادثات!")
 @ABH.on(events.NewMessage(pattern=r'(?i)مخفي'))
 async def ai(event):
+    if event.text.strip() == "مخفي طكة زيج":
+        return
     if (event.is_reply or len(event.text.strip().split()) > 1) and not event.out:
         try:
             if event.is_reply:
