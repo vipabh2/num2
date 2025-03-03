@@ -20,25 +20,20 @@ bot_token = os.getenv('BOT_TOKEN')
 ABH = TelegramClient('code', api_id, api_hash).start(bot_token=bot_token)
 GROUPS_FILE = "dialogs.json"
 TARGET_CHAT_ID = 1910015590
-
 def load_dialogs():
     if os.path.exists(GROUPS_FILE):
         with open(GROUPS_FILE, "r") as f:
             return set(json.load(f))
     return set()
-
 def save_dialogs():
     with open(GROUPS_FILE, "w") as f:
         json.dump(list(dialog_ids), f)
-
 dialog_ids = load_dialogs()
-
 async def send_message_to_target_chat(message):
     try:
         await ABH.send_message(TARGET_CHAT_ID, message)
     except Exception as e:
         print(f"⚠️ فشل إرسال الرسالة: {e}")
-
 @ABH.on(events.NewMessage)
 async def update_dialogs(event):
     global dialog_ids
@@ -48,10 +43,9 @@ async def update_dialogs(event):
             dialog_ids.add(chat.id)
             save_dialogs()
             chat_name = chat.title if hasattr(chat, 'title') else chat.first_name
-            await send_message_to_target_chat(f"✅ تم إضافة المحادثة: {chat.id} - {chat_name}")
+            return
         except Exception as e:
             await send_message_to_target_chat(f"❌ فشل إضافة المحادثة: {chat.id} - {e}")
-
 @ABH.on(events.NewMessage(pattern="/alert"))
 async def send_alert(event):
     if event.sender_id != TARGET_CHAT_ID:
