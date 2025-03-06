@@ -334,7 +334,7 @@ async def handler(event):
     if not validators.url(url):
         await event.reply("🙄 الرابط غير صالح! تأكد من كتابته بشكل صحيح.")
         return
-    msg = await event.respond('جاري التقاط الصورة')
+    msg = await event.reply('جاري التقاط الصورة')
     if not is_safe_url(url):
         await msg.edit("🚫 هذا الموقع محظور! \nتواصل مع المطور @k_4x1 للمزيد من التفاصيل.")
         return
