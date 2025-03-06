@@ -1,19 +1,16 @@
 from telethon.tl.types import ChatBannedRights, ChannelParticipantAdmin, ChannelParticipantCreator
-import requests, os, operator, asyncio, random, uuid, datetime, re, json, validators
 from telethon.tl.functions.channels import EditBannedRequest, GetParticipantRequest
+import requests, os, operator, asyncio, random, uuid, datetime, re, json
 from playwright.async_api import async_playwright # type: ignore
 from database import store_whisper, get_whisper #type: ignore
-from db import save_date, get_saved_date #type: ignore
 from telethon.tl.types import KeyboardButtonCallback
 from telethon import TelegramClient, events, Button
-from playwright.async_api import async_playwright
+from db import save_date, get_saved_date #type: ignore
 from hijri_converter import Gregorian
 from telethon.tl.custom import Button
 import google.generativeai as genai
 from googletrans import Translator
 from bs4 import BeautifulSoup
-
-from telethon import events
 GEMINI = "AIzaSyA5pzOpKVcMGm6Aek82KoB3Pk94dYg3LX4"
 genai.configure(api_key=GEMINI)
 model = genai.GenerativeModel("gemini-1.5-flash")
@@ -301,25 +298,24 @@ DEVICES = {
 }
 def is_safe_url(url):
     return not any(banned in url.lower() for banned in BANNED_SITES)
+
 async def take_screenshot(url, device="pc"):
     async with async_playwright() as p:
         browser = await p.chromium.launch(headless=True)
-        try:
-            if device in DEVICES:
-                if isinstance(DEVICES[device], str):
-                    from playwright.async_api import devices
-                    device_preset = devices.get(DEVICES[device])
-                    if not device_preset:
-                        raise ValueError(f"❌ الجهاز غير مدعوم: {DEVICES[device]}")
-                    context = await browser.new_context(**device_preset)
-                else:
-                    context = await browser.new_context(
-                        user_agent=DEVICES[device]["user_agent"],
-                        viewport={"width": DEVICES[device]["width"], "height": DEVICES[device]["height"]}
-                    )
-                page = await context.new_page()
+
+        if device in DEVICES:
+            if isinstance(DEVICES[device], str):
+                device_preset = p.devices[DEVICES[device]]
+                context = await browser.new_context(**device_preset)
             else:
-                page = await browser.new_page()
+                context = await browser.new_context(
+                    user_agent=DEVICES[device]["user_agent"],
+                    viewport={"width": DEVICES[device]["width"], "height": DEVICES[device]["height"]}
+                )
+            page = await context.new_page()
+        else:
+            page = await browser.new_page()
+        try:
             await page.goto(url, wait_until="domcontentloaded", timeout=30000)
             screenshot_path = f"screenshot_{device}.png"
             await page.screenshot(path=screenshot_path)
@@ -329,16 +325,11 @@ async def take_screenshot(url, device="pc"):
         finally:
             await browser.close()
     return screenshot_path
-@ABH.on(events.NewMessage(pattern=r'كشف رابط\s+(.+)|سكرين\s+(.+)'))
+@ABH.on(events.NewMessage(pattern=r'كشف رابط|سكرين (.+)'))
 async def handler(event):
-    match_groups = event.pattern_match.groups()
-    url = match_groups[0] or match_groups[1]
-    if not validators.url(url):
-        await event.reply("🙄 الرابط غير صالح! تأكد من كتابته بشكل صحيح.")
-        return
-    msg = await event.reply('جاري التقاط الصورة')
+    url = event.pattern_match.group(1)
     if not is_safe_url(url):
-        await msg.edit("🚫 هذا الموقع محظور! \nتواصل مع المطور @k_4x1 للمزيد من التفاصيل.")
+        await event.reply("هذا الموقع محظور! \nجرب تتواصل مع المطور @k_4x1")
         return
     devices = ['pc', 'android']
     screenshot_paths = []
@@ -347,10 +338,9 @@ async def handler(event):
         if screenshot_path:
             screenshot_paths.append(screenshot_path)
     if screenshot_paths:
-        await msg.edit("📸 تم التقاط لقطات الشاشة للأجهزة التالية: **PC، Android**:")
-        await event.reply(file=screenshot_paths)
+        await event.reply(f' تم التقاط لقطات الشاشة للأجهزة التالية: **PC، Android**:', file=screenshot_paths)
     else:
-        await msg.edit("😕 حدث خطأ أثناء التقاط لقطة الشاشة، تأكد من صحة الرابط أو حاول مجددًا.")
+        await event.reply("🙄 هنالك خطأ أثناء التقاط لقطة الشاشة، تأكد من صحة الرابط أو جرب مجددًا.")
 @ABH.on(events.NewMessage(pattern='^/dates$'))
 async def show_dates(event):
     btton = [[
