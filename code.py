@@ -307,7 +307,8 @@ async def take_screenshot(url, device="pc"):
         try:
             if device in DEVICES:
                 if isinstance(DEVICES[device], str):
-                    device_preset = p.devices.get(DEVICES[device])
+                    from playwright.async_api import devices
+                    device_preset = devices.get(DEVICES[device])
                     if not device_preset:
                         raise ValueError(f"❌ الجهاز غير مدعوم: {DEVICES[device]}")
                     context = await browser.new_context(**device_preset)
@@ -330,7 +331,8 @@ async def take_screenshot(url, device="pc"):
     return screenshot_path
 @ABH.on(events.NewMessage(pattern=r'كشف رابط\s+(.+)|سكرين\s+(.+)'))
 async def handler(event):
-    url = event.pattern_match.group(1) or event.pattern_match.group(2)
+    match_groups = event.pattern_match.groups()
+    url = match_groups[0] or match_groups[1]
     if not validators.url(url):
         await event.reply("🙄 الرابط غير صالح! تأكد من كتابته بشكل صحيح.")
         return
@@ -345,7 +347,8 @@ async def handler(event):
         if screenshot_path:
             screenshot_paths.append(screenshot_path)
     if screenshot_paths:
-        await msg.edit("📸 تم التقاط لقطات الشاشة للأجهزة التالية: **PC، Android**:", file=screenshot_paths)
+        await msg.edit("📸 تم التقاط لقطات الشاشة للأجهزة التالية: **PC، Android**:")
+        await event.reply(file=screenshot_paths)
     else:
         await msg.edit("😕 حدث خطأ أثناء التقاط لقطة الشاشة، تأكد من صحة الرابط أو حاول مجددًا.")
 @ABH.on(events.NewMessage(pattern='^/dates$'))
