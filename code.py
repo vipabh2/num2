@@ -334,8 +334,9 @@ async def handler(event):
     if not validators.url(url):
         await event.reply("🙄 الرابط غير صالح! تأكد من كتابته بشكل صحيح.")
         return
+    msg = await event.respond('جاري التقاط الصورة')
     if not is_safe_url(url):
-        await event.reply("🚫 هذا الموقع محظور! \nتواصل مع المطور @k_4x1 للمزيد من التفاصيل.")
+        await msg.edit("🚫 هذا الموقع محظور! \nتواصل مع المطور @k_4x1 للمزيد من التفاصيل.")
         return
     devices = ['pc', 'android']
     screenshot_paths = []
@@ -344,9 +345,9 @@ async def handler(event):
         if screenshot_path:
             screenshot_paths.append(screenshot_path)
     if screenshot_paths:
-        await event.reply("📸 تم التقاط لقطات الشاشة للأجهزة التالية: **PC، Android**:", file=screenshot_paths)
+        await msg.edit("📸 تم التقاط لقطات الشاشة للأجهزة التالية: **PC، Android**:", file=screenshot_paths)
     else:
-        await event.reply("😕 حدث خطأ أثناء التقاط لقطة الشاشة، تأكد من صحة الرابط أو حاول مجددًا.")
+        await msg.edit("😕 حدث خطأ أثناء التقاط لقطة الشاشة، تأكد من صحة الرابط أو حاول مجددًا.")
 @ABH.on(events.NewMessage(pattern='^/dates$'))
 async def show_dates(event):
     btton = [[
