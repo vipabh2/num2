@@ -276,7 +276,11 @@ user_states_s = {}
 async def start(event):
     user_id = event.sender_id
     question = random.choice(questions)
-    
+
+    # إضافة رسالة لتوضيح محتوى السؤال
+    print(f"السؤال المختار: {question}")
+
+    # التأكد من أن السؤال هو قاموس
     if isinstance(question, dict) and "question" in question:
         user_states_s[user_id] = {
             "question": question,
@@ -285,6 +289,7 @@ async def start(event):
         await event.reply(f"{question['question']}")
     else:
         await event.reply("حدث خطأ أثناء الحصول على السؤال.")
+        print(f"السؤال المختار لم يكن من النوع الصحيح: {question}")
 
 @ABH.on(events.NewMessage)
 async def check_answer(event):
@@ -307,6 +312,7 @@ async def check_answer(event):
                 await event.reply("إجابة غير صحيحة، حاول مرة أخرى.")
         else:
             await event.reply("حدث خطأ في الحصول على الإجابة.")
+
 
 @ABH.on(events.NewMessage(pattern=r'كشف ايدي (\d+)'))
 async def permalink(event):
