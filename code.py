@@ -270,50 +270,33 @@ questions = [
     {"question": "من هو عم برسا؟", "answer": ["رونالدو"]}
 ]
 
-user_states_s = {}
 
+user_states_s ={}
 @ABH.on(events.NewMessage(pattern='كرة قدم|كره قدم|/sport'))
 async def start(event):
     user_id = event.sender_id
     question = random.choice(questions)
-
-    # إضافة رسالة لتوضيح محتوى السؤال
-    print(f"السؤال المختار: {question}")
-
-    # التأكد من أن السؤال هو قاموس
-    if isinstance(question, dict) and "question" in question:
-        user_states_s[user_id] = {
-            "question": question,
-            "waiting_for_answer": True 
-        }
-        await event.reply(f"{question['question']}")
-    else:
-        await event.reply("حدث خطأ أثناء الحصول على السؤال.")
-        print(f"السؤال المختار لم يكن من النوع الصحيح: {question}")
-
+    user_states_s[user_id] = {
+        "question": question,
+        "waiting_for_answer": True 
+    }
+    await event.reply(f"{question['question']}")
 @ABH.on(events.NewMessage)
 async def check_answer(event):
     user_id = event.sender_id
     user_message = event.text.strip().lower()
-
     if user_id in user_states_s and user_states_s[user_id].get("waiting_for_answer"):
         current_question = user_states_s[user_id].get("question", {})
-        
-        if isinstance(current_question, dict) and "answer" in current_question:
-            correct_answer = current_question["answer"]
-            
-            if isinstance(correct_answer, list):
-                correct_answer = [answer.lower() for answer in correct_answer]
-            
-            if user_message in correct_answer:
-                await event.reply("أحسنت! إجابة صحيحة.")
-                del user_states_s[user_id]
-            else:
-                await event.reply("إجابة غير صحيحة، حاول مرة أخرى.")
+        correct_answer = current_question.get('answer', '')
+        if isinstance(correct_answer, str):
+            correct_answer = correct_answer.lower()
         else:
-            await event.reply("حدث خطأ في الحصول على الإجابة.")
-
-
+            correct_answer = str(correct_answer)
+        if user_message == correct_answer:
+            await event.reply("أحسنت! إجابة صحيحة.")
+            del user_states_s[user_id]
+        else:
+            pass
 @ABH.on(events.NewMessage(pattern=r'كشف ايدي (\d+)'))
 async def permalink(event):
     global user, uid
