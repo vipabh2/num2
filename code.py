@@ -17,10 +17,9 @@ model = genai.GenerativeModel("gemini-1.5-flash")
 api_id = os.getenv('API_ID')      
 api_hash = os.getenv('API_HASH')  
 bot_token = os.getenv('BOT_TOKEN')
-ABH = TelegramClient('code', api_id, api_hash).start(bot_token=bot_token)
+ABH = TelegramClient('code', api_id, api_hash).start(bot_token=bot_token)from deep_translator import GoogleTranslator
 @ABH.on(events.NewMessage(pattern=r'(ترجمة|ترجمه)'))
 async def handle_message(event):
-    translator = Translator()
     if event.is_reply:
         replied_message = await event.get_reply_message()
         original_text = replied_message.text if replied_message.text else None
@@ -31,13 +30,10 @@ async def handle_message(event):
         await event.reply("يرجى الرد على رسالة تحتوي على النص المراد ترجمته أو كتابة النص بجانب الأمر.")
         return
     try:
-        detected_language = await asyncio.to_thread(translator.detect, original_text)
-        if not detected_language or not hasattr(detected_language, 'lang'):
-            await event.reply("تعذر اكتشاف لغة النص المدخل.")
-            return
-        target_lang = "en" if detected_language.lang == "ar" else "ar"
-        translated = await asyncio.to_thread(translator.translate, original_text, dest=target_lang)
-        response = f"اللغة المكتشفة: {detected_language.lang}\nالنص المترجم: `{translated.text}`"
+        detected_language = GoogleTranslator().detect(original_text)
+        target_lang = "en" if detected_language == "ar" else "ar"
+        translated = GoogleTranslator(source='auto', target=target_lang).translate(original_text)
+        response = f"اللغة المكتشفة: {detected_language}\nالنص المترجم: `{translated}`"
         await event.reply(response)
     except Exception as e:
         await event.reply(f"حدث خطأ أثناء الترجمة: {str(e)}")
