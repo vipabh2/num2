@@ -698,10 +698,10 @@ def reset_game():
     turn = None
 if not any([player1, player2]): 
     reset_game()    
-@ABH.on(events.NewMessage(pattern=r'\bاحس\b'))
-async def mem1(event):
-        url = "https://files.catbox.moe/euqqqk.jpg"  
-        await event.client.send_file(event.chat_id, url, reply_to=event.message.id)
+# @ABH.on(events.NewMessage(pattern=r'\bاحس\b'))
+# async def mem1(event):
+#         url = "https://files.catbox.moe/euqqqk.jpg"  
+#         await event.client.send_file(event.chat_id, url, reply_to=event.message.id)
 operations = {
     "+": operator.add,
     "-": operator.sub,
@@ -753,16 +753,17 @@ async def handle_message(event):
     if not original_text:
         await event.reply("يرجى الرد على رسالة تحتوي على النص المراد ترجمته أو كتابة النص بجانب الأمر.")
         return
-    detected_language = translator.detect(original_text)
-    if detected_language.lang == "ar": 
-        translated = translator.translate(original_text, dest="en")
-    else: 
-        translated = translator.translate(original_text, dest="ar")
-    response = (
-        f"اللغة المكتشفة: {detected_language.lang}\n"
-        f"النص المترجم: `{translated.text}`"
-    )
-    await event.reply(response)
+    try:
+        detected_language = translator.detect(original_text)
+        target_lang = "en" if detected_language.lang == "ar" else "ar"
+        translated = translator.translate(original_text, dest=target_lang)
+        response = (
+            f"اللغة المكتشفة: {detected_language.lang}\n"
+            f"النص المترجم: `{translated.text}`"
+        )
+        await event.reply(response)
+    except Exception as e:
+        await event.reply(f"حدث خطأ أثناء الترجمة: {str(e)}")
 @ABH.on(events.NewMessage(pattern='ابن هاشم'))
 async def reply_abh(event):
     if event.chat_id == -1001968219024:
