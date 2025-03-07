@@ -6,6 +6,7 @@ from database import store_whisper, get_whisper #type: ignore
 from telethon.tl.types import KeyboardButtonCallback
 from telethon import TelegramClient, events, Button
 from db import save_date, get_saved_date #type: ignore
+from deep_translator import GoogleTranslator
 from hijri_converter import Gregorian
 from telethon.tl.custom import Button
 import google.generativeai as genai
