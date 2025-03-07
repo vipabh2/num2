@@ -263,8 +263,8 @@ questions_and_answers_s = [
     {"question": "من هو ال GOAT؟", "answer": ["رونالدو"]},
     {"question": "من هو عم برسا؟", "answer": ["رونالدو"]}
 ]
-user_states_s = {}
-@ABH.on(events.NewMessage(pattern='كرة قدم |كره قدم|/sport'))
+
+@ABH.on(events.NewMessage(pattern='كرة قدم|كره قدم|/sport'))
 async def start(event):
     user_id = event.sender_id
     question = random.choice(questions_and_answers_s)
@@ -277,8 +277,9 @@ async def start(event):
 async def check_answer(event):
     user_id = event.sender_id
     user_message = event.text.strip().lower()
-    if user_id in user_states and user_states[user_id].get("waiting_for_answer"):
-        current_question = user_states[user_id].get("question", {})
+    
+    if user_id in user_states_s and user_states_s[user_id].get("waiting_for_answer"):
+        current_question = user_states_s[user_id].get("question", {})
         correct_answer = current_question.get('answer', '')
         if isinstance(correct_answer, str):
             correct_answer = correct_answer.lower()
@@ -287,9 +288,9 @@ async def check_answer(event):
 
         if user_message == correct_answer:
             await event.reply("أحسنت! إجابة صحيحة.")
-            del user_states[user_id]
+            del user_states_s[user_id]
         else:
-          return 
+            return
 @ABH.on(events.NewMessage(pattern=r'كشف ايدي (\d+)'))
 async def permalink(event):
     global user, uid
