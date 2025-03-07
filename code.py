@@ -6,7 +6,6 @@ from database import store_whisper, get_whisper #type: ignore
 from telethon.tl.types import KeyboardButtonCallback
 from telethon import TelegramClient, events, Button
 from db import save_date, get_saved_date #type: ignore
-from deep_translator import GoogleTranslator
 from hijri_converter import Gregorian
 from telethon.tl.custom import Button
 import google.generativeai as genai
@@ -21,23 +20,26 @@ bot_token = os.getenv('BOT_TOKEN')
 ABH = TelegramClient('code', api_id, api_hash).start(bot_token=bot_token)
 @ABH.on(events.NewMessage(pattern=r'(ترجمة|ترجمه)'))
 async def handle_message(event):
+    translator = Translator()
     if event.is_reply:
         replied_message = await event.get_reply_message()
-        original_text = replied_message.text if replied_message.text else None
+        original_text = replied_message.text 
     else:
         command_parts = event.message.text.split(' ', 1)
         original_text = command_parts[1] if len(command_parts) > 1 else None
     if not original_text:
         await event.reply("يرجى الرد على رسالة تحتوي على النص المراد ترجمته أو كتابة النص بجانب الأمر.")
         return
-    try:
-        detected_language = GoogleTranslator().detect(original_text)
-        target_lang = "en" if detected_language == "ar" else "ar"
-        translated = GoogleTranslator(source='auto', target=target_lang).translate(original_text)
-        response = f"اللغة المكتشفة: {detected_language}\nالنص المترجم: `{translated}`"
-        await event.reply(response)
-    except Exception as e:
-        await event.reply(f"حدث خطأ أثناء الترجمة: {str(e)}")
+    detected_language = translator.detect(original_text)
+    if detected_language.lang == "ar": 
+        translated = translator.translate(original_text, dest="en")
+    else: 
+        translated = translator.translate(original_text, dest="ar")
+    response = (
+        f"اللغة المكتشفة: {detected_language.lang}\n"
+        f"النص المترجم: `{translated.text}`"
+    )
+    await event.reply(response)
 GROUPS_FILE = "dialogs.json"
 TARGET_CHAT_ID = 1910015590
 def load_dialogs():
