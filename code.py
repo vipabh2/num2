@@ -742,6 +742,7 @@ async def reply(event):
     else:
         await event.reply(vipabh)
 translator = Translator()
+
 @ABH.on(events.NewMessage(pattern=r'(ترجمة|ترجمه)'))
 async def handle_message(event):
     if event.is_reply:
@@ -750,18 +751,21 @@ async def handle_message(event):
     else:
         command_parts = event.message.text.split(' ', 1)
         original_text = command_parts[1] if len(command_parts) > 1 else None
+
     if not original_text:
-        await event.reply("عزيزي ...\n يرجئ كتابة النص مع الامر او بالرد عليه.")
+        await event.reply("عزيزي ...\n يرجئ كتابة النص مع الامر أو الرد عليه.")
         return
+
     try:
-        detected = translator.detect(original_text)
-        detected_language = detected.lang if detected else "غير معروف"
+        detected_language = detect(original_text)
         target_lang = "en" if detected_language == "ar" else "ar"
         translated = translator.translate(original_text, dest=target_lang)
-        response = (
-            f"**اللغة المكتشفة:** `{detected_language}`\n"
-            f"**النص المترجم:** `{translated.text}`"
-        )
+
+        if not translated.text.strip():
+            await event.reply("⚠️ لم يتم العثور على ترجمة صالحة.")
+            return
+
+        response = f"**اللغة المكتشفة:** `{detected_language}`\n**النص المترجم:** `{translated.text}`"
         await event.reply(response)
     except Exception as e:
         await event.reply(f"حدث خطأ أثناء الترجمة: {str(e)}")
