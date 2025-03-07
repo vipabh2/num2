@@ -17,7 +17,7 @@ model = genai.GenerativeModel("gemini-1.5-flash")
 api_id = os.getenv('API_ID')      
 api_hash = os.getenv('API_HASH')  
 bot_token = os.getenv('BOT_TOKEN')
-ABH = TelegramClient('code', api_id, api_hash).start(bot_token=bot_token)from deep_translator import GoogleTranslator
+ABH = TelegramClient('code', api_id, api_hash).start(bot_token=bot_token)
 @ABH.on(events.NewMessage(pattern=r'(ترجمة|ترجمه)'))
 async def handle_message(event):
     if event.is_reply:
