@@ -215,6 +215,9 @@ async def handler(event):
             except Exception as e:
                 return
 
+import random
+from telethon import events
+
 user_states_s = {}
 
 questions = [
@@ -273,11 +276,15 @@ user_states_s = {}
 async def start(event):
     user_id = event.sender_id
     question = random.choice(questions)
-    user_states_s[user_id] = {
-        "question": question,
-        "waiting_for_answer": True 
-    }
-    await event.reply(f"{question['question']}")
+    
+    if isinstance(question, dict) and "question" in question:
+        user_states_s[user_id] = {
+            "question": question,
+            "waiting_for_answer": True 
+        }
+        await event.reply(f"{question['question']}")
+    else:
+        await event.reply("حدث خطأ أثناء الحصول على السؤال.")
 
 @ABH.on(events.NewMessage)
 async def check_answer(event):
@@ -286,16 +293,21 @@ async def check_answer(event):
 
     if user_id in user_states_s and user_states_s[user_id].get("waiting_for_answer"):
         current_question = user_states_s[user_id].get("question", {})
-        correct_answer = current_question.get('answer', [])
         
-        if isinstance(correct_answer, list):
-            correct_answer = [answer.lower() for answer in correct_answer]
-
-        if user_message in correct_answer:
-            await event.reply("أحسنت! إجابة صحيحة.")
-            del user_states_s[user_id]
+        if isinstance(current_question, dict) and "answer" in current_question:
+            correct_answer = current_question["answer"]
+            
+            if isinstance(correct_answer, list):
+                correct_answer = [answer.lower() for answer in correct_answer]
+            
+            if user_message in correct_answer:
+                await event.reply("أحسنت! إجابة صحيحة.")
+                del user_states_s[user_id]
+            else:
+                await event.reply("إجابة غير صحيحة، حاول مرة أخرى.")
         else:
-            await event.reply("إجابة غير صحيحة، حاول مرة أخرى.")
+            await event.reply("حدث خطأ في الحصول على الإجابة.")
+
 @ABH.on(events.NewMessage(pattern=r'كشف ايدي (\d+)'))
 async def permalink(event):
     global user, uid
