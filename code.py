@@ -214,7 +214,7 @@ async def handler(event):
 
             except Exception as e:
                 return
-questions_and_answers_s = [
+questions = [
     {"question": "أين أقيمت بطولة كأس العالم لكرة القدم عام 2002؟", "answer": ["كوريا الجنوبية واليابان", 'كوريا الجنوبية و اليابان']},
     {"question": "من هو اللاعب المعروف بأنه الهداف الأول في دوري أبطال أوروبا؟", "answer": ["كريستيانو رونالدو", 'رونالدو', "كرستيانو"]},
     {"question": "من اللاعب الحاصل على جائزة الكرة الذهبية في عام 2015م؟", "answer": ["كريستيانو رونالدو", 'رونالدو', "كرستيانو"]},
@@ -263,10 +263,11 @@ questions_and_answers_s = [
     {"question": "من هو ال GOAT؟", "answer": ["رونالدو"]},
     {"question": "من هو عم برسا؟", "answer": ["رونالدو"]}
 ]
+user_states_s ={}
 @ABH.on(events.NewMessage(pattern='كرة قدم|كره قدم|/sport'))
 async def start(event):
     user_id = event.sender_id
-    question = random.choice(questions_and_answers_s)
+    question = random.choice(questions)
     user_states_s[user_id] = {
         "question": question,
         "waiting_for_answer": True 
