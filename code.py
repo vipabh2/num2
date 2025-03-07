@@ -263,12 +263,12 @@ questions_and_answers_s = [
     {"question": "من هو ال GOAT؟", "answer": ["رونالدو"]},
     {"question": "من هو عم برسا؟", "answer": ["رونالدو"]}
 ]
-user_states = {}
+user_states_s = {}
 @ABH.on(events.NewMessage(pattern='كرة قدم |كره قدم|/sport'))
 async def start(event):
     user_id = event.sender_id
     question = random.choice(questions_and_answers_s)
-    user_states[user_id] = {
+    user_states_s[user_id] = {
         "question": question,
         "waiting_for_answer": True 
     }
