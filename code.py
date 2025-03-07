@@ -741,9 +741,9 @@ async def reply(event):
         await event.reply(file=vipabh)
     else:
         await event.reply(vipabh)
+translator = Translator()
 @ABH.on(events.NewMessage(pattern=r'(ترجمة|ترجمه)'))
 async def handle_message(event):
-translator = Translator()
     if event.is_reply:
         replied_message = await event.get_reply_message()
         original_text = replied_message.text
@@ -753,16 +753,18 @@ translator = Translator()
     if not original_text:
         await event.reply("عزيزي ...\n يرجئ كتابة النص مع الامر او بالرد عليه.")
         return
-    detected_language = translator.detect(original_text).lang
-    if detected_language == "ar":
-        translated = translator.translate(original_text, dest="en")
-    else:
-        translated = translator.translate(original_text, dest="ar")
-    response = (
-        f" **اللغة المكتشفة:** `{detected_language}`\n"
-        f" **النص المترجم:** `{translated.text}`"
+    try:
+        detected = translator.detect(original_text)
+        detected_language = detected.lang if detected else "غير معروف"
+        target_lang = "en" if detected_language == "ar" else "ar"
+        translated = translator.translate(original_text, dest=target_lang)
+        response = (
+            f"**اللغة المكتشفة:** `{detected_language}`\n"
+            f"**النص المترجم:** `{translated.text}`"
         )
-    await event.reply(response)
+        await event.reply(response)
+    except Exception as e:
+        await event.reply(f"حدث خطأ أثناء الترجمة: {str(e)}")
 @ABH.on(events.NewMessage(pattern='ابن هاشم'))
 async def reply_abh(event):
     if event.chat_id == -1001968219024:
