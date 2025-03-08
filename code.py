@@ -568,7 +568,7 @@ questions_and_answers_q = [
 
 user_states = {}
 
-@ABH.on(events.NewMessage(pattern='كرة قدم|كره قدم|/sport'))
+@ABH.on(events.NewMessage(pattern='اسئلة|/quist'))
 async def start(event):
     user_id = event.sender_id
     question = random.choice(questions_and_answers_q)
