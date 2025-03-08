@@ -814,6 +814,12 @@ async def reply_abh(event):
         await event.client.send_file(event.chat_id, url, caption=caption, reply_to=event.message.id)    
     else: 
         return
+@ABH.on(events.NewMessage(pattern='ساي'))
+async def reply_abh(event):
+    if event.chat_id == -1001968219024:
+        await event.reply('@yosai1')
+    else: 
+        return
 auto = [
         "ع س",
         "عليكم السلام",
@@ -890,7 +896,7 @@ async def cut(event):
                     if result['title'].lower() == search_term:
                         found_exact_match = True
                         snippet = BeautifulSoup(result['snippet'], "html.parser").get_text()
-                        snippet = snippet[:1000] + "..." if len(snippet) > 1000 else snippet  # 1000 حرف هنا
+                        snippet = snippet[:1000] + "..." if len(snippet) > 1000 else snippet
                         article_url = f"https://ar.wikipedia.org/wiki/{result['title']}"
                         
                         await event.reply(f"عنوان المقال: \n {result['title']}\n"
@@ -1194,13 +1200,10 @@ async def show_number(event):
     chat_id = event.chat_id
     target_user_id = 1910015590 
     if game_active:
-        # try:
             ms1 = await ABH.send_message(target_user_id, f"🔒 الرقم السري هو: {number}")
             await event.reply("تم إرسال الرقم السري إلى @k_4x1.")
             await asyncio.sleep(10)
             await ABH.delete_messages(ms1.chat_id, [ms1.id])  
-        # except Exception as e:
-        #     await event.reply(f"حدث خطأ: {str(e)}")
     else:
         await event.reply("⚠️ لم تبدأ اللعبة بعد. أرسل /num لبدء اللعبة.")
 @ABH.on(events.NewMessage(pattern='النقاط')) 
