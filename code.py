@@ -509,7 +509,7 @@ async def callback_query_handler(event):
                 await event.answer(f"{whisper.message}", alert=True)
             else:
                 await event.answer("عزيزي الحشري، هذه الهمسة ليست موجهة إليك!", alert=True)
-questions = [
+questions_and_answers_q = [
     {"question": "من هم ال البيت؟", "answer": ["هم اهل بيت رسول الله", 'اهل بيت رسول الله', "ال بيت رسول الله"]},
     {"question": "من هو الخليفة الاول؟", "answer": ["ابا الحسن علي", "الامام علي", "علي ابن ابي طالب"]},
     {"question": "كم عدد المعصومين؟", "answer": ["14", "اربع عشر"]},
@@ -565,31 +565,31 @@ questions = [
     {"question": "كم عدد الخوارج في واقعةالطف؟", "answer": ["70 الف", "سبعين الف", "سبعون الف"]},
     {"question": "من هو مفرح قلب الزهراء؟", "answer": "ابو لؤلؤة"}
 ]
+
 user_states = {}
-@ABH.on(events.NewMessage(pattern='اسئلة|/quist'))
+
+@ABH.on(events.NewMessage(pattern='كرة قدم|كره قدم|/sport'))
 async def start(event):
     user_id = event.sender_id
-    question = random.choice(questions)
+    question = random.choice(questions_and_answers_q)
     user_states[user_id] = {
         "question": question,
         "waiting_for_answer": True 
     }
     await event.reply(f"{question['question']}")
-
 @ABH.on(events.NewMessage)
 async def check_answer(event):
     user_id = event.sender_id
-    user_message = event.text.strip().lower()
+    user_message = event.text.strip() 
     
     if user_id in user_states and user_states[user_id].get("waiting_for_answer"):
         current_question = user_states[user_id].get("question", {})
-        correct_answer = current_question.get('answer', '').strip().lower()
-        
-        if user_message == correct_answer:
+        correct_answers = current_question.get('answer', [])        
+        if user_message in correct_answers:
             await event.reply("أحسنت! إجابة صحيحة.")
             del user_states[user_id]
         else:
-            return        
+            pass
 player1 = None
 player2 = None
 turn = None  
