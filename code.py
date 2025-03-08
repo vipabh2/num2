@@ -215,12 +215,9 @@ async def handler(event):
             except Exception as e:
                 return
 
-import random
-from telethon import events
-
 user_states_s = {}
 
-questions = [
+questions_and_answers = [
     {"question": "أين أقيمت بطولة كأس العالم لكرة القدم عام 2002؟", "answer": ["كوريا الجنوبية واليابان", 'كوريا الجنوبية و اليابان']},
     {"question": "من هو اللاعب المعروف بأنه الهداف الأول في دوري أبطال أوروبا؟", "answer": ["كريستيانو رونالدو", 'رونالدو', "كرستيانو"]},
     {"question": "من اللاعب الحاصل على جائزة الكرة الذهبية في عام 2015م؟", "answer": ["كريستيانو رونالدو", 'رونالدو', "كرستيانو"]},
@@ -275,7 +272,7 @@ user_states_s ={}
 @ABH.on(events.NewMessage(pattern='كرة قدم|كره قدم|/sport'))
 async def start(event):
     user_id = event.sender_id
-    question = random.choice(questions)
+    question = random.choice(questions_and_answers)
     user_states_s[user_id] = {
         "question": question,
         "waiting_for_answer": True 
@@ -513,7 +510,7 @@ async def callback_query_handler(event):
                 await event.answer(f"{whisper.message}", alert=True)
             else:
                 await event.answer("عزيزي الحشري، هذه الهمسة ليست موجهة إليك!", alert=True)
-questions_and_answers = [
+questions = [
     {"question": "من هم ال البيت؟", "answer": ["هم اهل بيت رسول الله", 'اهل بيت رسول الله', "ال بيت رسول الله"]},
     {"question": "من هو الخليفة الاول؟", "answer": ["ابا الحسن علي", "الامام علي", "علي ابن ابي طالب"]},
     {"question": "كم عدد المعصومين؟", "answer": ["14", "اربع عشر"]},
@@ -573,29 +570,27 @@ user_states = {}
 @ABH.on(events.NewMessage(pattern='اسئلة|/quist'))
 async def start(event):
     user_id = event.sender_id
-    question = random.choice(questions_and_answers)
+    question = random.choice(questions)
     user_states[user_id] = {
         "question": question,
         "waiting_for_answer": True 
     }
     await event.reply(f"{question['question']}")
+
 @ABH.on(events.NewMessage)
 async def check_answer(event):
     user_id = event.sender_id
     user_message = event.text.strip().lower()
+    
     if user_id in user_states and user_states[user_id].get("waiting_for_answer"):
         current_question = user_states[user_id].get("question", {})
-        correct_answer = current_question.get('answer', '')
-        if isinstance(correct_answer, str):
-            correct_answer = correct_answer.lower()
-        else:
-            correct_answer = str(correct_answer)
-
+        correct_answer = current_question.get('answer', '').strip().lower()
+        
         if user_message == correct_answer:
             await event.reply("أحسنت! إجابة صحيحة.")
             del user_states[user_id]
         else:
-          return         
+            return        
 player1 = None
 player2 = None
 turn = None  
@@ -939,7 +934,7 @@ async def start_search(event):
             else:
                 for result in data['query']['search']:
                     snippet = BeautifulSoup(result['snippet'], "html.parser").get_text()
-                    snippet = snippet[:400] + "..." if len(snippet) > 400 else snippet  # 400 حرف هنا
+                    snippet = snippet[:400] + "..." if len(snippet) > 400 else snippet
                     article_url = f"https://ar.wikipedia.org/wiki/{result['title']}"
                     
                     await event.reply(f"عنوان المقال: \n {result['title']}\n"
@@ -1080,12 +1075,13 @@ banned_url = [
     9,  25, 94, 131, 175,
     26, 40, 110, 136, 194,
     71, 72, 111, 142, 212,
-    77, 79, 114, 148,
-    80, 81, 115, 150,
-    82, 93, 121, 152
+    77, 79, 114, 148, 230,
+    80, 81, 115, 150, 245,
+    82, 93, 121, 152, 254,
+    273
 ]
 
-latmiyat_range = range(50, 257)
+latmiyat_range = range(50, 274)
 
 async def send_random_latmia(event):
     try:
@@ -1095,7 +1091,7 @@ async def send_random_latmia(event):
         latmia_url = f"https://t.me/x04ou/{chosen}"
         await event.reply(file=latmia_url)
     except Exception as e:
-        await event.reply(f"حدث خطأ أثناء الإرسال: {str(e)}")
+        await event.reply(f"اعد المحاولة مره اخرى")
 
 @ABH.on(events.NewMessage(pattern=r"^(لطمية|لطميه)$"))
 async def handle_latmia_command(event):
