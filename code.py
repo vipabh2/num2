@@ -3,13 +3,14 @@ from telethon.tl.functions.channels import EditBannedRequest, GetParticipantRequ
 import requests, os, operator, asyncio, random, uuid, datetime, re, json
 from playwright.async_api import async_playwright # type: ignore
 from database import store_whisper, get_whisper #type: ignore
+from db import save_date, get_saved_date #type: ignore
 from telethon.tl.types import KeyboardButtonCallback
 from telethon import TelegramClient, events, Button
-from db import save_date, get_saved_date #type: ignore
 from hijri_converter import Gregorian
 from telethon.tl.custom import Button
 import google.generativeai as genai
 from googletrans import Translator
+from datetime import datetime
 from bs4 import BeautifulSoup
 GEMINI = "AIzaSyA5pzOpKVcMGm6Aek82KoB3Pk94dYg3LX4"
 genai.configure(api_key=GEMINI)
@@ -1446,5 +1447,8 @@ questions = [
 async def send_random_question(event):
     random_question = random.choice(questions)
     await event.reply(random_question)
-print('anymous is working ✓')
+now = datetime.now()
+hour = now.hour
+m = now.minute
+print(f'anymous is working at {hour}:{m} ✓')
 ABH.run_until_disconnected()
