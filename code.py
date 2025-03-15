@@ -78,8 +78,6 @@ async def start_f(event):
             await event.respond(f'✍ اكتب ⤶ {answer}')
             start_time = time.time()
             await asyncio.sleep(10)
-        is_on = False
-        done = False
         points_list = "\n".join([f"{info['name']} - {info['score']} نقطة" for info in res.values()])
         await event.reply(f"**ترتيب اللاعبين بالنقاط**\n{points_list}")
 @ABH.on(events.NewMessage)
