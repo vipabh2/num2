@@ -67,10 +67,8 @@ async def players_show(event):
 async def start_f(event):
     global answer, is_on, start_time, join_on
     join_on = True
-    done = True
-    if is_on and done and players:
+    if is_on:
         await event.reply('تم بدء اللعبة، انتظر ثواني...')
-        done = True
         await asyncio.sleep(2)
         for _ in range(5):
             word = fake.word()
