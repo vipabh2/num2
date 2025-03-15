@@ -91,7 +91,6 @@ async def check(event):
             res[username] = {"name": username, "score": 0}
         res[username]["score"] += 1
         await event.reply(f'إجابة صحيحة! أحسنت الوقت المستغرق: {seconds} ثانية و {milliseconds} مللي ثانية.')
-        is_on = False
         answer = None
         start_time = None
     elif elapsed_time >= 10:
