@@ -25,9 +25,7 @@ a = 0
 players = {}
 answer = None
 is_on = False
-join_on = False
 start_time = None
-done = False
 fake = Faker("ar_AA")
 @ABH.on(events.NewMessage(pattern="(?i)اسرع$"))
 async def start_s(event):
@@ -62,11 +60,10 @@ async def players_show(event):
         is_on = True
     else:
         await event.reply('ماكو لاعبين 🙃')
-        is_on = False
+        # is_on = False
 @ABH.on(events.NewMessage(pattern="(?i)تم$"))
 async def start_f(event):
-    global answer, is_on, start_time, join_on
-    join_on = True
+    global answer, is_on, start_time
     if is_on:
         await event.reply('تم بدء اللعبة، انتظر ثواني...')
         await asyncio.sleep(2)
@@ -80,8 +77,7 @@ async def start_f(event):
         await event.reply(f"**ترتيب اللاعبين بالنقاط**\n{points_list}")
 @ABH.on(events.NewMessage)
 async def check(event):
-    global is_on, start_time, answer, a, join_on
-    join_on = False
+    global is_on, start_time, answer, a
     if not is_on or start_time is None:
         return
     elapsed_time = time.time() - start_time
