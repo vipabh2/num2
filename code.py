@@ -40,13 +40,18 @@ async def msgs(event):
 async def show_res(event):
     await asyncio.sleep(2)
     guid = event.chat_id
-    sorted_users = sorted(uinfo.items(), key=lambda x: x[1][guid]['msg'], reverse=True)[:10]
+    sorted_users = sorted(
+        uinfo.items(), 
+        key=lambda x: x[1].get(guid, {}).get('msg', 0), 
+        reverse=True
+    )[:10]    
     top_users = []
     for user, data in sorted_users:
         if guid in data:
-            user_id = user 
+            first_name = data.get(guid, {}).get('fname', 'مجهول')
+            user_id = user
             msg_count = data[guid]["msg"]
-            top_users.append(f"المستخدم [{data[guid]['fname']}](tg://user?id={user_id}) رسائله -> {msg_count}")
+            top_users.append(f"المستخدم [{first_name}](tg://user?id={user_id}) رسائله -> {msg_count}")
     if top_users:
         await event.reply("\n".join(top_users))
     else:
