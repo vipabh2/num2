@@ -33,10 +33,10 @@ async def msgs(event):
         timenow = now.strftime("%I:%M %p")
         targetdate = "8:59 PM"
         targetdate2 = "20:59"
-    if timenow == targetdate:
+    if timenow == targetdate or timenow == targetdate2:
         uinfo = {}
         await event.reply('تم تصفير التوب يتم احتساب الرسائل في تمام 12:00')
-@ABH.on(events.NewMessage(pattern='توب اليومي|المتفاعلين'))
+@ABH.on(events.NewMessage(pattern="توب اليومي|المتفاعلين"))
 async def show_res(event):
     await asyncio.sleep(2)
     guid = event.chat_id
