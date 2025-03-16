@@ -33,7 +33,7 @@ async def msgs(event):
     now = datetime.now()
     timenow = now.strftime("%I:%M %p")
     # targetdate = "23:59"
-    targetdate = "0:13"
+    targetdate = "12:14 AM"
     if timenow == targetdate:
         uinfo = {}
         await event.reply('تم تصفير التوب يتم احتساب الرسائل في تمام 12:00')
