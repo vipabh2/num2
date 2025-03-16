@@ -32,8 +32,7 @@ async def msgs(event):
     uinfo.setdefault(unm, {}).setdefault(guid, {"guid": guid, "unm": unm, "fname": uid, "msg": 0})["msg"] += 1
     now = datetime.now()
     timenow = now.strftime("%I:%M %p")
-    # targetdate = "23:59"
-    targetdate = "12:14 AM"
+    targetdate = "11:59 PM"
     if timenow == targetdate:
         uinfo = {}
         await event.reply('تم تصفير التوب يتم احتساب الرسائل في تمام 12:00')
