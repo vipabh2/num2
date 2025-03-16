@@ -27,6 +27,7 @@ async def msgs(event):
     if event.is_group:
         uid = event.sender.first_name
     if not uid:
+     uid = "**ماعنده اسم**"
      unm = event.sender_id
      guid = event.chat_id
      uinfo.setdefault(unm, {}).setdefault(guid, {"guid": guid, "unm": unm, "fname": uid, "msg": 0})["msg"] += 1
