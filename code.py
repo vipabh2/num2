@@ -22,8 +22,8 @@ api_hash = os.getenv('API_HASH')
 bot_token = os.getenv('BOT_TOKEN')
 ABH = TelegramClient('code', api_id, api_hash).start(bot_token=bot_token)
 uinfo = {}
-@ABH.on(events.NewMessage)
 uinfo = defaultdict(lambda: defaultdict(lambda: {"msg": 0}))
+@ABH.on(events.NewMessage)
 async def msgs(event):
     global uinfo
     if event.is_group:
