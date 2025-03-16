@@ -9,6 +9,7 @@ from telethon import TelegramClient, events, Button
 from hijri_converter import Gregorian
 from telethon.tl.custom import Button
 import google.generativeai as genai
+from collections import defaultdict
 from googletrans import Translator
 from datetime import datetime
 from bs4 import BeautifulSoup
@@ -22,21 +23,27 @@ bot_token = os.getenv('BOT_TOKEN')
 ABH = TelegramClient('code', api_id, api_hash).start(bot_token=bot_token)
 uinfo = {}
 @ABH.on(events.NewMessage)
+from datetime import datetime
+from collections import defaultdict
+uinfo = defaultdict(lambda: defaultdict(lambda: {"msg": 0}))
 async def msgs(event):
     global uinfo
     if event.is_group:
-        uid = event.sender.first_name
-    if not uid:
+        uid = event.sender.first_name or "**ماعنده اسم**"
+    else:
         uid = "**ماعنده اسم**"
     unm = event.sender_id
     guid = event.chat_id
-    uinfo.setdefault(unm, {}).setdefault(guid, {"guid": guid, "unm": unm, "fname": uid, "msg": 0})["msg"] += 1
+    user_data = uinfo[unm][guid]
+    user_data.update({"guid": guid, "unm": unm, "fname": uid})
+    user_data["msg"] += 1
     now = datetime.now()
     timenow = now.strftime("%I:%M %p")
     targetdate = "11:59 PM"
     if timenow == targetdate:
+        uinfo.clear()
         uinfo = {}
-        await event.reply('تم تصفير التوب يتم احتساب الرسائل في تمام 12:00')
+        await event.reply("تم تصفير التوب، يتم احتساب الرسائل في تمام 12:00")
 @ABH.on(events.NewMessage(pattern="توب اليومي|المتفاعلين"))
 async def show_res(event):
     await asyncio.sleep(2)
