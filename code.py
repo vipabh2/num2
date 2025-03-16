@@ -27,13 +27,13 @@ async def msgs(event):
     if event.is_group:
         uid = event.sender.first_name
     if not uid:
-     uid = "**ماعنده اسم**"
-     unm = event.sender_id
-     guid = event.chat_id
-     uinfo.setdefault(unm, {}).setdefault(guid, {"guid": guid, "unm": unm, "fname": uid, "msg": 0})["msg"] += 1
-     now = datetime.now()
-     timenow = now.strftime("%I:%M %p")
-     targetdate = "11:59 PM"
+        uid = "**ماعنده اسم**"
+    unm = event.sender_id
+    guid = event.chat_id
+    uinfo.setdefault(unm, {}).setdefault(guid, {"guid": guid, "unm": unm, "fname": uid, "msg": 0})["msg"] += 1
+    now = datetime.now()
+    timenow = now.strftime("%I:%M %p")
+    targetdate = "11:59 PM"
     if timenow == targetdate:
         uinfo = {}
         await event.reply('تم تصفير التوب يتم احتساب الرسائل في تمام 12:00')
