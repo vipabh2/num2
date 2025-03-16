@@ -31,9 +31,8 @@ async def msgs(event):
         uinfo.setdefault(unm, {}).setdefault(guid, {"guid": guid, "unm": unm, "fname": uid, "msg": 0})["msg"] += 1
         now = datetime.now()
         timenow = now.strftime("%I:%M %p")
-        targetdate = "8:59 PM"
-        targetdate2 = "20:59"
-    if timenow == targetdate or timenow == targetdate2:
+        targetdate = "23:59"
+    if timenow == targetdate:
         uinfo = {}
         await event.reply('تم تصفير التوب يتم احتساب الرسائل في تمام 12:00')
 @ABH.on(events.NewMessage(pattern="توب اليومي|المتفاعلين"))
