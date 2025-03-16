@@ -23,8 +23,6 @@ bot_token = os.getenv('BOT_TOKEN')
 ABH = TelegramClient('code', api_id, api_hash).start(bot_token=bot_token)
 uinfo = {}
 @ABH.on(events.NewMessage)
-from datetime import datetime
-from collections import defaultdict
 uinfo = defaultdict(lambda: defaultdict(lambda: {"msg": 0}))
 async def msgs(event):
     global uinfo
