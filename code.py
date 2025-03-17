@@ -25,7 +25,7 @@ ABH = TelegramClient('code', api_id, api_hash).start(bot_token=bot_token)
 async def start(event):
     global sid
     sid = event.sender_id
-    Button = [[Button.inline("اوامر التوب", b"top"),
+    buttons = [[Button.inline("اوامر التوب", b"top"),
                Button.inline("اوامر التقييد", b"res"),
                Button.inline("اوامر الالعاب", b"gam"),
                Button.inline("اوامر الترجمة", b"tra"),
@@ -56,135 +56,137 @@ async def start(event):
    يرسل لك لطمية عشوائية.                 
 ⌘ `اوامر الذكاء`  
    ذكاء اصطناعي مبسط ليس اذكئ شيء.
-""", Button=Button, reply_to=event.message.id)
+""",
+buttons=buttons,
+ reply_to=event.message.id)
 @ABH.on(events.CallbackQuery(data=b'top'))
 async def top(event):
     uid = event.sender_id
     if uid == sid:
-        Button = [[
+        buttons = [[
         Button.inline("اوامر التقييد", b"res"),
         Button.inline("اوامر الالعاب", b"gam"),
         Button.inline("اوامر الترجمة", b"tra"),
         Button.inline("اوامر الايدي", b"id"),
         ]]
-    await event.edit('الامر `التوب تفعيل` \n لتسجيل الرسائل القادمة وزياده عداد الاعضاء \n الامر `التوب تعطيل ` يعطل التسجيل \n الامر `رسائلي` / رسائلة \n يظهر لك عداد رسائلك منذ ساعة 12 صباحاً \n ', Button=Button)
+    await event.edit('الامر `التوب تفعيل` \n لتسجيل الرسائل القادمة وزياده عداد الاعضاء \n الامر `التوب تعطيل ` يعطل التسجيل \n الامر `رسائلي` / رسائلة \n يظهر لك عداد رسائلك منذ ساعة 12 صباحاً \n ', buttons=buttons)
 @ABH.on(events.CallbackQuery(data=b'res'))
 async def res(event):
     uid = event.sender_id
     if uid == sid:    
-        Button = [[
+        buttons = [[
         Button.inline("اوامر الالعاب", b"gam"),
         Button.inline("اوامر الترجمة", b"tra"),
         Button.inline("اوامر الايدي", b"id"),
         Button.inline("اوامر الكشف", b"sca"),
         ]]    
-    await event.edit(' ```الامر يعمل تلقائي```\n امر يقيبد 90% من الكلام الفاحش يمسح و', Button=Button)
+    await event.edit(' ```الامر يعمل تلقائي```\n امر يقيبد 90% من الكلام الفاحش يمسح و', buttons=buttons)
 @ABH.on(events.CallbackQuery(data=b'gam'))
 async def gam(event):
     uid = event.sender_id
     if uid == sid:    
-        Button = [[
+        buttons = [[
         Button.inline("اوامر الترجمة", b"tra"),
         Button.inline("اوامر الايدي", b"id"),
         Button.inline("اوامر الكشف", b"sca"),
         Button.inline("اوامر الحسبان", b"cal"),
         ]]    
-    await event.edit('الامر `الالعاب` \n امر فيه جميع الالعاب المتاحة في البوت ', Button=Button)
+    await event.edit('الامر `الالعاب` \n امر فيه جميع الالعاب المتاحة في البوت ', buttons=buttons)
 @ABH.on(events.CallbackQuery(data=b'tra'))
 async def tra(event):
     uid = event.sender_id
     if uid == sid:    
-        Button = [[
+        buttons = [[
         Button.inline("اوامر الايدي", b"id"),
         Button.inline("اوامر الكشف", b"sca"),
         Button.inline("اوامر الحسبان", b"cal"),
         Button.inline("اوامر الميمز", b"mem"),
         ]]    
-    await event.edit('الامر `ترجمة` | `ترجمه` \n يعمل بالرد او مع الامر يترجم تلقائي من en الئ ar والعكس صحيح ', Button=Button)
+    await event.edit('الامر `ترجمة` | `ترجمه` \n يعمل بالرد او مع الامر يترجم تلقائي من en الئ ar والعكس صحيح ', buttons=buttons)
 @ABH.on(events.CallbackQuery(data=b'id'))
 async def id(event):
     uid = event.sender_id
     if uid == sid:    
-        Button = [[
+        buttons = [[
         Button.inline("اوامر الكشف", b"sca"),
         Button.inline("اوامر الحسبان", b"cal"),
         Button.inline("اوامر الميمز", b"mem"),
         Button.inline("اوامر الهمسة", b"whi"),
         ]]    
-    await event.edit('الامر `كشف ايدي 1910015590` \n يعمل رابط ل الايدي ويمكنك الدخول عبره ', Button=Button)
+    await event.edit('الامر `كشف ايدي 1910015590` \n يعمل رابط ل الايدي ويمكنك الدخول عبره ', buttons=buttons)
 @ABH.on(events.CallbackQuery(data=b'sca'))
 async def sca(event):
     uid = event.sender_id
     if uid == sid:    
-        Button = [[
+        buttons = [[
         Button.inline("اوامر الحسبان", b"cal"),
         Button.inline("اوامر الميمز", b"mem"),
         Button.inline("اوامر الهمسة", b"whi"),
         Button.inline("اوامر البحث", b"ser"),
         ]]    
-    await event.edit('الامر `كشف رابط https://t.me/K_4x1`\n يعمل نفس عمل امر الايدي لكنه يعطيك حماية من الروابط الملغمة', Button=Button)
+    await event.edit('الامر `كشف رابط https://t.me/K_4x1`\n يعمل نفس عمل امر الايدي لكنه يعطيك حماية من الروابط الملغمة', buttons=buttons)
 @ABH.on(events.CallbackQuery(data=b'cal'))
 async def cal(event):
     uid = event.sender_id
     if uid == sid:    
-        Button = [[
+        buttons = [[
         Button.inline("اوامر الميمز", b"mem"),
         Button.inline("اوامر الهمسة", b"whi"),
         Button.inline("اوامر البحث", b"ser"),
         Button.inline("اوامر الصوتيات", b"lat"),
         ]]    
-    await event.edit('الامر `كشف رابط https://t.me/K_4x1`\n يعمل نفس عمل امر الايدي لكنه يعطيك حماية من الروابط الملغمة', Button=Button)
+    await event.edit('الامر `كشف رابط https://t.me/K_4x1`\n يعمل نفس عمل امر الايدي لكنه يعطيك حماية من الروابط الملغمة', buttons=buttons)
 @ABH.on(events.CallbackQuery(data=b'mem'))
 async def mem(event):
     uid = event.sender_id
     if uid == sid:    
-        Button = [[
+        buttons = [[
         Button.inline("اوامر الهمسة", b"whi"),
         Button.inline("اوامر البحث", b"ser"),
         Button.inline("اوامر الصوتيات", b"son"),
         Button.inline("اوامر الذكاء", b"ai"),
         ]]    
-    await event.edit('الامر `ميم`| `ميمز` \n يرسل ميمز ب صوره عشوائية', Button=Button)
+    await event.edit('الامر `ميم`| `ميمز` \n يرسل ميمز ب صوره عشوائية', buttons=buttons)
 @ABH.on(events.CallbackQuery(data=b'whi'))
 async def whi(event):
     uid = event.sender_id
     if uid == sid:    
-        Button = [[
+        buttons = [[
         Button.inline("اوامر البحث", b"ser"),
         Button.inline("اوامر الصوتيات", b"son"),
         Button.inline("اوامر الذكاء", b"ai"),
         Button.url(text="صنع ب حب", url="https://t.me/K_4x1")
         ]]    
-    await event.edit('الامر يعمل كباقي الهمسات \n بطريقة هزلية اصنع همسة عن طريق يوزر او id ', Button=Button)
+    await event.edit('الامر يعمل كباقي الهمسات \n بطريقة هزلية اصنع همسة عن طريق يوزر او id ', buttons=buttons)
 @ABH.on(events.CallbackQuery(data=b'ser'))
 async def ser(event):
     uid = event.sender_id
     if uid == sid:    
-        Button = [[
+        buttons = [[
         Button.inline("اوامر الصوتيات", b"son"),
         Button.inline("اوامر الذكاء", b"ai"),
         Button.inline("رابط البوت", b"lin"),
         ]]    
-    await event.edit('الامر `ابحث` `عن` `عام` \n يعمل مع الامر ك ابحث عن siri او ابحث عام', Button=Button)
+    await event.edit('الامر `ابحث` `عن` `عام` \n يعمل مع الامر ك ابحث عن siri او ابحث عام', buttons=buttons)
 @ABH.on(events.CallbackQuery(data=b'son'))
 async def cal(event):
     uid = event.sender_id
     if uid == sid:    
-        Button = [[
+        buttons = [[
         Button.inline("اوامر الذكاء", b"ai"),
         Button.url(text="صنعهُ ب حب", url="https://t.me/K_4x1"),
         Button.url(text="رابط البوت", url="https://t.me/VIPABH_BOT"),        
         ]]    
-    await event.edit('الامر `لطمية`\n يرسل لطمية عشوائية ويتم الاضافة المزيد منها', Button=Button)
+    await event.edit('الامر `لطمية`\n يرسل لطمية عشوائية ويتم الاضافة المزيد منها', buttons=buttons)
 @ABH.on(events.CallbackQuery(data=b'ai'))
 async def ai(event):
     uid = event.sender_id
     if uid == sid:    
-        Button = [[
+        buttons = [[
         Button.url(text="صنعهُ ب حب", url="https://t.me/K_4x1"),
         Button.url(text="رابط البوت", url="https://t.me/VIPABH_BOT"),        
         ]]    
-    await event.edit('الامر `مخفي` + سؤالك\n يجيب عن سؤالك لكنه نوع قديم', Button=Button)
+    await event.edit('الامر `مخفي` + سؤالك\n يجيب عن سؤالك لكنه نوع قديم', buttons=buttons)
 uinfo = {}
 uinfo = defaultdict(lambda: defaultdict(lambda: {"msg": 0}))
 @ABH.on(events.NewMessage)
