@@ -1166,12 +1166,29 @@ async def start_game(event):
         parse_mode="Markdown",
         buttons=markup
     )
+@ABH.on(events.CallbackQuery(func=lambda call: call.data == b"startGame"))
+async def handle_start_game(event):
+    global number2
+    chat_id = event.chat_id
+    user_id = event.sender_id
+    username = event.sender.username or "unknown"
+    if chat_id not in group_game_status:
+        group_game_status[chat_id] = {'game_active': False, 'active_player_id': None}    
+    if not group_game_status[chat_id]['game_active']:
+        group_game_status[chat_id]['game_active'] = True
+        group_game_status[chat_id]['active_player_id'] = user_id
+        number2 = random.randint(1, 6)
+        group_game_status[chat_id]['number2'] = number2
+        await event.edit(buttons=None)
+        await event.respond(
+            f"عزيزي [{event.sender.first_name}](https://t.me/@{username})! تم تسجيلك في لعبة محيبس \nارسل `جيب ` + رقم للحزر \n ارسل `طك ` + رقم للتخمين.",
+            parse_mode="Markdown"
+        )
 number2 = None
 game_board = [["👊", "👊", "👊", "👊", "👊", "👊"]]
 numbers_board = [["1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣", "6️⃣"]]
 original_game_board = [["👊", "👊", "👊", "👊", "👊", "👊"]]
 points = {}
-@ABH.on(events.CallbackQuery(data=b"startGame"))
 def format_board(game_board, numbers_board):
     formatted_board = ""
     formatted_board += " ".join(numbers_board[0]) + "\n"
