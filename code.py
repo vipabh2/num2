@@ -372,8 +372,7 @@ def check_message(message):
     words = normalized_message.split()
     return any(word in normalized_banned_words.values() for word in words)
 @ABH.on(events.NewMessage)
-async def handler(event):
-    """التعامل مع الرسائل"""
+async def handler_res(event):
     if event.is_group:
         message_text = event.raw_text.strip()
         user_id = event.sender_id
