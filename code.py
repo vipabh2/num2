@@ -518,10 +518,6 @@ DEVICES = {
     "pc": {"width": 1920, "height": 1080, "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"},
     "android": "Galaxy S5"
 }
-def is_safe_url(url):
-    if not url:
-        return False
-    return not any(banned in url.lower() for banned in BANNED_SITES)
 async def take_screenshot(url, device="pc"):
     async with async_playwright() as p:
         browser = await p.chromium.launch(headless=True)
@@ -551,9 +547,8 @@ async def take_screenshot(url, device="pc"):
 @ABH.on(events.NewMessage(pattern=r'كشف رابط|سكرين (.+)'))
 async def handler(event):
     url = event.pattern_match.group(1)
-    if not is_safe_url(url):
-        await event.reply("هذا الموقع محظور! \nجرب تتواصل مع المطور @k_4x1")
-        return
+        # await event.reply("هذا الموقع محظور! \nجرب تتواصل مع المطور @k_4x1")
+        # return
     devices = ['pc', 'android', 'user_agent']
     screenshot_paths = []
     for device in devices:
