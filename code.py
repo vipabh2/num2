@@ -82,9 +82,7 @@ uinfo = defaultdict(lambda: defaultdict(lambda: {"msg": 0}))
 async def msgs(event):
     global uinfo
     if event.is_group:
-        uid = event.sender.first_name or "**ماعنده اسم**"
-    else:
-        uid = "**ماعنده اسم**"
+        uid = event.sender.first_name if event.sender else "**ماعنده اسم**"
     unm = event.sender_id
     guid = event.chat_id
     user_data = uinfo[unm][guid]
