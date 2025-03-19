@@ -519,6 +519,8 @@ DEVICES = {
     "android": "Galaxy S5"
 }
 def is_safe_url(url):
+    if not url:
+        return False
     return not any(banned in url.lower() for banned in BANNED_SITES)
 async def take_screenshot(url, device="pc"):
     async with async_playwright() as p:
@@ -540,7 +542,7 @@ async def take_screenshot(url, device="pc"):
             screenshot_path = f"screenshot_{device}.png"
             await page.screenshot(path=screenshot_path)
         except Exception as e:
-            print(f"❌ خطأ أثناء تحميل الصفحة: {e}")
+            print(f"خطأ أثناء تحميل الصفحة: {e}")
             screenshot_path = None
         finally:
             await browser.close()
