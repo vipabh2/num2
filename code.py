@@ -74,8 +74,6 @@ async def top(event):
         await event.reply('**اوامر الحسبان كآلاتي** \n *امر `/dates` يحسب لك كم باقي على رجب | شعبان |رمضان | محرم او تاريخ خاص فيك')
     elif event.text == 'اوامر الميمز':
         await event.reply('**اوامر الحسبان كآلاتي** \n *امر `/dates` يحسب لك كم باقي على رجب | شعبان |رمضان | محرم او تاريخ خاص فيك')
-
-
 uinfo = {}
 uinfo = defaultdict(lambda: defaultdict(lambda: {"msg": 0}))
 @ABH.on(events.NewMessage)
@@ -179,7 +177,6 @@ async def players_show(event):
         is_on = True
     else:
         await event.reply('ماكو لاعبين 🙃')
-        # is_on = False
 @ABH.on(events.NewMessage(pattern="(?i)تم$"))
 async def start_f(event):
     global answer, is_on, start_time
@@ -468,10 +465,7 @@ questions_and_answers = [
     {"question": "من هو ال GOAT؟", "answer": ["رونالدو"]},
     {"question": "من هو عم برسا؟", "answer": ["رونالدو"]}
 ]
-
-
 user_states_s = {}
-
 @ABH.on(events.NewMessage(pattern='كرة قدم|كره قدم|/sport'))
 async def start(event):
     user_id = event.sender_id
@@ -485,7 +479,6 @@ async def start(event):
 async def check_answer(event):
     user_id = event.sender_id
     user_message = event.text.strip() 
-    
     if user_id in user_states_s and user_states_s[user_id].get("waiting_for_answer"):
         current_question = user_states_s[user_id].get("question", {})
         correct_answers = current_question.get('answer', [])        
@@ -494,7 +487,6 @@ async def check_answer(event):
             del user_states_s[user_id]
         else:
             pass
-
 @ABH.on(events.NewMessage(pattern=r'كشف ايدي (\d+)'))
 async def permalink(event):
     global user, uid
@@ -529,11 +521,9 @@ DEVICES = {
 }
 def is_safe_url(url):
     return not any(banned in url.lower() for banned in BANNED_SITES)
-
 async def take_screenshot(url, device="pc"):
     async with async_playwright() as p:
         browser = await p.chromium.launch(headless=True)
-
         if device in DEVICES:
             if isinstance(DEVICES[device], str):
                 device_preset = p.devices[DEVICES[device]]
@@ -582,7 +572,6 @@ async def show_dates(event):
         Button.inline("حدد تاريخ", b"set_date")
     ]]
     await event.respond("اختر الشهر المناسب أو حدد تاريخ خاص 👇", buttons=btton)
-
 @ABH.on(events.CallbackQuery)
 async def handle_callback(event):
     data = event.data.decode("utf-8")
@@ -596,7 +585,6 @@ async def handle_callback(event):
         await count_sh(event)
     elif data == "r":
         await count_r(event)
-
 @ABH.on(events.NewMessage(pattern=r'^\d{4}-\d{2}-\d{2}$'))
 async def set_user_date(event):
     user_id = event.sender_id
@@ -607,7 +595,6 @@ async def set_user_date(event):
         await event.reply(f"تم حفظ التاريخ {date}. يمكنك الآن معرفة كم باقي.")
     except ValueError:
         await event.reply("التاريخ المدخل غير صالح، يرجى إدخاله بصيغة YYYY-MM-DD.")
-
 @ABH.on(events.NewMessage(pattern='^كم باقي$'))
 async def check_remaining_days(event):
     user_id = event.sender_id
@@ -620,25 +607,19 @@ async def check_remaining_days(event):
         await event.reply(msg)
     else:
         await event.reply("لم تحدد تاريخًا بعد، يرجى تحديد تاريخ أولاً.")
-
 async def count_r(event):
     await calculate_days(event, datetime.date(2025, 12, 22))
-
 async def count_sh(event):
     await calculate_days(event, datetime.date(2026, 1, 20))
-
 async def count_rm(event):
     await calculate_days(event, datetime.date(2025, 3, 1))
-
 async def count_m(event):
     await calculate_days(event, datetime.date(2025, 6, 26))
-
 async def calculate_days(event, target_date):
     t = datetime.datetime.today()
     days_difference = (target_date - t.date()).days
     msg = f"باقي {days_difference} ايام" if days_difference >= 0 else "الشهر قد بدأ \n يا مطوري حدث الكود @k_4x1"
     await event.edit(msg)
-
 @ABH.on(events.NewMessage(pattern='^تاريخ$'))
 async def start_handler(event):
     t = datetime.datetime.now().date()
@@ -657,7 +638,6 @@ async def start(event):
     url = f"https://t.me/IUABH/{rl}"
     cap = random.choice(c)
     await ABH.send_file(event.chat_id, url, caption=f"{cap}", reply_to=event.id)
-
 @ABH.on(events.InlineQuery)
 async def inline_query_handler(event):
     builder = event.builder
@@ -767,9 +747,7 @@ questions_and_answers_q = [
     {"question": "كم عدد الخوارج في واقعةالطف؟", "answer": ["70 الف", "سبعين الف", "سبعون الف"]},
     {"question": "من هو مفرح قلب الزهراء؟", "answer": "ابو لؤلؤة"}
 ]
-
 user_states = {}
-
 @ABH.on(events.NewMessage(pattern='اسئلة|/quist'))
 async def start(event):
     user_id = event.sender_id
@@ -783,7 +761,6 @@ async def start(event):
 async def check_answer(event):
     user_id = event.sender_id
     user_message = event.text.strip() 
-    
     if user_id in user_states and user_states[user_id].get("waiting_for_answer"):
         current_question = user_states[user_id].get("question", {})
         correct_answers = current_question.get('answer', [])        
@@ -849,7 +826,6 @@ async def show_board(event, winner=None):
             [Button.inline(game_board[3], b"move_3"), Button.inline(game_board[4], b"move_4"), Button.inline(game_board[5], b"move_5")],
             [Button.inline(game_board[6], b"move_6"), Button.inline(game_board[7], b"move_7"), Button.inline(game_board[8], b"move_8")]
         ]
-        
         current_player = t1 if turn == player1 else t2
         current_username = username1 if turn == player1 else username2
         try:
@@ -868,7 +844,6 @@ async def show_board(event, winner=None):
 async def make_move(event):
     global game_board, turn, t1, t2
     move = int(event.data.decode("utf-8").split("_")[1])
-    
     if move < 0 or move >= len(game_board):
         await event.answer("التحرك غير صالح! اختر مربعاً آخر.")
         return
@@ -1022,6 +997,13 @@ async def reply_abh(event):
         await event.reply('@yosai1')
     else: 
         return
+        return
+@ABH.on(events.NewMessage(pattern='يزيد'))
+async def reply_abh(event):
+    if event.chat_id == -1001968219024:
+        await event.reply('@l7QQI')
+    else: 
+        return
 auto = [
         "ع س",
         "عليكم السلام",
@@ -1104,7 +1086,6 @@ async def cut(event):
                         await event.reply(f"عنوان المقال: \n {result['title']}\n"
                                           f"المقال: \n {snippet}\n"
                                           f"{'-' * 40}")
-                
                 if not found_exact_match:
                     await event.reply(
                         f"لا يوجد نتائج تطابق {search_term} \n لكن جرب `ابحث عام {search_term}`",
@@ -1115,7 +1096,6 @@ async def cut(event):
     else:
         await event.reply(f"حدث خطأ في الاتصال بـ Wikipedia. حاول مرة أخرى لاحقًا.")
         await event.answer([result])
-
 searching_state = {}
 @ABH.on(events.NewMessage(func=lambda e: e.text and e.text.strip().lower().startswith('ابحث عام')))
 async def start_search(event):
@@ -1186,33 +1166,29 @@ async def start_game(event):
         parse_mode="Markdown",
         buttons=markup
     )
-    
-@ABH.on(events.CallbackQuery(func=lambda call: call.data == b"startGame"))
-async def handle_start_game(event):
-    chat_id = event.chat_id
-    user_id = event.sender_id
-    username = event.sender.username or "unknown"
-    
-    if chat_id not in group_game_status:
-        group_game_status[chat_id] = {'game_active': False, 'active_player_id': None}    
-    if not group_game_status[chat_id]['game_active']:
-        group_game_status[chat_id]['game_active'] = True
-        group_game_status[chat_id]['active_player_id'] = user_id
-    
-        global number2
-        number2 = random.randint(1, 6)
-        group_game_status[chat_id]['number2'] = number2
-        await event.edit(buttons=None)
-        await event.respond(
-            f"عزيزي [{event.sender.first_name}](https://t.me/@{username})! تم تسجيلك في لعبة محيبس \nارسل `جيب ` + رقم للحزر \n ارسل `طك ` + رقم للتخمين.",
-            parse_mode="Markdown"
-        )
+    group_game_status = {}
+number2 = None
+game_board = [["👊", "👊", "👊", "👊", "👊", "👊"]]
+numbers_board = [["1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣", "6️⃣"]]
+original_game_board = [["👊", "👊", "👊", "👊", "👊", "👊"]]
+points = {}
+def format_board(game_board, numbers_board):
+    formatted_board = ""
+    formatted_board += " ".join(numbers_board[0]) + "\n"
+    formatted_board += " ".join(game_board[0]) + "\n"
+    return formatted_board
+def reset_game(chat_id):
+    global game_board, number2, group_game_status
+    game_board = [row[:] for row in original_game_board]
+    number2 = None
+    group_game_status[chat_id]['game_active'] = False
+    group_game_status[chat_id]['active_player_id'] = None
+group_game_status = {}
 @ABH.on(events.NewMessage(pattern=r'جيب (\d+)'))
 async def handle_guess(event):
     global number2, game_board, points, group_game_status
     chat_id = event.chat_id
     if chat_id in group_game_status and group_game_status[chat_id]['game_active']:
-      
         try:
             guess = int(event.text.split()[1])  
             if 1 <= guess <= 6:  
@@ -1229,10 +1205,9 @@ async def handle_guess(event):
                     await event.reply(f"ضاع البات ماضن بعد تلگونة ☹️ \n{format_board(game_board, numbers_board)}")
                     reset_game(chat_id)
             else:
-                await event.reply("❗ يرجى إدخال رقم صحيح بين 1 و 6.")
+                await event.reply("يرجى إدخال رقم صحيح بين 1 و 6.")
         except (IndexError, ValueError):
-            await event.reply("❗ يرجى إدخال رقم صحيح بين 1 و 6.")
-        
+            await event.reply("يرجى إدخال رقم صحيح بين 1 و 6.")
 @ABH.on(events.NewMessage(pattern=r'طك (\d+)'))
 async def handle_strike(event):
     global game_board, number2, group_game_status
@@ -1244,7 +1219,7 @@ async def handle_strike(event):
                 game_board = [["💍" if i == number2 - 1 else "🖐️" for i in range(6)]]
                 await event.reply(f"**خسرت!** \n{format_board(game_board, numbers_board)}")
                 reset_game(chat_id)
-
+            else:
                 abh = [
                     "تلعب وخوش تلعب 👏🏻",
                     "لك عاش يابطل استمر 💪🏻",
@@ -1255,8 +1230,7 @@ async def handle_strike(event):
                 game_board[0][strike_position - 1] = '🖐️'
                 await event.reply(f" {iuABH} \n{format_board(game_board, numbers_board)}")
         except (IndexError, ValueError):
-            await event.reply("❗ يرجى إدخال رقم صحيح بين 1 و 6.")
-            
+            await event.reply("يرجى إدخال رقم صحيح بين 1 و 6.")
 @ABH.on(events.NewMessage(pattern='/محيبس'))
 async def show_number(event):
     """إظهار الرقم السري عند الطلب وإرساله إلى @k_4x1"""
@@ -1272,12 +1246,10 @@ basimurl = random.randint(50, 118)
 musurl = random.randint(139, 154)
 nurl = random.randint(164, 170)
 furl = random.randint(171, 174)
-
 async def send_audio_from_list(event, url_list):
     rl = random.choice(url_list)
     audio_url = f"https://t.me/sossosic/{rl}"
     await event.reply(file=audio_url)
-
 banned_url = [
     9,  25, 94, 131, 175,
     26, 40, 110, 136, 194,
@@ -1287,9 +1259,7 @@ banned_url = [
     82, 93, 121, 152, 254,
     273
 ]
-
 latmiyat_range = range(50, 274)
-
 async def send_random_latmia(event):
     try:
         chosen = random.choice(list(latmiyat_range))
@@ -1299,11 +1269,9 @@ async def send_random_latmia(event):
         await event.reply(file=latmia_url)
     except Exception as e:
         await event.reply(f"اعد المحاولة مره اخرى")
-
 @ABH.on(events.NewMessage(pattern=r"^(لطمية|لطميه)$"))
 async def handle_latmia_command(event):
     await send_random_latmia(event)
-
 @ABH.on(events.NewMessage(pattern='^/start$'))
 async def handle_start(event):
     await event.reply(
@@ -1323,17 +1291,6 @@ async def handle_start(event):
         "استمتع! 🎉",
         parse_mode='markdown'
         )
-        
-def add_or_update_user(user_id):
-    if user_id not in user_points:
-        user_points[user_id] = 0  
-            
-def add_point_to_winner(user_id):
-    if user_id in user_points:
-        user_points[user_id] += 1 
-
-def get_user_score(user_id):
-    return user_points.get(user_id, 0)
 user_points = {}
 game_active = False
 number = None
@@ -1379,9 +1336,6 @@ async def handle_guess(event):
         return
     attempts += 1
     if guess == number:
-        add_or_update_user(event.sender_id)
-        add_point_to_winner(event.sender_id)
-        points = get_user_score(event.sender_id)
         msg1 = await event.reply("🥳")
         await asyncio.sleep(3)
         await msg1.edit("🎉مُبارك! لقد فزت!")
@@ -1395,9 +1349,6 @@ async def handle_guess(event):
         await event.reply("جرب مرة أخرى، الرقم غلط💔")
 @ABH.on(events.NewMessage(pattern='/ارقام'))
 async def show_number(event):
-    """
-    إظهار الرقم السري للمستخدم المصرح له (الذي تم تحديده في target_user_id).
-    """
     global game_active, number
     chat_id = event.chat_id
     target_user_id = 1910015590 
@@ -1408,11 +1359,6 @@ async def show_number(event):
             await ABH.delete_messages(ms1.chat_id, [ms1.id])  
     else:
         await event.reply("⚠️ لم تبدأ اللعبة بعد. أرسل /num لبدء اللعبة.")
-@ABH.on(events.NewMessage(pattern='النقاط')) 
-async def show_points(event):
-    user_id = event.sender_id  
-    points = get_user_score(user_id) 
-    await event.reply(f"📊 نقاطك الحالية هي: {points} 🌟")
 questions = [
     "شلون تعمل هالشي؟",
     "شلون تقضي وقتك بالفراغ؟",
