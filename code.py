@@ -525,9 +525,10 @@ def is_safe_url(url):
 async def take_screenshot(url, device="pc"):
     async with async_playwright() as p:
         browser = await p.chromium.launch(headless=True)
+        playwright = p
         if device in DEVICES:
             if isinstance(DEVICES[device], str):
-                device_preset = p.devices[DEVICES[device]]
+                device_preset = playwright.devices[DEVICES[device]]
                 context = await browser.new_context(**device_preset)
             else:
                 context = await browser.new_context(
@@ -549,9 +550,13 @@ async def take_screenshot(url, device="pc"):
     return screenshot_path
 @ABH.on(events.NewMessage(pattern=r'كشف رابط|سكرين (.+)'))
 async def handler(event):
-    url = event.pattern_match.group(1)
-    if is_safe_url(url):
-        await event.reply("هذا الموقع محظور! \nجرب تتواصل مع المطور @k_4x1")
+    match = event.pattern_match
+    if not match or not match.group(1):
+        await event.reply("❌ يرجى إدخال رابط صالح.")
+        return
+    url = match.group(1)
+    if not is_safe_url(url):
+        await event.reply("🚫 هذا الموقع محظور! \nجرب تتواصل مع المطور @k_4x1")
         return
     devices = ['pc', 'android']
     screenshot_paths = []
@@ -560,7 +565,7 @@ async def handler(event):
         if screenshot_path:
             screenshot_paths.append(screenshot_path)
     if screenshot_paths:
-        await event.reply(f' تم التقاط لقطات الشاشة للأجهزة التالية: **PC، Android**:', file=screenshot_paths)
+        await event.reply(f'✅ تم التقاط لقطات الشاشة للأجهزة التالية: **PC، Android**', file=screenshot_paths)
     else:
         await event.reply("🙄 هنالك خطأ أثناء التقاط لقطة الشاشة، تأكد من صحة الرابط أو جرب مجددًا.")
 @ABH.on(events.NewMessage(pattern='^/dates$'))
