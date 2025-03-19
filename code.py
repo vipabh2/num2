@@ -25,13 +25,12 @@ ABH = TelegramClient('code', api_id, api_hash).start(bot_token=bot_token)
 async def start(event):
     global sid
     sid = event.sender_id
-    buttons = [[Button.inline("اوامر التوب", b"top"),
-               Button.inline("اوامر التقييد", b"res"),
-               Button.inline("اوامر الالعاب", b"gam"),
-               Button.inline("اوامر الترجمة", b"tra"),
-               ]]
+    buttons = [[
+        Button.url(text="صنعهُ ب حب", url="https://t.me/K_4x1"),
+        Button.url(text="رابط البوت", url="https://t.me/VIPABH_BOT"),        
+        ]]
     await event.respond("""
-**أوامر البوت المخفي** 卐 \n 
+**أوامر البوت المخفي** 卐  
 ⌘ `اوامر التوب`  
    يحسب عدد رسائل مجموعتك.  
 ⌘ `اوامر التقييد`  
@@ -56,137 +55,27 @@ async def start(event):
    يرسل لك لطمية عشوائية.                 
 ⌘ `اوامر الذكاء`  
    ذكاء اصطناعي مبسط ليس اذكئ شيء.
-""",
-buttons=buttons,
- reply_to=event.message.id)
-@ABH.on(events.CallbackQuery(data=b'top'))
+""", buttons=buttons, reply_to=event.message.id)
+@ABH.on(events.NewMessage)
 async def top(event):
-    uid = event.sender_id
-    if uid == sid:
-        buttons = [[
-        Button.inline("اوامر التقييد", b"res"),
-        Button.inline("اوامر الالعاب", b"gam"),
-        Button.inline("اوامر الترجمة", b"tra"),
-        Button.inline("اوامر الايدي", b"id"),
-        ]]
-    await event.edit('الامر `التوب تفعيل` \n لتسجيل الرسائل القادمة وزياده عداد الاعضاء \n الامر `التوب تعطيل ` يعطل التسجيل \n الامر `رسائلي` / رسائلة \n يظهر لك عداد رسائلك منذ ساعة 12 صباحاً \n ', buttons=buttons)
-@ABH.on(events.CallbackQuery(data=b'res'))
-async def res(event):
-    uid = event.sender_id
-    if uid == sid:    
-        buttons = [[
-        Button.inline("اوامر الالعاب", b"gam"),
-        Button.inline("اوامر الترجمة", b"tra"),
-        Button.inline("اوامر الايدي", b"id"),
-        Button.inline("اوامر الكشف", b"sca"),
-        ]]    
-    await event.edit(' ```الامر يعمل تلقائي```\n امر يقيبد 90% من الكلام الفاحش يمسح و', buttons=buttons)
-@ABH.on(events.CallbackQuery(data=b'gam'))
-async def gam(event):
-    uid = event.sender_id
-    if uid == sid:    
-        buttons = [[
-        Button.inline("اوامر الترجمة", b"tra"),
-        Button.inline("اوامر الايدي", b"id"),
-        Button.inline("اوامر الكشف", b"sca"),
-        Button.inline("اوامر الحسبان", b"cal"),
-        ]]    
-    await event.edit('الامر `الالعاب` \n امر فيه جميع الالعاب المتاحة في البوت ', buttons=buttons)
-@ABH.on(events.CallbackQuery(data=b'tra'))
-async def tra(event):
-    uid = event.sender_id
-    if uid == sid:    
-        buttons = [[
-        Button.inline("اوامر الايدي", b"id"),
-        Button.inline("اوامر الكشف", b"sca"),
-        Button.inline("اوامر الحسبان", b"cal"),
-        Button.inline("اوامر الميمز", b"mem"),
-        ]]    
-    await event.edit('الامر `ترجمة` | `ترجمه` \n يعمل بالرد او مع الامر يترجم تلقائي من en الئ ar والعكس صحيح ', buttons=buttons)
-@ABH.on(events.CallbackQuery(data=b'id'))
-async def id(event):
-    uid = event.sender_id
-    if uid == sid:    
-        buttons = [[
-        Button.inline("اوامر الكشف", b"sca"),
-        Button.inline("اوامر الحسبان", b"cal"),
-        Button.inline("اوامر الميمز", b"mem"),
-        Button.inline("اوامر الهمسة", b"whi"),
-        ]]    
-    await event.edit('الامر `كشف ايدي 1910015590` \n يعمل رابط ل الايدي ويمكنك الدخول عبره ', buttons=buttons)
-@ABH.on(events.CallbackQuery(data=b'sca'))
-async def sca(event):
-    uid = event.sender_id
-    if uid == sid:    
-        buttons = [[
-        Button.inline("اوامر الحسبان", b"cal"),
-        Button.inline("اوامر الميمز", b"mem"),
-        Button.inline("اوامر الهمسة", b"whi"),
-        Button.inline("اوامر البحث", b"ser"),
-        ]]    
-    await event.edit('الامر `كشف رابط https://t.me/K_4x1`\n يعمل نفس عمل امر الايدي لكنه يعطيك حماية من الروابط الملغمة', buttons=buttons)
-@ABH.on(events.CallbackQuery(data=b'cal'))
-async def cal(event):
-    uid = event.sender_id
-    if uid == sid:    
-        buttons = [[
-        Button.inline("اوامر الميمز", b"mem"),
-        Button.inline("اوامر الهمسة", b"whi"),
-        Button.inline("اوامر البحث", b"ser"),
-        Button.inline("اوامر الصوتيات", b"lat"),
-        ]]    
-    await event.edit('الامر `كشف رابط https://t.me/K_4x1`\n يعمل نفس عمل امر الايدي لكنه يعطيك حماية من الروابط الملغمة', buttons=buttons)
-@ABH.on(events.CallbackQuery(data=b'mem'))
-async def mem(event):
-    uid = event.sender_id
-    if uid == sid:    
-        buttons = [[
-        Button.inline("اوامر الهمسة", b"whi"),
-        Button.inline("اوامر البحث", b"ser"),
-        Button.inline("اوامر الصوتيات", b"son"),
-        Button.inline("اوامر الذكاء", b"ai"),
-        ]]    
-    await event.edit('الامر `ميم`| `ميمز` \n يرسل ميمز ب صوره عشوائية', buttons=buttons)
-@ABH.on(events.CallbackQuery(data=b'whi'))
-async def whi(event):
-    uid = event.sender_id
-    if uid == sid:    
-        buttons = [[
-        Button.inline("اوامر البحث", b"ser"),
-        Button.inline("اوامر الصوتيات", b"son"),
-        Button.inline("اوامر الذكاء", b"ai"),
-        Button.url(text="صنع ب حب", url="https://t.me/K_4x1")
-        ]]    
-    await event.edit('الامر يعمل كباقي الهمسات \n بطريقة هزلية اصنع همسة عن طريق يوزر او id ', buttons=buttons)
-@ABH.on(events.CallbackQuery(data=b'ser'))
-async def ser(event):
-    uid = event.sender_id
-    if uid == sid:    
-        buttons = [[
-        Button.inline("اوامر الصوتيات", b"son"),
-        Button.inline("اوامر الذكاء", b"ai"),
-        Button.inline("رابط البوت", b"lin"),
-        ]]    
-    await event.edit('الامر `ابحث` `عن` `عام` \n يعمل مع الامر ك ابحث عن siri او ابحث عام', buttons=buttons)
-@ABH.on(events.CallbackQuery(data=b'son'))
-async def cal(event):
-    uid = event.sender_id
-    if uid == sid:    
-        buttons = [[
-        Button.inline("اوامر الذكاء", b"ai"),
-        Button.url(text="صنعهُ ب حب", url="https://t.me/K_4x1"),
-        Button.url(text="رابط البوت", url="https://t.me/VIPABH_BOT"),        
-        ]]    
-    await event.edit('الامر `لطمية`\n يرسل لطمية عشوائية ويتم الاضافة المزيد منها', buttons=buttons)
-@ABH.on(events.CallbackQuery(data=b'ai'))
-async def ai(event):
-    uid = event.sender_id
-    if uid == sid:    
-        buttons = [[
-        Button.url(text="صنعهُ ب حب", url="https://t.me/K_4x1"),
-        Button.url(text="رابط البوت", url="https://t.me/VIPABH_BOT"),        
-        ]]    
-    await event.edit('الامر `مخفي` + سؤالك\n يجيب عن سؤالك لكنه نوع قديم', buttons=buttons)
+    if event.text == "اوامر التوب":
+        await event.reply('**اوامر التوب كآلاتي** \n * `توب اليومي` | `المتفاعلين` \n ل اظهار توب اكثر 10 اشخاص تفاعل \n `رسائلي` ل اظهار رسائلك من بدايه اليوم \n `رسائلة`  ل اظهار رسائل الشخص من بداية اليوم')
+    elif event.text == 'اوامر التقييد':
+        await event.reply('**امر التقييد كآلاتي** \n التقييد يعمل تلقائي مع البوت يعمل كلمة بذيئة او بذيئئة او بذيئ\ه \n كل انواع الكلام البذيئ ممنوع✌')
+    elif event.text == 'اوامر الالعاب':
+        await event.reply('**اوامر الالعاب كآلاتي** \n *امر `/num` يختار البوت رقم من 10 وانت تحزره لديك 3 محاولات \n *امر `/rings` *امر محيبس البوت يختار رقم وانت تحزره عن طريق جيب + رقم اليد ```اذا كتبت طك + رقم اليد كان فيه خاتم تخسر😁``` \n *امر `/xo` يعمل في المجموعات مع الاعبين يمكنك تحدي الاعبين بنفس التكتيك \n امر `/quist` يسأل اسئلة دينية وينتظر اجابتك ```البوت غير مناسب للبعض 😀``` \n *امر `/faster` يعمل في المجموعات وينتظر الاعبين ل اكتشاف اسرع من يكتب الكلمة التي يطلبها البوت')
+    elif event.text == 'اوامر الترجمة':
+        await event.reply('**اوامر الترجمة كآلاتي** \n *امر `ترجمة` \n يعمل مع الامر او بالرد ك ```ترجمة be how you are be , you are from dust```')
+    elif event.text == 'اوامر الايدي':
+        await event.reply('**اوامر الايدي كآلاتي** \n *امر `كشف ايدي 1910015590`\n  يعمل رابط ل حساب الايدي يمكنك من خلاله تدخل اليه')
+    elif event.text == 'اوامر الكشف':
+        await event.reply('**اوامر الكشف كآلاتي** \n *امر `سكرين`| `كشف رابط https://t.me/K_4x1` \n يعمل سكرين للرابط ليكشفه اذا كان ملغم ام رابط طبيعي ')
+    elif event.text == 'اوامر الحسبان':
+        await event.reply('**اوامر الحسبان كآلاتي** \n *امر `/dates` يحسب لك كم باقي على رجب | شعبان |رمضان | محرم او تاريخ خاص فيك')
+    elif event.text == 'اوامر الميمز':
+        await event.reply('**اوامر الحسبان كآلاتي** \n *امر `/dates` يحسب لك كم باقي على رجب | شعبان |رمضان | محرم او تاريخ خاص فيك')
+
+
 uinfo = {}
 uinfo = defaultdict(lambda: defaultdict(lambda: {"msg": 0}))
 @ABH.on(events.NewMessage)
@@ -259,7 +148,7 @@ answer = None
 is_on = False
 start_time = None
 fake = Faker("ar_AA")
-@ABH.on(events.NewMessage(pattern="(?i)اسرع$"))
+@ABH.on(events.NewMessage(pattern=r"(?i)^(?:اسرع|/faster)$"))  
 async def start_s(event):
     global is_on, players
     is_on = True
