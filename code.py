@@ -550,7 +550,7 @@ async def take_screenshot(url, device="pc"):
 @ABH.on(events.NewMessage(pattern=r'كشف رابط|سكرين (.+)'))
 async def handler(event):
     url = event.pattern_match.group(1)
-    if not is_safe_url(url):
+    if is_safe_url(url):
         await event.reply("هذا الموقع محظور! \nجرب تتواصل مع المطور @k_4x1")
         return
     devices = ['pc', 'android']
