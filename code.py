@@ -1166,12 +1166,12 @@ async def start_game(event):
         parse_mode="Markdown",
         buttons=markup
     )
-    group_game_status = {}
 number2 = None
 game_board = [["👊", "👊", "👊", "👊", "👊", "👊"]]
 numbers_board = [["1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣", "6️⃣"]]
 original_game_board = [["👊", "👊", "👊", "👊", "👊", "👊"]]
 points = {}
+@ABH.on(events.CallbackQuery(data=b"startGame"))
 def format_board(game_board, numbers_board):
     formatted_board = ""
     formatted_board += " ".join(numbers_board[0]) + "\n"
