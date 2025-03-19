@@ -550,15 +550,11 @@ async def take_screenshot(url, device="pc"):
     return screenshot_path
 @ABH.on(events.NewMessage(pattern=r'كشف رابط|سكرين (.+)'))
 async def handler(event):
-    match = event.pattern_match
-    if not match or not match.group(1):
-        await event.reply("❌ يرجى إدخال رابط صالح.")
-        return
-    url = match.group(1)
+    url = event.pattern_match.group(1)
     if not is_safe_url(url):
-        await event.reply("🚫 هذا الموقع محظور! \nجرب تتواصل مع المطور @k_4x1")
+        await event.reply("هذا الموقع محظور! \nجرب تتواصل مع المطور @k_4x1")
         return
-    devices = ['pc', 'android']
+    devices = ['pc', 'android', 'user_agent']
     screenshot_paths = []
     for device in devices:
         screenshot_path = await take_screenshot(url, device)
