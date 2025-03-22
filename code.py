@@ -90,8 +90,7 @@ async def msgs(event):
     timenow = now.strftime("%I:%M %p")
     targetdate = "11:59 PM"
     if timenow == targetdate:
-        uinfo.clear()
-        uinfo = {}
+        uinfo = defaultdict(lambda: defaultdict(lambda: {"msg": 0}))
         await event.reply("تم تصفير التوب، يتم احتساب الرسائل في تمام 12:00")
 @ABH.on(events.NewMessage(pattern="توب اليومي|المتفاعلين"))
 async def show_res(event):
