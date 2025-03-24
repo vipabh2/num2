@@ -113,17 +113,17 @@ uinfo = defaultdict(lambda: defaultdict(lambda: {"msg": 0}))
 async def msgs(event):
     global uinfo
     if event.is_group:
+        now = datetime.now()
         uid = event.sender.first_name if event.sender else "**ماعنده اسم**"
         unm = event.sender_id
         guid = event.chat_id
         user_data = uinfo[unm][guid]
         user_data.update({"guid": guid, "unm": unm, "fname": uid})
         user_data["msg"] += 1
-        now = datetime.now()
-    timenow = now.strftime("%I:%M %p")
-    targetdate = "11:59 PM"
-    if timenow == targetdate:
-        uinfo = defaultdict(lambda: defaultdict(lambda: {"msg": 0}))
+        timenow = now.strftime("%I:%M %p")
+        targetdate = "11:59 PM"
+        if timenow == targetdate:
+            uinfo = defaultdict(lambda: defaultdict(lambda: {"msg": 0}))
 @ABH.on(events.NewMessage(pattern="توب اليومي|المتفاعلين"))
 async def show_res(event):
     await asyncio.sleep(2)
