@@ -391,7 +391,6 @@ def normalize_text(text):
     text = re.sub(r'(.)\1+', r'\1', text)
     return text
 async def is_admin(chat, user_id):
-    """التحقق مما إذا كان المستخدم مشرفًا أو منشئ المجموعة"""
     try:
         participant = await ABH(GetParticipantRequest(chat, user_id))
         return isinstance(participant.participant, (ChannelParticipantAdmin, ChannelParticipantCreator))
@@ -403,18 +402,12 @@ def check_message(message):
     return any(word in normalized_banned_words.values() for word in words)
 @ABH.on(events.NewMessage)
 async def handler_res(event):
-    if event.is_group:
-        message_text = event.raw_text.strip()
+        new = event.message.text.strip()
         user_id = event.sender_id
-        chat = await event.get_chat()
-        if check_message(message_text):
-            if await is_admin(chat, user_id):
-                await event.delete()
-                return
-            me = await ABH.get_me()
-        else:
+        chat = await event.get_chat()    
+        if any(word in new for word in banned_words):
             restrict_rights = ChatBannedRights(
-                until_date=None,
+                until_date=20 * 60,
                 send_messages=True, 
                 send_media=True,
                 send_stickers=True,
@@ -433,17 +426,11 @@ async def handler_res(event):
                 send_inline=False,
                 embed_links=False
             )
-            try:
-                await ABH(EditBannedRequest(chat.id, user_id, restrict_rights))
-                await event.delete()
-                await asyncio.sleep(20 * 60)
-                await ABH(EditBannedRequest(chat.id, user_id, unrestrict_rights))
-
-            except Exception as e:
-                return
-
+            await ABH(EditBannedRequest(chat.id, user_id, restrict_rights))
+            await event.delete()
+            await asyncio.sleep(20 * 60)
+            await ABH(EditBannedRequest(chat.id, user_id, unrestrict_rights))
 user_states_s = {}
-
 questions_and_answers = [
     {"question": "أين أقيمت بطولة كأس العالم لكرة القدم عام 2002؟", "answer": ["كوريا الجنوبية واليابان", 'كوريا الجنوبية و اليابان']},
     {"question": "من هو اللاعب المعروف بأنه الهداف الأول في دوري أبطال أوروبا؟", "answer": ["كريستيانو رونالدو", 'رونالدو', "كرستيانو"]},
