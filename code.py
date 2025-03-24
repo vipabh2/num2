@@ -407,7 +407,7 @@ async def handler_res(event):
         chat = await event.get_chat()    
         if any(word in new for word in banned_words):
             restrict_rights = ChatBannedRights(
-                until_date=20 * 60,
+                # until_date=20 * 60,
                 send_messages=True, 
                 send_media=True,
                 send_stickers=True,
