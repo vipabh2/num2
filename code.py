@@ -987,12 +987,17 @@ async def reply_abh(event):
         await event.client.send_file(event.chat_id, url, caption=caption, reply_to=event.message.id)    
     else: 
         return
-@ABH.on(events.NewMessage(pattern='ساي'))
+@ABH.on(events.NewMessage(pattern='محمد موسى'))
 async def reply_abh(event):
     if event.chat_id == -1001968219024:
-        await event.reply('@yosai1')
+        await event.reply('@E_0_0_0 ')
     else: 
         return
+@ABH.on(events.NewMessage(pattern='مقتد'))
+async def reply_abh(event):
+    if event.chat_id == -1001968219024:
+        await event.reply('@hiz8s')
+    else: 
         return
 @ABH.on(events.NewMessage(pattern='يزيد'))
 async def reply_abh(event):
