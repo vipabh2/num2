@@ -398,7 +398,6 @@ async def is_admin(chat, user_id):
     except:
         return False
 def check_message(message):
-    """التحقق مما إذا كانت الرسالة تحتوي على كلمة محظورة"""
     normalized_message = normalize_text(message)
     words = normalized_message.split()
     return any(word in normalized_banned_words.values() for word in words)
@@ -413,8 +412,7 @@ async def handler_res(event):
                 await event.delete()
                 return
             me = await ABH.get_me()
-            if not await is_admin(chat, me.id):
-                return
+        else:
             restrict_rights = ChatBannedRights(
                 until_date=None,
                 send_messages=True, 
