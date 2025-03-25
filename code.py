@@ -569,7 +569,7 @@ async def take_screenshot(url, device="pc"):
     return screenshot_path
 @ABH.on(events.NewMessage(pattern=r'كشف رابط|سكرين (.+)'))
 async def handler(event):
-    url = event.pattern_match.group(1).strip()
+    url = event.pattern_match.group(1)
     if any(banned in url.lower() for banned in BANNED_SITES):
         await event.reply("🚫 هذا الموقع محظور!\nجرب تتواصل مع المطور @k_4x1")
         return
@@ -1158,7 +1158,7 @@ async def start_search(event):
     else:
         await event.reply(f"حدث خطأ: {response.status_code}")
     searching_state[event.chat.id] = False
-@ABH.on(events.NewMessage(func=lambda e: e.text and e.text.strip().lower() in ['عاشوراء']))
+@ABH.on(events.NewMessage(pattern='عاشوراء'))
 async def ashouau(event):
     pic = "links/abh.jpg"
     await ABH.send_file(event.chat_id, pic, caption="تقبل الله صالح الأعمال", reply_to=event.message.id)
