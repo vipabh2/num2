@@ -346,7 +346,7 @@ async def start(event):
     buttons = [
         [Button.inline("🪨", b"rock"), Button.inline("✂️", b"cuter"), Button.inline("📜", b"paper")]
     ]
-    await event.respond("اختر أحد الاختيارات 🌚", buttons=buttons)
+    await event.respond("اختر أحد الاختيارات 🌚", buttons=buttons, reply_to=event.id)
 async def process_choice(event, user_choice):
     game_owner = active_games.get(event.chat_id)
     if game_owner != event.sender_id:
@@ -372,17 +372,18 @@ async def paper_callback(event):
     await process_choice(event, "paper")
 banned_words = [
     "خرب دينه", "كسك", "كسه", "كسة", "اكحاب", "أكحاب", "زنا", "كوم بي", "كمبي", "ارقة جاي", 
+    "انيجك", "نيجك", "كحبة", "ابن الكحبة", "ابن الكحبه", "تنيج", "اتنيج", "ينيج", "طيرك",
     "ارقه جاي", "يموط", "تموط", "موطلي", "اموط", "بورن", "الفرخ", "الفرحْ", "تيز", "كسم",
     "سكسي", "كحاب", "مناويج", "منيوج", "عيورة", "عيورتكم", "انيجة", "انيچة", "انيجه", 
-    "مايا", "ماية", "مايه", "بكسمك", "بكسختك", "🍑", "نغل", "نغولة", "نغوله", "ينغل", 
     "انيچه", "أناج", "اناج", "انيج", "أنيج", "فريخ", "فريخة", "فريخه", "فرخي","قضيب", 
+    "مايا", "ماية", "مايه", "بكسمك", "بكسختك", "🍑", "نغل", "نغولة", "نغوله", "ينغل", 
     "كس", "عير", "كسمك", "كسختك", "كس امك", "طيز", "طيزك", "فرخ", "كواد", "اخلكحبة", 
     "اينيج", "بربوك", "زب", "طيزها", "عيري", "خرب الله", "العير", "بعيري", "كحبه", 
     "برابيك", "نيجني", "نيچني", "نودز", "نتلاوط", "لواط", "لوطي", "فروخ", "منيوك", 
-    "انيجك", "نيجك", "كحبة", "ابن الكحبة", "ابن الكحبه", "تنيج", "اتنيج", "ينيج", "سب"
-    ]
+]
 normalized_banned_words = {word: re.sub(r'(.)\1+', r'\1', word) for word in banned_words}
 def normalize_text(text):
+    """تطبيع النص ليكون مطابقًا لقائمة الحظر"""
     text = text.lower()
     text = re.sub(r'[^أ-يa-zA-Z\s]', '', text)
     replace_map = {'أ': 'ا', 'إ': 'ا', 'آ': 'ا', 'ى': 'ي', 'ؤ': 'و', 'ئ': 'ي'}
@@ -402,10 +403,14 @@ def check_message(message):
     return any(word in normalized_banned_words.values() for word in words)
 @ABH.on(events.NewMessage)
 async def handler_res(event):
-        new = event.message.text.strip()
+    if event.is_group:
+        message_text = event.raw_text.strip()
         user_id = event.sender_id
-        chat = await event.get_chat()    
-        if any(word in new for word in banned_words):
+        chat = await event.get_chat()
+        if check_message(message_text):
+            if await is_admin(chat, user_id):
+                await event.delete()
+                return            
             restrict_rights = ChatBannedRights(
                 until_date=None,
                 send_messages=True, 
@@ -426,10 +431,13 @@ async def handler_res(event):
                 send_inline=False,
                 embed_links=False
             )
-            await ABH(EditBannedRequest(chat.id, user_id, restrict_rights))
-            await event.delete()
-            await asyncio.sleep(20 * 60)
-            await ABH(EditBannedRequest(chat.id, user_id, unrestrict_rights))
+            try:
+                await ABH(EditBannedRequest(chat.id, user_id, restrict_rights))  # تقييد المستخدم
+                await event.delete()  # حذف رسالته
+                await asyncio.sleep(20 * 60)  # الانتظار 20 دقيقة
+                await ABH(EditBannedRequest(chat.id, user_id, unrestrict_rights))  # فك التقييد
+            except Exception as e:
+                print(f"حدث خطأ أثناء محاولة تقييد المستخدم: {e}")
 user_states_s = {}
 questions_and_answers = [
     {"question": "أين أقيمت بطولة كأس العالم لكرة القدم عام 2002؟", "answer": ["كوريا الجنوبية واليابان", 'كوريا الجنوبية و اليابان']},
