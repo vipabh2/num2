@@ -545,10 +545,9 @@ DEVICES = {
 async def take_screenshot(url, device="pc"):
     async with async_playwright() as p:
         browser = await p.chromium.launch(headless=True)
-        playwright = p
         if device in DEVICES:
             if isinstance(DEVICES[device], str):
-                device_preset = playwright.devices[DEVICES[device]]
+                device_preset = p.devices[DEVICES[device]]
                 context = await browser.new_context(**device_preset)
             else:
                 context = await browser.new_context(
@@ -558,31 +557,31 @@ async def take_screenshot(url, device="pc"):
             page = await context.new_page()
         else:
             page = await browser.new_page()
+
         try:
             await page.goto(url, wait_until="domcontentloaded", timeout=30000)
             screenshot_path = f"screenshot_{device}.png"
             await page.screenshot(path=screenshot_path)
         except Exception as e:
-            print(f"خطأ أثناء تحميل الصفحة: {e}")
+            print(f"❌ خطأ أثناء تحميل الصفحة: {e}")
             screenshot_path = None
         finally:
             await browser.close()
     return screenshot_path
 @ABH.on(events.NewMessage(pattern=r'كشف رابط|سكرين (.+)'))
 async def handler(event):
-    url = event.pattern_match.group(1)
-        # await event.reply("هذا الموقع محظور! \nجرب تتواصل مع المطور @k_4x1")
-        # return
-    devices = ['pc', 'android', 'user_agent']
-    screenshot_paths = []
+    url = event.pattern_match.group(1).strip()
+    for banned in BANNED_SITES:
+        if banned in url.lower():
+            await event.reply("🚫 هذا الموقع محظور!\nجرب تتواصل مع المطور @k_4x1")
+            return
+    devices = ['pc', 'android']
     for device in devices:
         screenshot_path = await take_screenshot(url, device)
         if screenshot_path:
-            screenshot_paths.append(screenshot_path)
-    if screenshot_paths:
-        await event.reply(f'✅ تم التقاط لقطات الشاشة للأجهزة التالية: **PC، Android**', file=screenshot_paths)
-    else:
-        await event.reply("🙄 هنالك خطأ أثناء التقاط لقطة الشاشة، تأكد من صحة الرابط أو جرب مجددًا.")
+            await event.reply(f'✅ تم التقاط لقطة الشاشة لجهاز: **{device.upper()}**', file=screenshot_path)
+        else:
+            await event.reply(f"❌ فشل التقاط لقطة شاشة لجهاز **{device.upper()}**.")
 @ABH.on(events.NewMessage(pattern='^/dates$'))
 async def show_dates(event):
     btton = [[
