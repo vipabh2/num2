@@ -557,13 +557,12 @@ async def take_screenshot(url, device="pc"):
             page = await context.new_page()
         else:
             page = await browser.new_page()
-
         try:
             await page.goto(url, wait_until="domcontentloaded", timeout=30000)
+            await asyncio.sleep(2)
             screenshot_path = f"screenshot_{device}.png"
             await page.screenshot(path=screenshot_path)
         except Exception as e:
-            print(f"❌ خطأ أثناء تحميل الصفحة: {e}")
             screenshot_path = None
         finally:
             await browser.close()
@@ -571,17 +570,19 @@ async def take_screenshot(url, device="pc"):
 @ABH.on(events.NewMessage(pattern=r'كشف رابط|سكرين (.+)'))
 async def handler(event):
     url = event.pattern_match.group(1).strip()
-    for banned in BANNED_SITES:
-        if banned in url.lower():
-            await event.reply("🚫 هذا الموقع محظور!\nجرب تتواصل مع المطور @k_4x1")
-            return
+    if any(banned in url.lower() for banned in BANNED_SITES):
+        await event.reply("🚫 هذا الموقع محظور!\nجرب تتواصل مع المطور @k_4x1")
+        return
     devices = ['pc', 'android']
+    screenshot_paths = []
     for device in devices:
         screenshot_path = await take_screenshot(url, device)
         if screenshot_path:
-            await event.reply(f'✅ تم التقاط لقطة الشاشة لجهاز: **{device.upper()}**', file=screenshot_path)
-        else:
-            await event.reply(f"❌ فشل التقاط لقطة شاشة لجهاز **{device.upper()}**.")
+            screenshot_paths.append(screenshot_path)
+    if screenshot_paths:
+        await event.reply(f"✅ تم التقاط لقطات الشاشة للأجهزة: **PC، Android**", file=screenshot_paths)
+    else:
+        await event.reply("❌ فشل التقاط لقطة الشاشة، تأكد من صحة الرابط أو جرب مجددًا.")
 @ABH.on(events.NewMessage(pattern='^/dates$'))
 async def show_dates(event):
     btton = [[
