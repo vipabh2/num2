@@ -1148,7 +1148,6 @@ async def start_search(event):
                 for result in data['query']['search']:
                     snippet = BeautifulSoup(result['snippet'], "html.parser").get_text()
                     snippet = snippet[:400] + "..." if len(snippet) > 400 else snippet
-                    article_url = f"https://ar.wikipedia.org/wiki/{result['title']}"
                     
                     await event.reply(f"عنوان المقال: \n {result['title']}\n"
                                       f"المقال: \n {snippet}\n"
