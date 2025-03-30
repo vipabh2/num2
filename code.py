@@ -424,7 +424,7 @@ async def handler_res(event):
    if chat.id not in warns[user_id]:
     warns[user_id][chat.id] = 0
    warns[user_id][chat.id] += 1
-   if warns[user_id][chat.id] == 3:
+   if warns[user_id][chat.id] == 2:
     await ABH(EditBannedRequest(chat.id, user_id, restrict_rights))
     warns[user_id][chat.id] = 0
     await asyncio.sleep(20 * 60)
