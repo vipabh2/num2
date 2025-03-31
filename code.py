@@ -150,7 +150,7 @@ async def show_res(event):
         uinfo.items(), 
         key=lambda x: x[1].get(guid, {}).get('msg', 0), 
         reverse=True
-    )[:10]    
+    )[:10]
     top_users = []
     for user, data in sorted_users:
         if guid in data:
@@ -826,7 +826,7 @@ async def check_quist(event):
         correct_answers = current_question.get('answer', [])
         if user_message in correct_answers:
             p = random.randint(3000, 10000)
-            add_points(user_id, gid, points, amount=0)
+            add_points(user_id, gid, points, amount=p)
             await event.reply(f"هلا هلا طبوا الشيعة 🫡 \n نقاطك ↢ {points[str(user_id)][str(gid)]['points']}")
             del user_states[user_id]
         else:
