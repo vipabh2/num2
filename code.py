@@ -137,14 +137,12 @@ async def msgs(event):
         uid = event.sender.first_name if event.sender.first_name else "**ماعنده اسم**"
         unm = event.sender_id
         guid = event.chat_id
-        if unm not in uinfo:
-            uinfo[unm] = defaultdict(lambda: {"msg": 0})
-        if guid not in uinfo[unm]:
-            uinfo[unm][guid] = {"msg": 0}
         user_data = uinfo[unm][guid]
         user_data.update({"guid": guid, "unm": unm, "fname": uid})
         user_data["msg"] += 1
-        if now.strftime("%I:%M %p") == "11:59 PM":
+        timenow = now.strftime("%I:%M %p")
+        targetdate = "11:59 PM"
+        if timenow == targetdate:
             uinfo = defaultdict(lambda: defaultdict(lambda: {"msg": 0}))
 @ABH.on(events.NewMessage(pattern="توب اليومي|المتفاعلين"))
 async def show_res(event):
