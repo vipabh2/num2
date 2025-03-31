@@ -31,8 +31,7 @@ def save_points(data, filename="points.json"):
     with open(filename, "w") as file:
         json.dump(data, file, indent=4)
 points = load_points()
-def add_points(uid, gid, points_dict, amount=1):
-    """إضافة نقاط لمستخدم معين داخل مجموعة معينة."""
+def add_points(uid, gid, points_dict, amount=0):
     uid, gid = str(uid), str(gid)
     if uid not in points_dict:
         points_dict[uid] = {}
@@ -173,7 +172,7 @@ async def show_res(event):
         msg_count = uinfo[unm1][guid1]["msg"]
         await event.reply(f"المستخدم [{uid1}](tg://user?id={unm1}) أرسلت {msg_count} رسالة في هذه المجموعة.")
 @ABH.on(events.NewMessage(pattern='رسائله|رسائلة|رسائل|الرسائل'))
-async def show_res(event):
+async def his_res(event):
     r = await event.get_reply_message()  
     await asyncio.sleep(2)
     if not r:
@@ -184,7 +183,7 @@ async def show_res(event):
     if unm1 in uinfo and guid1 in uinfo[unm1]:
         msg_count = uinfo[unm1][guid1]["msg"]
         await event.reply(f"المستخدم [{uid1}](tg://user?id={unm1}) أرسل {msg_count} رسالة في هذه المجموعة.")
-@ABH.on(events.NewMessage(pattern='/الرسائل'))
+@ABH.on(events.NewMessage(pattern='الرسائل'))
 async def title(event):
     await event.reply('اهلا صديقي , اوامر الرسائل \n ارسل `المتفاعلين` ل اضهار توب 15 تفاعل \n ارسل `رسائلي` ل اضهار رسائلك في اخر يوم \n ارسل `رسائله` ل اضهار رساله الشخص بالرد \n استمتع')
 res = {}
@@ -195,7 +194,7 @@ is_on = False
 start_time = None
 fake = Faker("ar_AA")
 @ABH.on(events.NewMessage(pattern=r"(?i)^(?:اسرع|/faster)$"))  
-async def start_s(event):
+async def faster(event):
     global is_on, players
     is_on = True
     players.clear()
@@ -207,7 +206,7 @@ async def start_s(event):
          res[name] = {"name": name, "score": 0}
          await event.reply("اهلاً ضفتك للعبة , للانضمام ارسل `انا` للبدء `تم` \n**ENJOY BABY✌**")
 @ABH.on(events.NewMessage(pattern="(?i)انا$"))
-async def sign_in(event):
+async def faster_join(event):
     if is_on:
         uid = event.sender_id
         sender = await event.get_sender()
@@ -219,7 +218,7 @@ async def sign_in(event):
         else:
             await event.reply("عزيزي الصديق، سجلتك والله!")
 @ABH.on(events.NewMessage(pattern="(?i)الاعبين$"))
-async def players_show(event):
+async def faster_players(event):
     global is_on
     if is_on and players:
         player_list = "\n".join([f"{pid} - {info['username']}" for pid, info in players.items()])
@@ -228,7 +227,7 @@ async def players_show(event):
     else:
         await event.reply('ماكو لاعبين 🙃')
 @ABH.on(events.NewMessage(pattern="(?i)تم$"))
-async def start_f(event):
+async def faster_done(event):
     global answer, is_on, start_time
     if is_on:
         await event.reply('تم بدء اللعبة، انتظر ثواني...')
@@ -242,7 +241,7 @@ async def start_f(event):
         points_list = "\n".join([f"{info['name']} - {info['score']} نقطة" for info in res.values()])
         await event.reply(f"**ترتيب اللاعبين بالنقاط**\n{points_list}")
 @ABH.on(events.NewMessage)
-async def check(event):
+async def faster_reult(event):
     global is_on, start_time, answer, a
     if not is_on or start_time is None:
         return
@@ -256,7 +255,7 @@ async def check(event):
         if username not in res:
             res[username] = {"name": username, "score": 0}
         res[username]["score"] += 1
-        await event.reply(f'إجابة صحيحة! أحسنت الوقت المستغرق: {seconds} ثانية و {milliseconds} مللي ثانية.')
+        await event.reply(f'إجابة صحيحة! أحسنت الوقت المستغرق: {seconds} ثانية.')
         answer = None
         start_time = None
     elif elapsed_time >= 10:
@@ -268,7 +267,7 @@ async def check(event):
             points_list = "\n".join([f"{pid} -> {info['score']} نقطة" for pid, info in res.items()])
             await event.reply(f"**ترتيب اللاعبين بالنقاط**\n{points_list}")
 @ABH.on(events.NewMessage(pattern=r'(ترجمة|ترجمه)'))
-async def handle_message(event):
+async def translation(event):
     translator = Translator()
     if event.is_reply:
         replied_message = await event.get_reply_message()
@@ -289,37 +288,37 @@ async def handle_message(event):
         f"النص المترجم: `{translated.text}`"
     )
     await event.reply(response)
-GROUPS_FILE = "dialogs.json"
-TARGET_CHAT_ID = 1910015590
-def load_dialogs():
-    if os.path.exists(GROUPS_FILE):
-        with open(GROUPS_FILE, "r") as f:
+FILE = "dialogs.json"
+K_4X1 = 1910015590
+def load_alert():
+    if os.path.exists(FILE):
+        with open(FILE, "r") as f:
             return set(json.load(f))
     return set()
-def save_dialogs():
-    with open(GROUPS_FILE, "w") as f:
-        json.dump(list(dialog_ids), f)
-dialog_ids = load_dialogs()
-async def send_message_to_target_chat(message):
+def save_alerts():
+    with open(FILE, "w") as f:
+        json.dump(list(alert_ids), f)
+alert_ids = load_alert()
+async def alert(message):
     try:
-        await ABH.send_message(TARGET_CHAT_ID, message)
+        await ABH.send_message(K_4X1, message)
     except Exception as e:
         print(f"فشل إرسال الرسالة {e}")
 @ABH.on(events.NewMessage)
-async def update_dialogs(event):
-    global dialog_ids
+async def add_to(event):
+    global alert_ids
     chat = await event.get_chat()
-    if chat.id not in dialog_ids:
+    if chat.id not in alert_ids:
         try:
-            dialog_ids.add(chat.id)
-            save_dialogs()
+            alert_ids.add(chat.id)
+            save_alerts()
             chat_name = chat.title if hasattr(chat, 'title') else chat.first_name
             return
         except Exception as e:
-            await send_message_to_target_chat(f"فشل إضافة المحادثة: {chat.id} - {e}")
+            await alert(f"فشل إضافة المحادثة: {chat.id} - {e}")
 @ABH.on(events.NewMessage(pattern="/alert"))
 async def send_alert(event):
-    if event.sender_id != TARGET_CHAT_ID:
+    if event.sender_id != K_4X1:
         return
     message_text = None
     if event.reply_to_msg_id:
@@ -332,13 +331,13 @@ async def send_alert(event):
     if not message_text:
         await event.reply("يرجى الرد على رسالة أو كتابة نص بعد `/alert`.")
         return
-    await event.reply(f"🚀 جاري إرسال التنبيه إلى {len(dialog_ids)} محادثة...")
-    for dialog_id in dialog_ids:
+    await event.reply(f"🚀 جاري إرسال التنبيه إلى {len(alert_ids)} محادثة...")
+    for dialog_id in alert_ids:
         try:
             await ABH.send_message(dialog_id, f"**{message_text}**")
-            await send_message_to_target_chat(f"✅ تم الإرسال إلى: {dialog_id}")
+            await alert(f"✅ تم الإرسال إلى: {dialog_id}")
         except Exception as e:
-            await send_message_to_target_chat(f"❌ فشل الإرسال إلى {dialog_id}: {e}")
+            await alert(f"❌ فشل الإرسال إلى {dialog_id}: {e}")
     await event.reply("✅ تم إرسال التنبيه لجميع المحادثات!")
 @ABH.on(events.NewMessage(pattern=r'(?i)مخفي'))
 async def ai(event):
@@ -358,7 +357,7 @@ async def ai(event):
 choices = {"rock": "🪨حجره", "paper": "📜ورقة", "cuter": "✂️مقص"}
 active_games = {}
 @ABH.on(events.NewMessage(pattern="حجرة|/rock"))
-async def start(event):
+async def rock(event):
     global n
     active_games[event.chat_id] = event.sender_id
     n = event.sender.first_name
@@ -366,7 +365,7 @@ async def start(event):
         [Button.inline("🪨", b"rock"), Button.inline("✂️", b"cuter"), Button.inline("📜", b"paper")]
     ]
     await event.respond("اختر أحد الاختيارات 🌚", buttons=buttons, reply_to=event.id)
-async def process_choice(event, user_choice):
+async def choice(event, user_choice):
     game_owner = active_games.get(event.chat_id)
     if game_owner != event.sender_id:
         await event.answer("من تدخل في ما لا يعنيه لقي كلام لا يرضيه 🙄", alert=True)
@@ -382,13 +381,13 @@ async def process_choice(event, user_choice):
     await event.edit(f"[{n}](tg://user?id={user_id}) {choices[user_choice]}\n[مخفي](tg://user?id=7908156943) {bot_choice}\n\n{result}")
 @ABH.on(events.CallbackQuery(data=b"rock"))
 async def rock_callback(event):
-    await process_choice(event, "rock")
+    await choice(event, "rock")
 @ABH.on(events.CallbackQuery(data=b"cuter"))
 async def cuter_callback(event):
-    await process_choice(event, "cuter")
+    await choice(event, "cuter")
 @ABH.on(events.CallbackQuery(data=b"paper"))
 async def paper_callback(event):
-    await process_choice(event, "paper")
+    await choice(event, "paper")
 banned_words = [
     "احط رجلي", "عاهرات", "عواهر", "عاهره", "عاهرة", "ناكك", "اشتعل دينه", "احترك دينك",
     "نيچني", "نودز", "نتلاوط", "لواط", "لوطي", "فروخ", "منيوك", "خربدينه", "خربدينك", 
@@ -405,7 +404,7 @@ banned_words = [
     "كمبي", "كوم بي", "قوم بي", "قم بي", "قوم به", "كومت", "قومت", "الطيازه", 
     "ارقة جاي", "انيجك", "نيجك", "كحبة", "ابن الكحبة", "ابن الكحبه", "تنيج", 
 ]
-normalized_banned_words = {word: re.sub(r'(.)\1+', r'\1', word) for word in banned_words}
+set_Bwords = {word: re.sub(r'(.)\1+', r'\1', word) for word in banned_words}
 def normalize_text(text):
  text = text.lower()
  text = re.sub(r'[^أ-يa-zA-Z\s]', '', text)
@@ -423,7 +422,7 @@ async def is_admin(chat, user_id):
 def check_message(message):
  normalized_message = normalize_text(message)
  words = normalized_message.split()
- return any(word in normalized_banned_words.values() for word in words)
+ return any(word in set_Bwords.values() for word in words)
 restrict_rights = ChatBannedRights(until_date=None,send_messages=True,send_media=True,send_stickers=True,send_gifs=True,send_games=True,send_inline=True,embed_links=True)
 unrestrict_rights = ChatBannedRights(until_date=None,send_messages=False,send_media=False,send_stickers=False,send_gifs=False,send_games=False,send_inline=False,embed_links=False)
 warns = {}
@@ -527,7 +526,7 @@ questions_and_answers = [
 ]
 user_states_s = {}
 @ABH.on(events.NewMessage(pattern='كرة قدم|كره قدم|/sport'))
-async def start(event):
+async def sport(event):
     user_id = event.sender_id
     question = random.choice(questions_and_answers)
     user_states_s[user_id] = {
@@ -536,7 +535,7 @@ async def start(event):
     }
     await event.reply(f"{question['question']}")
 @ABH.on(events.NewMessage)
-async def check_answer(event):
+async def check_sport(event):
     user_id = event.sender_id
     user_message = event.text.strip() 
     if user_id in user_states_s and user_states_s[user_id].get("waiting_for_answer"):
@@ -548,7 +547,7 @@ async def check_answer(event):
         else:
             pass
 @ABH.on(events.NewMessage(pattern=r'كشف ايدي (\d+)'))
-async def permalink(event):
+async def link(event):
     global user, uid
     uid = event.sender_id
     user_id = event.pattern_match.group(1)
@@ -605,7 +604,7 @@ async def take_screenshot(url, device="pc"):
             await browser.close()
     return screenshot_path
 @ABH.on(events.NewMessage(pattern=r'كشف رابط|سكرين (.+)'))
-async def handler(event):
+async def screen_shot(event):
     url = event.pattern_match.group(1)
     if any(banned in url.lower() for banned in BANNED_SITES):
         await event.reply("🚫 هذا الموقع محظور!\nجرب تتواصل مع المطور @k_4x1")
@@ -679,7 +678,7 @@ async def calculate_days(event, target_date):
     msg = f"باقي {days_difference} ايام" if days_difference >= 0 else "الشهر قد بدأ \n يا مطوري حدث الكود @k_4x1"
     await event.edit(msg)
 @ABH.on(events.NewMessage(pattern='^تاريخ$'))
-async def start_handler(event):
+async def today(event):
     t = datetime.datetime.now().date()
     hd = Gregorian(t.year, t.month, t.day).to_hijri()
     hd_str = f"{hd.day} {hd.month_name('ar')} {hd.year} هـ"    
@@ -690,14 +689,14 @@ c = [
     "يسعدلي مسائك😀"
 ]
 @ABH.on(events.NewMessage(pattern='ميم|ميمز'))
-async def start(event):
+async def meme(event):
     global c
     rl = random.randint(2, 273)
     url = f"https://t.me/IUABH/{rl}"
     cap = random.choice(c)
     await ABH.send_file(event.chat_id, url, caption=f"{cap}", reply_to=event.id)
 @ABH.on(events.InlineQuery)
-async def inline_query_handler(event):
+async def Whisper(event):
     builder = event.builder
     query = event.text
     sender = event.sender_id
@@ -739,7 +738,7 @@ async def inline_query_handler(event):
             return
         await event.answer([result])
 @ABH.on(events.CallbackQuery)
-async def callback_query_handler(event):
+async def callback_Whisper(event):
     data = event.data.decode('utf-8')
     if data.startswith('send:'):
         whisper_id = data.split(':')[1]
@@ -807,7 +806,7 @@ questions_and_answers_q = [
 ]
 user_states = {}
 @ABH.on(events.NewMessage(pattern='اسئلة|/quist'))
-async def start_question(event):
+async def quest(event):
     """بدء السؤال العشوائي"""
     user_id = event.sender_id
     question = random.choice(questions_and_answers_q)
@@ -817,7 +816,7 @@ async def start_question(event):
     }
     await event.reply(f"{question['question']}")
 @ABH.on(events.NewMessage)
-async def check_answer(event):
+async def check_quist(event):
     """التحقق من إجابة المستخدم"""
     user_id = event.sender_id
     user_message = event.text.strip()
@@ -826,7 +825,8 @@ async def check_answer(event):
         current_question = user_states[user_id].get("question", {})
         correct_answers = current_question.get('answer', [])
         if user_message in correct_answers:
-            add_points(user_id, gid, points, amount=1)
+            p = random.randint(3000, 10000)
+            add_points(user_id, gid, points, amount=0)
             await event.reply(f"هلا هلا طبوا الشيعة 🫡 \n نقاطك ↢ {points[str(user_id)][str(gid)]['points']}")
             del user_states[user_id]
         else:
@@ -837,7 +837,7 @@ turn = None
 game_board = [" " for _ in range(9)] 
 restart_confirmations = {}
 @ABH.on(events.NewMessage(pattern='اكس او|/xo|/Xo'))
-async def start_message(event):
+async def xo(event):
     global player1, player2, username1, t1
     player1 = event.sender_id
     username1 = event.sender.username or "unknown"
@@ -850,7 +850,7 @@ async def start_message(event):
         buttons=markup
     )
 @ABH.on(events.CallbackQuery(func=lambda call: call.data == b"start"))
-async def start_game(event):
+async def start_xo(event):
     global player1, player2, turn, game_board, username1, username2, t1, t2
     player2 = event.sender_id
     username2 = event.sender.username or "unknown"
@@ -895,7 +895,6 @@ async def show_board(event, winner=None):
                 f"اللاعب الأول —> [{t1}](https://t.me/{username1})\nاللاعب الثاني —> [{t2}](https://t.me/{username2})\n\nدور اللاعب —> [{current_player}](https://t.me/{current_username})",
                 buttons=markup,
                 parse_mode="Markdown")
-              
         except Exception:
             await event.reply(
                 f"اللاعب الأول —> [{t1}](https://t.me/{username1})\nاللاعب الثاني —> [{t2}](https://t.me/{username2})\n\nدور اللاعب —> [{current_player}](https://t.me/{current_username})",
@@ -999,7 +998,7 @@ abh = [
     "https://t.me/VIPABH/1215"
 ]
 @ABH.on(events.NewMessage(pattern=r'^مخفي$'))
-async def reply(event):
+async def anymous(event):
     if event.is_reply:
         return
     vipabh = random.choice(abh)
@@ -1018,7 +1017,7 @@ async def reply_abh(event):
     else:
         return
 @ABH.on(events.NewMessage(pattern='زهراء'))
-async def reply_abh(event):
+async def reply_zahraa(event):
     if event.chat_id == -1001968219024:
         url = "https://t.me/VIPABH/1220"  
         caption = "@klix_78 ( لَقَدْ كَفَرَ الّذِينَ قَالُوا إنَّ الله هُو المَسِيحُ ابْنُ مَرْيَم)." 
@@ -1026,7 +1025,7 @@ async def reply_abh(event):
     else: 
         return
 @ABH.on(events.NewMessage(pattern='امريجا|الامريكي'))
-async def reply_abh(event):
+async def reply_American(event):
     if event.chat_id == -1001968219024:
         url = "https://files.catbox.moe/p9e75j.mp4"  
         caption = "@l_h_2" 
@@ -1034,7 +1033,7 @@ async def reply_abh(event):
     else: 
         return
 @ABH.on(events.NewMessage(pattern='امير'))
-async def reply_abh(event):
+async def reply_amer(event):
     if event.chat_id == -1001968219024:
         ur = ["https://files.catbox.moe/k44qq6.mp4",
                'https://t.me/KQK4Q/23',
@@ -1046,7 +1045,7 @@ async def reply_abh(event):
     else: 
         return
 @ABH.on(events.NewMessage(pattern='عبدالله|عبود'))
-async def reply_abh(event):
+async def reply_abod(event):
     if event.chat_id == -1001968219024:
         url = "https://files.catbox.moe/qohqtp.MP4"  
         caption = "@UU77QQ" 
@@ -1054,19 +1053,19 @@ async def reply_abh(event):
     else: 
         return
 @ABH.on(events.NewMessage(pattern='محمد موسى'))
-async def reply_abh(event):
+async def reply_mohamed(event):
     if event.chat_id == -1001968219024:
         await event.reply('@E_0_0_0 ')
     else: 
         return
 @ABH.on(events.NewMessage(pattern='مقتد'))
-async def reply_abh(event):
+async def reply_moqtada(event):
     if event.chat_id == -1001968219024:
         await event.reply('@hiz8s')
     else: 
         return
 @ABH.on(events.NewMessage(pattern='يزيد'))
-async def reply_abh(event):
+async def reply_yazeed(event):
     if event.chat_id == -1001968219024:
         await event.reply('@l7QQI')
     else: 
@@ -1078,42 +1077,43 @@ auto = [
         "عليكم سلام الله"
         ]
 @ABH.on(events.NewMessage(pattern=r'^(سلام عليكم|السلام عليكم)$'))
-async def reply_abh(event):
+async def reply_hi(event):
         abh = random.choice(auto)
         await event.reply(abh)    
 @ABH.on(events.NewMessage(pattern=r'^(مخفي طكة زيج|زيج)$'))
-async def reply_abh(event):
+async def reply_zig(event):
     replied_message = await event.get_reply_message()
     if replied_message and replied_message.sender_id == 1910015590:
         await event.reply("عزيزي الغبي ... \n تريدني اعفط للمطور شكلت لربك؟")
         return
     if replied_message:
-        await event.client.send_file(replied_message.peer_id, "https://t.me/VIPABH/1171", reply_to=replied_message.id)
+        abh = random.choice('https://t.me/VIPABH/1171', 'https://t.me/recoursec/7', 'https://t.me/recoursec/8')
+        await event.client.send_file(replied_message.peer_id, abh, reply_to=replied_message.id)
     else:
         await event.reply("عزيزي الفاهي ... \n الامر يعمل بالرد , اذا عدتها وما سويت رد اعفطلك")
 @ABH.on(events.NewMessage(pattern=r'^(ميعرف|مايعرف)$'))
-async def reply_abh(event):
+async def reply_mem(event):
     replied_message = await event.get_reply_message()
     if replied_message:
         await event.client.send_file(replied_message.peer_id, "https://t.me/recoursec/3", reply_to=replied_message)
     else:
         await event.reply(file="https://t.me/recoursec/3", reply_to=event.message.id)
 @ABH.on(events.NewMessage(pattern=r'^(صباح النور|صباح الخير)$'))
-async def reply_abh(event):
+async def reply_mem(event):
     replied_message = await event.get_reply_message()
     if replied_message:
         await event.client.send_file(replied_message.peer_id, "https://t.me/recoursec/4", reply_to=replied_message)
     else:
         await event.reply(file="https://t.me/recoursec/4", reply_to=event.message.id)
 @ABH.on(events.NewMessage(pattern=r'^(لا تتمادة|لا تتماده|تتماده)$'))
-async def reply_abh(event):
+async def reply_mem(event):
     replied_message = await event.get_reply_message()
     if replied_message:
         await event.client.send_file(replied_message.peer_id, "https://t.me/recoursec/5", reply_to=replied_message)
     else:
         await event.reply(file="https://t.me/recoursec/5", reply_to=event.message.id)
 @ABH.on(events.NewMessage(pattern=r'^(هاي بعد|اي هاي)$'))
-async def reply_abh(event):
+async def reply_mem(event):
     replied_message = await event.get_reply_message()
     if replied_message:
         await event.client.send_file(replied_message.peer_id, "https://t.me/recoursec/6", reply_to=replied_message)
@@ -1122,7 +1122,7 @@ async def reply_abh(event):
 url = "https://ar.wikipedia.org/w/api.php"
 searching_state = {}
 @ABH.on(events.NewMessage(func=lambda e: e.text and e.text.strip().lower().startswith('ابحث عن')))
-async def cut(event):
+async def serch(event):
     search_term = event.text.strip().lower().replace('ابحث عن', '').strip()
     if not search_term:
         await event.reply("من فضلك أدخل الكلمة التي تريد البحث عنها بعد 'ابحث عن'.")
@@ -1147,9 +1147,7 @@ async def cut(event):
                     if result['title'].lower() == search_term:
                         found_exact_match = True
                         snippet = BeautifulSoup(result['snippet'], "html.parser").get_text()
-                        snippet = snippet[:1000] + "..." if len(snippet) > 1000 else snippet
-                        article_url = f"https://ar.wikipedia.org/wiki/{result['title']}"
-                        
+                        snippet = snippet[:1000] + "..." if len(snippet) > 1000 else snippet                        
                         await event.reply(f"عنوان المقال: \n {result['title']}\n"
                                           f"المقال: \n {snippet}\n"
                                           f"{'-' * 40}")
@@ -1165,7 +1163,7 @@ async def cut(event):
         await event.answer([result])
 searching_state = {}
 @ABH.on(events.NewMessage(func=lambda e: e.text and e.text.strip().lower().startswith('ابحث عام')))
-async def start_search(event):
+async def serch3(event):
     searching_state[event.chat.id] = True
     search_term = event.text.strip().lower().replace('ابحث عام', '').strip()
     if not search_term:
@@ -1199,7 +1197,7 @@ async def start_search(event):
         await event.reply(f"حدث خطأ: {response.status_code}")
     searching_state[event.chat.id] = False
 @ABH.on(events.NewMessage(pattern='عاشوراء'))
-async def ashouau(event):
+async def ashourau(event):
     pic = "links/abh.jpg"
     await ABH.send_file(event.chat_id, pic, caption="تقبل الله صالح الأعمال", reply_to=event.message.id)
 group_game_status = {}
@@ -1207,23 +1205,20 @@ number2 = None
 game_board = [["👊", "👊", "👊", "👊", "👊", "👊"]]
 numbers_board = [["1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣", "6️⃣"]]
 original_game_board = [["👊", "👊", "👊", "👊", "👊", "👊"]]
-points = {}
 def format_board(game_board, numbers_board):
-    """تنسيق الجدول للعرض بشكل مناسب"""
     formatted_board = ""
     formatted_board += " ".join(numbers_board[0]) + "\n"
     formatted_board += " ".join(game_board[0]) + "\n"
     return formatted_board
 def reset_game(chat_id):
-    """إعادة تعيين حالة اللعبة بعد انتهائها"""
     global game_board, number2, group_game_status
     game_board = [row[:] for row in original_game_board]
     number2 = None
     group_game_status[chat_id]['game_active'] = False
     group_game_status[chat_id]['active_player_id'] = None
 group_game_status = {}
-@ABH.on(events.NewMessage(pattern='/rings'))
-async def start_game(event):
+@ABH.on(events.NewMessage(pattern='/rings|محيبس'))
+async def rings(event):
     username = event.sender.username or "unknown"
     markup = [[Button.inline("ابدأ اللعبة", b"startGame")]]
     await event.reply(
@@ -1233,7 +1228,7 @@ async def start_game(event):
         buttons=markup
     )
 @ABH.on(events.CallbackQuery(func=lambda call: call.data == b"startGame"))
-async def handle_start_game(event):
+async def handle_rings(event):
     global number2
     chat_id = event.chat_id
     user_id = event.sender_id
@@ -1260,7 +1255,7 @@ def format_board(game_board, numbers_board):
     formatted_board += " ".join(numbers_board[0]) + "\n"
     formatted_board += " ".join(game_board[0]) + "\n"
     return formatted_board
-def reset_game(chat_id):
+def rest_game(chat_id):
     global game_board, number2, group_game_status
     game_board = [row[:] for row in original_game_board]
     number2 = None
@@ -1281,12 +1276,12 @@ async def handle_guess(event):
                     sender_first_name = event.sender.first_name
                     game_board = [["💍" if i == number2 - 1 else "🖐️" for i in range(6)]]
                     await event.reply(f'🎉 الف مبروك! اللاعب ({sender_first_name}) وجد المحبس 💍!\n{format_board(game_board, numbers_board)}')
-                    reset_game(chat_id)
+                    rest_game(chat_id)
                 else: 
                     sender_first_name = event.sender.first_name
                     game_board = [["❌" if i == guess - 1 else "🖐️" for i in range(6)]]
                     await event.reply(f"ضاع البات ماضن بعد تلگونة ☹️ \n{format_board(game_board, numbers_board)}")
-                    reset_game(chat_id)
+                    rest_game(chat_id)
             else:
                 await event.reply("يرجى إدخال رقم صحيح بين 1 و 6.")
         except (IndexError, ValueError):
@@ -1301,7 +1296,7 @@ async def handle_strike(event):
             if strike_position == number2:
                 game_board = [["💍" if i == number2 - 1 else "🖐️" for i in range(6)]]
                 await event.reply(f"**خسرت!** \n{format_board(game_board, numbers_board)}")
-                reset_game(chat_id)
+                rest_game(chat_id)
             else:
                 abh = [
                     "تلعب وخوش تلعب 👏🏻",
@@ -1316,7 +1311,6 @@ async def handle_strike(event):
             await event.reply("يرجى إدخال رقم صحيح بين 1 و 6.")
 @ABH.on(events.NewMessage(pattern='/محيبس'))
 async def show_number(event):
-    """إظهار الرقم السري عند الطلب وإرساله إلى @k_4x1"""
     chat_id = event.chat_id
     if chat_id in group_game_status and group_game_status[chat_id]['game_active']:
         target_user_id = 1910015590  
@@ -1355,7 +1349,7 @@ async def send_random_latmia(event):
 @ABH.on(events.NewMessage(pattern=r"^(لطمية|لطميه)$"))
 async def handle_latmia_command(event):
     await send_random_latmia(event)
-@ABH.on(events.NewMessage(pattern='^/start$'))
+@ABH.on(events.NewMessage(pattern='/start'))
 async def handle_start(event):
     await event.reply(
         "أهلاً حياك الله! \n\n"
@@ -1381,7 +1375,7 @@ max_attempts = 3
 attempts = 0
 active_player_id = None
 @ABH.on(events.NewMessage(pattern='/num'))
-async def start_game(event):
+async def num(event):
     global game_active, number, attempts, active_player_id
     if game_active:
         await event.reply("اللعبة قيد التشغيل بالفعل! حاول إنهاء اللعبة الحالية أولاً.")
@@ -1404,7 +1398,7 @@ async def initiate_game(event):
     await event.answer("🎮 اللعبة بدأت!")
     await event.edit("🎲 اللعبة بدأت! حاول تخمين الرقم (من 1 إلى 10).")
 @ABH.on(events.NewMessage(func=lambda event: game_active and event.sender_id == active_player_id))
-async def handle_guess(event):
+async def guess(event):
     global game_active, number, attempts, max_attempts
     if not game_active:
         await event.reply("اللعبة ليست نشطة حاليًا، ابدأ لعبة جديدة.")
@@ -1433,7 +1427,6 @@ async def handle_guess(event):
 @ABH.on(events.NewMessage(pattern='/ارقام'))
 async def show_number(event):
     global game_active, number
-    chat_id = event.chat_id
     target_user_id = 1910015590 
     if game_active:
             ms1 = await ABH.send_message(target_user_id, f"🔒 الرقم السري هو: {number}")
