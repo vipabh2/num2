@@ -126,14 +126,14 @@ async def top(event):
         await event.reply('**اوامر الحسبان كآلاتي** \n *امر `/dates` يحسب لك كم باقي على رجب | شعبان |رمضان | محرم او تاريخ خاص فيك')
     elif event.text == 'اوامر الميمز':
         await event.reply('**اوامر الحسبان كآلاتي** \n *امر `/dates` يحسب لك كم باقي على رجب | شعبان |رمضان | محرم او تاريخ خاص فيك')
+uinfo = {}
 uinfo = defaultdict(lambda: defaultdict(lambda: {"msg": 0}))
+@ABH.on(events.NewMessage)
 async def msgs(event):
     global uinfo
     if event.is_group:
         now = datetime.now()
-        uid = "**ماعنده اسم**"
-    if isinstance(event.sender, User):
-        uid = event.sender.first_name if event.sender.first_name else "**ماعنده اسم**"
+        uid = event.sender.first_name if event.sender else "**ماعنده اسم**"
         unm = event.sender_id
         guid = event.chat_id
         user_data = uinfo[unm][guid]
@@ -824,7 +824,7 @@ async def check_answer(event):
         current_question = user_states[user_id].get("question", {})
         correct_answers = current_question.get('answer', [])        
         if user_message in correct_answers:
-            await event.reply("أحسنت! إجابة صحيحة.")
+            await event.reply(f"هلا هلا طبوا الشيعة 🫡 \n نقاطك ↢ {points[str(user_id)][str(gid)]['points']}")
             add_points(user_id, gid, points, amount=1)
             del user_states[user_id]
         else:
