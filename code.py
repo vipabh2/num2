@@ -127,7 +127,6 @@ async def top(event):
     elif event.text == 'اوامر الميمز':
         await event.reply('**اوامر الحسبان كآلاتي** \n *امر `/dates` يحسب لك كم باقي على رجب | شعبان |رمضان | محرم او تاريخ خاص فيك')
 uinfo = defaultdict(lambda: defaultdict(lambda: {"msg": 0}))
-@ABH.on(events.NewMessage)
 async def msgs(event):
     global uinfo
     if event.is_group:
