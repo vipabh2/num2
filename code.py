@@ -126,22 +126,25 @@ async def top(event):
         await event.reply('**اوامر الحسبان كآلاتي** \n *امر `/dates` يحسب لك كم باقي على رجب | شعبان |رمضان | محرم او تاريخ خاص فيك')
     elif event.text == 'اوامر الميمز':
         await event.reply('**اوامر الحسبان كآلاتي** \n *امر `/dates` يحسب لك كم باقي على رجب | شعبان |رمضان | محرم او تاريخ خاص فيك')
-uinfo = {}
 uinfo = defaultdict(lambda: defaultdict(lambda: {"msg": 0}))
 @ABH.on(events.NewMessage)
 async def msgs(event):
     global uinfo
     if event.is_group:
         now = datetime.now()
-        uid = event.sender.first_name if event.sender else "**ماعنده اسم**"
+        uid = "**ماعنده اسم**"
+    if isinstance(event.sender, User):
+        uid = event.sender.first_name if event.sender.first_name else "**ماعنده اسم**"
         unm = event.sender_id
         guid = event.chat_id
+        if unm not in uinfo:
+            uinfo[unm] = defaultdict(lambda: {"msg": 0})
+        if guid not in uinfo[unm]:
+            uinfo[unm][guid] = {"msg": 0}
         user_data = uinfo[unm][guid]
         user_data.update({"guid": guid, "unm": unm, "fname": uid})
         user_data["msg"] += 1
-        timenow = now.strftime("%I:%M %p")
-        targetdate = "11:59 PM"
-        if timenow == targetdate:
+        if now.strftime("%I:%M %p") == "11:59 PM":
             uinfo = defaultdict(lambda: defaultdict(lambda: {"msg": 0}))
 @ABH.on(events.NewMessage(pattern="توب اليومي|المتفاعلين"))
 async def show_res(event):
