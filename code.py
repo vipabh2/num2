@@ -21,6 +21,25 @@ api_id = os.getenv('API_ID')
 api_hash = os.getenv('API_HASH')  
 bot_token = os.getenv('BOT_TOKEN')
 ABH = TelegramClient('code', api_id, api_hash).start(bot_token=bot_token)
+def load_points(filename="points.json"):
+    try:
+        with open(filename, "r") as file:
+            return json.load(file)
+    except FileNotFoundError:
+        return {}
+def save_points(data, filename="points.json"):
+    with open(filename, "w") as file:
+        json.dump(data, file, indent=4)
+points = load_points()
+def add_points(uid, gid, points_dict, amount=0):
+    """إضافة نقاط لمستخدم معين داخل مجموعة معينة."""
+    uid, gid = str(uid), str(gid)
+    if uid not in points_dict:
+        points_dict[uid] = {}
+    if gid not in points_dict[uid]:
+        points_dict[uid][gid] = {"points": 0}
+    points_dict[uid][gid]["points"] += amount
+    save_points(points_dict)
 @ABH.on(events.NewMessage(pattern='النازية|الشعار'))
 async def nazi(event):
     n1 = """🟥🟥🟥🟥🟥🟥🟥🟥🟥
@@ -799,12 +818,14 @@ async def start(event):
 @ABH.on(events.NewMessage)
 async def check_answer(event):
     user_id = event.sender_id
-    user_message = event.text.strip() 
+    user_message = event.text.strip()
+    gid = event.chat_id
     if user_id in user_states and user_states[user_id].get("waiting_for_answer"):
         current_question = user_states[user_id].get("question", {})
         correct_answers = current_question.get('answer', [])        
         if user_message in correct_answers:
             await event.reply("أحسنت! إجابة صحيحة.")
+            add_points(user_id, gid, points, amount=1)
             del user_states[user_id]
         else:
             pass
