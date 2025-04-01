@@ -388,7 +388,7 @@ async def choice(event, user_choice):
     elif result == '🤝تعادل':
         p = random.randint(10, 50)
         add_points(user_id, gid, points, amount=p)
-    await event.edit(f"[{n}](tg://user?id={user_id}) {choices[user_choice]}\n[مخفي](tg://user?id=7908156943) {bot_choice}\n\n{result} تم اضافة `{p}` لحسابك")
+    await event.edit(f"[{n}](tg://user?id={user_id}) {choices[user_choice]}\n[مخفي](tg://user?id=7908156943) {bot_choice}\n\n{result} تم اضافة (` {p} `) لحسابك")
 @ABH.on(events.CallbackQuery(data=b"rock"))
 async def rock_callback(event):
     await choice(event, "rock")
@@ -838,7 +838,7 @@ async def check_quist(event):
         current_question = user_states[user_id].get("question", {})
         correct_answers = current_question.get('answer', [])
         if user_message in correct_answers:
-            p = random.randint(3000, 6000)
+            p = random.randint(500, 2000)
             add_points(user_id, gid, points, amount=p)
             await event.reply(f"هلا هلا طبوا الشيعة 🫡 \n نقاطك ↢ {points[str(user_id)][str(gid)]['points']}")
             del user_states[user_id]
