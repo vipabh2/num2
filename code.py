@@ -535,8 +535,9 @@ questions_and_answers = [
     {"question": "من هو عم برسا؟", "answer": ["رونالدو"]}
 ]
 user_states_s = {}
-@ABH.on(events.NewMessage(pattern='كرة قدم|كره قدم|/sport'))
-async def sport(event):
+@ABH.on(events.NewMessage(pattern='اسئلة|/quist'))
+async def quest(event):
+    """بدء السؤال العشوائي"""
     user_id = event.sender_id
     question = random.choice(questions_and_answers)
     user_states_s[user_id] = {
@@ -551,14 +552,14 @@ async def check_quist(event):
     user_id = event.sender_id
     user_message = event.text.strip()
     gid = event.chat_id
-    if user_id in user_states and user_states[user_id].get("waiting_for_answer"):
-        current_question = user_states[user_id].get("question", {})
+    if user_id in user_states_s and user_states_s[user_id].get("waiting_for_answer"):
+        current_question = user_states_s[user_id].get("question", {})
         correct_answers = current_question.get('answer', [])
         if user_message in correct_answers:
             p = random.randint(50, 500)
             add_points(user_id, gid, points, amount=p)
             await event.reply(f"احسنت اجابة صحيحة 🫡 \n ربحت (`{p}`) \n فلوسك ↢ {points[str(user_id)][str(gid)]['points']}")
-            del user_states[user_id]
+            del user_states_s[user_id]
         else:
             pass
 @ABH.on(events.NewMessage(pattern=r'كشف ايدي (\d+)'))
