@@ -247,7 +247,6 @@ async def faster_reult(event):
         return
     elapsed_time = time.time() - start_time
     seconds = int(elapsed_time)
-    milliseconds = int((elapsed_time - seconds) * 1000)
     isabh = event.text.strip()
     wid = event.sender_id
     if answer and isabh.lower() == answer.lower() and wid in players:
@@ -255,7 +254,11 @@ async def faster_reult(event):
         if username not in res:
             res[username] = {"name": username, "score": 0}
         res[username]["score"] += 1
-        await event.reply(f'إجابة صحيحة! أحسنت الوقت المستغرق: {seconds} ثانية.')
+        user_id = event.sender_id
+        gid = event.chat_id
+        await event.reply(f'احسنت جواب موفق \n الوقت ↞ {seconds} \n تم اضافه `{points[str(user_id)][str(gid)]['points']}` لفلوسك')
+        p = random.randint(70, 999)
+        add_points(user_id, gid, points, amount=p)
         answer = None
         start_time = None
     elif elapsed_time >= 10:
@@ -367,6 +370,7 @@ async def rock(event):
     await event.respond("اختر أحد الاختيارات 🌚", buttons=buttons, reply_to=event.id)
 async def choice(event, user_choice):
     game_owner = active_games.get(event.chat_id)
+    gid = event.chat_id
     if game_owner != event.sender_id:
         await event.answer("من تدخل في ما لا يعنيه لقي كلام لا يرضيه 🙄", alert=True)
         return  
@@ -378,7 +382,13 @@ async def choice(event, user_choice):
         (user_choice == "paper" and bot_choice_key == "rock") or 
         (user_choice == "cuter" and bot_choice_key == "paper")
     ) else "😢خسرت"
-    await event.edit(f"[{n}](tg://user?id={user_id}) {choices[user_choice]}\n[مخفي](tg://user?id=7908156943) {bot_choice}\n\n{result}")
+    if result == '🎉فزت':
+        p = random.randint(10, 150)
+        add_points(user_id, gid, points, amount=p)
+    elif result == '🤝تعادل':
+        p = random.randint(10, 50)
+        add_points(user_id, gid, points, amount=p)
+    await event.edit(f"[{n}](tg://user?id={user_id}) {choices[user_choice]}\n[مخفي](tg://user?id=7908156943) {bot_choice}\n\n{result} تم اضافة `{p}` لحسابك")
 @ABH.on(events.CallbackQuery(data=b"rock"))
 async def rock_callback(event):
     await choice(event, "rock")
@@ -541,11 +551,15 @@ async def check_sport(event):
     if user_id in user_states_s and user_states_s[user_id].get("waiting_for_answer"):
         current_question = user_states_s[user_id].get("question", {})
         correct_answers = current_question.get('answer', [])        
-        if user_message in correct_answers:
-            await event.reply("أحسنت! إجابة صحيحة.")
-            del user_states_s[user_id]
-        else:
-            pass
+    if user_message in correct_answers:
+        await event.reply("أحسنت! إجابة صحيحة.")
+        user_id = event.sender_id
+        gid = event.chat_id
+        p = random.randint(70, 300)
+        add_points(user_id, gid, points, amount=p)
+        del user_states_s[user_id]
+    else:
+        pass
 @ABH.on(events.NewMessage(pattern=r'كشف ايدي (\d+)'))
 async def link(event):
     global user, uid
@@ -825,7 +839,7 @@ async def check_quist(event):
         current_question = user_states[user_id].get("question", {})
         correct_answers = current_question.get('answer', [])
         if user_message in correct_answers:
-            p = random.randint(3000, 10000)
+            p = random.randint(3000, 6000)
             add_points(user_id, gid, points, amount=p)
             await event.reply(f"هلا هلا طبوا الشيعة 🫡 \n نقاطك ↢ {points[str(user_id)][str(gid)]['points']}")
             del user_states[user_id]
@@ -1249,7 +1263,6 @@ number2 = None
 game_board = [["👊", "👊", "👊", "👊", "👊", "👊"]]
 numbers_board = [["1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣", "6️⃣"]]
 original_game_board = [["👊", "👊", "👊", "👊", "👊", "👊"]]
-points = {}
 def format_board(game_board, numbers_board):
     formatted_board = ""
     formatted_board += " ".join(numbers_board[0]) + "\n"
@@ -1271,11 +1284,13 @@ async def handle_guess(event):
             guess = int(event.text.split()[1])  
             if 1 <= guess <= 6:  
                 if guess == number2:
-                    winner_id = event.sender_id 
-                    points[winner_id] = points.get(winner_id, 0) + 1 
                     sender_first_name = event.sender.first_name
                     game_board = [["💍" if i == number2 - 1 else "🖐️" for i in range(6)]]
-                    await event.reply(f'🎉 الف مبروك! اللاعب ({sender_first_name}) وجد المحبس 💍!\n{format_board(game_board, numbers_board)}')
+                    gid = event.chat_id
+                    p = random.randint(10, 150)
+                    user_id = event.sender_id
+                    add_points(user_id, gid, points, amount=p)
+                    await event.reply(f'🎉 مبارك , اللاعب ({sender_first_name}) وجد المحبس 💍!\n{format_board(game_board, numbers_board)}')
                     rest_game(chat_id)
                 else: 
                     sender_first_name = event.sender.first_name
@@ -1374,7 +1389,7 @@ number = None
 max_attempts = 3
 attempts = 0
 active_player_id = None
-@ABH.on(events.NewMessage(pattern='/num'))
+@ABH.on(events.NewMessage(pattern='/num|ارقام'))
 async def num(event):
     global game_active, number, attempts, active_player_id
     if game_active:
@@ -1415,7 +1430,11 @@ async def guess(event):
     if guess == number:
         msg1 = await event.reply("🥳")
         await asyncio.sleep(3)
-        await msg1.edit("🎉مُبارك! لقد فزت!")
+        user_id = event.sender_id
+        gid = event.chat_id
+        p = random.randint(70, 999)
+        add_points(user_id, gid, points, amount=p)
+        await msg1.edit(f"🎉مُبارك! لقد فزت! \n فلوسك {points[str(user_id)][str(gid)]['points']}")
         game_active = False
     elif attempts >= max_attempts:
         await event.reply(f"للأسف، لقد نفدت محاولاتك. الرقم الصحيح هو {number}.")
