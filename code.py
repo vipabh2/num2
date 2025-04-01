@@ -1101,11 +1101,11 @@ async def reply_zig(event):
         return
     if replied_message:
         abh = random.choice([
-    'https://t.me/VIPABH/1171',
-    'https://t.me/recoursec/7',
-    'https://t.me/recoursec/8'
-])
-        await event.client.send_file(replied_message.peer_id, abh, reply_to=replied_message.id)
+            'https://t.me/VIPABH/1171',
+            'https://t.me/recoursec/7',
+            'https://t.me/recoursec/8'
+        ])
+        await event.client.send_file(event.chat_id, abh, reply_to=replied_message.id)
     else:
         await event.reply("عزيزي الفاهي ... \n الامر يعمل بالرد , اذا عدتها وما سويت رد اعفطلك")
 @ABH.on(events.NewMessage(pattern=r'^(ميعرف|مايعرف)$'))
