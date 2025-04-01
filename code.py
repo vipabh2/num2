@@ -535,8 +535,8 @@ questions_and_answers = [
     {"question": "من هو عم برسا؟", "answer": ["رونالدو"]}
 ]
 user_states_s = {}
-@ABH.on(events.NewMessage(pattern='اسئلة|/quist'))
-async def quest(event):
+@ABH.on(events.NewMessage(pattern='كره قدم|كرة القدم|/sport'))
+async def sport(event):
     """بدء السؤال العشوائي"""
     user_id = event.sender_id
     question = random.choice(questions_and_answers)
@@ -546,7 +546,7 @@ async def quest(event):
     }
     await event.reply(f"{question['question']}")
 @ABH.on(events.NewMessage)
-async def check_quist(event):
+async def check_sport(event):
     if not event.text:
         return
     user_id = event.sender_id
