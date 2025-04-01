@@ -545,20 +545,22 @@ async def sport(event):
     }
     await event.reply(f"{question['question']}")
 @ABH.on(events.NewMessage)
-async def check_sport(event):
+async def check_quist(event):
+    if not event.text:
+        return
     user_id = event.sender_id
-    user_message = event.text.strip().lower()
-    if user_id in user_states_s and user_states_s[user_id].get("waiting_for_answer"):
-        current_question = user_states_s[user_id].get("question", {})
-        correct_answers = [ans.lower() for ans in current_question.get('answer', [])]
+    user_message = event.text.strip()
+    gid = event.chat_id
+    if user_id in user_states and user_states[user_id].get("waiting_for_answer"):
+        current_question = user_states[user_id].get("question", {})
+        correct_answers = current_question.get('answer', [])
         if user_message in correct_answers:
-            p = random.randint(10, 200)
-            gid = event.chat_id
-            add_points(user_id, gid, amount=p)
-            await event.reply(f"🎉 أحسنت! إجابة صحيحة. 🎉\nتمت إضافة (`{p}`) نقطة لحسابك.")
-            del user_states_s[user_id]
+            p = random.randint(50, 500)
+            add_points(user_id, gid, points, amount=p)
+            await event.reply(f"احسنت اجابة صحيحة 🫡 \n ربحت (`{p}`) \n فلوسك ↢ {points[str(user_id)][str(gid)]['points']}")
+            del user_states[user_id]
         else:
-            return
+            pass
 @ABH.on(events.NewMessage(pattern=r'كشف ايدي (\d+)'))
 async def link(event):
     global user, uid
