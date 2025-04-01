@@ -256,8 +256,8 @@ async def faster_reult(event):
         res[username]["score"] += 1
         user_id = event.sender_id
         gid = event.chat_id
-        await event.reply(f'احسنت جواب موفق \n الوقت ↞ {seconds} \n تم اضافه `{points[str(user_id)][str(gid)]['points']}` لفلوسك')
-        p = random.randint(70, 999)
+        p = random.randint(1, 100)
+        await event.reply(f'احسنت جواب موفق \n الوقت ↞ {seconds} \n تم اضافه (`{p}`) \n `{points[str(user_id)][str(gid)]['points']}` لفلوسك')
         add_points(user_id, gid, points, amount=p)
         answer = None
         start_time = None
@@ -306,7 +306,7 @@ async def alert(message):
     try:
         await ABH.send_message(K_4X1, message)
     except Exception as e:
-        print(f"فشل إرسال الرسالة {e}")
+        return
 @ABH.on(events.NewMessage)
 async def add_to(event):
     global alert_ids
@@ -446,12 +446,12 @@ async def handler_res(event):
    if await is_admin(chat, user_id):
     await event.delete()
     return
-   await event.delete()
    if user_id not in warns:
     warns[user_id] = {}
    if chat.id not in warns[user_id]:
     warns[user_id][chat.id] = 0
    warns[user_id][chat.id] += 1
+   await event.delete()
    if warns[user_id][chat.id] == 2:
     await ABH(EditBannedRequest(chat.id, user_id, restrict_rights))
     warns[user_id][chat.id] = 0
@@ -552,10 +552,10 @@ async def check_sport(event):
         current_question = user_states_s[user_id].get("question", {})
         correct_answers = [ans.lower() for ans in current_question.get('answer', [])]
         if user_message in correct_answers:
-            p = random.randint(70, 300)
+            p = random.randint(10, 200)
             gid = event.chat_id
             add_points(user_id, gid, amount=p)
-            await event.reply(f"🎉 أحسنت! إجابة صحيحة. 🎉\nتمت إضافة `{p}` نقطة لحسابك.")
+            await event.reply(f"🎉 أحسنت! إجابة صحيحة. 🎉\nتمت إضافة (`{p}`) نقطة لحسابك.")
             del user_states_s[user_id]
         else:
             return
@@ -830,7 +830,8 @@ async def quest(event):
     await event.reply(f"{question['question']}")
 @ABH.on(events.NewMessage)
 async def check_quist(event):
-    """التحقق من إجابة المستخدم"""
+    if not event.text:
+        return
     user_id = event.sender_id
     user_message = event.text.strip()
     gid = event.chat_id
@@ -838,9 +839,9 @@ async def check_quist(event):
         current_question = user_states[user_id].get("question", {})
         correct_answers = current_question.get('answer', [])
         if user_message in correct_answers:
-            p = random.randint(500, 2000)
+            p = random.randint(50, 500)
             add_points(user_id, gid, points, amount=p)
-            await event.reply(f"هلا هلا طبوا الشيعة 🫡 \n نقاطك ↢ {points[str(user_id)][str(gid)]['points']}")
+            await event.reply(f"هلا هلا طبوا الشيعة 🫡 \n ربحت (`{p}`) \n فلوسك ↢ {points[str(user_id)][str(gid)]['points']}")
             del user_states[user_id]
         else:
             pass
@@ -1290,7 +1291,7 @@ async def handle_guess(event):
                     sender_first_name = event.sender.first_name
                     game_board = [["💍" if i == number2 - 1 else "🖐️" for i in range(6)]]
                     gid = event.chat_id
-                    p = random.randint(10, 150)
+                    p = random.randint(10, 50)
                     user_id = event.sender_id
                     add_points(user_id, gid, points, amount=p)
                     await event.reply(f'🎉 مبارك , اللاعب ({sender_first_name}) وجد المحبس 💍!\n{format_board(game_board, numbers_board)} \n  فلوسك ↞ {points[str(user_id)][str(gid)]['points']}')
@@ -1435,9 +1436,9 @@ async def guess(event):
         await asyncio.sleep(3)
         user_id = event.sender_id
         gid = event.chat_id
-        p = random.randint(70, 999)
+        p = random.randint(5, 100)
         add_points(user_id, gid, points, amount=p)
-        await msg1.edit(f"🎉مُبارك! لقد فزت! \n فلوسك {points[str(user_id)][str(gid)]['points']}")
+        await msg1.edit(f"🎉مُبارك! لقد فزت! \n ربحت (`{p}`) \n  فلوسك {points[str(user_id)][str(gid)]['points']}")
         game_active = False
     elif attempts >= max_attempts:
         await event.reply(f"للأسف، لقد نفدت محاولاتك. الرقم الصحيح هو {number}.")
