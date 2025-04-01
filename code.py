@@ -558,7 +558,7 @@ async def check_sport(event):
             await event.reply(f"🎉 أحسنت! إجابة صحيحة. 🎉\nتمت إضافة `{p}` نقطة لحسابك.")
             del user_states_s[user_id]
         else:
-            await event.reply("إجابة خاطئة! حاول مرة أخرى.")
+            return
 @ABH.on(events.NewMessage(pattern=r'كشف ايدي (\d+)'))
 async def link(event):
     global user, uid
@@ -1289,7 +1289,7 @@ async def handle_guess(event):
                     p = random.randint(10, 150)
                     user_id = event.sender_id
                     add_points(user_id, gid, points, amount=p)
-                    await event.reply(f'🎉 مبارك , اللاعب ({sender_first_name}) وجد المحبس 💍!\n{format_board(game_board, numbers_board)}')
+                    await event.reply(f'🎉 مبارك , اللاعب ({sender_first_name}) وجد المحبس 💍!\n{format_board(game_board, numbers_board)}' فلوسك ↞ {points[str(user_id)][str(gid)]['points']})
                     rest_game(chat_id)
                 else: 
                     sender_first_name = event.sender.first_name
