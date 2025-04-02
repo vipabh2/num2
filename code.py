@@ -1108,7 +1108,7 @@ async def reply_zig(event):
             'https://t.me/recoursec/7',
             'https://t.me/recoursec/8'
         ])
-        await event.client.send_file(event.chat_id, abh, reply_to=replied_message.id)
+        await event.client.send_file(event.chat_id, abh, reply_to=replied_message)
     else:
         await event.reply("عزيزي الفاهي ... \n الامر يعمل بالرد , اذا عدتها وما سويت رد اعفطلك")
 @ABH.on(events.NewMessage(pattern=r'^(ميعرف|مايعرف)$'))
