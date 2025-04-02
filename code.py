@@ -537,7 +537,6 @@ questions_and_answers = [
 user_states_s = {}
 @ABH.on(events.NewMessage(pattern='كره قدم|كرة القدم|/sport'))
 async def sport(event):
-    """بدء السؤال العشوائي"""
     user_id = event.sender_id
     question = random.choice(questions_and_answers)
     user_states_s[user_id] = {
@@ -1100,10 +1099,10 @@ async def reply_hi(event):
 @ABH.on(events.NewMessage(pattern=r'^(مخفي طكة زيج|زيج)$'))
 async def reply_zig(event):
     replied_message = await event.get_reply_message()
-    if replied_message and replied_message.sender_id == 1910015590:
+    if replied_message and str(replied_message.sender_id) == "1910015590":
         await event.reply("عزيزي الغبي ... \n تريدني اعفط للمطور شكلت لربك؟")
         return
-    if replied_message:
+    if replied_message and replied_message.text:
         abh = random.choice([
             'https://t.me/VIPABH/1171',
             'https://t.me/recoursec/7',
