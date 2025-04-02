@@ -1109,7 +1109,6 @@ async def reply_abh(event):
             'https://t.me/recoursec/8'
         ])
         await event.client.send_file(replied_message.peer_id, abh, reply_to=replied_message.id)
-        await event.client.send_file(replied_message.peer_id, abh, reply_to=replied_message.id)
     else:
         await event.reply("عزيزي الفاهي ... \n الامر يعمل بالرد , اذا عدتها وما سويت رد اعفطلك")
 @ABH.on(events.NewMessage(pattern=r'^(ميعرف|مايعرف)$'))
