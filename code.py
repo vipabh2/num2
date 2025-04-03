@@ -1024,7 +1024,7 @@ async def anymous(event):
         await event.reply(vipabh)
 @ABH.on(events.NewMessage(pattern='ابن هاشم'))
 async def reply_abh(event):
-    if event.chat_id == -1001968219024:
+    if event.chat_id == -1001784332159:
         rl = random.randint(1222, 1241)
         url = f"https://t.me/VIPABH/{rl}"
         caption = "أبن هاشم (رض) مرات متواضع ،🌚 @K_4x1"
@@ -1034,7 +1034,7 @@ async def reply_abh(event):
         return
 @ABH.on(events.NewMessage(pattern='زهراء'))
 async def reply_zahraa(event):
-    if event.chat_id == -1001968219024:
+    if event.chat_id == -1001784332159:
         url = "https://t.me/VIPABH/1220"  
         caption = "@klix_78 ( لَقَدْ كَفَرَ الّذِينَ قَالُوا إنَّ الله هُو المَسِيحُ ابْنُ مَرْيَم)." 
         await event.client.send_file(event.chat_id, url, caption=caption, reply_to=event.message.id)    
@@ -1042,7 +1042,7 @@ async def reply_zahraa(event):
         return
 @ABH.on(events.NewMessage(pattern='امريجا|الامريكي'))
 async def reply_American(event):
-    if event.chat_id == -1001968219024:
+    if event.chat_id == -1001784332159:
         url = "https://files.catbox.moe/p9e75j.mp4"  
         caption = "@l_h_2" 
         await event.client.send_file(event.chat_id, url, caption=caption, reply_to=event.message.id)    
@@ -1050,7 +1050,7 @@ async def reply_American(event):
         return
 @ABH.on(events.NewMessage(pattern='امير'))
 async def reply_amer(event):
-    if event.chat_id == -1001968219024:
+    if event.chat_id == -1001784332159:
         ur = ["https://files.catbox.moe/k44qq6.mp4",
                'https://t.me/KQK4Q/23',
                'https://t.me/KQK4Q/22'
@@ -1062,7 +1062,7 @@ async def reply_amer(event):
         return
 @ABH.on(events.NewMessage(pattern='عبدالله|عبود'))
 async def reply_abod(event):
-    if event.chat_id == -1001968219024:
+    if event.chat_id == -1001784332159:
         url = "https://files.catbox.moe/qohqtp.MP4"  
         caption = "@UU77QQ" 
         await event.client.send_file(event.chat_id, url, caption=caption, reply_to=event.message.id)    
@@ -1070,19 +1070,19 @@ async def reply_abod(event):
         return
 @ABH.on(events.NewMessage(pattern='محمد موسى'))
 async def reply_mohamed(event):
-    if event.chat_id == -1001968219024:
+    if event.chat_id == -1001784332159:
         await event.reply('@E_0_0_0 ')
     else: 
         return
 @ABH.on(events.NewMessage(pattern='مقتد'))
 async def reply_moqtada(event):
-    if event.chat_id == -1001968219024:
+    if event.chat_id == -1001784332159:
         await event.reply('@hiz8s')
     else: 
         return
 @ABH.on(events.NewMessage(pattern='يزيد'))
 async def reply_yazeed(event):
-    if event.chat_id == -1001968219024:
+    if event.chat_id == -1001784332159:
         await event.reply('@l7QQI')
     else: 
         return
