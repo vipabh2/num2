@@ -1132,7 +1132,7 @@ async def reply_mem(event):
         await event.client.send_file(replied_message.peer_id, "https://t.me/recoursec/5", reply_to=replied_message)
     else:
         await event.reply(file="https://t.me/recoursec/5", reply_to=event.message.id)
-@ABH.on(events.NewMessage(pattern=r'^(هاي بعد|اي هاي)$'))
+@ABH.on(events.NewMessage(pattern=r'^(هيه حسب|هاي بعد|اي هاي)$'))
 async def reply_mem(event):
     replied_message = await event.get_reply_message()
     if replied_message:
