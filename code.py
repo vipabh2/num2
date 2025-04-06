@@ -827,7 +827,8 @@ async def quest(event):
     quest = random.choice(questions_and_answers_q)
     states[user_id] = {
         "question": quest,
-        "waiting_for_answer": True
+        "waiting_for_answer": True,
+        "start_time": time.time()
     }
     await event.reply(f"{quest['question']}")
 @ABH.on(events.NewMessage)
@@ -840,6 +841,11 @@ async def check_quist(event):
     if user_id in states and states[user_id].get("waiting_for_answer"):
         question_q = states[user_id].get("question", {})
         answers_q = question_q.get('answer', [])
+        current_time = time.time()
+        time_passed = current_time - start_time
+        if time_passed > 60:
+            del states[user_id]
+            return
         if usermessage in answers_q:
             p = random.randint(50, 500)
             add_points(user_id, gid, points, amount=p)
@@ -1040,14 +1046,14 @@ async def reply_zahraa(event):
         await event.client.send_file(event.chat_id, url, caption=caption, reply_to=event.message.id)    
     else: 
         return
-@ABH.on(events.NewMessage(pattern='امريجا|الامريكي'))
-async def reply_American(event):
-    if event.chat_id == -1001784332159:
-        url = "https://files.catbox.moe/p9e75j.mp4"  
-        caption = "@l_h_2" 
-        await event.client.send_file(event.chat_id, url, caption=caption, reply_to=event.message.id)    
-    else: 
-        return
+# @ABH.on(events.NewMessage(pattern='امريجا|الامريكي'))
+# async def reply_American(event):
+#     if event.chat_id == -1001784332159:
+#         url = "https://files.catbox.moe/p9e75j.mp4"  
+#         caption = "@l_h_2" 
+#         await event.client.send_file(event.chat_id, url, caption=caption, reply_to=event.message.id)    
+#     else: 
+#         return
 @ABH.on(events.NewMessage(pattern='امير'))
 async def reply_amer(event):
     if event.chat_id == -1001784332159:
@@ -1370,25 +1376,6 @@ async def send_random_latmia(event):
 @ABH.on(events.NewMessage(pattern=r"^(لطمية|لطميه)$"))
 async def handle_latmia_command(event):
     await send_random_latmia(event)
-@ABH.on(events.NewMessage(pattern='/start'))
-async def handle_start(event):
-    await event.reply(
-        "أهلاً حياك الله! \n\n"
-        "• أرسل /xo ل بدء لعبة xo \n"
-        "• أرسل `لطمية` ل ارسال لطمية\n"
-        "• أرسل /num لبدء لعبة الأرقام.\n"
-        "• أرسل `ميم` او `ميمز` للميمز. \n"
-        "• أرسل `كتويت` لبدء أسئلة الكتتويت.\n"
-        "• أرسل /quist او `اسئلة`اسئلة دينية. \n"
-        "• أرسل `ابحث عن` لعمل بحث في ويكيبيديا \n"
-        "• أرسل /rings لبدء لعبة محيبس الكتتويت. \n"
-        "• أرسل `النقاط` ل رؤية نقاطك في لعبة /num \n"
-        "• الامر او بالرد `ترجمة` لترجمه نص مع لطمية\n"
-        "• أرسل `احسب` لحساب معادلة بالرد او مع الامر\n"
-        "• أرسل `ابحث عام` يعمل بحث لكن ليس دقيق ب 3 نتائج \n\n"
-        "استمتع! 🎉",
-        parse_mode='markdown'
-        )
 user_points = {}
 game_active = False
 number = None
