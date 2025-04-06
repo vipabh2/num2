@@ -841,6 +841,7 @@ async def check_quist(event):
     if user_id in states and states[user_id].get("waiting_for_answer"):
         question_q = states[user_id].get("question", {})
         answers_q = question_q.get('answer', [])
+        start_time = states[user_id].get("start_time")
         current_time = time.time()
         time_passed = current_time - start_time
         if time_passed > 60:
@@ -849,7 +850,9 @@ async def check_quist(event):
         if usermessage in answers_q:
             p = random.randint(50, 500)
             add_points(user_id, gid, points, amount=p)
-            await event.reply(f"هلا هلا طبوا الشيعة 🫡 \n ربحت (`{p}`) \n فلوسك ↢ {points[str(user_id)][str(gid)]['points']}")
+            await event.reply(
+                f"هلا هلا طبوا الشيعة 🫡 \n ربحت (`{p}`) \n فلوسك ↢ {points[str(user_id)][str(gid)]['points']}"
+            )
             del states[user_id]
         else:
             pass
@@ -1046,14 +1049,14 @@ async def reply_zahraa(event):
         await event.client.send_file(event.chat_id, url, caption=caption, reply_to=event.message.id)    
     else: 
         return
-# @ABH.on(events.NewMessage(pattern='امريجا|الامريكي'))
-# async def reply_American(event):
-#     if event.chat_id == -1001784332159:
-#         url = "https://files.catbox.moe/p9e75j.mp4"  
-#         caption = "@l_h_2" 
-#         await event.client.send_file(event.chat_id, url, caption=caption, reply_to=event.message.id)    
-#     else: 
-#         return
+@ABH.on(events.NewMessage(pattern='امريجا|الامريكي'))
+async def reply_American(event):
+    if event.chat_id == -1001784332159:
+        url = "https://files.catbox.moe/p9e75j.mp4"  
+        caption = "@l_h_2" 
+        await event.client.send_file(event.chat_id, url, caption=caption, reply_to=event.message.id)    
+    else: 
+        return
 @ABH.on(events.NewMessage(pattern='امير'))
 async def reply_amer(event):
     if event.chat_id == -1001784332159:
