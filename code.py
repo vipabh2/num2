@@ -133,24 +133,15 @@ def load_from_file():
             except json.JSONDecodeError:
                 return {}
     return {}
-def save_to_file():
+
+def save_to_file(uinfo):
     regular_data = {user: {guid: dict(data) for guid, data in users.items()} for user, users in uinfo.items()}
     with open("user_data.json", "w", encoding="utf-8") as f:
         json.dump(regular_data, f, ensure_ascii=False, indent=4)
-def load_from_file():
-    if os.path.exists("user_data.json"):
-        with open("user_data.json", "r", encoding="utf-8") as f:
-            try:
-                return json.load(f)
-            except json.JSONDecodeError:
-                return {}
-    return {}
-def save_to_file():
-    regular_data = {user: {guid: dict(data) for guid, data in users.items()} for user, users in uinfo.items()}
-    with open("user_data.json", "w", encoding="utf-8") as f:
-        json.dump(regular_data, f, ensure_ascii=False, indent=4)
+
 uinfo = defaultdict(lambda: defaultdict(lambda: {"msg": 0}))
 uinfo.update(load_from_file())
+
 @ABH.on(events.NewMessage)
 async def msgs(event):
     global uinfo
@@ -161,17 +152,19 @@ async def msgs(event):
         guid = event.chat_id
         user_data = uinfo[unm][guid]
         user_data.update({"guid": guid, "unm": unm, "fname": uid})
-        user_data["msg"] += 1
+        user_data["msg"] += 1  # Increase message count by 1
         timenow = now.strftime("%I:%M %p")
         targetdate = "11:59 PM"
+        save_to_file(uinfo)  # Save to file after every message sent
         if timenow == targetdate:
-            save_to_file()
-            uinfo = defaultdict(lambda: defaultdict(lambda: {"msg": 0}))
-        save_to_file()
+            uinfo = defaultdict(lambda: defaultdict(lambda: {"msg": 0}))  # Reset at midnight
+        save_to_file(uinfo)  # Save after resetting at midnight if applicable
+
 @ABH.on(events.NewMessage(pattern="توب اليومي|المتفاعلين"))
 async def show_res(event):
     await asyncio.sleep(2)
     guid = event.chat_id
+    uinfo = load_from_file()  # Load data from file on request
     sorted_users = sorted(
         uinfo.items(), 
         key=lambda x: x[1].get(guid, {}).get('msg', 0), 
@@ -188,15 +181,18 @@ async def show_res(event):
         await event.reply("\n".join(top_users))
     else:
         await event.reply("لا توجد بيانات لعرضها.")
+
 @ABH.on(events.NewMessage(pattern='رسائلي'))
 async def show_res(event):
     await asyncio.sleep(2)
     uid1 = event.sender.first_name
     unm1 = event.sender_id
     guid1 = event.chat_id
+    uinfo = load_from_file()  # Load data from file on request
     if unm1 in uinfo and guid1 in uinfo[unm1]:
         msg_count = uinfo[unm1][guid1]["msg"]
         await event.reply(f"المستخدم [{uid1}](tg://user?id={unm1}) أرسلت {msg_count} رسالة في هذه المجموعة.")
+
 @ABH.on(events.NewMessage(pattern='رسائله|رسائلة|رسائل|الرسائل'))
 async def his_res(event):
     r = await event.get_reply_message()  
@@ -206,9 +202,11 @@ async def his_res(event):
     uid1 = r.sender.first_name
     unm1 = r.sender_id
     guid1 = event.chat_id
+    uinfo = load_from_file()  # Load data from file on request
     if unm1 in uinfo and guid1 in uinfo[unm1]:
         msg_count = uinfo[unm1][guid1]["msg"]
         await event.reply(f"المستخدم [{uid1}](tg://user?id={unm1}) أرسل {msg_count} رسالة في هذه المجموعة.")
+
 @ABH.on(events.NewMessage(pattern='الرسائل'))
 async def title(event):
     await event.reply('اهلا صديقي , اوامر الرسائل \n ارسل `المتفاعلين` ل اضهار توب 15 تفاعل \n ارسل `رسائلي` ل اضهار رسائلك في اخر يوم \n ارسل `رسائله` ل اضهار رساله الشخص بالرد \n استمتع')
