@@ -125,11 +125,18 @@ async def top(event):
         await event.reply('**اوامر الحسبان كآلاتي** \n *امر `/dates` يحسب لك كم باقي على رجب | شعبان |رمضان | محرم او تاريخ خاص فيك')
     elif event.text == 'اوامر الميمز':
         await event.reply('**اوامر الحسبان كآلاتي** \n *امر `/dates` يحسب لك كم باقي على رجب | شعبان |رمضان | محرم او تاريخ خاص فيك')
-uinfo = defaultdict(lambda: defaultdict(lambda: {"msg": 0}))
+
+def load_from_file():
+    if os.path.exists("user_data.json"):
+        with open("user_data.json", "r", encoding="utf-8") as f:
+            return json.load(f)
+    return {}
 def save_to_file():
     regular_data = {user: {guid: dict(data) for guid, data in users.items()} for user, users in uinfo.items()}
     with open("user_data.json", "w", encoding="utf-8") as f:
         json.dump(regular_data, f, ensure_ascii=False, indent=4)
+uinfo = defaultdict(lambda: defaultdict(lambda: {"msg": 0}))
+uinfo.update(load_from_file())
 @ABH.on(events.NewMessage)
 async def msgs(event):
     global uinfo
@@ -140,12 +147,13 @@ async def msgs(event):
         guid = event.chat_id
         user_data = uinfo[unm][guid]
         user_data.update({"guid": guid, "unm": unm, "fname": uid})
-        user_data["msg"] += 1    
+        user_data["msg"] += 1
         timenow = now.strftime("%I:%M %p")
         targetdate = "11:59 PM"
         if timenow == targetdate:
             save_to_file()
             uinfo = defaultdict(lambda: defaultdict(lambda: {"msg": 0}))
+        save_to_file()
 @ABH.on(events.NewMessage(pattern="توب اليومي|المتفاعلين"))
 async def show_res(event):
     await asyncio.sleep(2)
