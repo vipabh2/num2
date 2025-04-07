@@ -125,11 +125,25 @@ async def top(event):
         await event.reply('**اوامر الحسبان كآلاتي** \n *امر `/dates` يحسب لك كم باقي على رجب | شعبان |رمضان | محرم او تاريخ خاص فيك')
     elif event.text == 'اوامر الميمز':
         await event.reply('**اوامر الحسبان كآلاتي** \n *امر `/dates` يحسب لك كم باقي على رجب | شعبان |رمضان | محرم او تاريخ خاص فيك')
-
 def load_from_file():
     if os.path.exists("user_data.json"):
         with open("user_data.json", "r", encoding="utf-8") as f:
-            return json.load(f)
+            try:
+                return json.load(f)
+            except json.JSONDecodeError:
+                return {}
+    return {}
+def save_to_file():
+    regular_data = {user: {guid: dict(data) for guid, data in users.items()} for user, users in uinfo.items()}
+    with open("user_data.json", "w", encoding="utf-8") as f:
+        json.dump(regular_data, f, ensure_ascii=False, indent=4)
+def load_from_file():
+    if os.path.exists("user_data.json"):
+        with open("user_data.json", "r", encoding="utf-8") as f:
+            try:
+                return json.load(f)
+            except json.JSONDecodeError:
+                return {}
     return {}
 def save_to_file():
     regular_data = {user: {guid: dict(data) for guid, data in users.items()} for user, users in uinfo.items()}
