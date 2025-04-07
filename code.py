@@ -447,8 +447,7 @@ async def handler_res(event):
    user_id = event.sender_id
    chat = await event.get_chat()
    if await is_admin(chat, user_id):
-    msg = event.message
-    await msg.delete()
+    # await event.delete()
     return
    if user_id not in warns:
     warns[user_id] = {}
