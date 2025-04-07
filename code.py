@@ -125,6 +125,7 @@ async def top(event):
         await event.reply('**اوامر الحسبان كآلاتي** \n *امر `/dates` يحسب لك كم باقي على رجب | شعبان |رمضان | محرم او تاريخ خاص فيك')
     elif event.text == 'اوامر الميمز':
         await event.reply('**اوامر الحسبان كآلاتي** \n *امر `/dates` يحسب لك كم باقي على رجب | شعبان |رمضان | محرم او تاريخ خاص فيك')
+
 def load_from_file():
     if os.path.exists("user_data.json"):
         with open("user_data.json", "r", encoding="utf-8") as f:
@@ -158,10 +159,10 @@ async def msgs(event):
         save_to_file(uinfo)  # Save to file after every message sent
         if timenow == targetdate:
             uinfo = defaultdict(lambda: defaultdict(lambda: {"msg": 0}))  # Reset at midnight
-        save_to_file(uinfo)  # Save after resetting at midnight if applicable
+            save_to_file(uinfo)  # Save after resetting at midnight if applicable
 
 @ABH.on(events.NewMessage(pattern="توب اليومي|المتفاعلين"))
-async def show_res(event):
+async def show_top_users(event):
     await asyncio.sleep(2)
     guid = event.chat_id
     uinfo = load_from_file()  # Load data from file on request
@@ -183,7 +184,7 @@ async def show_res(event):
         await event.reply("لا توجد بيانات لعرضها.")
 
 @ABH.on(events.NewMessage(pattern='رسائلي'))
-async def show_res(event):
+async def show_my_messages(event):
     await asyncio.sleep(2)
     uid1 = event.sender.first_name
     unm1 = event.sender_id
@@ -194,7 +195,7 @@ async def show_res(event):
         await event.reply(f"المستخدم [{uid1}](tg://user?id={unm1}) أرسلت {msg_count} رسالة في هذه المجموعة.")
 
 @ABH.on(events.NewMessage(pattern='رسائله|رسائلة|رسائل|الرسائل'))
-async def his_res(event):
+async def show_user_messages(event):
     r = await event.get_reply_message()  
     await asyncio.sleep(2)
     if not r:
