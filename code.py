@@ -240,6 +240,7 @@ async def faster_done(event):
             await asyncio.sleep(10)
         points_list = "\n".join([f"{info['name']} - {info['score']} نقطة" for info in res.values()])
         await event.reply(f"**ترتيب اللاعبين بالنقاط**\n{points_list}")
+        is_on = False
 @ABH.on(events.NewMessage)
 async def faster_reult(event):
     global is_on, start_time, answer, a
@@ -269,6 +270,8 @@ async def faster_reult(event):
             is_on = False
             points_list = "\n".join([f"{pid} -> {info['score']} نقطة" for pid, info in res.items()])
             await event.reply(f"**ترتيب اللاعبين بالنقاط**\n{points_list}")
+            is_on = False
+
 @ABH.on(events.NewMessage(pattern=r'(ترجمة|ترجمه)'))
 async def translation(event):
     translator = Translator()
