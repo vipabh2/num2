@@ -447,14 +447,16 @@ async def handler_res(event):
    user_id = event.sender_id
    chat = await event.get_chat()
    if await is_admin(chat, user_id):
-    await event.delete()
+    msg = event.message
+    await msg.delete()
     return
    if user_id not in warns:
     warns[user_id] = {}
    if chat.id not in warns[user_id]:
     warns[user_id][chat.id] = 0
    warns[user_id][chat.id] += 1
-   await event.delete()
+   msg = event.message
+   await msg.delete()
    if warns[user_id][chat.id] == 2:
     await ABH(EditBannedRequest(chat.id, user_id, restrict_rights))
     warns[user_id][chat.id] = 0
@@ -1052,14 +1054,6 @@ async def reply_zahraa(event):
         await event.client.send_file(event.chat_id, url, caption=caption, reply_to=event.message.id)    
     else: 
         return
-@ABH.on(events.NewMessage(pattern='امريجا|الامريكي'))
-async def reply_American(event):
-    if event.chat_id == -1001784332159:
-        url = "https://files.catbox.moe/p9e75j.mp4"  
-        caption = "@l_h_2" 
-        await event.client.send_file(event.chat_id, url, caption=caption, reply_to=event.message.id)    
-    else: 
-        return
 @ABH.on(events.NewMessage(pattern='امير'))
 async def reply_amer(event):
     if event.chat_id == -1001784332159:
@@ -1069,14 +1063,6 @@ async def reply_amer(event):
                ]
         url = random.choice(ur)
         caption = "@xcxx1x" 
-        await event.client.send_file(event.chat_id, url, caption=caption, reply_to=event.message.id)    
-    else: 
-        return
-@ABH.on(events.NewMessage(pattern='عبدالله|عبود'))
-async def reply_abod(event):
-    if event.chat_id == -1001784332159:
-        url = "https://files.catbox.moe/qohqtp.MP4"  
-        caption = "@UU77QQ" 
         await event.client.send_file(event.chat_id, url, caption=caption, reply_to=event.message.id)    
     else: 
         return
@@ -1090,12 +1076,6 @@ async def reply_mohamed(event):
 async def reply_moqtada(event):
     if event.chat_id == -1001784332159:
         await event.reply('@hiz8s')
-    else: 
-        return
-@ABH.on(events.NewMessage(pattern='يزيد'))
-async def reply_yazeed(event):
-    if event.chat_id == -1001784332159:
-        await event.reply('@l7QQI')
     else: 
         return
 auto = [
