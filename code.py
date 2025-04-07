@@ -125,28 +125,8 @@ async def top(event):
         await event.reply('**اوامر الحسبان كآلاتي** \n *امر `/dates` يحسب لك كم باقي على رجب | شعبان |رمضان | محرم او تاريخ خاص فيك')
     elif event.text == 'اوامر الميمز':
         await event.reply('**اوامر الحسبان كآلاتي** \n *امر `/dates` يحسب لك كم باقي على رجب | شعبان |رمضان | محرم او تاريخ خاص فيك')
-
-
-# تحميل البيانات من الملف
-def load_from_file():
-    if os.path.exists("user_data.json"):
-        with open("user_data.json", "r", encoding="utf-8") as f:
-            try:
-                return json.load(f)
-            except json.JSONDecodeError:
-                return {}
-    return {}
-
-# حفظ البيانات إلى الملف
-def save_to_file(uinfo):
-    regular_data = {user: {guid: dict(data) for guid, data in users.items()} for user, users in uinfo.items()}
-    with open("user_data.json", "w", encoding="utf-8") as f:
-        json.dump(regular_data, f, ensure_ascii=False, indent=4)
-
-# تحميل البيانات من الملف عند بدء التشغيل
+uinfo = {}
 uinfo = defaultdict(lambda: defaultdict(lambda: {"msg": 0}))
-uinfo.update(load_from_file())
-
 @ABH.on(events.NewMessage)
 async def msgs(event):
     global uinfo
@@ -157,21 +137,15 @@ async def msgs(event):
         guid = event.chat_id
         user_data = uinfo[unm][guid]
         user_data.update({"guid": guid, "unm": unm, "fname": uid})
-        user_data["msg"] += 1  # زيادة عدد الرسائل
+        user_data["msg"] += 1
         timenow = now.strftime("%I:%M %p")
         targetdate = "11:59 PM"
-        save_to_file(uinfo)  # حفظ البيانات إلى الملف بعد كل رسالة
         if timenow == targetdate:
-            uinfo = defaultdict(lambda: defaultdict(lambda: {"msg": 0}))  # إعادة تعيين البيانات عند منتصف الليل
-        save_to_file(uinfo)  # حفظ البيانات بعد التحديث
-        print(f"Data after saving: {uinfo}")  # طباعة البيانات بعد حفظها
-
+            uinfo = defaultdict(lambda: defaultdict(lambda: {"msg": 0}))
 @ABH.on(events.NewMessage(pattern="توب اليومي|المتفاعلين"))
 async def show_res(event):
     await asyncio.sleep(2)
     guid = event.chat_id
-    uinfo = load_from_file()  # تحميل البيانات من الملف عند الاستعلام
-    print(f"Loaded data: {uinfo}")  # طباعة البيانات المحمّلة
     sorted_users = sorted(
         uinfo.items(), 
         key=lambda x: x[1].get(guid, {}).get('msg', 0), 
@@ -188,21 +162,15 @@ async def show_res(event):
         await event.reply("\n".join(top_users))
     else:
         await event.reply("لا توجد بيانات لعرضها.")
-
 @ABH.on(events.NewMessage(pattern='رسائلي'))
-async def show_my_messages(event):
+async def show_res(event):
     await asyncio.sleep(2)
     uid1 = event.sender.first_name
     unm1 = event.sender_id
     guid1 = event.chat_id
-    uinfo = load_from_file()  # تحميل البيانات من الملف عند الاستعلام
-    print(f"Loaded data for user {unm1}, group {guid1}: {uinfo}")  # طباعة البيانات للمستخدم والمجموعة
     if unm1 in uinfo and guid1 in uinfo[unm1]:
-        msg_count = uinfo[unm1][guid1]["msg"]  # استرجاع عدد الرسائل من الملف
+        msg_count = uinfo[unm1][guid1]["msg"]
         await event.reply(f"المستخدم [{uid1}](tg://user?id={unm1}) أرسلت {msg_count} رسالة في هذه المجموعة.")
-    else:
-        await event.reply("لا توجد بيانات رسائل لهذا المستخدم في هذه المجموعة.")
-
 @ABH.on(events.NewMessage(pattern='رسائله|رسائلة|رسائل|الرسائل'))
 async def his_res(event):
     r = await event.get_reply_message()  
@@ -212,14 +180,9 @@ async def his_res(event):
     uid1 = r.sender.first_name
     unm1 = r.sender_id
     guid1 = event.chat_id
-    uinfo = load_from_file()  # تحميل البيانات من الملف عند الاستعلام
-    print(f"Loaded data for replied user {unm1}, group {guid1}: {uinfo}")  # طباعة البيانات للمستخدم والرد
     if unm1 in uinfo and guid1 in uinfo[unm1]:
-        msg_count = uinfo[unm1][guid1]["msg"]  # استرجاع عدد الرسائل من الملف
+        msg_count = uinfo[unm1][guid1]["msg"]
         await event.reply(f"المستخدم [{uid1}](tg://user?id={unm1}) أرسل {msg_count} رسالة في هذه المجموعة.")
-    else:
-        await event.reply("لا توجد بيانات رسائل لهذا المستخدم في هذه المجموعة.")
-
 @ABH.on(events.NewMessage(pattern='الرسائل'))
 async def title(event):
     await event.reply('اهلا صديقي , اوامر الرسائل \n ارسل `المتفاعلين` ل اضهار توب 15 تفاعل \n ارسل `رسائلي` ل اضهار رسائلك في اخر يوم \n ارسل `رسائله` ل اضهار رساله الشخص بالرد \n استمتع')
