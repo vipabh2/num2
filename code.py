@@ -60,35 +60,33 @@ async def promote_handler(event):
     match = event.pattern_match
     cost = int(match.group(1)) if match.group(1) else 313
     giver_id = str(event.sender_id)
-    receiver_id = str(message.sender_id)
+    sender_id = str(message.sender_id)
     receiver_name = message.sender.first_name or "مجهول"
     giver_name = (await event.get_sender()).first_name or "مجهول"
     gid = str(event.chat_id)
-    add_user(receiver_id, gid, receiver_name, points, cost)
+    add_user(sender_id, gid, receiver_name, points, cost)
     add_user(giver_id, gid, giver_name, points, cost)
-    if points[gid][receiver_id]["status"] == "مرفوع":
+    if points[gid][sender_id]["status"] == "مرفوع":
         await event.reply(f"{receiver_name} مرفوع من قبل.")
         return
     if cost < 1:
-        await event.reply("🚫 أقل مبلغ مسموح للرفع هو 1.")
+        await event.reply("أقل مبلغ مسموح للرفع هو 1.")
         return
     giver_money = points[gid][giver_id]["money"]
     min_required = 10
     if giver_money < min_required:
-        await event.reply(f"❌ رصيدك {giver_money}، والحد الأدنى للرفع هو {min_required}.")
+        await event.reply(f" رصيدك {giver_money}، والحد الأدنى للرفع هو {min_required}.")
         return
     if giver_money < cost:
-        await event.reply(f"❌ رصيدك لا يكفي. تحاول ترفع بـ {cost} فلوس ورصيدك فقط {giver_money}.")
+        await event.reply(f" رصيدك لا يكفي. تحاول ترفع بـ {cost} فلوس ورصيدك فقط {giver_money}.")
         return
     points[gid][giver_id]["money"] = giver_money - cost
-    points[gid][receiver_id]["status"] = "مرفوع"
-    points[gid][receiver_id]["giver"] = giver_id
-    points[gid][receiver_id]["m"] = cost
-    points[gid][receiver_id]["promote_value"] = cost
+    points[gid][sender_id]["status"] = "مرفوع"
+    points[gid][sender_id]["giver"] = giver_id
+    points[gid][sender_id]["m"] = cost
+    points[gid][sender_id]["promote_value"] = cost
     save_points(points)
-    add_points(receiver_id, gid, points, amount=5)
-    await event.reply(f"🌹 تم رفع {receiver_name} مقابل {cost} فلوس وتم منحه 5 نقاط.")
-
+    await event.reply(f" تم رفع {receiver_name} مقابل {cost} فلوس")
 @ABH.on(events.NewMessage(pattern='تنزيل سمب'))
 async def demote_handler(event):
     message = await event.get_reply_message()
