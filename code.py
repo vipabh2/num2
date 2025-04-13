@@ -31,13 +31,13 @@ def save_points(data, filename="points.json"):
     with open(filename, "w") as file:
         json.dump(data, file, indent=4)
 points = load_points()
-def add_points(uid, gid, points_dict, amount=0):
+def add_points(uid, gid, points_dict, cost=0):
     uid, gid = str(uid), str(gid)
     if uid not in points_dict:
         points_dict[uid] = {}
     if gid not in points_dict[uid]:
         points_dict[uid][gid] = {"points": 0}
-    points_dict[uid][gid]["points"] += amount
+    points_dict[uid][gid]["points"] += cost
     save_points(points_dict)
 @ABH.on(events.NewMessage(pattern=r'رفع سمب(?:\s+(\d+))?'))
 async def promote_handler(event):
@@ -74,7 +74,7 @@ async def promote_handler(event):
     points[gid][receiver_id]["m"] = cost
     points[gid][receiver_id]["promote_value"] = cost
     save_points(points)
-    add_points(receiver_id, gid, points, amount=5)
+    add_points(receiver_id, gid, points, cost=5)
     await event.reply(f"🌹 تم رفع {receiver_name} مقابل {cost} فلوس وتم منحه 5 نقاط.")
 
 @ABH.on(events.NewMessage(pattern='تنزيل سمب'))
@@ -358,7 +358,7 @@ async def faster_reult(event):
         gid = event.chat_id
         p = random.randint(1, 100)
         await event.reply(f'احسنت جواب موفق \n الوقت ↞ {seconds} \n تم اضافه (`{p}`) \n `{points[str(user_id)][str(gid)]['points']}` لفلوسك')
-        add_points(user_id, gid, points, amount=p)
+        add_points(user_id, gid, points, cost=p)
         answer = None
         start_time = None
     elif elapsed_time >= 10:
@@ -486,10 +486,10 @@ async def choice(event, user_choice):
     ) else "😢خسرت"
     if result == '🎉فزت':
         p = random.randint(10, 150)
-        add_points(user_id, gid, points, amount=p)
+        add_points(user_id, gid, points, cost=p)
     elif result == '🤝تعادل':
         p = random.randint(10, 50)
-        add_points(user_id, gid, points, amount=p)
+        add_points(user_id, gid, points, cost=p)
     await event.edit(f"[{n}](tg://user?id={user_id}) {choices[user_choice]}\n[مخفي](tg://user?id=7908156943) {bot_choice}\n\n{result} تم اضافة (` {p} `) لحسابك")
 @ABH.on(events.CallbackQuery(data=b"rock"))
 async def rock_callback(event):
@@ -659,7 +659,7 @@ async def check_sport(event):
         correct_answers = current_question.get('answer', [])
         if user_message in correct_answers:
             p = random.randint(50, 500)
-            add_points(user_id, gid, points, amount=p)
+            add_points(user_id, gid, points, cost=p)
             await event.reply(f"احسنت اجابة صحيحة 🫡 \n ربحت (`{p}`) \n فلوسك ↢ {points[str(user_id)][str(gid)]['points']}")
             del user_states_s[user_id]
         else:
@@ -952,7 +952,7 @@ async def check_quist(event):
             return
         if usermessage in answers_q:
             p = random.randint(50, 500)
-            add_points(user_id, gid, points, amount=p)
+            add_points(user_id, gid, points, cost=p)
             await event.reply(
                 f"هلا هلا طبوا الشيعة 🫡 \n ربحت (`{p}`) \n فلوسك ↢ {points[str(user_id)][str(gid)]['points']}"
             )
@@ -1385,7 +1385,7 @@ async def handle_guess(event):
                     gid = event.chat_id
                     p = random.randint(10, 50)
                     user_id = event.sender_id
-                    add_points(user_id, gid, points, amount=p)
+                    add_points(user_id, gid, points, cost=p)
                     await event.reply(f'🎉 مبارك , اللاعب ({sender_first_name}) وجد المحبس 💍!\n{format_board(game_board, numbers_board)} \n  فلوسك ↞ {points[str(user_id)][str(gid)]['points']}')
                     rest_game(chat_id)
                 else: 
@@ -1510,7 +1510,7 @@ async def guess(event):
         user_id = event.sender_id
         gid = event.chat_id
         p = random.randint(5, 100)
-        add_points(user_id, gid, points, amount=p)
+        add_points(user_id, gid, points, cost=p)
         await msg1.edit(f"🎉مُبارك! لقد فزت! \n ربحت (`{p}`) \n  فلوسك {points[str(user_id)][str(gid)]['points']}")
         game_active = False
     elif attempts >= max_attempts:
