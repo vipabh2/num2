@@ -39,6 +39,105 @@ def add_points(uid, gid, points_dict, amount=0):
         points_dict[uid][gid] = {"points": 0}
     points_dict[uid][gid]["points"] += amount
     save_points(points_dict)
+@ABH.on(events.NewMessage(pattern=r'رفع سمب(?:\s+(\d+))?'))
+async def promote_handler(event):
+    message = await event.get_reply_message()
+    if not message or not message.sender:
+        await event.reply("يجب الرد على شخص حتى ترفعه.")
+        return
+    match = event.pattern_match
+    cost = int(match.group(1)) if match.group(1) else 313
+    giver_id = str(event.sender_id)
+    receiver_id = str(message.sender_id)
+    receiver_name = message.sender.first_name or "مجهول"
+    giver_name = (await event.get_sender()).first_name or "مجهول"
+    gid = str(event.chat_id)
+    add_points(receiver_id, gid, receiver_name, points, cost)
+    add_points(giver_id, gid, giver_name, points, cost)
+    if points[gid][receiver_id]["status"] == "مرفوع":
+        await event.reply(f"{receiver_name} مرفوع من قبل.")
+        return
+    if cost < 1:
+        await event.reply("🚫 أقل مبلغ مسموح للرفع هو 1.")
+        return
+    giver_money = points[gid][giver_id]["money"]
+    min_required = 10
+    if giver_money < min_required:
+        await event.reply(f"❌ رصيدك {giver_money}، والحد الأدنى للرفع هو {min_required}.")
+        return
+    if giver_money < cost:
+        await event.reply(f"❌ رصيدك لا يكفي. تحاول ترفع بـ {cost} فلوس ورصيدك فقط {giver_money}.")
+        return
+    points[gid][giver_id]["money"] = giver_money - cost
+    points[gid][receiver_id]["status"] = "مرفوع"
+    points[gid][receiver_id]["giver"] = giver_id
+    points[gid][receiver_id]["m"] = cost
+    points[gid][receiver_id]["promote_value"] = cost
+    save_points(points)
+    add_points(receiver_id, gid, points, amount=5)
+    await event.reply(f"🌹 تم رفع {receiver_name} مقابل {cost} فلوس وتم منحه 5 نقاط.")
+
+@ABH.on(events.NewMessage(pattern='تنزيل سمب'))
+async def demote_handler(event):
+    message = await event.get_reply_message()
+    if not message or not message.sender:
+        await event.reply("متكدر تنزل العدم , سوي رد على شخص")
+        return
+    gid = str(event.chat_id)
+    sender_id = str(event.sender_id)
+    target_id = str(message.sender_id)
+    target_name = message.sender.first_name or "مجهول"
+    add_points(target_id, gid, target_name, points, 0)
+    add_points(sender_id, gid, event.sender.first_name, points, 0)
+    if points[gid][target_id]["status"] != "مرفوع":
+        await event.reply("المستخدم هاذ ما مرفوع من قبل😐")
+        return
+    giver_id = points[gid][target_id].get("giver")
+    executor_money = points[gid][sender_id]["money"]
+    promote_value = points[gid][target_id].get("promote_value", 313)
+    if sender_id == giver_id:
+        cost = int(promote_value * 1.5)
+    else:
+        cost = int(promote_value * 2)
+    if executor_money < cost:
+        await event.reply(f"ما تگدر تنزله لأن رصيدك {executor_money}، والكلفة المطلوبة {cost}")
+        return
+    points[gid][sender_id]["money"] -= cost
+    points[gid][target_id]["status"] = "عادي"
+    points[gid][target_id]["giver"] = None
+    points[gid][target_id]["promote_value"] = 0
+    save_points(points)
+    await event.reply("تم تنزيل المستخدم من قائمة السمبات.")
+
+@ABH.on(events.NewMessage(pattern='السمبات'))
+async def show_handler(event):
+    chat_id = str(event.chat_id)
+    if chat_id not in points or not points[chat_id]:
+        await event.reply("ماكو سمبات هنا بالمجموعة")
+        return
+    response = "قائمة الوردات👇\n"
+    removed_users = []
+    for uid in list(points[chat_id].keys()):
+        data = points[chat_id][uid]
+        if data.get("status") == "مرفوع":
+            status_icon = "🌹"
+            response += f"{status_icon} [{data['name']}](tg://user?id={uid}) ⇜ {data.get('promote_value', 0)}\n"
+        else:
+            removed_users.append(uid)
+    for uid in removed_users:
+        del points[chat_id][uid]
+    save_points(points)
+    await event.reply(response if response.strip() != "قائمة الوردات👇" else "ماكو وردات مرفوعين بالمجموعة", parse_mode="Markdown")
+
+@ABH.on(events.NewMessage(pattern='ثروتي'))
+async def m(event):
+    gid = str(event.chat_id)
+    sender_id = str(event.sender_id)
+    if gid not in points or sender_id not in points[gid]:
+        name = (await event.get_sender()).first_name or "مجهول"
+        add_points(sender_id, gid, name, points, cost=0)
+    m = points[gid][sender_id]["money"]
+    await event.reply(f'{m}')
 @ABH.on(events.NewMessage(pattern='النازية|الشعار'))
 async def nazi(event):
     n1 = """🟥🟥🟥🟥🟥🟥🟥🟥🟥
