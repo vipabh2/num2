@@ -66,13 +66,13 @@ async def promote_handler(event):
     gid = str(event.chat_id)
     add_user(uid, gid, receiver_name, points, cost)
     add_user(uid, gid, giver_name, points, cost)
-    if points[gid][sender_id]["status"] == "مرفوع":
+    if points[gid][uid]["status"] == "مرفوع":
         await event.reply(f"{receiver_name} مرفوع من قبل.")
         return
     if cost < 1:
         await event.reply("أقل مبلغ مسموح للرفع هو 1.")
         return
-    giver_money = points[str(sender_id)][str(gid)]['points']
+    giver_money = points[str(uid)][str(gid)]['points']
     min_required = 10
     if giver_money < min_required:
         await event.reply(f" رصيدك {giver_money}، والحد الأدنى للرفع هو {min_required}.")
@@ -81,10 +81,10 @@ async def promote_handler(event):
         await event.reply(f" رصيدك لا يكفي. تحاول ترفع بـ {cost} فلوس ورصيدك فقط {giver_money}.")
         return
     points[gid][uid]["money"] = giver_money - cost
-    points[gid][sender_id]["status"] = "مرفوع"
-    points[gid][sender_id]["giver"] = uid
-    points[gid][sender_id]["m"] = cost
-    points[gid][sender_id]["promote_value"] = cost
+    points[gid][uid]["status"] = "مرفوع"
+    points[gid][uid]["giver"] = uid
+    points[gid][uid]["m"] = cost
+    points[gid][uid]["promote_value"] = cost
     save_points(points)
     await event.reply(f" تم رفع {receiver_name} مقابل {cost} فلوس")
 @ABH.on(events.NewMessage(pattern='تنزيل سمب'))
