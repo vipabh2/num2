@@ -39,7 +39,7 @@ def add_points(uid, gid, points_dict, amount=0):
         points_dict[uid][gid] = {"points": 0}
     points_dict[uid][gid]["points"] += amount
     save_points(points_dict)
-def add_user(uid, gid, name, rose, cost, sender_id):
+def add_user(uid, gid, name, rose, cost):
     uid, gid = str(uid), str(gid)
     if gid not in rose:
         rose[gid] = {}
