@@ -144,8 +144,8 @@ async def show_handler(event):
 @ABH.on(events.NewMessage(pattern='ثروتي'))
 async def m(event):
     gid = str(event.chat_id)
-    sender_id = str(event.sender_id)
-    if gid not in points or sender_id not in points[gid]:
+    user_id = str(event.sender_id)
+    if gid not in points or user_id not in points[gid]:
         m = points[str(user_id)][str(gid)]['points']
     await event.reply(f'{m}')
 @ABH.on(events.NewMessage(pattern='النازية|الشعار'))
