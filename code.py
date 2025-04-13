@@ -146,13 +146,13 @@ async def m(event):
     gid = str(event.chat_id)
     sender_id = str(event.sender_id)
     if gid not in points or sender_id not in points[gid]:
-        m = points[gid][sender_id]["money"]
+        m = points[str(user_id)][str(gid)]['points']
     await event.reply(f'{m}')
 @ABH.on(events.NewMessage(pattern='النازية|الشعار'))
 async def nazi(event):
     n1 = """🟥🟥🟥🟥🟥🟥🟥🟥🟥
 🟥⬜⬜⬜⬜⬜⬜⬜🟥
-🟥⬜⬛⬜⬛⬛⬛⬜🟥
+🟥⬜⬛⬜⬛⬛⬛⬜🟥[]
 🟥⬜️⬛️⬜️⬛️⬜️⬜️⬜️🟥
 🟥⬜️⬛️⬛️⬛️⬛️⬛️⬜️🟥
 🟥⬜️⬜️⬜️⬛️⬜️⬛️⬜️🟥
