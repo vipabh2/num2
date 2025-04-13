@@ -72,7 +72,7 @@ async def promote_handler(event):
     if cost < 1:
         await event.reply("أقل مبلغ مسموح للرفع هو 1.")
         return
-    giver_money = points[gid][giver_id]["money"]
+    giver_money = points[str(sender_id)][str(gid)]['points']
     min_required = 10
     if giver_money < min_required:
         await event.reply(f" رصيدك {giver_money}، والحد الأدنى للرفع هو {min_required}.")
@@ -103,7 +103,7 @@ async def demote_handler(event):
         await event.reply("المستخدم هاذ ما مرفوع من قبل😐")
         return
     giver_id = points[gid][target_id].get("giver")
-    executor_money = points[gid][sender_id]["money"]
+    executor_money = points[str(sender_id)][str(gid)]['points']
     promote_value = points[gid][target_id].get("promote_value", 313)
     if sender_id == giver_id:
         cost = int(promote_value * 1.5)
