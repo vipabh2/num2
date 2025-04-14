@@ -97,24 +97,20 @@ async def demote_handler(event):
     target_name = message.sender.first_name or "مجهول"
     add_user(target_id, gid, target_name, points, 0)
     add_user(sender_id, gid, event.sender.first_name, points, 0)
-    if points[gid][target_id]["status"] != "مرفوع":
+    if points[gid].get(target_id, {}).get("status") != "مرفوع":
         await event.reply("المستخدم هاذ ما مرفوع من قبل😐")
         return
     giver_id = points[gid][target_id].get("giver")
-    executor_money = points[str(sender_id)][str(gid)]['points']
+    executor_money = points[sender_id][gid]['points']
     promote_value = points[gid][target_id].get("promote_value", 313)
-    if sender_id == giver_id:
-        amount = int(promote_value * 1.5)
-    else:
-        amount = int(promote_value * 2)
+    amount = int(promote_value * (1.5 if sender_id == giver_id else 2))
     if executor_money < amount:
         await event.reply(f"ما تگدر تنزله لأن رصيدك {executor_money}، والكلفة المطلوبة {amount}")
         return
-    points[gid][sender_id]["money"] -= amount
-    if target_id in points and gid in points[target_id]:
-        del points[target_id][gid]
-        if not points[target_id]:
-            del points[target_id]
+    points[sender_id][gid]['points'] -= amount
+    del points[gid][target_id]
+    if not points[gid]:
+        del points[gid]
     save_points(points)
     await event.reply("تم تنزيل المستخدم من قائمة السمبات وتم حذفه من السجل.")
 @ABH.on(events.NewMessage(pattern='السمبات'))
