@@ -1,6 +1,7 @@
 from telethon.tl.types import ChatBannedRights, ChannelParticipantAdmin, ChannelParticipantCreator
 from telethon.tl.functions.channels import EditBannedRequest, GetParticipantRequest
 import requests, os, operator, asyncio, random, uuid, re, json, time
+from telethon.tl.functions.channels import GetParticipantRequest
 from playwright.async_api import async_playwright # type: ignore
 from database import store_whisper, get_whisper #type: ignore
 from db import save_date, get_saved_date #type: ignore
@@ -27,25 +28,36 @@ hint_gid = -1002168230471
 bot = "Anymous"
 @ABH.on(events.NewMessage(pattern='لقبي'))
 async def nickname(event):
-    chat = await event.get_chat()
-    sender_id = event.sender_id
-    participant = await ABH.get_permissions(chat, sender_id)
-    if participant.is_admin:
-        nickname = participant.custom_title or "لا يوجد لقب"
+    try:
+        chat = await event.get_input_chat()
+        sender_id = event.sender_id
+        result = await ABH(GetParticipantRequest(
+            channel=chat,
+            participant=sender_id
+        ))
+        participant = result.participant
+        nickname = getattr(participant, 'rank', None) or "لا يوجد لقب"
         await event.reply(f"لقبك ↞ {nickname}")
-    else:
-        await event.reply("المستخدم ليس مشرفًا.")
+    except Exception:
+        await event.reply("المستخدم ليس مشرفًا أو لا يمكن العثور عليه.")
 @ABH.on(events.NewMessage(pattern='لقبه'))
 async def nickname_r(event):
-    chat = await event.get_chat()
-    msg = await event.get_reply_message()
-    sender_id = msg.sender_id
-    participant = await ABH.get_permissions(chat, sender_id)
-    if participant.is_admin:
-        nickname = participant.custom_title or "لا يوجد لقب"
+    try:
+        msg = await event.get_reply_message()
+        if not msg:
+            await event.reply("رد على رسالة المستخدم أولًا.")
+            return
+        chat = await event.get_input_chat()
+        sender_id = msg.sender_id
+        result = await ABH(GetParticipantRequest(
+            channel=chat,
+            participant=sender_id
+        ))
+        participant = result.participant
+        nickname = getattr(participant, 'rank', None) or "مشرف"
         await event.reply(f"لقبه ↞ {nickname}")
-    else:
-        await event.reply("المستخدم ليس مشرفًا.")
+    except Exception:
+        await event.reply("المستخدم ليس مشرفًا أو لا يمكن العثور عليه.")
 @ABH.on(events.MessageEdited)
 async def edited(event):
     msg = event.message
