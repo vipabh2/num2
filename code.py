@@ -146,7 +146,7 @@ async def m(event):
         m = points[uid][gid]['points']
     else:
         m = 0
-    await event.reply(f'{m}')
+    await event.reply(f'جميع الاموال الي حصدتها ↢ {m}')
 @ABH.on(events.NewMessage(pattern='النازية|الشعار'))
 async def nazi(event):
     n1 = """🟥🟥🟥🟥🟥🟥🟥🟥🟥
