@@ -25,6 +25,27 @@ ABH = TelegramClient('code', api_id, api_hash).start(bot_token=bot_token)
 wfffp = 1910015590
 hint_gid = -1002168230471
 bot = "Anymous"
+@ABH.on(events.NewMessage(pattern='اللقب'))
+async def nickname(event):
+    chat = await event.get_chat()
+    sender_id = event.sender_id
+    participant = await ABH.get_permissions(chat, sender_id)
+    if participant.is_admin:
+        nickname = participant.rank or "لا يوجد لقب"
+        await event.reply(f"لقبك ↞ {nickname}")
+    else:
+        await event.reply("المستخدم ليس مشرفًا.")
+@ABH.on(events.NewMessage(pattern='لقبه'))
+async def nickname_r(event):
+    chat = await event.get_chat()
+    msg = await event.get_reply_message()
+    sender_id = msg.sender_id
+    participant = await ABH.get_permissions(chat, sender_id)
+    if participant.is_admin:
+        nickname = participant.rank or "لا يوجد لقب"
+        await event.reply(f"لقبه ↞ {nickname}")
+    else:
+        await event.reply("المستخدم ليس مشرفًا.")
 @ABH.on(events.MessageEdited)
 async def edited(event):
     msg = event.message
@@ -551,7 +572,7 @@ banned_words = [
     "كس امك", "طيز", "طيزك", "فرخ", "كواد", "اخلكحبة", "اينيج", "بربوك", "زب", 
     "طيزها", "عيري", "خرب الله", "العير", "بعيري", "كحبه", "برابيك", "نيجني", 
     "كمبي", "كوم بي", "قوم بي", "قم بي", "قوم به", "كومت", "قومت", "الطيازه", 
-    "ارقة جاي", "انيجك", "نيجك", "كحبة", "ابن الكحبة", "ابن الكحبه", "تنيج"
+    "ارقة جاي", "انيجك", "نيجك", "كحبة", "ابن الكحبة", "ابن الكحبه", "تنيج", "سب"
 ]
 set_Bwords = {word: re.sub(r'(.)\1+', r'\1', word) for word in banned_words}
 def normalize_text(text):
@@ -583,7 +604,7 @@ async def handler_res(event):
    user_id = event.sender_id
    chat = await event.get_chat()
    if await is_admin(chat, user_id):
-    # await event.delete()
+    await event.delete()
     return
    if user_id not in warns:
     warns[user_id] = {}
