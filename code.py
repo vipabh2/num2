@@ -119,7 +119,7 @@ async def show_handler(event):
     if chat_id not in points or not points[chat_id]:
         await event.reply("ماكو سمبات هنا بالمجموعة")
         return
-    response = "قائمة الوردات👇\n"
+    response = "قائمة السمبات👇\n"
     removed_users = []
     for uid in list(points[chat_id].keys()):
         data = points[chat_id][uid]
@@ -132,7 +132,7 @@ async def show_handler(event):
         if points[chat_id].get(uid) and points[chat_id][uid].get("status") != "مرفوع":
             del points[chat_id][uid]
     save_points(points)
-    await event.reply(response if response.strip() != "قائمة الوردات👇" else "ماكو وردات مرفوعين بالمجموعة", parse_mode="Markdown")
+    await event.reply(response if response.strip() != "قائمة السمبات👇" else "ماكو وردات مرفوعين بالمجموعة", parse_mode="Markdown")
 @ABH.on(events.NewMessage(pattern='ثروتي'))
 async def m(event):
     uid = str(event.sender_id)
