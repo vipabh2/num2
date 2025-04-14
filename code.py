@@ -6,6 +6,7 @@ from database import store_whisper, get_whisper #type: ignore
 from db import save_date, get_saved_date #type: ignore
 from telethon.tl.types import KeyboardButtonCallback
 from telethon import TelegramClient, events, Button
+from telethon.tl.types import MessageEntityUrl
 from hijri_converter import Gregorian
 from telethon.tl.custom import Button
 from collections import defaultdict
@@ -21,6 +22,33 @@ api_id = os.getenv('API_ID')
 api_hash = os.getenv('API_HASH')  
 bot_token = os.getenv('BOT_TOKEN')
 ABH = TelegramClient('code', api_id, api_hash).start(bot_token=bot_token)
+wfffp = 1910015590
+hint_gid = -1002168230471
+bot = "Anymous"
+@ABH.on(events.MessageEdited)
+async def test(event):
+    msg = event.message
+    chat = event.chat_id
+    if chat != -1001784332159:
+        return
+    if any(isinstance(entity, MessageEntityUrl) for entity in msg.entities):
+        return
+    has_media = bool(msg.media)
+    has_document = bool(msg.document)
+    has_url = any(isinstance(entity, MessageEntityUrl) for entity in (msg.entities or []))
+    perms = await ABH.get_permissions(event.chat_id, event.sender_id)
+    uid = event.sender_id
+    if (has_media or has_document or has_url) and not (perms.is_admin or perms.is_creator):
+        sender = await event.get_sender()
+        nid = sender.first_name
+        msg_link = f"https://t.me/{event.chat.username}/{event.id}" if event.chat.username else None
+        message = event.message
+        if message.edit_date:
+            msg = await ABH.send_message(hint_gid, f'تم #تعديل رسالة مريبة \n رابط الرسالة ↢ **{msg_link}** \n ايدي المستخدم ↢ `{uid}` \n اسم المستخدم ↢ `{nid}`')
+            await asyncio.sleep(60)
+            await event.delete()
+    else:
+        return
 def load_points(filename="points.json"):
     try:
         with open(filename, "r") as file:
@@ -61,19 +89,21 @@ async def promote_handler(event):
     amount = int(match.group(1)) if match.group(1) else 313
     uid = str(event.sender_id)
     target_id = str(message.sender_id)
-    receiver_name = message.sender.first_name or "مجهول"
     giver_name = (await event.get_sender()).first_name or "مجهول"
+    if target_id == wfffp:
+        await event.reply(f'جاري رفع {giver_name} سمب')
+    receiver_name = message.sender.first_name or "مجهول"
     gid = str(event.chat_id)
     add_user(target_id, gid, receiver_name, points, 0)
     add_user(uid, gid, giver_name, points, 0)
     if points[gid][target_id].get("status") == "مرفوع":
         await event.reply(f"{receiver_name} مرفوع من قبل.")
         return
-    if amount < 1:
-        await event.reply("أقل مبلغ مسموح للرفع هو 1.")
+    if amount < 1000:
+        await event.reply("أقل مبلغ مسموح للرفع هو 313.")
         return
     giver_money = points[uid][gid]['points']
-    if giver_money < 10:
+    if giver_money < 1000:
         await event.reply(f" رصيدك {giver_money}، والحد الأدنى للرفع هو 10.")
         return
     if giver_money < amount:
@@ -124,7 +154,7 @@ async def show_handler(event):
     for uid in list(points[chat_id].keys()):
         data = points[chat_id][uid]
         if data.get("status") == "مرفوع":
-            status_icon = "🌹"
+            status_icon = "👌"
             response += f"{status_icon} [{data['name']}](tg://user?id={uid}) ⇜ {data.get('promote_value', 0)}\n"
         else:
             removed_users.append(uid)
@@ -235,7 +265,7 @@ async def msgs(event):
     global uinfo
     if event.is_group:
         now = datetime.now()
-        uid = event.sender.first_name if event.sender else "**ماعنده اسم**"
+        uid = event.sender.first_name if event.sender else "الاسم غير متوفر"
         unm = event.sender_id
         guid = event.chat_id
         user_data = uinfo[unm][guid]
@@ -277,7 +307,7 @@ async def show_res(event):
 @ABH.on(events.NewMessage(pattern='رسائله|رسائلة|رسائل|الرسائل'))
 async def his_res(event):
     r = await event.get_reply_message()  
-    await asyncio.sleep(2)
+    await asyncio.sleep(1)
     if not r:
         return
     uid1 = r.sender.first_name
@@ -329,6 +359,7 @@ async def faster_players(event):
         is_on = True
     else:
         await event.reply('ماكو لاعبين 🙃')
+s = random.randint(6, 8)
 @ABH.on(events.NewMessage(pattern="(?i)تم$"))
 async def faster_done(event):
     global answer, is_on, start_time
@@ -338,9 +369,11 @@ async def faster_done(event):
         for _ in range(5):
             word = fake.word()
             answer = (word)
+            await event.respond('راقب الكلمة 👇')
+            await asyncio.sleep(1)
             await event.respond(f'✍ اكتب ⤶ {answer}')
             start_time = time.time()
-            await asyncio.sleep(10)
+            await asyncio.sleep(s)
         points_list = "\n".join([f"{info['name']} - {info['score']} نقطة" for info in res.values()])
         await event.reply(f"**ترتيب اللاعبين بالنقاط**\n{points_list}")
         is_on = False
@@ -374,7 +407,6 @@ async def faster_reult(event):
             points_list = "\n".join([f"{pid} -> {info['score']} نقطة" for pid, info in res.items()])
             await event.reply(f"**ترتيب اللاعبين بالنقاط**\n{points_list}")
             is_on = False
-
 @ABH.on(events.NewMessage(pattern=r'(ترجمة|ترجمه)'))
 async def translation(event):
     translator = Translator()
@@ -545,6 +577,8 @@ warns = {}
 @ABH.on(events.NewMessage)
 async def handler_res(event):
  if event.is_group:
+  sender = await event.get_sender()
+  name = sender.first_name
   message_text = event.raw_text.strip()
   if check_message(message_text):  
    user_id = event.sender_id
@@ -561,6 +595,7 @@ async def handler_res(event):
    await msg.delete()
    if warns[user_id][chat.id] == 2:
     await ABH(EditBannedRequest(chat.id, user_id, restrict_rights))
+    await event.send_message(hint_gid, f"تم تقييد المستخدم {name} \n بواسطة {bot} \n تحذيراته {warns}")
     warns[user_id][chat.id] = 0
     await asyncio.sleep(20 * 60)
     await ABH(EditBannedRequest(chat.id, user_id, unrestrict_rights))
