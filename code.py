@@ -26,13 +26,14 @@ wfffp = 1910015590
 hint_gid = -1002168230471
 bot = "Anymous"
 @ABH.on(events.MessageEdited)
-async def test(event):
+async def edited(event):
     msg = event.message
     chat = event.chat_id
     if chat != -1001784332159:
         return
-    if any(isinstance(entity, MessageEntityUrl) for entity in msg.entities):
-        return
+    if msg.entities:
+        if any(isinstance(entity, MessageEntityUrl) for entity in msg.entities):
+            return
     has_media = bool(msg.media)
     has_document = bool(msg.document)
     has_url = any(isinstance(entity, MessageEntityUrl) for entity in (msg.entities or []))
