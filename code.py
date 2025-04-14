@@ -25,13 +25,13 @@ ABH = TelegramClient('code', api_id, api_hash).start(bot_token=bot_token)
 wfffp = 1910015590
 hint_gid = -1002168230471
 bot = "Anymous"
-@ABH.on(events.NewMessage(pattern='اللقب'))
+@ABH.on(events.NewMessage(pattern='لقبي'))
 async def nickname(event):
     chat = await event.get_chat()
     sender_id = event.sender_id
     participant = await ABH.get_permissions(chat, sender_id)
     if participant.is_admin:
-        nickname = participant.rank or "لا يوجد لقب"
+        nickname = participant.custom_title or "لا يوجد لقب"
         await event.reply(f"لقبك ↞ {nickname}")
     else:
         await event.reply("المستخدم ليس مشرفًا.")
@@ -42,7 +42,7 @@ async def nickname_r(event):
     sender_id = msg.sender_id
     participant = await ABH.get_permissions(chat, sender_id)
     if participant.is_admin:
-        nickname = participant.rank or "لا يوجد لقب"
+        nickname = participant.custom_title or "لا يوجد لقب"
         await event.reply(f"لقبه ↞ {nickname}")
     else:
         await event.reply("المستخدم ليس مشرفًا.")
