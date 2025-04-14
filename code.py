@@ -46,43 +46,38 @@ def translate_rights_lines(rights_obj):
         emoji = "👍🏾" if status else "👎🏾"
         lines.append(f"{emoji} ⇜ {name}")
     return "\n".join(lines) if lines else "لا يوجد صلاحيات"
-@ABH.on(events.NewMessage(pattern='صلاحياتي'))
-async def my_rights(event):
-    try:
-        chat = await event.get_input_chat()
-        sender_id = event.sender_id
-        result = await ABH(GetParticipantRequest(channel=chat, participant=sender_id))
-        translated = translate_rights_lines(result.participant.admin_rights)
-        await event.reply(f"صلاحياتك:\n{translated}")
-    except Exception:
-        await event.reply("لا يمكن عرض الصلاحيات.")
-@ABH.on(events.NewMessage(pattern='صلاحياته'))
+@ABH.on(events.NewMessage(pattern=r'^صلاحياته(?: (.+))?$'))
 async def his_rights(event):
     try:
-        msg = await event.get_reply_message()
-        if not msg:
-            await event.reply("رد على رسالة المستخدم أولًا.")
-            return
         chat = await event.get_input_chat()
-        sender_id = msg.sender_id
-        result = await ABH(GetParticipantRequest(channel=chat, participant=sender_id))
+        match = event.pattern_match.group(1)
+        if match:
+            target = match
+        else:
+            reply = await event.get_reply_message()
+            if not reply:
+                await event.reply("استخدم الرد على رسالة المستخدم أو أرسل معرفه بعد الأمر.")
+                return
+            target = reply.sender_id
+        result = await ABH(GetParticipantRequest(channel=chat, participant=target))
         translated = translate_rights_lines(result.participant.admin_rights)
-        await event.reply(f"صلاحياته:\n{translated}")
+        await event.reply(f"صلاحياته\n{translated}")
     except Exception:
         await event.reply("لا يمكن عرض الصلاحيات.")
-@ABH.on(events.NewMessage(pattern='لقبه'))
+@ABH.on(events.NewMessage(pattern=r'^لقبه(?: (.+))?$'))
 async def nickname_r(event):
     try:
-        msg = await event.get_reply_message()
-        if not msg:
-            await event.reply("رد على رسالة المستخدم أولًا.")
-            return
         chat = await event.get_input_chat()
-        sender_id = msg.sender_id
-        result = await ABH(GetParticipantRequest(
-            channel=chat,
-            participant=sender_id
-        ))
+        match = event.pattern_match.group(1)
+        if match:
+            target = match
+        else:
+            reply = await event.get_reply_message()
+            if not reply:
+                await event.reply("استخدم الرد على رسالة المستخدم أو أرسل معرفه بعد الأمر.")
+                return
+            target = reply.sender_id
+        result = await ABH(GetParticipantRequest(channel=chat, participant=target))
         participant = result.participant
         nickname = getattr(participant, 'rank', None) or "مشرف"
         await event.reply(f"لقبه ↞ {nickname}")
