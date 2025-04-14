@@ -138,13 +138,14 @@ async def show_handler(event):
         del points[chat_id][uid]
     save_points(points)
     await event.reply(response if response.strip() != "قائمة الوردات👇" else "ماكو وردات مرفوعين بالمجموعة", parse_mode="Markdown")
-
 @ABH.on(events.NewMessage(pattern='ثروتي'))
 async def m(event):
-    gid = str(event.chat_id)
     uid = str(event.sender_id)
-    if gid not in points or uid not in points[gid]:
-        m = points[str(uid)][str(gid)]['points']
+    gid = str(event.chat_id)
+    if uid in points and gid in points[uid]:
+        m = points[uid][gid]['points']
+    else:
+        m = 0
     await event.reply(f'{m}')
 @ABH.on(events.NewMessage(pattern='النازية|الشعار'))
 async def nazi(event):
