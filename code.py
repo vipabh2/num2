@@ -39,7 +39,7 @@ def add_points(uid, gid, points_dict, amount=0):
         points_dict[uid][gid] = {"points": 0}
     points_dict[uid][gid]["points"] += amount
     save_points(points_dict)
-def add_user(uid, gid, name, rose, cost):
+def add_user(uid, gid, name, rose, amount):
     uid, gid = str(uid), str(gid)
     if gid not in rose:
         rose[gid] = {}
@@ -48,7 +48,7 @@ def add_user(uid, gid, name, rose, cost):
             "name": name,
             "status": "عادي",
             "giver": None,
-            "m": cost,
+            "m": amount,
             "promote_value": 0
         }
 @ABH.on(events.NewMessage(pattern=r'رفع سمب(?:\s+(\d+))?'))
@@ -58,18 +58,18 @@ async def promote_handler(event):
         await event.reply("يجب الرد على شخص حتى ترفعه.")
         return
     match = event.pattern_match
-    cost = int(match.group(1)) if match.group(1) else 313
+    amount = int(match.group(1)) if match.group(1) else 313
     uid = str(event.sender_id)
     sender_id = str(message.sender_id)
     receiver_name = message.sender.first_name or "مجهول"
     giver_name = (await event.get_sender()).first_name or "مجهول"
     gid = str(event.chat_id)
-    add_user(uid, gid, receiver_name, points, cost)
-    add_user(uid, gid, giver_name, points, cost)
+    add_user(uid, gid, receiver_name, points, amount)
+    add_user(uid, gid, giver_name, points, amount)
     if points[gid][uid]["status"] == "مرفوع":
         await event.reply(f"{receiver_name} مرفوع من قبل.")
         return
-    if cost < 1:
+    if amount < 1:
         await event.reply("أقل مبلغ مسموح للرفع هو 1.")
         return
     giver_money = points[str(uid)][str(gid)]['points']
@@ -77,16 +77,16 @@ async def promote_handler(event):
     if giver_money < min_required:
         await event.reply(f" رصيدك {giver_money}، والحد الأدنى للرفع هو {min_required}.")
         return
-    if giver_money < cost:
-        await event.reply(f" رصيدك لا يكفي. تحاول ترفع بـ {cost} فلوس ورصيدك فقط {giver_money}.")
+    if giver_money < amount:
+        await event.reply(f" رصيدك لا يكفي. تحاول ترفع بـ {amount} فلوس ورصيدك فقط {giver_money}.")
         return
-    points[gid][uid]["money"] = giver_money - cost
+    points[gid][uid]["money"] = giver_money - amount
     points[gid][uid]["status"] = "مرفوع"
     points[gid][uid]["giver"] = uid
-    points[gid][uid]["m"] = cost
-    points[gid][uid]["promote_value"] = cost
+    points[gid][uid]["m"] = amount
+    points[gid][uid]["promote_value"] = amount
     save_points(points)
-    await event.reply(f" تم رفع {receiver_name} مقابل {cost} فلوس")
+    await event.reply(f" تم رفع {receiver_name} مقابل {amount} فلوس")
 @ABH.on(events.NewMessage(pattern='تنزيل سمب'))
 async def demote_handler(event):
     message = await event.get_reply_message()
@@ -106,13 +106,13 @@ async def demote_handler(event):
     executor_money = points[str(sender_id)][str(gid)]['points']
     promote_value = points[gid][target_id].get("promote_value", 313)
     if sender_id == giver_id:
-        cost = int(promote_value * 1.5)
+        amount = int(promote_value * 1.5)
     else:
-        cost = int(promote_value * 2)
-    if executor_money < cost:
-        await event.reply(f"ما تگدر تنزله لأن رصيدك {executor_money}، والكلفة المطلوبة {cost}")
+        amount = int(promote_value * 2)
+    if executor_money < amount:
+        await event.reply(f"ما تگدر تنزله لأن رصيدك {executor_money}، والكلفة المطلوبة {amount}")
         return
-    points[gid][sender_id]["money"] -= cost
+    points[gid][sender_id]["money"] -= amount
     points[gid][target_id]["status"] = "عادي"
     points[gid][target_id]["giver"] = None
     points[gid][target_id]["promote_value"] = 0
