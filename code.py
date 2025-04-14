@@ -60,7 +60,6 @@ async def promote_handler(event):
     match = event.pattern_match
     amount = int(match.group(1)) if match.group(1) else 313
     uid = str(event.sender_id)
-    sender_id = str(message.sender_id)
     receiver_name = message.sender.first_name or "مجهول"
     giver_name = (await event.get_sender()).first_name or "مجهول"
     gid = str(event.chat_id)
@@ -116,9 +115,12 @@ async def demote_handler(event):
     points[gid][target_id]["status"] = "عادي"
     points[gid][target_id]["giver"] = None
     points[gid][target_id]["promote_value"] = 0
+    uid = target_id
+    if uid in points and gid in points[uid]:
+        if "points" in points[uid][gid]:
+            del points[uid][gid]["points"]
     save_points(points)
-    await event.reply("تم تنزيل المستخدم من قائمة السمبات.")
-
+    await event.reply("تم تنزيل المستخدم من قائمة السمبات وتم حذف نقاطه.")
 @ABH.on(events.NewMessage(pattern='السمبات'))
 async def show_handler(event):
     chat_id = str(event.chat_id)
