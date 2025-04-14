@@ -112,15 +112,12 @@ async def demote_handler(event):
         await event.reply(f"ما تگدر تنزله لأن رصيدك {executor_money}، والكلفة المطلوبة {amount}")
         return
     points[gid][sender_id]["money"] -= amount
-    points[gid][target_id]["status"] = "عادي"
-    points[gid][target_id]["giver"] = None
-    points[gid][target_id]["promote_value"] = 0
-    uid = target_id
-    if uid in points and gid in points[uid]:
-        if "points" in points[uid][gid]:
-            del points[uid][gid]["points"]
+    if target_id in points and gid in points[target_id]:
+        del points[target_id][gid]
+        if not points[target_id]:
+            del points[target_id]
     save_points(points)
-    await event.reply("تم تنزيل المستخدم من قائمة السمبات وتم حذف نقاطه.")
+    await event.reply("تم تنزيل المستخدم من قائمة السمبات وتم حذفه من السجل.")
 @ABH.on(events.NewMessage(pattern='السمبات'))
 async def show_handler(event):
     chat_id = str(event.chat_id)
