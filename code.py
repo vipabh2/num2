@@ -578,8 +578,6 @@ warns = {}
 @ABH.on(events.NewMessage)
 async def handler_res(event):
  if event.is_group:
-  sender = await event.get_sender()
-  name = sender.first_name
   message_text = event.raw_text.strip()
   if check_message(message_text):  
    user_id = event.sender_id
@@ -596,7 +594,9 @@ async def handler_res(event):
    await msg.delete()
    if warns[user_id][chat.id] == 2:
     await ABH(EditBannedRequest(chat.id, user_id, restrict_rights))
-    await event.send_message(hint_gid, f'تم تقييد المستخدم {name} \n بواسطة {bot}')
+    sender = await event.get_sender()
+    name = sender.first_name
+    await ABH.send_message(hint_gid, f'تم تقييد المستخدم {name} \n بواسطة {bot}')
     warns[user_id][chat.id] = 0
     await asyncio.sleep(20 * 60)
     await ABH(EditBannedRequest(chat.id, user_id, unrestrict_rights))
