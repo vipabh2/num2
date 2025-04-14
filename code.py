@@ -133,7 +133,8 @@ async def show_handler(event):
         else:
             removed_users.append(uid)
     for uid in removed_users:
-        del points[chat_id][uid]
+        if points[chat_id].get(uid) and points[chat_id][uid].get("status") != "مرفوع":
+            del points[chat_id][uid]
     save_points(points)
     await event.reply(response if response.strip() != "قائمة الوردات👇" else "ماكو وردات مرفوعين بالمجموعة", parse_mode="Markdown")
 @ABH.on(events.NewMessage(pattern='ثروتي'))
