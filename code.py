@@ -1498,7 +1498,10 @@ async def handle_guess(event):
                     p = random.randint(10, 50)
                     user_id = event.sender_id
                     add_points(user_id, gid, points, amount=p)
-                    await event.reply(f'🎉 مبارك , اللاعب ({sender_first_name}) وجد المحبس 💍!\n{format_board(game_board, numbers_board)} \n  فلوسك ↞ {points[str(user_id)][str(gid)]['points']}')
+                    await event.reply(
+                        f'🎉 مبارك، اللاعب ({sender_first_name}) وجد المحبس 💍!\n'
+                        f'{format_board(game_board, numbers_board)}\n'
+                        f'فلوسك ↞ `{points[str(user_id)][str(gid)]["points"]}`')
                     rest_game(chat_id)
                 else: 
                     sender_first_name = event.sender.first_name
