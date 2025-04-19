@@ -1885,5 +1885,6 @@ async def time_run(event):
         with open(اسم_الملف, "r", encoding="utf-8") as ملف:
             وقت_التشغيل = json.load(ملف)
         await event.reply(f"وقت التشغيل هو: {وقت_التشغيل}")
-print(f'anymous is working at {وقت_التشغيل} ✓')
+hour = now.strftime("%I:%M %p")
+print(f'anymous is working at {hour} ✓')
 ABH.run_until_disconnected()
