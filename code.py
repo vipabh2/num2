@@ -1,13 +1,11 @@
 from telethon.tl.types import ChatBannedRights, ChannelParticipantAdmin, ChannelParticipantCreator
-from telethon.tl.types import KeyboardButtonCallback, MessageEntityUrl, Channel, ChannelParticipant
 from telethon.tl.functions.channels import EditBannedRequest, GetParticipantRequest
-import requests, os, operator, asyncio, random, uuid, re, json, time, aiohttp
-from telethon.tl.functions.channels import GetParticipantRequest
-from playwright.async_api import async_playwright # type: ignore
+from telethon.tl.types import KeyboardButtonCallback, MessageEntityUrl
+import requests, os, operator, asyncio, random, uuid, re, json, time
 from database import store_whisper, get_whisper #type: ignore
-from telethon.tl.functions.users import GetFullUserRequest
 from db import save_date, get_saved_date #type: ignore
 from telethon import TelegramClient, events, Button
+from playwright.async_api import async_playwright 
 from hijri_converter import Gregorian
 from telethon.tl.custom import Button
 from collections import defaultdict
@@ -25,6 +23,7 @@ bot_token = os.getenv('BOT_TOKEN')
 ABH = TelegramClient('code', api_id, api_hash).start(bot_token=bot_token)
 hint_gid = -1002168230471
 bot = "Anymous"
+wfffp = 1910015590
 rights_translation = {
     "change_info": "تغيير معلومات المجموعة",
     "post_messages": "نشر الرسائل",
@@ -158,7 +157,7 @@ async def promote_handler(event):
         await event.reply(f"{receiver_name} مرفوع من قبل.")
         return
     if amount < 1000:
-        await event.reply("أقل مبلغ مسموح للرفع هو 313.")
+        await event.reply("أقل مبلغ مسموح للرفع هو 1000.")
         return
     giver_money = points[uid][gid]['points']
     if giver_money < 1000:
@@ -234,7 +233,7 @@ async def m(event):
 async def nazi(event):
     n1 = """🟥🟥🟥🟥🟥🟥🟥🟥🟥
 🟥⬜⬜⬜⬜⬜⬜⬜🟥
-🟥⬜⬛⬜⬛⬛⬛⬜🟥[]
+🟥⬜⬛⬜⬛⬛⬛⬜🟥
 🟥⬜️⬛️⬜️⬛️⬜️⬜️⬜️🟥
 🟥⬜️⬛️⬛️⬛️⬛️⬛️⬜️🟥
 🟥⬜️⬜️⬜️⬛️⬜️⬛️⬜️🟥
@@ -271,7 +270,8 @@ async def start(event):
         Button.url(text="صنعهُ ب حب", url="https://t.me/K_4x1"),
         Button.url(text="رابط البوت", url="https://t.me/VIPABH_BOT"),        
         ]]
-    await event.respond("""
+    await event.respond(
+        """
 **أوامر البوت المخفي** 卐  
 ⌘ `اوامر التوب`  
    يحسب عدد رسائل مجموعتك.  
@@ -315,7 +315,7 @@ async def top(event):
     elif event.text == 'اوامر الحسبان':
         await event.reply('**اوامر الحسبان كآلاتي** \n *امر `/dates` يحسب لك كم باقي على رجب | شعبان |رمضان | محرم او تاريخ خاص فيك')
     elif event.text == 'اوامر الميمز':
-        await event.reply('**اوامر الحسبان كآلاتي** \n *امر `/dates` يحسب لك كم باقي على رجب | شعبان |رمضان | محرم او تاريخ خاص فيك')
+        await event.reply('**اوامر الميمز كآلاتي** \n *امر `مخفي طكة زيج` \n بالرد ليرسل بصمه زيج للرساله المردود عليها \n `هاي بعد` ارسال فيديو للتعبير عن عدم فهمك لكلام الشخص \n `ميعرف` ارسال فيديو يعبر عن فهمك لموضوع عكس الشخص المقابل \n `استرجل`')
 uinfo = {}
 uinfo = defaultdict(lambda: defaultdict(lambda: {"msg": 0}))
 @ABH.on(events.NewMessage)
@@ -1326,6 +1326,20 @@ async def reply_mem(event):
         await event.client.send_file(replied_message.peer_id, "https://t.me/recoursec/6", reply_to=replied_message)
     else:
         await event.reply(file="https://t.me/recoursec/6", reply_to=event.message.id)
+@ABH.on(events.NewMessage(pattern=r'^(يله شنسوي|ههههه)$'))
+async def reply_mem(event):
+    replied_message = await event.get_reply_message()
+    if replied_message:
+        await event.client.send_file(replied_message.peer_id, "https://t.me/recoursec/9", reply_to=replied_message)
+    else:
+        await event.reply(file="https://t.me/recoursec/9", reply_to=event.message.id)
+@ABH.on(events.NewMessage(pattern=r'^(man up|استرجل)$'))
+async def reply_mem(event):
+    replied_message = await event.get_reply_message()
+    if replied_message:
+        await event.client.send_file(replied_message.peer_id, "https://t.me/recoursec/10", reply_to=replied_message)
+    else:
+        await event.reply(file="https://t.me/recoursec/10", reply_to=event.message.id)
 url = "https://ar.wikipedia.org/w/api.php"
 searching_state = {}
 @ABH.on(events.NewMessage(func=lambda e: e.text and e.text.strip().lower().startswith('ابحث عن')))
