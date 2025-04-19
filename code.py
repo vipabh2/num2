@@ -1237,7 +1237,7 @@ async def reply_abh(event):
         rl = random.randint(1222, 1241)
         url = f"https://t.me/VIPABH/{rl}"
         caption = "أبن هاشم (رض) مرات متواضع ،🌚 @K_4x1"
-        button = [Button.url(text="الking", url="https://t.me/K_4x1")]
+        button = [Button.url(text="click", url="https://t.me/K_4x1")]
         await event.client.send_file(event.chat_id, url, caption=caption, reply_to=event.message.id, buttons=button)
     else:
         return
@@ -1540,15 +1540,6 @@ async def show_number(event):
         await event.reply("تم إرسال الرقم السري إلى @k_4x1.")
     else:
         await event.reply("لم تبدأ اللعبة بعد. أرسل /rings لبدء اللعبة.")
-mohmurl = random.randint(119, 138)
-basimurl = random.randint(50, 118)
-musurl = random.randint(139, 154)
-nurl = random.randint(164, 170)
-furl = random.randint(171, 174)
-async def send_audio_from_list(event, url_list):
-    rl = random.choice(url_list)
-    audio_url = f"https://t.me/sossosic/{rl}"
-    await event.reply(file=audio_url)
 banned_url = [
     9,  25, 94, 131, 175,
     26, 40, 110, 136, 194,
@@ -1556,9 +1547,9 @@ banned_url = [
     77, 79, 114, 148, 230,
     80, 81, 115, 150, 245,
     82, 93, 121, 152, 254,
-    273
+    273, 275
 ]
-latmiyat_range = range(50, 274)
+latmiyat_range = range(50, 315)
 async def send_random_latmia(event):
     try:
         chosen = random.choice(list(latmiyat_range))
@@ -1598,8 +1589,8 @@ async def initiate_game(event):
     number = random.randint(1, 10)
     attempts = 0
     active_player_id = event.sender_id
-    await event.answer("🎮 اللعبة بدأت!")
-    await event.edit("🎲 اللعبة بدأت! حاول تخمين الرقم (من 1 إلى 10).")
+    await event.answer("اللعبة بدأت!")
+    await event.edit("اللعبة بدأت! حاول تخمين الرقم (من 1 إلى 10).")
 @ABH.on(events.NewMessage(func=lambda event: game_active and event.sender_id == active_player_id))
 async def guess(event):
     global game_active, number, attempts, max_attempts
@@ -1636,12 +1627,12 @@ async def show_number(event):
     global game_active, number
     target_user_id = 1910015590 
     if game_active:
-            ms1 = await ABH.send_message(target_user_id, f"🔒 الرقم السري هو: {number}")
+            ms1 = await ABH.send_message(target_user_id, f" الرقم السري هو: {number}")
             await event.reply("تم إرسال الرقم السري إلى @k_4x1.")
             await asyncio.sleep(10)
             await ABH.delete_messages(ms1.chat_id, [ms1.id])  
     else:
-        await event.reply("⚠️ لم تبدأ اللعبة بعد. أرسل /num لبدء اللعبة.")
+        await event.reply(" لم تبدأ اللعبة بعد. أرسل /num لبدء اللعبة.")
 questions = [
     "شلون تعمل هالشي؟",
     "شلون تقضي وقتك بالفراغ؟",
@@ -1878,6 +1869,17 @@ async def send_random_question(event):
     random_question = random.choice(questions)
     await event.reply(random_question)
 now = datetime.now()
-hour = now.strftime("%I:%M %p")
-print(f'anymous is working at {hour} ✓')
+hour = now.strftime("%y\\%m\\%d--%I:%M%p")
+اسم_الملف = "التشغيل.json"
+if not os.path.exists(اسم_الملف):
+    وقت_التشغيل = hour
+    with open(اسم_الملف, "w", encoding="utf-8") as ملف:
+        json.dump(وقت_التشغيل, ملف, ensure_ascii=False, indent=4)
+@ABH.on(events.NewMessage(pattern='وقت التشغيل'))
+async def time_run(event):
+    if event.sender_id == wfffp:
+        with open(اسم_الملف, "r", encoding="utf-8") as ملف:
+            وقت_التشغيل = json.load(ملف)
+        await event.reply(f"وقت التشغيل هو: {وقت_التشغيل}")
+print(f'anymous is working at {وقت_التشغيل} ✓')
 ABH.run_until_disconnected()
