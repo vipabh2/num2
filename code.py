@@ -862,22 +862,22 @@ async def handle_callback(event):
         x = (2025, 6, 27)
         x_datetime = datetime(*x)
         الباقي = الان - x_datetime
-        await msg.edit(f'باقي {الباقي.days} يوم', Button=None)
+        await msg.edit(f'باقي {الباقي.days} يوم', buttons=None)
     elif data == "rm":
         x = (2026, 2, 22)
         x_datetime = datetime(*x)
         الباقي = الان - x_datetime
-        await msg.edit(f'باقي {الباقي.days} يوم', Button=None)
+        await msg.edit(f'باقي {الباقي.days} يوم', buttons=None)
     elif data == "sh":
         x = (2026, 1, 22)
         x_datetime = datetime(*x)
         الباقي = الان - x_datetime
-        await msg.edit(f'باقي {الباقي.days} يوم', Button=None)
+        await msg.edit(f'باقي {الباقي.days} يوم', buttons=None)
     elif data == "r":
         x = (2025, 12, 22)
         x_datetime = datetime(*x)
         الباقي = الان - x_datetime
-        await msg.edit(f'باقي {الباقي.days} يوم', Button=None)
+        await msg.edit(f'باقي {الباقي.days} يوم', buttons=None)
 @ABH.on(events.NewMessage(pattern=r'^\d{4}-\d{2}-\d{2}$'))
 async def set_user_date(event):
     user_id = event.sender_id
