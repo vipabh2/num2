@@ -883,7 +883,7 @@ async def set_user_date(event):
     user_id = event.sender_id
     date = event.text
     try:
-        datetime.datetime.strptime(date, "%Y-%m-%d")
+        datetime.strptime(date, "%Y-%m-%d")
         save_date(user_id, date)
         await event.reply(f"تم حفظ التاريخ {date}. يمكنك الآن معرفة كم باقي.")
     except ValueError:
