@@ -894,7 +894,7 @@ async def check_remaining_days(event):
     saved_date = get_saved_date(user_id)
     if saved_date:
         t = datetime.today()
-        saved_date_obj = datetime.datetime.strptime(saved_date, "%Y-%m-%d").date()
+        saved_date_obj = datetime.strptime(saved_date, "%Y-%m-%d").date()
         days_difference = (saved_date_obj - t.date()).days
         msg = f"باقي {days_difference} ايام" if days_difference >= 0 else f"التاريخ قد مضى منذ {abs(days_difference)} يوم"
         await event.reply(msg)
