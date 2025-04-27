@@ -11,7 +11,7 @@ from telethon.tl.custom import Button
 from collections import defaultdict
 import google.generativeai as genai
 from googletrans import Translator
-from datetime import datetime
+from datetime import datetime, date
 from bs4 import BeautifulSoup
 from faker import Faker
 GEMINI = "AIzaSyA5pzOpKVcMGm6Aek82KoB3Pk94dYg3LX4"
