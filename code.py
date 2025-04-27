@@ -11,7 +11,7 @@ from telethon.tl.custom import Button
 from collections import defaultdict
 import google.generativeai as genai
 from googletrans import Translator
-from datetime import datetime, date
+from datetime import datetime
 from bs4 import BeautifulSoup
 from faker import Faker
 GEMINI = "AIzaSyA5pzOpKVcMGm6Aek82KoB3Pk94dYg3LX4"
@@ -835,7 +835,7 @@ async def screen_shot(event):
         await event.reply(f"✅ تم التقاط لقطات الشاشة للأجهزة: **PC، Android**", file=screenshot_paths)
     else:
         await event.reply("❌ فشل التقاط لقطة الشاشة، تأكد من صحة الرابط أو جرب مجددًا.")
-@ABH.on(events.NewMessage(pattern='^/dates$'))
+@ABH.on(events.NewMessage(pattern='^/dates|مواعيد$'))
 async def show_dates(event):
     btton = [[
         Button.inline("محرم", b"m"),
@@ -881,13 +881,13 @@ async def check_remaining_days(event):
     else:
         await event.reply("لم تحدد تاريخًا بعد، يرجى تحديد تاريخ أولاً.")
 async def count_r(event):
-    await calculate_days(event, datetime.date(2025, 12, 22))
+    await calculate_days(event, date(2025, 12, 22))
 async def count_sh(event):
-    await calculate_days(event, datetime.date(2026, 1, 20))
+    await calculate_days(event, date(2026, 1, 20))
 async def count_rm(event):
-    await calculate_days(event, datetime.date(2025, 3, 1))
+    await calculate_days(event, date(2026, 2, 21))
 async def count_m(event):
-    await calculate_days(event, datetime.date(2025, 6, 26))
+    await calculate_days(event, date(2025, 6, 26))
 async def calculate_days(event, target_date):
     t = datetime.datetime.today()
     days_difference = (target_date - t.date()).days
