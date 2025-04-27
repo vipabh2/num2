@@ -862,22 +862,22 @@ async def handle_callback(event):
         x = (2025, 6, 27)
         x_datetime = datetime(*x)
         الباقي = x_datetime - الان
-        await msg.edit(f'باقي {الباقي.days} يوم', buttons=None)
+        await msg.edit(f'باقي {الباقي.days} لمحرم يوم', buttons=None)
     elif data == "rm":
         x = (2026, 2, 22)
         x_datetime = datetime(*x)
         الباقي = x_datetime - الان
-        await msg.edit(f'باقي {الباقي.days} يوم', buttons=None)
+        await msg.edit(f'باقي {الباقي.days} لرمضان يوم', buttons=None)
     elif data == "sh":
         x = (2026, 1, 22)
         x_datetime = datetime(*x)
         الباقي = x_datetime - الان
-        await msg.edit(f'باقي {الباقي.days} يوم', buttons=None)
+        await msg.edit(f'باقي {الباقي.days} لشعبان يوم', buttons=None)
     elif data == "r":
         x = (2025, 12, 22)
         x_datetime = datetime(*x)
         الباقي = x_datetime - الان
-        await msg.edit(f'باقي {الباقي.days} يوم', buttons=None)
+        await msg.edit(f'باقي {الباقي.days} لرجب يوم', buttons=None)
 @ABH.on(events.NewMessage(pattern=r'^\d{4}-\d{2}-\d{2}$'))
 async def set_user_date(event):
     user_id = event.sender_id
@@ -900,11 +900,11 @@ async def check_remaining_days(event):
         await event.reply(msg)
     else:
         await event.reply("لم تحدد تاريخًا بعد، يرجى تحديد تاريخ أولاً.")
-async def calculate_days(event, target_date):
-    t = datetime.datetime.today()
-    days_difference = (target_date - t.date()).days
-    msg = f"باقي {days_difference} ايام" if days_difference >= 0 else "الشهر قد بدأ \n يا مطوري حدث الكود @k_4x1"
-    await event.edit(msg)
+# async def calculate_days(event, target_date):
+#     t = datetime.datetime.today()
+#     days_difference = (target_date - t.date()).days
+#     msg = f"باقي {days_difference} ايام" if days_difference >= 0 else "الشهر قد بدأ \n يا مطوري حدث الكود @k_4x1"
+#     await event.edit(msg)
 @ABH.on(events.NewMessage(pattern='^تاريخ$'))
 async def today(event):
     t = datetime.datetime.now().date()
