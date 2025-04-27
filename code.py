@@ -1,7 +1,7 @@
 from telethon.tl.types import ChatBannedRights, ChannelParticipantAdmin, ChannelParticipantCreator
 from telethon.tl.functions.channels import EditBannedRequest, GetParticipantRequest
+import requests, os, operator, asyncio, random, uuid, re, json, time, pytz
 from telethon.tl.types import KeyboardButtonCallback, MessageEntityUrl
-import requests, os, operator, asyncio, random, uuid, re, json, time
 from database import store_whisper, get_whisper #type: ignore
 from db import save_date, get_saved_date #type: ignore
 from telethon import TelegramClient, events, Button
@@ -11,9 +11,10 @@ from telethon.tl.custom import Button
 from collections import defaultdict
 import google.generativeai as genai
 from googletrans import Translator
-from datetime import datetime, date
+from datetime import datetime
 from bs4 import BeautifulSoup
 from faker import Faker
+timezone = pytz.timezone('Asia/Baghdad')
 GEMINI = "AIzaSyA5pzOpKVcMGm6Aek82KoB3Pk94dYg3LX4"
 genai.configure(api_key=GEMINI)
 model = genai.GenerativeModel("gemini-1.5-flash")
@@ -837,6 +838,7 @@ async def screen_shot(event):
         await event.reply("❌ فشل التقاط لقطة الشاشة، تأكد من صحة الرابط أو جرب مجددًا.")
 @ABH.on(events.NewMessage(pattern='^/dates|مواعيد$'))
 async def show_dates(event):
+    global uid, msg
     btton = [[
         Button.inline("محرم", b"m"),
         Button.inline("رمضان", b"rm"),
@@ -844,20 +846,34 @@ async def show_dates(event):
         Button.inline("رجب", b"r"),
         Button.inline("حدد تاريخ", b"set_date")
     ]]
-    await event.respond("اختر الشهر المناسب أو حدد تاريخ خاص 👇", buttons=btton)
+    msg = await event.respond("اختر الشهر المناسب أو حدد تاريخ خاص 👇", buttons=btton)
+    uid = event.sender_id
 @ABH.on(events.CallbackQuery)
 async def handle_callback(event):
+    المرسل_الثاني = event.sender_id
+    if المرسل_الثاني != uid:
+        await event.answer('عزيزي الامر لا يخصك', alert=True)
+        return
+    الان = datetime.today()
     data = event.data.decode("utf-8")
     if data == "set_date":
         await event.edit("من فضلك أدخل التاريخ بصيغة YYYY-MM-DD مثال: 2025-06-15", buttons=None)
     elif data == "m":
-        await count_m(event)
+        x = 2025, 6, 27
+        الباقي = الان - x
+        await msg.edit(f'{الباقي}')
     elif data == "rm":
-        await count_rm(event)
+        x = 2026, 2, 22
+        الباقي = الان - x
+        await msg.edit(f'{الباقي}')
     elif data == "sh":
-        await count_sh(event)
+        x = 2026, 1, 22
+        الباقي = الان - x
+        await msg.edit(f'{الباقي}')
     elif data == "r":
-        await count_r(event)
+        x = 2025, 12, 22
+        الباقي = الان - x
+        await msg.edit(f'{الباقي}')
 @ABH.on(events.NewMessage(pattern=r'^\d{4}-\d{2}-\d{2}$'))
 async def set_user_date(event):
     user_id = event.sender_id
@@ -880,14 +896,6 @@ async def check_remaining_days(event):
         await event.reply(msg)
     else:
         await event.reply("لم تحدد تاريخًا بعد، يرجى تحديد تاريخ أولاً.")
-async def count_r(event):
-    await calculate_days(event, date(2025, 12, 22))
-async def count_sh(event):
-    await calculate_days(event, date(2026, 1, 20))
-async def count_rm(event):
-    await calculate_days(event, date(2026, 2, 21))
-async def count_m(event):
-    await calculate_days(event, date(2025, 6, 26))
 async def calculate_days(event, target_date):
     t = datetime.datetime.today()
     days_difference = (target_date - t.date()).days
