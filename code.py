@@ -859,21 +859,25 @@ async def handle_callback(event):
     if data == "set_date":
         await event.edit("من فضلك أدخل التاريخ بصيغة YYYY-MM-DD مثال: 2025-06-15", buttons=None)
     elif data == "m":
-        x = 2025, 6, 27
-        الباقي = الان - x
-        await msg.edit(f'{الباقي}')
+        x = (2025, 6, 27)
+        x_datetime = datetime(*x)
+        الباقي = الان - x_datetime
+        await msg.edit(f'باقي {الباقي.days} يوم')
     elif data == "rm":
-        x = 2026, 2, 22
-        الباقي = الان - x
-        await msg.edit(f'{الباقي}')
+        x = (2026, 2, 22)
+        x_datetime = datetime(*x)
+        الباقي = الان - x_datetime
+        await msg.edit(f'باقي {الباقي.days} يوم')
     elif data == "sh":
-        x = 2026, 1, 22
-        الباقي = الان - x
-        await msg.edit(f'{الباقي}')
+        x = (2026, 1, 22)
+        x_datetime = datetime(*x)
+        الباقي = الان - x_datetime
+        await msg.edit(f'باقي {الباقي.days} يوم')
     elif data == "r":
-        x = 2025, 12, 22
-        الباقي = الان - x
-        await msg.edit(f'{الباقي}')
+        x = (2025, 12, 22)
+        x_datetime = datetime(*x)
+        الباقي = الان - x_datetime
+        await msg.edit(f'باقي {الباقي.days} يوم')
 @ABH.on(events.NewMessage(pattern=r'^\d{4}-\d{2}-\d{2}$'))
 async def set_user_date(event):
     user_id = event.sender_id
