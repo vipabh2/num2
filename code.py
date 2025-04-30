@@ -88,6 +88,8 @@ async def edited(event):
     chat = event.chat_id
     if chat != -1001784332159:
         return
+    if not msg.edit_date:
+        return
     if msg.entities:
         if any(isinstance(entity, MessageEntityUrl) for entity in msg.entities):
             return
@@ -96,17 +98,19 @@ async def edited(event):
     has_url = any(isinstance(entity, MessageEntityUrl) for entity in (msg.entities or []))
     perms = await ABH.get_permissions(event.chat_id, event.sender_id)
     uid = event.sender_id
-    if (has_media or has_document or has_url) and not (perms.is_admin or perms.is_creator):
+    if (has_media or has_document or has_url) and not perms.is_admin:
         sender = await event.get_sender()
         nid = sender.first_name
-        msg_link = f"https://t.me/{event.chat.username}/{event.id}" if event.chat.username else None
-        message = event.message
-        if message.edit_date:
-            msg = await ABH.send_message(hint_gid, f'تم #تعديل رسالة مريبة \n رابط الرسالة ↢ **{msg_link}** \n ايدي المستخدم ↢ `{uid}` \n اسم المستخدم ↢ `{nid}`')
-            await asyncio.sleep(60)
-            await event.delete()
-    else:
-        return
+        msg_link = f"https://t.me/{event.chat.username}/{event.id}" if getattr(event.chat, 'username', None) else "رابط غير متوفر"
+        await ABH.send_message(
+            hint_gid,
+            f"""تم #تعديل رسالة مريبة
+رابط الرسالة: {msg_link}
+معرف المستخدم: `{uid}`
+اسم المستخدم: `{nid}`"""
+        )
+        await asyncio.sleep(60)
+        await event.delete()
 def load_points(filename="points.json"):
     try:
         with open(filename, "r") as file:
@@ -363,7 +367,7 @@ async def show_res(event):
     if unm1 in uinfo and guid1 in uinfo[unm1]:
         msg_count = uinfo[unm1][guid1]["msg"]
         await event.reply(f"المستخدم [{uid1}](tg://user?id={unm1}) أرسلت {msg_count} رسالة في هذه المجموعة.")
-@ABH.on(events.NewMessage(pattern='رسائله|رسائلة|رسائل|الرسائل'))
+@ABH.on(events.NewMessage(pattern=r'^(رسائله|رسائلة|رسائل|الرسائل)$'))
 async def his_res(event):
     r = await event.get_reply_message()  
     await asyncio.sleep(1)
@@ -996,7 +1000,7 @@ questions_and_answers_q = [
     {"question": "من هو قطيع الكفين؟", "answer": "الامام العباس"},
     {"question": "من هو شاعر قصيدة الله يا حامي الشريعة؟", "answer": "حيدر الحلي"},
     {"question": "من هو حامي الجار؟", "answer": "الامام علي"},
-    {"question": "من صاحب قول \n أَمْلَأَ رُكابِي فِضَّةً أَوْ ذَهَبًا إِنِّي قَتَلْتُ خَيْرَ الرِّجَالِ أَمَّا وَأَبَا؟", "answer": "سنان بن انس"},
+    {"question": "من صاحب قول \n أَمْلَأَ رُكابِي فِضَّةً أَوْ ذَهَبًا إِنِّي قَتَلْتُ خَيْرَ الرِّجَالِ أَمَّا وَأَبَا؟", "answer": "سنان بن انس"},
     {"question": "من هو سلمان المحمدي؟", "answer": "صحابي النبي و شهيد كربلاء"},
     {"question": "من هو الذي دفن مع الامام الحسين؟", "answer": "عبد الله الرضيع"},
     {"question": "ما هي اسم الواقعه في يوم العاشر من محرم؟", "answer": "واقعة الطف"},
@@ -1261,7 +1265,7 @@ async def replys(event):
 async def reply_zahraa(event):
     if event.chat_id == -1001784332159:
         url = "https://t.me/VIPABH/1220"  
-        caption = "@klix_78 ( لَقَدْ كَفَرَ الّذِينَ قَالُوا إنَّ الله هُو المَسِيحُ ابْنُ مَرْيَم)." 
+        caption = "@klix_78 ( لَقَدْ كَفَرَ الّذِينَ قَالُوا إنَّ الله هُو المَسِيحُ ابْنُ مَرْيَم)." 
         await event.client.send_file(event.chat_id, url, caption=caption, reply_to=event.message.id)    
     else: 
         return
