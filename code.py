@@ -1903,7 +1903,9 @@ async def time_run(event):
     if event.sender_id == wfffp:
         with open(اسم_الملف, "r", encoding="utf-8") as ملف:
             وقت_التشغيل = json.load(ملف)
-        await event.reply(f"وقت التشغيل هو: {وقت_التشغيل}")
-hour = now.strftime("%I:%M %p")
+            baghdad_tz = pytz.timezone("Asia/Baghdad")
+            now = datetime.now(baghdad_tz)
+            hour = now.strftime("%I:%M %p")
+            await event.reply(f"وقت التشغيل هو: {وقت_التشغيل}\nالساعة الحالية في بغداد: {hour}")
 print(f'anymous is working at {hour} ✓')
 ABH.run_until_disconnected()
