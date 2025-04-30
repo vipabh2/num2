@@ -848,36 +848,41 @@ async def show_dates(event):
     ]]
     msg = await event.respond("اختر الشهر المناسب أو حدد تاريخ خاص 👇", buttons=btton)
     uid = event.sender_id
-@ABH.on(events.CallbackQuery)
-async def handle_callback(event):
+@ABH.on(events.CallbackQuery(data='set_date'))
+async def set_date(event):
     المرسل_الثاني = event.sender_id
     if المرسل_الثاني != uid:
         await event.answer('عزيزي الامر لا يخصك', alert=True)
         return
+    await event.edit("من فضلك أدخل التاريخ بصيغة YYYY-MM-DD مثال: 2025-06-15", buttons=None)
+@ABH.on(events.CallbackQuery(data='M'))
+async def handle_m(event):
+    x = (2025, 6, 27)
     الان = datetime.today()
-    data = event.data.decode("utf-8")
-    if data == "set_date":
-        await event.edit("من فضلك أدخل التاريخ بصيغة YYYY-MM-DD مثال: 2025-06-15", buttons=None)
-    elif data == "m":
-        x = (2025, 6, 27)
-        x_datetime = datetime(*x)
-        الباقي = x_datetime - الان
-        await msg.edit(f'باقي {الباقي.days} لمحرم يوم', buttons=None)
-    elif data == "rm":
-        x = (2026, 2, 22)
-        x_datetime = datetime(*x)
-        الباقي = x_datetime - الان
-        await msg.edit(f'باقي {الباقي.days} لرمضان يوم', buttons=None)
-    elif data == "sh":
-        x = (2026, 1, 22)
-        x_datetime = datetime(*x)
-        الباقي = x_datetime - الان
-        await msg.edit(f'باقي {الباقي.days} لشعبان يوم', buttons=None)
-    elif data == "r":
-        x = (2025, 12, 22)
-        x_datetime = datetime(*x)
-        الباقي = x_datetime - الان
-        await msg.edit(f'باقي {الباقي.days} لرجب يوم', buttons=None)
+    x_datetime = datetime(*x)
+    الباقي = x_datetime - الان
+    await msg.edit(f'باقي {الباقي.days} لمحرم يوم', buttons=None)
+@ABH.on(events.CallbackQuery(data='rm'))
+async def handle_m(event):
+    x = (2026, 2, 22)
+    الان = datetime.today()
+    x_datetime = datetime(*x)
+    الباقي = x_datetime - الان
+    await msg.edit(f'باقي {الباقي.days} لرمضان يوم', buttons=None)
+@ABH.on(events.CallbackQuery(data='sh'))
+async def handle_m(event):
+    x = (2026, 1, 22)
+    الان = datetime.today()
+    x_datetime = datetime(*x)
+    الباقي = x_datetime - الان
+    await msg.edit(f'باقي {الباقي.days} لشعبان يوم', buttons=None)
+@ABH.on(events.CallbackQuery(data='r'))
+async def handle_m(event):
+    x = (2025, 12, 22)
+    الان = datetime.today()
+    x_datetime = datetime(*x)
+    الباقي = x_datetime - الان
+    await msg.edit(f'باقي {الباقي.days} لرجب يوم', buttons=None)
 @ABH.on(events.NewMessage(pattern=r'^\d{4}-\d{2}-\d{2}$'))
 async def set_user_date(event):
     user_id = event.sender_id
@@ -900,11 +905,6 @@ async def check_remaining_days(event):
         await event.reply(msg)
     else:
         await event.reply("لم تحدد تاريخًا بعد، يرجى تحديد تاريخ أولاً.")
-# async def calculate_days(event, target_date):
-#     t = datetime.datetime.today()
-#     days_difference = (target_date - t.date()).days
-#     msg = f"باقي {days_difference} ايام" if days_difference >= 0 else "الشهر قد بدأ \n يا مطوري حدث الكود @k_4x1"
-#     await event.edit(msg)
 @ABH.on(events.NewMessage(pattern='^تاريخ$'))
 async def today(event):
     t = datetime.datetime.now().date()
@@ -1251,12 +1251,12 @@ async def replys(event):
     if x in text:
         await event.reply("@rizrz")
         abh = "ابن هاشم"
-        if abh in text:
-            rl = random.randint(1222, 1241)
-            url = f"https://t.me/VIPABH/{rl}"
-            caption = "أبن هاشم (رض) مرات متواضع ،🌚 @K_4x1"
-            button = [Button.url(text="click", url="https://t.me/K_4x1")]
-            await event.client.send_file(event.chat_id, url, caption=caption, reply_to=event.message.id, buttons=button)
+    if abh in text:
+        rl = random.randint(1222, 1241)
+        url = f"https://t.me/VIPABH/{rl}"
+        caption = "أبن هاشم (رض) مرات متواضع ،🌚 @K_4x1"
+        button = [Button.url(text="click", url="https://t.me/K_4x1")]
+        await event.client.send_file(event.chat_id, url, caption=caption, reply_to=event.message.id, buttons=button)
 @ABH.on(events.NewMessage(pattern='زهراء'))
 async def reply_zahraa(event):
     if event.chat_id == -1001784332159:
