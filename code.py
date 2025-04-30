@@ -1900,12 +1900,15 @@ if not os.path.exists(اسم_الملف):
         json.dump(وقت_التشغيل, ملف, ensure_ascii=False, indent=4)
 @ABH.on(events.NewMessage(pattern='وقت التشغيل'))
 async def time_run(event):
-    if event.sender_id == wfffp:
-        with open(اسم_الملف, "r", encoding="utf-8") as ملف:
-            وقت_التشغيل = json.load(ملف)
-            baghdad_tz = pytz.timezone("Asia/Baghdad")
-            now = datetime.now(baghdad_tz)
-            hour = now.strftime("%I:%M %p")
-            await event.reply(f"وقت التشغيل هو: {وقت_التشغيل}\nالساعة الحالية في بغداد: {hour}")
+    if event.sender_id==wfffp:
+        try:
+            with open(اسم_الملف,"r",encoding="utf-8") as ملف:
+                وقت_التشغيل=json.load(ملف)
+            baghdad_tz=pytz.timezone("Asia/Baghdad")
+            now=datetime.now(baghdad_tz)
+            hour=now.strftime("%I:%M %p")
+            await event.reply(f"🕒 وقت التشغيل: {وقت_التشغيل}\n🕰️ الوقت الحالي في بغداد: {hour}")
+        except Exception as e:
+            await event.reply(f"حدث خطأ أثناء قراءة الوقت: {str(e)}")
 print(f'anymous is working at {hour} ✓')
 ABH.run_until_disconnected()
