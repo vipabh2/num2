@@ -1905,10 +1905,11 @@ async def time_run(event):
             with open(اسم_الملف,"r",encoding="utf-8") as ملف:
                 وقت_التشغيل=json.load(ملف)
             baghdad_tz=pytz.timezone("Asia/Baghdad")
-            now=datetime.now(baghdad_tz)
-            hour=now.strftime("%I:%M %p")
-            await event.reply(f"🕒 وقت التشغيل: {وقت_التشغيل}\n🕰️ الوقت الحالي في بغداد: {hour}")
+            الآن=datetime.now(baghdad_tz)
+            الساعة=الآن.strftime("%I:%M %p")
+            الرسالة=f"🕒 وقت التشغيل: {وقت_التشغيل}\n🕰️ الوقت الحالي في بغداد: {الساعة}"
+            await event.reply(الرسالة)
         except Exception as e:
-            await event.reply(f"حدث خطأ أثناء قراءة الوقت: {str(e)}")
+            await event.reply(f"خطأ: {str(e)}")
 print(f'anymous is working at {hour} ✓')
 ABH.run_until_disconnected()
