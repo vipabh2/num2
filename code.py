@@ -1250,7 +1250,7 @@ async def replys(event):
     x = "ادونيس"
     if x in text:
         await event.reply("@rizrz")
-        abh = "ابن هاشم"
+    abh = "ابن هاشم"
     if abh in text:
         rl = random.randint(1222, 1241)
         url = f"https://t.me/VIPABH/{rl}"
