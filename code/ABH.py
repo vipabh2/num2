@@ -2,6 +2,8 @@ import os, asyncio, json, pytz
 from telethon import TelegramClient, events
 from datetime import datetime
 from code import *
+from database import *
+from db import *
 timezone = pytz.timezone('Asia/Baghdad')
 api_id = os.getenv('API_ID')      
 api_hash = os.getenv('API_HASH')  
