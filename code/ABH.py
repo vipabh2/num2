@@ -8,7 +8,7 @@ timezone = pytz.timezone('Asia/Baghdad')
 api_id = os.getenv('API_ID')      
 api_hash = os.getenv('API_HASH')  
 bot_token = os.getenv('BOT_TOKEN')
-ABH = TelegramClient('codeo', api_id, api_hash).start(bot_token=bot_token)
+ABH = TelegramClient('code', api_id, api_hash).start(bot_token=bot_token)
 hint_gid = -1002168230471
 bot = "Anymous"
 wfffp = 1910015590
