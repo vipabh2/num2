@@ -1,66 +1,33 @@
-from sqlalchemy import create_engine, Column, Integer, String
-from sqlalchemy.orm import sessionmaker, declarative_base
-from sqlalchemy.orm import sessionmaker
-
-DATABASE_URL = "sqlite:///db.sqlite3"
-engine = create_engine(DATABASE_URL, echo=False)
-
-Base = declarative_base()
-
-class Whisper(Base):
-    __tablename__ = 'whispers'
-
-    id = Column(Integer, primary_key=True, autoincrement=True)
-    whisper_id = Column(String)
-    sender_id = Column(Integer)
-    reciver_id = Column(Integer)
-    username = Column(String)
-    message = Column(String)
-
-class ApprovedUser(Base):
-    __tablename__ = 'approved_users'
-    
-    user_id = Column(Integer, primary_key=True)
-    group_id = Column(Integer, primary_key=True)
-
-Base.metadata.create_all(engine)
-
-Session = sessionmaker(bind=engine)
-session = Session()
-
-def store_whisper(whisper_id, sender_id, reciver_id, username, message):
-    whisper = Whisper(whisper_id=whisper_id, sender_id=sender_id, reciver_id=reciver_id, username=username, message=message)
-    session.add(whisper)
-    session.commit()
-
-def get_whisper(whisper_id):
-    return session.query(Whisper).filter_by(whisper_id=whisper_id).first()
-
-def add_approved_user(user_id, group_id):
-    existing_user = session.query(ApprovedUser).filter_by(user_id=user_id, group_id=group_id).first()
-    if not existing_user:
-        new_user = ApprovedUser(user_id=user_id, group_id=group_id)
-        session.add(new_user)
-        session.commit()
-
-def remove_approved_user(user_id, group_id):
-    user_to_remove = session.query(ApprovedUser).filter_by(user_id=user_id, group_id=group_id).first()
-    if user_to_remove:
-        session.delete(user_to_remove)
-        session.commit()
-
-def is_approved_user(user_id, group_id):
-    user = session.query(ApprovedUser).filter_by(user_id=user_id, group_id=group_id).first()
-    return user is not None
-
-def get_approved_users(group_id):
-    users = session.query(ApprovedUser).filter_by(group_id=group_id).all()
-    user_list = []
-    for user in users:
-        user_list.append((user.user_id, user.group_id))
-    return user_list
-
-def init_db():
-    Base.metadata.create_all(bind=engine)
-
-init_db()
+import os, asyncio, json, pytz
+from telethon import TelegramClient, events
+from datetime import datetime
+from ABH import *
+from database import *
+from db import *
+timezone = pytz.timezone('Asia/Baghdad')
+api_id = os.getenv('API_ID')      
+api_hash = os.getenv('API_HASH')  
+bot_token = os.getenv('BOT_TOKEN')
+ABH = TelegramClient('code', api_id, api_hash).start(bot_token=bot_token)
+hint_gid = -1002168230471
+bot = "Anymous"
+wfffp = 1910015590
+now = datetime.now()
+hour = now.strftime("%y\\%m\\%d--%I:%M%p")
+اسم_الملف = "التشغيل.json"
+if not os.path.exists(اسم_الملف):
+    وقت_التشغيل = hour
+    with open(اسم_الملف, "w", encoding="utf-8") as ملف:
+        json.dump(وقت_التشغيل, ملف, ensure_ascii=False, indent=4)
+@ABH.on(events.NewMessage(pattern='وقت التشغيل'))
+async def time_run(event):
+    if event.sender_id == wfffp:
+        with open(اسم_الملف, "r", encoding="utf-8") as ملف:
+            وقت_التشغيل = json.load(ملف)
+        await event.reply(f"وقت التشغيل هو: {وقت_التشغيل}")
+hour = now.strftime("%I:%M %p")
+print(f'anymous is working at {hour} ✓')
+async def main():
+    await ABH.start()
+    await ABH.run_until_disconnected()
+asyncio.run(main())
