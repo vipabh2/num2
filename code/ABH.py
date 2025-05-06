@@ -26,6 +26,10 @@ async def time_run(event):
 hour = now.strftime("%I:%M %p")
 print(f'anymous is working at {hour} ✓')
 async def main():
-    await ABH.start()
-    await ABH.run_until_disconnected()
-asyncio.run(main())
+    try:
+        await ABH.start(bot_token=bot_token)
+        await ABH.run_until_disconnected()
+    except Exception as e:
+        print(f"An error occurred: {e}")
+    finally:
+        await ABH.disconnect()
