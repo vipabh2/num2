@@ -1,10 +1,9 @@
-from sqlalchemy import create_engine, Column, Integer, String, ForeignKey
+from sqlalchemy import create_engine, Column, Integer, String, PrimaryKeyConstraint
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker, relationship
-from sqlalchemy import UniqueConstraint
+from sqlalchemy.orm import sessionmaker
 
 DATABASE_URL = "sqlite:///db.sqlite3"
-engine = create_engine(DATABASE_URL, echo=False, connect_args={"check_same_thread": False})
+engine = create_engine(DATABASE_URL, echo=False)
 
 Base = declarative_base()
 
@@ -20,13 +19,12 @@ class Whisper(Base):
 
 class ApprovedUser(Base):
     __tablename__ = 'approved_users'
-
-    id = Column(Integer, primary_key=True, autoincrement=True)
-    user_id = Column(Integer, nullable=False)
-    group_id = Column(Integer, nullable=False)
     
+    user_id = Column(Integer)
+    group_id = Column(Integer)
+
     __table_args__ = (
-        UniqueConstraint('user_id', 'group_id', name='_user_group_uc'),
+        PrimaryKeyConstraint('user_id', 'group_id'),
     )
 
 Base.metadata.create_all(engine)
