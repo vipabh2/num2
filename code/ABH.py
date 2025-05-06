@@ -12,4 +12,5 @@ ABH = TelegramClient('code', api_id, api_hash).start(bot_token=bot_token)
 async def main():
     await ABH.start()
     await ABH.run_until_disconnected()
-asyncio.run(main())
+if __name__ == "__main__":
+    asyncio.run(main())
