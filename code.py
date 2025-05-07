@@ -4,25 +4,21 @@ import requests, os, operator, asyncio, random, uuid, re, json, time, pytz
 from telethon.tl.types import KeyboardButtonCallback, MessageEntityUrl
 from database import store_whisper, get_whisper #type: ignore
 from db import save_date, get_saved_date #type: ignore
-from telethon import TelegramClient, events, Button
 from playwright.async_api import async_playwright 
 from hijri_converter import Gregorian
 from telethon.tl.custom import Button
+from telethon import events, Button
 from collections import defaultdict
 import google.generativeai as genai
 from googletrans import Translator
+from ABH import ABH #type: ignore
 from datetime import datetime
 from bs4 import BeautifulSoup
 from faker import Faker
-from ABH import ABH
 timezone = pytz.timezone('Asia/Baghdad')
 GEMINI = "AIzaSyA5pzOpKVcMGm6Aek82KoB3Pk94dYg3LX4"
 genai.configure(api_key=GEMINI)
 model = genai.GenerativeModel("gemini-1.5-flash")
-# api_id = os.getenv('API_ID')      
-# api_hash = os.getenv('API_HASH')  
-# bot_token = os.getenv('BOT_TOKEN')
-# ABH = TelegramClient('code', api_id, api_hash).start(bot_token=bot_token)
 hint_gid = -1002168230471
 bot = "Anymous"
 wfffp = 1910015590
@@ -851,7 +847,7 @@ async def show_dates(event):
         Button.inline("رجب", b"r"),
         Button.inline("حدد تاريخ", b"set_date")
     ]]
-    msg = await event.respond("اختر الشهر المناسب أو حدد تاريخ خاص 👇", buttons=btton)
+    msg = await event.respond("اختر الشهر المناسب أو حدد تاريخ خاص 👇", buttons=btton, reply_to=event.id)
     uid = event.sender_id
 @ABH.on(events.CallbackQuery(data='set_date'))
 async def set_date(event):
@@ -860,7 +856,7 @@ async def set_date(event):
         await event.answer('عزيزي الامر لا يخصك', alert=True)
         return
     await event.edit("من فضلك أدخل التاريخ بصيغة YYYY-MM-DD مثال: 2025-06-15", buttons=None)
-@ABH.on(events.CallbackQuery(data='M'))
+@ABH.on(events.CallbackQuery(data='m'))
 async def handle_m(event):
     x = (2025, 6, 27)
     الان = datetime.today()
@@ -1913,4 +1909,3 @@ async def time_run(event):
         except Exception as e:
             await event.reply(f"خطأ: {str(e)}")
 print(f'anymous is working at {hour} ✓')
-# ABH.run_until_disconnected()
