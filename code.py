@@ -22,6 +22,7 @@ api_id = os.getenv('API_ID')
 api_hash = os.getenv('API_HASH')  
 bot_token = os.getenv('BOT_TOKEN')
 ABH = TelegramClient('code', api_id, api_hash).start(bot_token=bot_token)
+hint_gid = -1002168230471
 @ABH.on(events.NewMessage(pattern=r'^اضف فلوس (\d+)$'))
 async def add_money(event):
     uid = event.sender_id
@@ -107,16 +108,6 @@ async def edited(event):
     perms = await ABH.get_permissions(event.chat_id, event.sender_id)
     uid = event.sender_id
     if (has_media or has_document or has_url) and not perms.is_admin:
-        sender = await event.get_sender()
-        nid = sender.first_name
-        msg_link = f"https://t.me/{event.chat.username}/{event.id}" if getattr(event.chat, 'username', None) else "رابط غير متوفر"
-        await ABH.send_message(
-            hint_gid,
-            f"""تم #تعديل رسالة مريبة
-رابط الرسالة: {msg_link}
-معرف المستخدم: `{uid}`
-اسم المستخدم: `{nid}`"""
-        )
         await asyncio.sleep(60)
         await event.delete()
 def load_points(filename="points.json"):
