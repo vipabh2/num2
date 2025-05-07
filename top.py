@@ -8,3 +8,4 @@ async def add_money(event):
         gid = event.chat_id
         user_id = r.sender_id
         add_points(user_id, gid, points, amount=p)
+print("top is running")
