@@ -8,4 +8,5 @@ async def add_money(event):
         gid = event.chat_id
         user_id = r.sender_id
         add_points(user_id, gid, points, amount=p)
+        await event.reply(f"تم اضافة {p} دينار ل {r.sender.first_name}")
 print("top is running")
