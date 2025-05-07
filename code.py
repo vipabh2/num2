@@ -1097,8 +1097,6 @@ async def start_xo(event):
     if player1 == player2:
         await event.answer(" لا يمكنك اللعب ضد نفسك يا متوحد!")
         return
-    if player2 == 7017022402:
-        return
     turn = player1
     game_board = [" " for _ in range(9)]
     await show_board(event)
@@ -1107,8 +1105,12 @@ async def show_board(event, winner=None):
         markup = [
             [Button.inline("إعادة اللعبة", b"restart"), Button.inline("إلغاء", b"cancel")]
         ]
+        user_id = event.sender_id
+        gid = event.chat_id
+        p = random.randint(50, 500)
+        add_points(user_id, gid, points, amount=p)
         await event.edit(
-            f"اللاعب [{winner['name']}](https://t.me/{winner['username']}) فاز باللعبة!",
+            f"اللاعب [{winner['name']}](https://t.me/{winner['username']}) فاز باللعبة! \n تم اضافة (`{p}`) فلوس",
             buttons=markup,
             parse_mode="Markdown"
         )
@@ -1508,19 +1510,20 @@ async def handle_guess(event):
             guess = int(event.text.split()[1])  
             if 1 <= guess <= 6:  
                 if guess == number2:
-                    sender_first_name = event.sender.first_name
+                    n = event.sender.first_name
                     game_board = [["💍" if i == number2 - 1 else "🖐️" for i in range(6)]]
                     gid = event.chat_id
                     p = random.randint(10, 50)
                     user_id = event.sender_id
                     add_points(user_id, gid, points, amount=p)
+                    m = {points[str(user_id)][str(gid)]["points"]}
                     await event.reply(
-                        f'🎉 مبارك، اللاعب ({sender_first_name}) وجد المحبس 💍!\n'
+                        f'🎉 مبارك، اللاعب ({n}) وجد المحبس 💍!\n'
                         f'{format_board(game_board, numbers_board)}\n'
-                        f'فلوسك ↞ `{points[str(user_id)][str(gid)]["points"]}`')
+                        f'فلوسك ↞ `( {m} )`')
                     rest_game(chat_id)
                 else: 
-                    sender_first_name = event.sender.first_name
+                    n = event.sender.first_name
                     game_board = [["❌" if i == guess - 1 else "🖐️" for i in range(6)]]
                     await event.reply(f"ضاع البات ماضن بعد تلگونة ☹️ \n{format_board(game_board, numbers_board)}")
                     rest_game(chat_id)
@@ -1617,11 +1620,6 @@ async def guess(event):
     if not game_active:
         await event.reply("اللعبة ليست نشطة حاليًا، ابدأ لعبة جديدة.")
         return
-    try:
-        guess = int(event.text)
-    except ValueError:
-        await event.reply("يرجى إدخال رقم صحيح بين 1 و 10.")
-        return
     if guess < 1 or guess > 10:
         await event.reply("يرجى اختيار رقم بين 1 و 10 فقط!")
         return
@@ -1631,9 +1629,9 @@ async def guess(event):
         await asyncio.sleep(3)
         user_id = event.sender_id
         gid = event.chat_id
-        p = random.randint(5, 100)
+        p = random.randint(50, 200)
         add_points(user_id, gid, points, amount=p)
-        await msg1.edit(f"🎉مُبارك! لقد فزت! \n ربحت (`{p}`) \n  فلوسك {points[str(user_id)][str(gid)]['points']}")
+        await msg1.edit(f"🎉مُبارك! لقد فزت! \n ربحت ( `{p}` ) \n  فلوسك {points[str(user_id)][str(gid)]['points']}")
         game_active = False
     elif attempts >= max_attempts:
         await event.reply(f"للأسف، لقد نفدت محاولاتك. الرقم الصحيح هو {number}.")
@@ -1645,9 +1643,9 @@ async def guess(event):
 @ABH.on(events.NewMessage(pattern='/ارقام'))
 async def show_number(event):
     global game_active, number
-    target_user_id = 1910015590 
+    wfffp = 1910015590 
     if game_active:
-            ms1 = await ABH.send_message(target_user_id, f" الرقم السري هو: {number}")
+            ms1 = await ABH.send_message(wfffp, f" الرقم السري هو: {number}")
             await event.reply("تم إرسال الرقم السري إلى @k_4x1.")
             await asyncio.sleep(10)
             await ABH.delete_messages(ms1.chat_id, [ms1.id])  
