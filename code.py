@@ -14,7 +14,7 @@ from googletrans import Translator
 from datetime import datetime
 from bs4 import BeautifulSoup
 from faker import Faker
-from config import ABH
+from ABH import ABH
 timezone = pytz.timezone('Asia/Baghdad')
 GEMINI = "AIzaSyA5pzOpKVcMGm6Aek82KoB3Pk94dYg3LX4"
 genai.configure(api_key=GEMINI)
