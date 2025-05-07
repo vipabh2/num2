@@ -1,4 +1,5 @@
 from code import *
+from config import *
 @ABH.on(events.NewMessage(pattern=r'^اضف فلوس (\d+)$'))
 async def add_money(event):
     uid = event.sender_id
