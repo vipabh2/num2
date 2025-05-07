@@ -19,10 +19,10 @@ timezone = pytz.timezone('Asia/Baghdad')
 GEMINI = "AIzaSyA5pzOpKVcMGm6Aek82KoB3Pk94dYg3LX4"
 genai.configure(api_key=GEMINI)
 model = genai.GenerativeModel("gemini-1.5-flash")
-api_id = os.getenv('API_ID')      
-api_hash = os.getenv('API_HASH')  
-bot_token = os.getenv('BOT_TOKEN')
-ABH = TelegramClient('code', api_id, api_hash).start(bot_token=bot_token)
+# api_id = os.getenv('API_ID')      
+# api_hash = os.getenv('API_HASH')  
+# bot_token = os.getenv('BOT_TOKEN')
+# ABH = TelegramClient('code', api_id, api_hash).start(bot_token=bot_token)
 hint_gid = -1002168230471
 bot = "Anymous"
 wfffp = 1910015590
@@ -1913,4 +1913,4 @@ async def time_run(event):
         except Exception as e:
             await event.reply(f"خطأ: {str(e)}")
 print(f'anymous is working at {hour} ✓')
-ABH.run_until_disconnected()
+# ABH.run_until_disconnected()
