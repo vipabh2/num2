@@ -235,6 +235,16 @@ async def m(event):
     else:
         m = 0
     await event.reply(f'جميع الاموال الي حصدتها ↢ {m}')
+@ABH.on(events.NewMessage(pattern='ثروته|الثروه'))
+async def m(event):
+    r = await event.get_reply_message()
+    uid = str(r.sender_id)
+    gid = str(event.chat_id)
+    if uid in points and gid in points[uid]:
+        m = points[uid][gid]['points']
+    else:
+        m = 0
+    await event.reply(f'جميع الاموال الي حصدتها ↢ {m}')
 @ABH.on(events.NewMessage(pattern='النازية|الشعار'))
 async def nazi(event):
     n1 = """🟥🟥🟥🟥🟥🟥🟥🟥🟥
