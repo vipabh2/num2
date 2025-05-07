@@ -14,8 +14,15 @@ from googletrans import Translator
 from datetime import datetime
 from bs4 import BeautifulSoup
 from faker import Faker
-from top import *
-timezone = pytz.timezone('Asia/Baghdad')
+@ABH.on(events.NewMessage(pattern=r'^اضف فلوس (\d+)$'))
+async def add_money(event):
+    uid = event.sender_id
+    r = await event.get_reply_message()
+    if uid == wfffp:
+        p = int(event.pattern_match.group(1))
+        gid = event.chat_id
+        user_id = r.sender_id
+        add_points(user_id, gid, points, amount=p)timezone = pytz.timezone('Asia/Baghdad')
 GEMINI = "AIzaSyA5pzOpKVcMGm6Aek82KoB3Pk94dYg3LX4"
 genai.configure(api_key=GEMINI)
 model = genai.GenerativeModel("gemini-1.5-flash")
