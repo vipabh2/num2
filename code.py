@@ -19,6 +19,7 @@ timezone = pytz.timezone('Asia/Baghdad')
 GEMINI = "AIzaSyA5pzOpKVcMGm6Aek82KoB3Pk94dYg3LX4"
 genai.configure(api_key=GEMINI)
 model = genai.GenerativeModel("gemini-1.5-flash")
+group = -1001784332159
 hint_gid = -1002168230471
 bot = "Anymous"
 wfffp = 1910015590
@@ -1251,7 +1252,8 @@ async def anymous(event):
 async def replys(event):
     text = event.text
     x = "ادونيس"
-    if x in text:
+    v = event.chat_id
+    if x in text and c == group:
         await event.reply("@rizrz")
     abh = "ابن هاشم"
     if abh in text:
