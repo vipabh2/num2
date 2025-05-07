@@ -30,7 +30,8 @@ async def add_money(event):
         p = int(event.pattern_match.group(1))
         gid = event.chat_id
         user_id = r.sender_id
-        add_points(user_id, gid, points, amount=p)bot = "Anymous"
+        add_points(user_id, gid, points, amount=p)
+bot = "Anymous"
 wfffp = 1910015590
 rights_translation = {
     "change_info": "تغيير معلومات المجموعة",
