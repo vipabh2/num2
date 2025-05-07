@@ -14,6 +14,14 @@ from googletrans import Translator
 from datetime import datetime
 from bs4 import BeautifulSoup
 from faker import Faker
+timezone = pytz.timezone('Asia/Baghdad')
+GEMINI = "AIzaSyA5pzOpKVcMGm6Aek82KoB3Pk94dYg3LX4"
+genai.configure(api_key=GEMINI)
+model = genai.GenerativeModel("gemini-1.5-flash")
+api_id = os.getenv('API_ID')      
+api_hash = os.getenv('API_HASH')  
+bot_token = os.getenv('BOT_TOKEN')
+ABH = TelegramClient('code', api_id, api_hash).start(bot_token=bot_token)
 @ABH.on(events.NewMessage(pattern=r'^اضف فلوس (\d+)$'))
 async def add_money(event):
     uid = event.sender_id
@@ -22,16 +30,7 @@ async def add_money(event):
         p = int(event.pattern_match.group(1))
         gid = event.chat_id
         user_id = r.sender_id
-        add_points(user_id, gid, points, amount=p)timezone = pytz.timezone('Asia/Baghdad')
-GEMINI = "AIzaSyA5pzOpKVcMGm6Aek82KoB3Pk94dYg3LX4"
-genai.configure(api_key=GEMINI)
-model = genai.GenerativeModel("gemini-1.5-flash")
-api_id = os.getenv('API_ID')      
-api_hash = os.getenv('API_HASH')  
-bot_token = os.getenv('BOT_TOKEN')
-ABH = TelegramClient('code', api_id, api_hash).start(bot_token=bot_token)
-hint_gid = -1002168230471
-bot = "Anymous"
+        add_points(user_id, gid, points, amount=p)bot = "Anymous"
 wfffp = 1910015590
 rights_translation = {
     "change_info": "تغيير معلومات المجموعة",
