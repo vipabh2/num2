@@ -1,8 +1,10 @@
 import os
-import asyncio
+from telethon import TelegramClient
 from code import *
 from top import *
-async def main():
-    print("✅ Bot is running as a bot account (not userbot).")
-    await ABH.run_until_disconnected()
-asyncio.run(main())
+def main():
+    print("✅ Bot is starting...")
+    ABH.start(bot_token=bot_token)
+    ABH.run_until_disconnected()
+if __name__ == "__main__":
+    main()
