@@ -1622,6 +1622,7 @@ async def guess(event):
     if not game_active:
         await event.reply("اللعبة ليست نشطة حاليًا، ابدأ لعبة جديدة.")
         return
+    guess = int(event.text)
     if guess < 1 or guess > 10:
         await event.reply("يرجى اختيار رقم بين 1 و 10 فقط!")
         return
