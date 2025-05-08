@@ -22,7 +22,7 @@ async def msgs(event):
             uinfo = defaultdict(lambda: defaultdict(lambda: {"msg": 0}))
 @ABH.on(events.NewMessage(pattern="توب اليومي|المتفاعلين"))
 async def show_res(event):
-    await asyncio.sleep(2)
+    await asyncio.sleep(1)
     guid = event.chat_id
     sorted_users = sorted(
         uinfo.items(), 
