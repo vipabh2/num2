@@ -2,7 +2,7 @@ from telethon.tl.types import MessageEntityUrl
 from Resources import hint_gid 
 from Resources import group
 from ABH import ABH, events
-import asyncio
+import asyncio, re
 @ABH.on(events.MessageEdited)
 async def edited(event):
     msg = event.message
