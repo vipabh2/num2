@@ -84,7 +84,7 @@ async def nickname_r(event):
 async def edited(event):
     msg = event.message
     chat = event.chat_id
-    if chat != -1001784332159:
+    if chat != group:
         return
     if not msg.edit_date:
         return
@@ -1264,7 +1264,7 @@ async def replys(event):
         await event.client.send_file(event.chat_id, url, caption=caption, reply_to=event.message.id, buttons=button)
 @ABH.on(events.NewMessage(pattern='زهراء'))
 async def reply_zahraa(event):
-    if event.chat_id == -1001784332159:
+    if event.chat_id == group:
         url = "https://t.me/VIPABH/1220"  
         caption = "@klix_78 ( لَقَدْ كَفَرَ الّذِينَ قَالُوا إنَّ الله هُو المَسِيحُ ابْنُ مَرْيَم)." 
         await event.client.send_file(event.chat_id, url, caption=caption, reply_to=event.message.id)    
@@ -1272,7 +1272,7 @@ async def reply_zahraa(event):
         return
 @ABH.on(events.NewMessage(pattern='امير'))
 async def reply_amer(event):
-    if event.chat_id == -1001784332159:
+    if event.chat_id == group:
         ur = ["https://files.catbox.moe/k44qq6.mp4",
                'https://t.me/KQK4Q/23',
                'https://t.me/KQK4Q/22'
@@ -1284,13 +1284,19 @@ async def reply_amer(event):
         return
 @ABH.on(events.NewMessage(pattern='محمد موسى'))
 async def reply_mohamed(event):
-    if event.chat_id == -1001784332159:
+    if event.chat_id == group:
         await event.reply('@E_0_0_0 ')
+    else: 
+        return
+@ABH.on(events.NewMessage(pattern='هاكس'))
+async def reply_mohamed(event):
+    if event.chat_id == group:
+        await event.reply('@c7cce')
     else: 
         return
 @ABH.on(events.NewMessage(pattern='مقتد'))
 async def reply_moqtada(event):
-    if event.chat_id == -1001784332159:
+    if event.chat_id == group:
         await event.reply('@hiz8s')
     else: 
         return
