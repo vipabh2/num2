@@ -1,4 +1,3 @@
-from config import *
 import json
 from ABH import ABH, events
 def load_points(filename="points.json"):
