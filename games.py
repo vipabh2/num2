@@ -1,8 +1,8 @@
-from telethon import events
-from ABH import ABH, Button
-import random, asyncio, time
+from telethon import Button, events
 from top import points, add_points
+import random, asyncio, time
 from faker import Faker
+from ABH import ABH
 user_points = {}
 game_active = False
 number = None
