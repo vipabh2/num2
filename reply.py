@@ -1,4 +1,5 @@
 from ABH import ABH, events
+import random
 abh = [
     "ها",
     "تفظل",
