@@ -2,6 +2,28 @@ from database import store_whisper, get_whisper #type: ignore
 from playwright.async_api import async_playwright 
 import asyncio, os, json, random, uuid, operator
 from ABH import ABH, events, Button
+banned_url = [
+    9,  25, 94, 131, 175,
+    26, 40, 110, 136, 194,
+    71, 72, 111, 142, 212,
+    77, 79, 114, 148, 230,
+    80, 81, 115, 150, 245,
+    82, 93, 121, 152, 254,
+    273, 275
+]
+latmiyat_range = range(50, 315)
+async def send_random_latmia(event):
+    try:
+        chosen = random.choice(list(latmiyat_range))
+        if chosen in banned_url:
+            return await send_random_latmia(event)
+        latmia_url = f"https://t.me/x04ou/{chosen}"
+        await event.reply(file=latmia_url)
+    except Exception as e:
+        await event.reply(f"اعد المحاولة مره اخرى")
+@ABH.on(events.NewMessage(pattern=r"^(لطمية|لطميه)$"))
+async def handle_latmia_command(event):
+    await send_random_latmia(event)
 @ABH.on(events.NewMessage(pattern='عاشوراء'))
 async def ashourau(event):
     pic = "links/abh.jpg"
