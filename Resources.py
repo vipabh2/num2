@@ -1,3 +1,4 @@
+import google.generativeai as genai
 from ABH import *
 import pytz
 timezone = pytz.timezone('Asia/Baghdad')
