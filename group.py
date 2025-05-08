@@ -3,7 +3,6 @@ import google.generativeai as genai
 from ABH import ABH, events #type: ignore
 import  pytz
 from googletrans import Translator
-from Resources import hint_gid 
 timezone = pytz.timezone('Asia/Baghdad')
 GEMINI = "AIzaSyA5pzOpKVcMGm6Aek82KoB3Pk94dYg3LX4"
 genai.configure(api_key=GEMINI)
