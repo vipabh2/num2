@@ -3,14 +3,11 @@ import google.generativeai as genai
 from ABH import ABH, events #type: ignore
 import  pytz
 from googletrans import Translator
+from Resources import hint_gid 
 timezone = pytz.timezone('Asia/Baghdad')
 GEMINI = "AIzaSyA5pzOpKVcMGm6Aek82KoB3Pk94dYg3LX4"
 genai.configure(api_key=GEMINI)
 model = genai.GenerativeModel("gemini-1.5-flash")
-group = -1001784332159
-hint_gid = -1002168230471
-bot = "Anymous"
-wfffp = 1910015590
 @ABH.on(events.NewMessage(pattern=r'(ترجمة|ترجمه)'))
 async def translation(event):
     translator = Translator()
@@ -90,4 +87,3 @@ async def nickname_r(event):
         await event.reply(f"لقبه ↞ {nickname}")
     except Exception:
         await event.reply("المستخدم ليس مشرفًا أو لا يمكن العثور عليه.")
-      
