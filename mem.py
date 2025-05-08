@@ -1,4 +1,4 @@
-from ABH import ABH
+from ABH import ABH, events
 @ABH.on(events.NewMessage(pattern=r'^(مخفي طكة زيج|زيج)$'))
 async def reply_abh(event):
     replied_message = await event.get_reply_message()
