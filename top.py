@@ -41,4 +41,23 @@ async def add_money(event):
         user_id = r.sender_id
         add_points(user_id, gid, points, amount=p)
         await event.reply(f"تم اضافة {p} دينار ل {r.sender.first_name}")
+@ABH.on(events.NewMessage(pattern='ثروتي'))
+async def m(event):
+    uid = str(event.sender_id)
+    gid = str(event.chat_id)
+    if uid in points and gid in points[uid]:
+        m = points[uid][gid]['points']
+    else:
+        m = 0
+    await event.reply(f'فلوسك ↢ ( {m} )')
+@ABH.on(events.NewMessage(pattern='ثروته|الثروه'))
+async def m(event):
+    r = await event.get_reply_message()
+    uid = str(r.sender_id)
+    gid = str(event.chat_id)
+    if uid in points and gid in points[uid]:
+        m = points[uid][gid]['points']
+    else:
+        m = 0
+    await event.reply(f'فلوسه ↢ ( {m} )')
 print("top is running")
