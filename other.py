@@ -2,6 +2,10 @@ from database import store_whisper, get_whisper #type: ignore
 from playwright.async_api import async_playwright 
 import asyncio, os, json, random, uuid, operator
 from ABH import ABH, events, Button
+@ABH.on(events.NewMessage(pattern='عاشوراء'))
+async def ashourau(event):
+    pic = "links/abh.jpg"
+    await ABH.send_file(event.chat_id, pic, caption="تقبل الله صالح الأعمال", reply_to=event.message.id)
 operations = {
     "+": operator.add,
     "-": operator.sub,
