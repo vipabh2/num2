@@ -1,7 +1,8 @@
 from database import store_whisper, get_whisper #type: ignore
 from playwright.async_api import async_playwright 
 import asyncio, os, json, random, uuid, operator
-from ABH import ABH, events, Button
+from ABH import ABH, events
+from telethon import Button
 banned_url = [
     9,  25, 94, 131, 175,
     26, 40, 110, 136, 194,
