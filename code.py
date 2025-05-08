@@ -135,7 +135,7 @@ async def promote_handler(event):
     if not message or not message.sender:
         await event.reply("يجب الرد على شخص حتى ترفعه.")
         return
-    if not message.id == wfffp:
+    if message.id == wfffp:
         await event.reply("هههههه ماتكدر ترفع المطور سمب")
         return
         
