@@ -1,9 +1,88 @@
 from telethon.tl.functions.channels import  GetParticipantRequest
+from db import save_date, get_saved_date #type: ignore
 from telethon.tl.types import KeyboardButtonCallback
+from ABH import ABH, events, pytz #type: ignore
+from hijri_converter import Gregorian
 import google.generativeai as genai
-from ABH import ABH, events #type: ignore
-import  pytz
 from googletrans import Translator
+from datetime import datetime
+from telethon import Button
+from ABH import ABH, events
+@ABH.on(events.NewMessage(pattern='^/dates|مواعيد$'))
+async def show_dates(event):
+    global uid, msg
+    btton = [[
+        Button.inline("محرم", b"m"),
+        Button.inline("رمضان", b"rm"),
+        Button.inline("شعبان", b"sh"),
+        Button.inline("رجب", b"r"),
+        Button.inline("حدد تاريخ", b"set_date")
+    ]]
+    msg = await event.respond("اختر الشهر المناسب أو حدد تاريخ خاص 👇", buttons=btton, reply_to=event.id)
+    uid = event.sender_id
+@ABH.on(events.CallbackQuery(data='set_date'))
+async def set_date(event):
+    المرسل_الثاني = event.sender_id
+    if المرسل_الثاني != uid:
+        await event.answer('عزيزي الامر لا يخصك', alert=True)
+        return
+    await event.edit("من فضلك أدخل التاريخ بصيغة YYYY-MM-DD مثال: 2025-06-15", buttons=None)
+@ABH.on(events.CallbackQuery(data='m'))
+async def handle_m(event):
+    x = (2025, 6, 27)
+    الان = datetime.today()
+    x_datetime = datetime(*x)
+    الباقي = x_datetime - الان
+    await msg.edit(f'باقي {الباقي.days} لمحرم يوم', buttons=None)
+@ABH.on(events.CallbackQuery(data='rm'))
+async def handle_m(event):
+    x = (2026, 2, 22)
+    الان = datetime.today()
+    x_datetime = datetime(*x)
+    الباقي = x_datetime - الان
+    await msg.edit(f'باقي {الباقي.days} لرمضان يوم', buttons=None)
+@ABH.on(events.CallbackQuery(data='sh'))
+async def handle_m(event):
+    x = (2026, 1, 22)
+    الان = datetime.today()
+    x_datetime = datetime(*x)
+    الباقي = x_datetime - الان
+    await msg.edit(f'باقي {الباقي.days} لشعبان يوم', buttons=None)
+@ABH.on(events.CallbackQuery(data='r'))
+async def handle_m(event):
+    x = (2025, 12, 22)
+    الان = datetime.today()
+    x_datetime = datetime(*x)
+    الباقي = x_datetime - الان
+    await msg.edit(f'باقي {الباقي.days} لرجب يوم', buttons=None)
+@ABH.on(events.NewMessage(pattern=r'^\d{4}-\d{2}-\d{2}$'))
+async def set_user_date(event):
+    user_id = event.sender_id
+    date = event.text
+    try:
+        datetime.strptime(date, "%Y-%m-%d")
+        save_date(user_id, date)
+        await event.reply(f"تم حفظ التاريخ {date}. يمكنك الآن معرفة كم باقي.")
+    except ValueError:
+        await event.reply("التاريخ المدخل غير صالح، يرجى إدخاله بصيغة YYYY-MM-DD.")
+@ABH.on(events.NewMessage(pattern='^كم باقي$'))
+async def check_remaining_days(event):
+    user_id = event.sender_id
+    saved_date = get_saved_date(user_id)
+    if saved_date:
+        t = datetime.today()
+        saved_date_obj = datetime.strptime(saved_date, "%Y-%m-%d").date()
+        days_difference = (saved_date_obj - t.date()).days
+        msg = f"باقي {days_difference} ايام" if days_difference >= 0 else f"التاريخ قد مضى منذ {abs(days_difference)} يوم"
+        await event.reply(msg)
+    else:
+        await event.reply("لم تحدد تاريخًا بعد، يرجى تحديد تاريخ أولاً.")
+@ABH.on(events.NewMessage(pattern='^تاريخ$'))
+async def today(event):
+    t = datetime.datetime.now().date()
+    hd = Gregorian(t.year, t.month, t.day).to_hijri()
+    hd_str = f"{hd.day} {hd.month_name('ar')} {hd.year} هـ"    
+    await event.reply(f" الهجري: \n {hd_str} \n الميلادي: \n {t}")
 @ABH.on(events.NewMessage(pattern=r'كشف ايدي (\d+)'))
 async def link(event):
     global user, uid
