@@ -1,6 +1,6 @@
 from ABH import ABH, events, bot_token
 from datetime import datetime
-import os, json, pytz, re
+import os, json, pytz
 from Resources import * 
 from addanddel import * 
 from Program import * 
