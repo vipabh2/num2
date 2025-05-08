@@ -221,7 +221,7 @@ async def m(event):
         m = points[uid][gid]['points']
     else:
         m = 0
-    await event.reply(f'جميع الاموال الي حصدتها ↢ {m}')
+    await event.reply(f'فلوسك ↢ ( {m} )')
 @ABH.on(events.NewMessage(pattern='ثروته|الثروه'))
 async def m(event):
     r = await event.get_reply_message()
@@ -231,7 +231,7 @@ async def m(event):
         m = points[uid][gid]['points']
     else:
         m = 0
-    await event.reply(f'جميع الاموال الي حصدتها ↢ {m}')
+    await event.reply(f'فلوسه ↢ ( {m} )')
 @ABH.on(events.NewMessage(pattern='النازية|الشعار'))
 async def nazi(event):
     n1 = """🟥🟥🟥🟥🟥🟥🟥🟥🟥
@@ -353,7 +353,9 @@ async def show_res(event):
             msg_count = data[guid]["msg"]
             top_users.append(f"المستخدم [{first_name}](tg://user?id={user_id}) رسائله -> {msg_count}")
     if top_users:
-        await event.reply("\n".join(top_users))
+        x = await event.reply("\n".join(top_users))
+        asyncio.sleep(60)
+        await x.delete()
     else:
         await event.reply("لا توجد بيانات لعرضها.")
 @ABH.on(events.NewMessage(pattern='رسائلي'))
@@ -365,7 +367,7 @@ async def show_res(event):
     if unm1 in uinfo and guid1 in uinfo[unm1]:
         msg_count = uinfo[unm1][guid1]["msg"]
         await event.reply(f"المستخدم [{uid1}](tg://user?id={unm1}) أرسلت {msg_count} رسالة في هذه المجموعة.")
-@ABH.on(events.NewMessage(pattern=r'^(رسائله|رسائلة|رسائل|الرسائل)$'))
+@ABH.on(events.NewMessage(pattern=r'^(رسائله|رسائلة|رسائل)$'))
 async def his_res(event):
     r = await event.get_reply_message()  
     await asyncio.sleep(1)
@@ -1253,7 +1255,7 @@ async def replys(event):
     text = event.text
     x = "ادونيس"
     v = event.chat_id
-    if x in text and c == group:
+    if x in text and int(c) == int(group):
         await event.reply("@rizrz")
     abh = "ابن هاشم"
     if abh in text:
