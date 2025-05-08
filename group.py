@@ -1,7 +1,7 @@
 from telethon.tl.functions.channels import  GetParticipantRequest
 from db import save_date, get_saved_date #type: ignore
 from telethon.tl.types import KeyboardButtonCallback
-from ABH import ABH, events, pytz #type: ignore
+from ABH import ABH, events #type: ignore
 from hijri_converter import Gregorian
 import google.generativeai as genai
 from googletrans import Translator
