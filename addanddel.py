@@ -1,6 +1,5 @@
 from ABH import ABH, events
 from top import points, add_user, save_points
-from Resources import wfffp
 @ABH.on(events.NewMessage(pattern=r'رفع سمب(?:\s+(\d+))?'))
 async def promote_handler(event):
     message = await event.get_reply_message()
@@ -12,7 +11,7 @@ async def promote_handler(event):
     uid = str(event.sender_id)
     target_id = str(message.sender_id)
     giver_name = (await event.get_sender()).first_name or "مجهول"
-    if target_id == wfffp:
+    if target_id == 1910015590:
         await event.reply(f'جاري رفع {giver_name} سمب')
     receiver_name = message.sender.first_name or "مجهول"
     gid = str(event.chat_id)
