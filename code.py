@@ -358,7 +358,7 @@ async def show_res(event):
             top_users.append(f"المستخدم [{first_name}](tg://user?id={user_id}) رسائله -> {msg_count}")
     if top_users:
         x = await event.reply("\n".join(top_users))
-        asyncio.sleep(60)
+        await asyncio.sleep(60)
         await x.delete()
     else:
         await event.reply("لا توجد بيانات لعرضها.")
