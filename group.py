@@ -1,4 +1,4 @@
-from telethon.tl.types import ChatBannedRights, KeyboardButtonCallback
+from telethon.tl.types import KeyboardButtonCallback
 from telethon.tl.functions.channels import  GetParticipantRequest
 from db import save_date, get_saved_date #type: ignore
 from ABH import ABH, events #type: ignore
