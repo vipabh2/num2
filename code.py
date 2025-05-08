@@ -1254,7 +1254,7 @@ async def anymous(event):
 async def replys(event):
     text = event.text
     x = "ادونيس"
-    v = event.chat_id
+    c = event.chat_id
     if x in text and int(c) == int(group):
         await event.reply("@rizrz")
     abh = "ابن هاشم"
