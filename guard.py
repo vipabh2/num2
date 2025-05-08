@@ -73,8 +73,8 @@ async def handler_res(event):
    if user_id not in warns:
     warns[user_id] = {}
    if chat.id not in warns[user_id]:
-       await msg.delete()
        msg = event.message
+       await msg.delete()
        warns[user_id][chat.id] = 0
        warns[user_id][chat.id] += 1
    if warns[user_id][chat.id] == 2:
