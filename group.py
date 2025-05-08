@@ -2,6 +2,7 @@ from telethon.tl.functions.channels import  GetParticipantRequest
 import google.generativeai as genai
 from ABH import ABH, events #type: ignore
 import  pytz
+from googletrans import Translator
 timezone = pytz.timezone('Asia/Baghdad')
 GEMINI = "AIzaSyA5pzOpKVcMGm6Aek82KoB3Pk94dYg3LX4"
 genai.configure(api_key=GEMINI)
@@ -10,6 +11,28 @@ group = -1001784332159
 hint_gid = -1002168230471
 bot = "Anymous"
 wfffp = 1910015590
+@ABH.on(events.NewMessage(pattern=r'(ترجمة|ترجمه)'))
+async def translation(event):
+    translator = Translator()
+    if event.is_reply:
+        replied_message = await event.get_reply_message()
+        original_text = replied_message.text 
+    else:
+        command_parts = event.message.text.split(' ', 1)
+        original_text = command_parts[1] if len(command_parts) > 1 else None
+    if not original_text:
+        await event.reply("يرجى الرد على رسالة تحتوي على النص المراد ترجمته أو كتابة النص بجانب الأمر.")
+        return
+    detected_language = translator.detect(original_text)
+    if detected_language.lang == "ar": 
+        translated = translator.translate(original_text, dest="en")
+    else: 
+        translated = translator.translate(original_text, dest="ar")
+    response = (
+        f"اللغة المكتشفة: {detected_language.lang}\n"
+        f"النص المترجم: `{translated.text}`"
+    )
+    await event.reply(response)
 rights_translation = {
     "change_info": "تغيير معلومات المجموعة",
     "post_messages": "نشر الرسائل",
