@@ -295,8 +295,8 @@ async def start_with_param(event):
                 caption=original.text if original.text else None,
                 protect_content=True
             )
-    else:
-        await event.reply(data['text'])
+    # else:
+    #     await event.reply(data['text'])
     # if 'original_msg_id' in data and 'from_user_chat_id' in data:
     #     await ABH.forward_messages(
     #         event.sender_id,
