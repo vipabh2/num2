@@ -1,7 +1,7 @@
 from database import store_whisper, get_whisper #type: ignore
 from playwright.async_api import async_playwright 
 import asyncio, os, json, random, uuid, operator
-from ABH import ABH, events
+from ABH import ABH, events #type: ignore
 from telethon import Button
 banned_url = [
     9,  25, 94, 131, 175,
@@ -212,6 +212,8 @@ async def send_alert(event):
         except Exception as e:
             await alert(f"❌ فشل الإرسال إلى {dialog_id}: {e}")
     await event.reply("✅ تم إرسال التنبيه لجميع المحادثات!")
+whispers_file = 'whispers.json'
+sent_log_file = 'sent_whispers.json'
 if os.path.exists(whispers_file):
     try:
         with open(whispers_file, 'r') as f:
@@ -236,7 +238,7 @@ def save_sent_log():
         json.dump(sent_whispers, f, ensure_ascii=False, indent=2)
 user_sessions = {}
 l = {}
-@client.on(events.NewMessage(pattern='اهمس'))
+@ABH.on(events.NewMessage(pattern='اهمس'))
 async def handle_whisper(event):
     global l, m1, reply
     sender_id = event.sender_id
@@ -258,13 +260,13 @@ async def handle_whisper(event):
         "to_name": to_user.first_name
     }
     save_whispers()
-    button = Button.url("اضغط هنا للبدء", url=f"https://t.me/{(await client.get_me()).username}?start={whisper_id}")
+    button = Button.url("اضغط هنا للبدء", url=f"https://t.me/{(await ABH.get_me()).username}?start={whisper_id}")
     m1 = await event.reply(
         f'همسة مرسلة من {from_user.first_name} إلى {to_user.first_name}',
         buttons=[button]
     )
     l[sender_id] = True
-@client.on(events.NewMessage(pattern=r'/start (\w+)'))
+@ABH.on(events.NewMessage(pattern=r'/start (\w+)'))
 async def start_with_param(event):
     whisper_id = event.pattern_match.group(1)
     data = whisper_links.get(whisper_id)
@@ -276,7 +278,7 @@ async def start_with_param(event):
         return
     sender = await event.get_sender()
     if 'original_msg_id' in data and 'from_user_chat_id' in data:
-        await client.forward_messages(
+        await ABH.forward_messages(
             event.sender_id,
             messages=data['original_msg_id'],
             from_peer=data['from_user_chat_id']
@@ -286,7 +288,7 @@ async def start_with_param(event):
     else:
         await event.reply(f"أهلاً {sender.first_name}، ارسل نص الهمسة أو ميديا.")
     user_sessions[event.sender_id] = whisper_id
-@client.on(events.NewMessage(incoming=True))
+@ABH.on(events.NewMessage(incoming=True))
 async def forward_whisper(event):
     global l, m2
     if not event.is_private or (event.text and event.text.startswith('/')):
@@ -301,11 +303,11 @@ async def forward_whisper(event):
     if not data:
         return
     msg = event.message
-    b = Button.url("فتح الهمسة", url=f"https://t.me/{(await client.get_me()).username}?start={whisper_id}")
+    b = Button.url("فتح الهمسة", url=f"https://t.me/{(await ABH.get_me()).username}?start={whisper_id}")
     from_name = data.get("from_name", "مجهول")
     to_name = data.get("to_name", "مجهول")
     await m1.delete()
-    m2 = await client.send_message(
+    m2 = await ABH.send_message(
         data['chat_id'],
         f'همسة مرسلة من ({from_name}) إلى ({to_name})',
         buttons=[b], reply_to=reply.id)
