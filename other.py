@@ -249,7 +249,7 @@ async def handle_whisper(event):
     if not reply:
         await event.reply("صديقي الامر هاذ ميشتغل اذا مو رد")
         return
-    if reply.id == sender_id:
+    if reply.sender_id == sender_id:
         await event.reply("شني خالي تسوي همسه لنفسك")
         return
     whisper_id = str(uuid.uuid4())[:6]
