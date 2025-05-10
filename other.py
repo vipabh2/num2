@@ -285,15 +285,13 @@ async def start_with_param(event):
         if original.text:
             await ABH.send_message(
                 event.sender_id,
-                message=original.text,
-                protect_content=True
+                message=original.text
             )
         elif original.media:
             await ABH.send_file(
                 event.sender_id,
                 file=original.media,
-                caption=original.text if original.text else None,
-                protect_content=True
+                caption=original.text if original.text else None
             )
     elif 'text' in data:
         await event.reply(data['text'])
