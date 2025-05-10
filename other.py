@@ -249,6 +249,9 @@ async def handle_whisper(event):
     if not reply:
         await event.reply("صديقي الامر هاذ ميشتغل اذا مو رد")
         return
+    # if reply == sender_id:
+    #     await event.reply("شني خالي تسوي همسه لنفسك")
+    #     return
     whisper_id = str(uuid.uuid4())[:6]
     from_user = await event.get_sender()
     to_user = await reply.get_sender()
@@ -278,13 +281,30 @@ async def start_with_param(event):
         return
     sender = await event.get_sender()
     if 'original_msg_id' in data and 'from_user_chat_id' in data:
-        await ABH.forward_messages(
-            event.sender_id,
-            messages=data['original_msg_id'],
-            from_peer=data['from_user_chat_id']
-        )
-    elif 'text' in data:
+        original = await ABH.get_messages(data['from_user_chat_id'], ids=data['original_msg_id'])
+        if original.text:
+            await ABH.send_message(
+                event.sender_id,
+                message=original.text,
+                protect_content=True
+            )
+        elif original.media:
+            await ABH.send_file(
+                event.sender_id,
+                file=original.media,
+                caption=original.text if original.text else None,
+                protect_content=True
+            )
+    else:
         await event.reply(data['text'])
+    # if 'original_msg_id' in data and 'from_user_chat_id' in data:
+    #     await ABH.forward_messages(
+    #         event.sender_id,
+    #         messages=data['original_msg_id'],
+    #         from_peer=data['from_user_chat_id']
+    #     )
+    # elif 'text' in data:
+    #     await event.reply(data['text'])
     else:
         await event.reply(f"أهلاً {sender.first_name}، ارسل نص الهمسة أو ميديا.")
     user_sessions[event.sender_id] = whisper_id
