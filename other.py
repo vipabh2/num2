@@ -314,12 +314,14 @@ async def forward_whisper(event):
         return
     msg = event.message
     b = Button.url("فتح الهمسة", url=f"https://t.me/{(await ABH.get_me()).username}?start={whisper_id}")
+    uid = data.get("from", "x04ou")
+    rid = data.get("to", "x04ou")
     from_name = data.get("from_name", "مجهول")
     to_name = data.get("to_name", "مجهول")
     await m1.delete()
     m2 = await ABH.send_message(
         data['chat_id'],
-        f'همسة مرسلة من ({from_name}) إلى ({to_name})',
+        f'همسة مرسلة من ( [{from_name}](tg://user?id={uid}) ) إلى ( [{to_name}](tg://user?id={rid}) )',
         buttons=[b], reply_to=reply.id)
     if msg.media:
         whisper_links[whisper_id]['original_msg_id'] = msg.id
