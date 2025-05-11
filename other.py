@@ -266,10 +266,9 @@ async def handle_whisper(event):
         "to_name": to_user.first_name
     }
     save_whispers()
-    f'همسة مرسلة من ( [{name}](tg://user?id={sender_id}) ) إلى ( [{to_name}](tg://user?id={rid}) 🙂🙂)',
     button = Button.url("اضغط هنا للبدء", url=f"https://t.me/{(await ABH.get_me()).username}?start={whisper_id}")
     m1 = await event.reply(
-        f'همسة مرسلة من {from_user.first_name} إلى {to_user.first_name}',
+        f'همسة مرسلة من ( [{name}](tg://user?id={sender_id}) ) إلى ( [{to_name}](tg://user?id={rid}) 🙂🙂)',
         buttons=[button]
     )
     l[sender_id] = True
