@@ -252,12 +252,12 @@ async def handle_whisper(event):
     if reply.sender_id == sender_id:
         await event.reply("شني خالي تسوي همسه لنفسك")
         return
-    rid = reply.sender_id
-    name = event.first_name
+    to_user = await reply.get_sender()
+    from_user = await event.get_sender()
+    rid = to_user.sender_id
+    name = from_user.first_name
     to_name = reply.first_name
     whisper_id = str(uuid.uuid4())[:6]
-    from_user = await event.get_sender()
-    to_user = await reply.get_sender()
     whisper_links[whisper_id] = {
         "from": sender_id,
         "to": reply.sender_id,
