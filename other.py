@@ -252,6 +252,9 @@ async def handle_whisper(event):
     if reply.sender_id == sender_id:
         await event.reply("شني خالي تسوي همسه لنفسك")
         return
+    rid = reply.sender_id
+    name = event.first_name
+    to_name = reply.first_name
     whisper_id = str(uuid.uuid4())[:6]
     from_user = await event.get_sender()
     to_user = await reply.get_sender()
@@ -263,6 +266,7 @@ async def handle_whisper(event):
         "to_name": to_user.first_name
     }
     save_whispers()
+    f'همسة مرسلة من ( [{name}](tg://user?id={sender_id}) ) إلى ( [{to_name}](tg://user?id={rid}) 🙂🙂)',
     button = Button.url("اضغط هنا للبدء", url=f"https://t.me/{(await ABH.get_me()).username}?start={whisper_id}")
     m1 = await event.reply(
         f'همسة مرسلة من {from_user.first_name} إلى {to_user.first_name}',
