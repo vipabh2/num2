@@ -254,9 +254,9 @@ async def handle_whisper(event):
         return
     to_user = await reply.get_sender()
     from_user = await event.get_sender()
-    rid = to_user.sender_id
+    rid = to_user.id
     name = from_user.first_name
-    to_name = reply.first_name
+    to_name = to_user.first_name
     whisper_id = str(uuid.uuid4())[:6]
     whisper_links[whisper_id] = {
         "from": sender_id,
