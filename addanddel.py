@@ -1,5 +1,8 @@
 from ABH import ABH, events
 from top import points, add_user, save_points
+@ABH.on(events.NewMessage(pattern='اوامر الرفع'))
+async def promot_list(event):
+    await event.reply('**اوامر الرفع كالاتي** \n `رفع سمب` + عدد فلوس \n لرفع الشخص في قائمة `السمبات` \n `تنزيل سمب` \n حتى ترفع لازم يكون رصيدك 1000 والتنزيل يُضرب المبلغ *1.5 \n * `اوامر الالعاب`')
 @ABH.on(events.NewMessage(pattern=r'رفع سمب(?:\s+(\d+))?'))
 async def promote_handler(event):
     message = await event.get_reply_message()
