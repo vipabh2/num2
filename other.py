@@ -3,6 +3,19 @@ from playwright.async_api import async_playwright
 import asyncio, os, json, random, uuid, operator
 from ABH import ABH, events #type: ignore
 from telethon import Button
+@ABH.on(events.NewMessage(pattern='اوامر الحظ'))
+async def luck_list(event):                          
+    await event.reply('''
+    **اوامر الحظ** كآلاتي
+    `🎲` المقدار المربح = 6
+    `🏀` لمقدار المربح = 5
+    `🎯` المقدار المربح = 6
+    `⚽` المقدار المربح = 5
+    `🎳` المقدار المربح = 6
+    `🎰` المقدار المربح = 64
+    المقدار 🎰-64 يعطي من 1000 الئ 3000 
+    الباقي يعطي 999 للثروة الكلية
+    ''')
 banned_url = [
     9,  25, 94, 131, 175,
     26, 40, 110, 136, 194,
