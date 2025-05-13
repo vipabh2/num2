@@ -58,6 +58,8 @@ async def telegramgames(event):
         await event.reply(f"💔 للأسف، لم تفز في لعبة {emoji}\n🔢 النتيجة: `{value}`")
     user_data[str(user_id)] = {"last_play_time": current_time}
     save_user_data(user_data)
+user_points = {}
+game_active = False
 number = None
 max_attempts = 3
 attempts = 0
