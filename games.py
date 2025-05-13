@@ -13,7 +13,7 @@ async def boxing(event):
     if not r:
         await event.reply('عزيزي لازم ترد شخص وتكتب مضاربة')
         return
-    count = event.pattern_match.group(1)
+    count = int(event.pattern_match.group(1))
     if not count:
         await event.reply('عزيزي لازم تحدد مبلغ المضاربة')
         return
