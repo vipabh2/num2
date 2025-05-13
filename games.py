@@ -15,37 +15,42 @@ async def boxing(event):
     except ValueError:
         await event.reply(' تأكد من كتابة رقم صحيح بعد كلمة مضاربة.')
         return
-    if count <= 0:
-        await event.reply(' المبلغ يجب أن يكون أكبر من صفر.')
+    if count <= 3000:
+        await event.reply(' المبلغ يجب أن يكون أكبر من 3000 الاف.')
         return
-    user1 = reply.sender_id
-    user2 = event.sender_id
+    user1_id = reply.sender_id
+    user2_id = event.sender_id
     gid = str(event.chat_id)
-    if str(user1) not in points or gid not in points[str(user1)]:
+    if str(user1_id) not in points or gid not in points[str(user1_id)]:
         await event.reply(' الشخص الذي تم الرد عليه لا يملك نقاط.')
         return
-    if str(user2) not in points or gid not in points[str(user2)]:
+    if str(user2_id) not in points or gid not in points[str(user2_id)]:
         await event.reply(' أنت لا تملك نقاط.')
         return
-    mu1 = points[str(user1)][gid]['points']
-    mu2 = points[str(user2)][gid]['points']
+    mu1 = points[str(user1_id)][gid]['points']
+    mu2 = points[str(user2_id)][gid]['points']
     if count > mu1:
         await event.reply(' فلوس الشخص الذي تم الرد عليه أقل من مبلغ المضاربة.')
         return
     if count > mu2:
         await event.reply(' فلوسك أقل من مبلغ المضاربة.')
         return
-    winner_id = random.choice([user1, user2])
-    loser_id = user2 if winner_id == user1 else user1
+    user1_entity = await ABH.get_entity(user1_id)
+    user2_entity = await ABH.get_entity(user2_id)
+    mention1 = f"[{user1_entity.first_name}](tg://user?id={user1_id})"
+    mention2 = f"[{user2_entity.first_name}](tg://user?id={user2_id})"
+    winner_id = random.choice([user1_id, user2_id])
+    loser_id = user2_id if winner_id == user1_id else user1_id
     points[str(winner_id)][gid]['points'] += count
     points[str(loser_id)][gid]['points'] -= count
     with open("points.json", "w", encoding="utf-8") as f:
         json.dump(points, f, ensure_ascii=False, indent=2)
+    winner_name = mention1 if winner_id == user1_id else mention2
     await event.reply(
         f"🥊 تمت المضاربة بين:\n"
-        f"👤 [{user2}](tg://user?id={user2}) و [{user1}](tg://user?id={user1})\n\n"
-        f"🏆 الفائز: [{winner_id}](tg://user?id={winner_id})\n"
-        f"💰 ربح: {count} نقطة!"
+        f"👤 {mention2} و {mention1}\n\n"
+        f"🏆 الفائز: {winner_name}\n"
+        f"💰 الربح: {count} نقطة!"
     )
 user_state = {}
 @ABH.on(events.NewMessage(pattern='/football|كرة قدم'))
