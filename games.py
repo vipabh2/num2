@@ -6,7 +6,6 @@ from ABH import ABH
 WIN_VALUES = {
     "🎲": 6,
     "🎯": 6,
-    "🏀": 5,
     "⚽": 5,
     "🎳": 6,
     "🎰": 64
