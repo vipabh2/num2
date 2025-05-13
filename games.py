@@ -1,4 +1,4 @@
-import random, asyncio, time, json
+import random, asyncio, time, json, os
 from telethon import Button, events
 from top import points, add_points
 from faker import Faker
