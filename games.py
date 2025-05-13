@@ -1,6 +1,6 @@
 from telethon import Button, events
 from top import points, add_points
-import random, asyncio, time
+import random, asyncio, time, os
 from faker import Faker
 from ABH import ABH
 WIN_VALUES = {
