@@ -207,21 +207,27 @@ async def send_alert(event):
     if event.sender_id != K_4X1:
         return
     message_text = None
+    media = None
     if event.reply_to_msg_id:
         replied_msg = await event.get_reply_message()
         message_text = replied_msg.text
+        media = replied_msg.media
     else:
         command_parts = event.raw_text.split(maxsplit=1)
         if len(command_parts) > 1:
             message_text = command_parts[1]
-    if not message_text:
-        await event.reply("يرجى الرد على رسالة أو كتابة نص بعد `/alert`.")
+        if event.media:
+            media = event.media
+    if not message_text and not media:
+        await event.reply("يرجى الرد على رسالة تحتوي على ملف أو كتابة نص مع مرفق بعد `/alert`.")
         return
     await event.reply(f"🚀 جاري إرسال التنبيه إلى {len(alert_ids)} محادثة...")
     for dialog_id in alert_ids:
         try:
-            await ABH.send_message(dialog_id, f"**{message_text}**")
-            await alert(f"✅ تم الإرسال إلى: {dialog_id}")
+            if media:
+                await ABH.send_message(dialog_id, file=media, caption=message_text or "")
+            else:
+                await ABH.send_message(dialog_id, f"**{message_text}**")
         except Exception as e:
             await alert(f"❌ فشل الإرسال إلى {dialog_id}: {e}")
     await event.reply("✅ تم إرسال التنبيه لجميع المحادثات!")
