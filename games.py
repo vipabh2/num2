@@ -58,8 +58,7 @@ async def boxing(event):
         json.dump(points, f, ensure_ascii=False, indent=2)
     winner_name = mention1 if winner_id == user1_id else mention2
     await event.reply(
-        f"🌺 تمت المضاربة!
-\n"
+        f"🌺 تمت المضاربة!\n"
         f"👤 {mention2} 🌟 {mention1}\n\n"
         f"🏆 الفائز: {winner_name}\n"
         f"💰 الجائزة: {count} نقطة 🎉"
