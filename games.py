@@ -1,4 +1,4 @@
-from telethon import Button, events
+from telethon import Button, events, os
 from top import points, add_points
 import random, asyncio, time
 from faker import Faker
