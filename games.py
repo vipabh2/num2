@@ -6,25 +6,47 @@ from ABH import ABH #type: ignore
 from faker import Faker
 @ABH.on(events.NewMessage(pattern=r'مضاربة (\d+)'))
 async def boxing(event):
-    r = await event.get_reply_message()
-    user_id = r.sender_id
+    reply = await event.get_reply_message()
+    if not reply:
+        await event.reply(' عزيزي، لازم ترد على رسالة الشخص اللي تريد تضاربه.')
+        return
+    try:
+        count = int(event.pattern_match.group(1))
+    except ValueError:
+        await event.reply(' تأكد من كتابة رقم صحيح بعد كلمة مضاربة.')
+        return
+    if count <= 0:
+        await event.reply(' المبلغ يجب أن يكون أكبر من صفر.')
+        return
+    user1 = reply.sender_id
     user2 = event.sender_id
-    gid = event.chat_id
-    if not r:
-        await event.reply('عزيزي لازم ترد شخص وتكتب مضاربة')
+    gid = str(event.chat_id)
+    if str(user1) not in points or gid not in points[str(user1)]:
+        await event.reply(' الشخص الذي تم الرد عليه لا يملك نقاط.')
         return
-    count = int(event.pattern_match.group(1))
-    if not count:
-        await event.reply('عزيزي لازم تحدد مبلغ المضاربة')
+    if str(user2) not in points or gid not in points[str(user2)]:
+        await event.reply(' أنت لا تملك نقاط.')
         return
-    mu1 = points[str(user_id)][str(gid)]['points']
+    mu1 = points[str(user1)][gid]['points']
+    mu2 = points[str(user2)][gid]['points']
     if count > mu1:
-        await event.reply('فلوسك اقل من مبلغ المضاربة')
+        await event.reply(' فلوس الشخص الذي تم الرد عليه أقل من مبلغ المضاربة.')
         return
-    mu2 = points[str(user2)][str(gid)]['points']
     if count > mu2:
-        await event.reply('فلوسه اقل من مبلغ المضاربة')
+        await event.reply(' فلوسك أقل من مبلغ المضاربة.')
         return
+    winner_id = random.choice([user1, user2])
+    loser_id = user2 if winner_id == user1 else user1
+    points[str(winner_id)][gid]['points'] += count
+    points[str(loser_id)][gid]['points'] -= count
+    with open("points.json", "w", encoding="utf-8") as f:
+        json.dump(points, f, ensure_ascii=False, indent=2)
+    await event.reply(
+        f"🥊 تمت المضاربة بين:\n"
+        f"👤 [{user2}](tg://user?id={user2}) و [{user1}](tg://user?id={user1})\n\n"
+        f"🏆 الفائز: [{winner_id}](tg://user?id={winner_id})\n"
+        f"💰 ربح: {count} نقطة!"
+    )
 user_state = {}
 @ABH.on(events.NewMessage(pattern='/football|كرة قدم'))
 async def start_handler(event):
