@@ -6,6 +6,7 @@ from ABH import ABH #type: ignore
 from faker import Faker
 @ABH.on(events.NewMessage(pattern=r'مضاربة (\d+)'))
 async def boxing(event):
+    reply = await event.get_reply_message()
     user1_id = reply.sender_id
     user2_id = event.sender_id
     gid = str(event.chat_id)
@@ -20,7 +21,6 @@ async def boxing(event):
         formatted_time = f"{minutes:02}:{seconds:02}"
         await event.reply(f" يجب عليك الانتظار {formatted_time} قبل اللعب مجددًا.")
         return
-    reply = await event.get_reply_message()
     if not reply:
         await event.reply(' عزيزي، لازم ترد على رسالة الشخص اللي تريد تضاربه.')
         return
