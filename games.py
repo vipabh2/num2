@@ -40,8 +40,8 @@ async def telegramgames(event):
         minutes = remaining // 60
         seconds = remaining % 60
         formatted_time = f"{minutes:02}:{seconds:02}"
-        # await event.reply(f" يجب عليك الانتظار {formatted_time} قبل اللعب مجددًا.")
-    #     return
+        await event.reply(f" يجب عليك الانتظار {formatted_time} قبل اللعب مجددًا.")
+        return
     await asyncio.sleep(4)
     win = value == WIN_VALUES.get(emoji, -1)
     if win:
