@@ -1,8 +1,43 @@
+from top import points, add_points #type: ignore
+from Resources import football #type: ignore
 import random, asyncio, time, os, json
 from telethon import Button, events
-from top import points, add_points
+from ABH import ABH #type: ignore
 from faker import Faker
-from ABH import ABH
+user_state = {}
+@ABH.on(events.NewMessage(pattern='/start'))
+async def start_handler(event):
+    sender = await event.get_sender()
+    user_id = sender.id
+    r = random.choice(football)
+    user_state[user_id] = {
+        'answer': r['answer']
+    }
+    message_id = int(r['photo'].split("/")[-1])
+    message = await ABH.get_messages("LANBOT2", ids=message_id)
+    if message and message.media:
+        file_path = await ABH.download_media(message.media)
+        await ABH.send_file(event.chat_id, file_path, caption=r['caption'])
+    if os.path.exists(file_path):
+        os.remove(file_path)
+@ABH.on(events.NewMessage)
+async def answer_handler(event):
+    sender = await event.get_sender()
+    user_id = sender.id
+    msg = event.raw_text.strip()
+    if msg.startswith('/'):
+        return
+    if user_id in user_state:
+        correct_answer = user_state[user_id]['answer']
+        if msg == correct_answer:
+            amount = 250
+            await event.reply(f"اجابة صحيحة ربحت ↢ `{amount}`")
+            user_id = event.sender_id
+            gid = event.chat_id
+            add_points(user_id, gid, points, amount=amount)
+        else:
+            await event.reply("اجابة خاطئة!")
+        del user_state[user_id]
 WIN_VALUES = {
     "🎲": 6,
     "🎯": 6,
@@ -46,11 +81,11 @@ async def telegramgames(event):
     win = value == WIN_VALUES.get(emoji, -1)
     if win:
         await event.reply(f"اررررحب فزت ب {emoji}  تم اضافة ( `{amount}` ) لثروتك")
-    else:
-        await event.reply(f"للاسف خسرت ب {emoji}\n المقدار: `{value}`")
         user_id = event.sender_id
         gid = event.chat_id
         add_points(user_id, gid, points, amount=amount)
+    else:
+        await event.reply(f"للاسف خسرت ب {emoji}\n المقدار: `{value}`")
     user_data[str(user_id)] = {"last_play_time": current_time}
     save_user_data(user_data)
 user_points = {}
