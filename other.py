@@ -3,12 +3,12 @@ from playwright.async_api import async_playwright
 import asyncio, os, json, random, uuid, operator
 from ABH import ABH, events #type: ignore
 from telethon import Button
+    # `🏀` لمقدار المربح = 5
 @ABH.on(events.NewMessage(pattern='اوامر الحظ'))
 async def luck_list(event):                          
     await event.reply('''
     **اوامر الحظ** كآلاتي
     `🎲` المقدار المربح = 6
-    # `🏀` لمقدار المربح = 5
     `🎯` المقدار المربح = 6
     `⚽` المقدار المربح = 5
     `🎳` المقدار المربح = 6
