@@ -38,8 +38,11 @@ async def telegramgames(event):
     time_diff = current_time - last_play_time
     await asyncio.sleep(5)
     if time_diff < 5 * 60:
-        wait_time = (5 * 60 - time_diff) // 60
-        await event.reply(f" يجب عليك الانتظار {wait_time} دقيقة{'s' if wait_time > 1 else ''} قبل اللعب مجددًا.")
+        remaining = 5 * 60 - time_diff
+        minutes = remaining // 60
+        seconds = remaining % 60
+        formatted_time = f"{minutes:02}:{seconds:02}"
+        await event.reply(f"🚫 يجب عليك الانتظار {formatted_time} قبل اللعب مجددًا.")
         return
     win = value == WIN_VALUES.get(emoji, -1)
     if win:
