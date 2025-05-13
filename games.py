@@ -13,6 +13,7 @@ WIN_VALUES = {
     "🎰": 64
 }
 USER_DATA_FILE = "user_data.json"
+
 def load_user_data():
     if os.path.exists(USER_DATA_FILE):
         try:
@@ -25,6 +26,7 @@ def load_user_data():
 def save_user_data(data):
     with open(USER_DATA_FILE, "w", encoding="utf-8") as file:
         json.dump(data, file, ensure_ascii=False, indent=4)
+
 @ABH.on(events.NewMessage(pattern=r'.*'))
 async def telegramgames(event):
     if not event.message.dice:
@@ -41,9 +43,13 @@ async def telegramgames(event):
     last_play_time = user_data.get(str(user_id), {}).get("last_play_time", 0)
     current_time = int(time.time())
     time_diff = current_time - last_play_time
-    if time_diff < 5 * 60:
-        wait_time = (5 * 60 - time_diff) // 60
-        await event.reply(f"🚫 يجب عليك الانتظار {wait_time} دقيقة{'s' if wait_time > 1 else ''} قبل اللعب مجددًا.")
+    wait_seconds = 5 * 60
+    if time_diff < wait_seconds:
+        remaining = wait_seconds - time_diff
+        minutes = remaining // 60
+        seconds = remaining % 60
+        formatted_time = f"{minutes:02}:{seconds:02}"
+        await event.reply(f"🚫 يجب عليك الانتظار {formatted_time} دقيقة قبل اللعب مجددًا.")
         return
     win = value == WIN_VALUES.get(emoji, -1)
     if win:
@@ -52,7 +58,6 @@ async def telegramgames(event):
         await event.reply(f"💔 للأسف، لم تفز في لعبة {emoji}\n🔢 النتيجة: `{value}`")
     user_data[str(user_id)] = {"last_play_time": current_time}
     save_user_data(user_data)
-game_active = False
 number = None
 max_attempts = 3
 attempts = 0
