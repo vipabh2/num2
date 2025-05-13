@@ -47,10 +47,10 @@ async def boxing(event):
         json.dump(points, f, ensure_ascii=False, indent=2)
     winner_name = mention1 if winner_id == user1_id else mention2
     await event.reply(
-        f"🥊 تمت المضاربة بين:\n"
-        f"👤 {mention2} و {mention1}\n\n"
+        f"🥊 تمت المضاربة!\n\n"
+        f"👤 {mention2} 🆚 {mention1}\n\n"
         f"🏆 الفائز: {winner_name}\n"
-        f"💰 الربح: {count} نقطة!"
+        f"💰 الجائزة: {count} نقطة 🎉"
     )
 user_state = {}
 @ABH.on(events.NewMessage(pattern='/football|كرة قدم'))
