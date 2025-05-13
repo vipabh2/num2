@@ -8,7 +8,7 @@ async def luck_list(event):
     await event.reply('''
     **اوامر الحظ** كآلاتي
     `🎲` المقدار المربح = 6
-    `🏀` لمقدار المربح = 5
+    # `🏀` لمقدار المربح = 5
     `🎯` المقدار المربح = 6
     `⚽` المقدار المربح = 5
     `🎳` المقدار المربح = 6
@@ -62,10 +62,13 @@ async def calc(event):
             await event.respond("عملية غير مدعومة!", reply_to=event.message.id)
     except ZeroDivisionError:
         await event.respond("خطأ: لا يمكن القسمة على صفر!", reply_to=event.message.id)
-
+c = [
+    "ههههههه",
+    "😂",
+    "يسعدلي مسائك😀"
+]
 @ABH.on(events.NewMessage(pattern='ميم|ميمز'))
 async def meme(event):
-    global c
     rl = random.randint(2, 273)
     url = f"https://t.me/IUABH/{rl}"
     cap = random.choice(c)
