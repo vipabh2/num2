@@ -227,7 +227,7 @@ async def send_alert(event):
             if media:
                 await ABH.send_message(dialog_id, file=media, caption=message_text or "")
             else:
-                await ABH.send_message(dialog_id, f"**{message_text}**")
+                await ABH.send_message(dialog_id, f"{message_text}")
         except Exception as e:
             await alert(f"❌ فشل الإرسال إلى {dialog_id}: {e}")
     await event.reply("✅ تم إرسال التنبيه لجميع المحادثات!")
