@@ -1,6 +1,6 @@
-import random, asyncio, time, os, json
 from telethon import Button, events
 from top import points, add_points
+import random, asyncio, time
 from faker import Faker
 from ABH import ABH
 WIN_VALUES = {
@@ -40,7 +40,7 @@ async def telegramgames(event):
     if time_diff < 5 * 60:
         wait_time = (5 * 60 - time_diff) // 60
         await event.reply(f" يجب عليك الانتظار {wait_time} دقيقة{'s' if wait_time > 1 else ''} قبل اللعب مجددًا.")
-        # return
+        return
     win = value == WIN_VALUES.get(emoji, -1)
     if win:
         await event.reply(f"اررررحب فزت ب {emoji}  تم اضافة ( `{amount}` ) لثروتك")
