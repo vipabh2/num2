@@ -7,6 +7,9 @@ from faker import Faker
 @ABH.on(events.NewMessage(pattern=r'مضاربة (\d+)'))
 async def boxing(event):
     reply = await event.get_reply_message()
+    if not reply:
+        await event.reply(' عزيزي، لازم ترد على رسالة الشخص اللي تريد تضاربه.')
+        return
     user1_id = reply.sender_id
     user2_id = event.sender_id
     gid = str(event.chat_id)
@@ -15,14 +18,11 @@ async def boxing(event):
     current_time = int(time.time())
     time_diff = current_time - boxing
     if time_diff < 10 * 60:
-        remaining = 5 * 60 - time_diff
+        remaining = 10 * 60 - time_diff
         minutes = remaining // 60
         seconds = remaining % 60
         formatted_time = f"{minutes:02}:{seconds:02}"
         await event.reply(f" يجب عليك الانتظار {formatted_time} قبل اللعب مجددًا.")
-        return
-    if not reply:
-        await event.reply(' عزيزي، لازم ترد على رسالة الشخص اللي تريد تضاربه.')
         return
     try:
         count = int(event.pattern_match.group(1))
@@ -58,13 +58,13 @@ async def boxing(event):
         json.dump(points, f, ensure_ascii=False, indent=2)
     winner_name = mention1 if winner_id == user1_id else mention2
     await event.reply(
-        f"🥊 تمت المضاربة!\n\n"
-        f"👤 {mention2} 🆚 {mention1}\n\n"
+        f"🌺 تمت المضاربة!
+\n"
+        f"👤 {mention2} 🌟 {mention1}\n\n"
         f"🏆 الفائز: {winner_name}\n"
         f"💰 الجائزة: {count} نقطة 🎉"
     )
     user_data[str(user1_id)] = {"boxing": current_time}
-
 user_state = {}
 @ABH.on(events.NewMessage(pattern='/football|كرة قدم'))
 async def start_handler(event):
