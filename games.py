@@ -5,7 +5,7 @@ from telethon import Button, events
 from ABH import ABH #type: ignore
 from faker import Faker
 user_state = {}
-@ABH.on(events.NewMessage(pattern='/start'))
+@ABH.on(events.NewMessage(pattern='/football|كرة قدم'))
 async def start_handler(event):
     sender = await event.get_sender()
     user_id = sender.id
