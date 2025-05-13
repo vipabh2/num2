@@ -1,11 +1,25 @@
-from top import points, add_points #type: ignore
 from Resources import football, questions #type: ignore
+from top import points, add_points #type: ignore
 import random, asyncio, time, os, json
 from telethon import Button, events
 from ABH import ABH #type: ignore
 from faker import Faker
 @ABH.on(events.NewMessage(pattern=r'مضاربة (\d+)'))
 async def boxing(event):
+    user1_id = reply.sender_id
+    user2_id = event.sender_id
+    gid = str(event.chat_id)
+    user_data = load_user_data()
+    boxing = user_data.get(str(user1_id), {}).get("boxing", 0)
+    current_time = int(time.time())
+    time_diff = current_time - boxing
+    if time_diff < 10 * 60:
+        remaining = 5 * 60 - time_diff
+        minutes = remaining // 60
+        seconds = remaining % 60
+        formatted_time = f"{minutes:02}:{seconds:02}"
+        await event.reply(f" يجب عليك الانتظار {formatted_time} قبل اللعب مجددًا.")
+        return
     reply = await event.get_reply_message()
     if not reply:
         await event.reply(' عزيزي، لازم ترد على رسالة الشخص اللي تريد تضاربه.')
@@ -18,9 +32,6 @@ async def boxing(event):
     if count <= 3000:
         await event.reply(' المبلغ يجب أن يكون أكبر من 3000 الاف.')
         return
-    user1_id = reply.sender_id
-    user2_id = event.sender_id
-    gid = str(event.chat_id)
     if str(user1_id) not in points or gid not in points[str(user1_id)]:
         await event.reply(' الشخص الذي تم الرد عليه لا يملك نقاط.')
         return
@@ -52,6 +63,8 @@ async def boxing(event):
         f"🏆 الفائز: {winner_name}\n"
         f"💰 الجائزة: {count} نقطة 🎉"
     )
+    user_data[str(user1_id)] = {"boxing": current_time}
+
 user_state = {}
 @ABH.on(events.NewMessage(pattern='/football|كرة قدم'))
 async def start_handler(event):
