@@ -15,7 +15,11 @@ USER_DATA_FILE = "user_data.json"
 def load_user_data():
     if os.path.exists(USER_DATA_FILE):
         with open(USER_DATA_FILE, "r", encoding="utf-8") as file:
-            return json.load(file)
+            try:
+                return json.load(file)
+            except json.JSONDecodeError:
+                print("⚠️ خطأ في تحميل بيانات JSON، الملف فارغ أو التنسيق غير صحيح.")
+                return {}
     return {}
 def save_user_data(data):
     with open(USER_DATA_FILE, "w", encoding="utf-8") as file:
@@ -23,16 +27,15 @@ def save_user_data(data):
 @ABH.on(events.NewMessage(pattern=r'.*'))
 async def telegramgames(event):
     if not event.message.dice:
-        return    
+        return
     user_id = event.sender_id
     dice = event.message.dice
     emoji = dice.emoticon
-    value = dice.value
+    value = dice.value    
     if value == 64:
         amount = random.choice([1000, 2000, 3000])
     else:
         amount = 999
-    
     user_data = load_user_data()
     last_play_time = user_data.get(str(user_id), {}).get("last_play_time", 0)
     current_time = int(time.time())
@@ -43,15 +46,12 @@ async def telegramgames(event):
         return
     win = value == WIN_VALUES.get(emoji, -1)
     if win:
-        await event.reply(f"اررررحب فزت ب بالقيمة {value}` \n تم اضافة ( `{amount}` ) لثروتك")
+        await event.reply(f"🎉 مبروك! فزت في لعبة {emoji}\n🔢 النتيجة: `{value}`\n تم إضافة `{amount}` لثروتك")
+        add_points(user_id, event.chat_id, points, amount=amount)
     else:
-        await event.reply(f"💔 للأسف، لم تفز في لعبة {emoji}\n🔢 النتيجة: `{value}`")
-        user_id = event.sender_id
-        gid = event.chat_id
-        add_points(user_id, gid, points, amount=amount)
+        await event.reply(f"💔 للأسف، لم تفز في لعبة {emoji}\n🔢 النتيجة: `{value}`")    
     user_data[str(user_id)] = {"last_play_time": current_time}
     save_user_data(user_data)
-user_points = {}
 game_active = False
 number = None
 max_attempts = 3
