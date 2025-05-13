@@ -3,6 +3,54 @@ from top import points, add_points
 import random, asyncio, time
 from faker import Faker
 from ABH import ABH
+WIN_VALUES = {
+    "🎲": 6,
+    "🎯": 6,
+    "🏀": 5,
+    "⚽": 5,
+    "🎳": 6,
+    "🎰": 64
+}
+USER_DATA_FILE = "user_data.json"
+def load_user_data():
+    if os.path.exists(USER_DATA_FILE):
+        with open(USER_DATA_FILE, "r", encoding="utf-8") as file:
+            return json.load(file)
+    return {}
+def save_user_data(data):
+    with open(USER_DATA_FILE, "w", encoding="utf-8") as file:
+        json.dump(data, file, ensure_ascii=False, indent=4)
+@ABH.on(events.NewMessage(pattern=r'.*'))
+async def telegramgames(event):
+    if not event.message.dice:
+        return    
+    user_id = event.sender_id
+    dice = event.message.dice
+    emoji = dice.emoticon
+    value = dice.value
+    if value == 64:
+        amount = random.choice([1000, 2000, 3000])
+    else:
+        amount = 999
+    
+    user_data = load_user_data()
+    last_play_time = user_data.get(str(user_id), {}).get("last_play_time", 0)
+    current_time = int(time.time())
+    time_diff = current_time - last_play_time
+    if time_diff < 5 * 60:
+        wait_time = (5 * 60 - time_diff) // 60
+        await event.reply(f"🚫 يجب عليك الانتظار {wait_time} دقيقة{'s' if wait_time > 1 else ''} قبل اللعب مجددًا.")
+        return
+    win = value == WIN_VALUES.get(emoji, -1)
+    if win:
+        await event.reply(f"اررررحب فزت ب بالقيمة {value}` \n تم اضافة ( `{amount}` ) لثروتك")
+    else:
+        await event.reply(f"💔 للأسف، لم تفز في لعبة {emoji}\n🔢 النتيجة: `{value}`")
+        user_id = event.sender_id
+        gid = event.chat_id
+        add_points(user_id, gid, points, amount=amount)
+    user_data[str(user_id)] = {"last_play_time": current_time}
+    save_user_data(user_data)
 user_points = {}
 game_active = False
 number = None
