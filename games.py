@@ -4,6 +4,15 @@ import random, asyncio, time, os, json
 from telethon import Button, events
 from ABH import ABH #type: ignore
 from faker import Faker
+@ABH.on(events.NewMessage(pattern=r'^شراء حل \s+([^\d\W]\w*)'))
+async def buy(event):
+    user_id = event.sender_id
+    type = event.pattern_match.group(1)
+    x = {'/football', 'كرة قدم', '/quist', '/sport', '/rings', '/num'}
+    if type not in x:
+        await event.reply('ماكو هيج لعبة')
+    elif type == '/football':
+        await event.reply(user_state[user_id]['answer'])
 USER_DATA_FILE = "boxing.json"
 def load_user_data():
     if os.path.exists(USER_DATA_FILE):
@@ -24,7 +33,7 @@ async def boxing(event):
     except ValueError:
         await event.reply('تأكد من كتابة رقم صحيح بعد كلمة مضاربة.')
         return
-    if count <= 3000:
+    if count <= 2999:
         await event.reply('المبلغ يجب أن يكون أكبر من 3000.')
         return
     user1_id = reply.sender_id
@@ -37,8 +46,8 @@ async def boxing(event):
         remaining = 10 * 60 - (current_time - last_target_time)
         minutes = remaining // 60
         seconds = remaining % 60
-        s = await event.get_sender()
-        x = await mention(event, s)
+        s = await event.get_sender(event, s)
+        x = await mention(event)
         await event.reply(f"لا يمكن مضاربة {x} الآن، انتظر {minutes:02}:{seconds:02} دقيقة.")
         return
     last_attack_time = user_data.get(str(user2_id), {}).get("attacked", 0)
@@ -46,7 +55,7 @@ async def boxing(event):
         remaining = 10 * 60 - (current_time - last_attack_time)
         minutes = remaining // 60
         seconds = remaining % 60
-        await event.reply(f"🕒 يجب عليك الانتظار {minutes:02}:{seconds:02} قبل أن تبدأ مضاربة جديدة.")
+        await event.reply(f"يجب عليك الانتظار {minutes:02}:{seconds:02} قبل أن تبدأ مضاربة جديدة.")
         return
     if str(user1_id) not in points or gid not in points[str(user1_id)]:
         await event.reply('الشخص الذي تم الرد عليه لا يملك نقاط.')
@@ -97,7 +106,7 @@ async def start_handler(event):
     message = await ABH.get_messages("LANBOT2", ids=message_id)
     if message and message.media:
         file_path = await ABH.download_media(message.media)
-        await ABH.send_file(event.chat_id, file_path, caption=r['caption'], reply_to=event.id)
+        await ABH.send_file(event.chat_id, file_path, caption=r['caption'])
     if os.path.exists(file_path):
         os.remove(file_path)
 @ABH.on(events.NewMessage)
