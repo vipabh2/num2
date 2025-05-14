@@ -1,4 +1,4 @@
-from Resources import football, questions #type: ignore
+from Resources import football, questions, mention #type: ignore
 from top import points, add_points #type: ignore
 import random, asyncio, time, os, json
 from telethon import Button, events
@@ -37,7 +37,9 @@ async def boxing(event):
         remaining = 10 * 60 - (current_time - last_target_time)
         minutes = remaining // 60
         seconds = remaining % 60
-        await event.reply(f"🕒 لا يمكن مضاربة هذا الشخص الآن، انتظر {minutes:02}:{seconds:02} دقيقة.")
+        s = await event.get_sender(event, s)
+        x = await mention(event)
+        await event.reply(f"لا يمكن مضاربة {x} الآن، انتظر {minutes:02}:{seconds:02} دقيقة.")
         return
     last_attack_time = user_data.get(str(user2_id), {}).get("attacked", 0)
     if current_time - last_attack_time < 10 * 60:
