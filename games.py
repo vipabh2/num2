@@ -16,44 +16,49 @@ def save_user_data(data):
 @ABH.on(events.NewMessage(pattern=r'مضاربة (\d+)'))
 async def boxing(event):
     reply = await event.get_reply_message()
-    user1_id = reply.sender_id
-    user2_id = event.sender_id
-    gid = str(event.chat_id)
-    user_data = load_user_data()
-    boxing = user_data.get(str(user1_id), {}).get("boxing", 0)
-    current_time = int(time.time())
-    time_diff = current_time - boxing
-    if time_diff < 10 * 60:
-        remaining = 5 * 60 - time_diff
-        minutes = remaining // 60
-        seconds = remaining % 60
-        formatted_time = f"{minutes:02}:{seconds:02}"
-        await event.reply(f" يجب عليك الانتظار {formatted_time} قبل اللعب مجددًا.")
-        return
     if not reply:
-        await event.reply(' عزيزي، لازم ترد على رسالة الشخص اللي تريد تضاربه.')
+        await event.reply('عزيزي، لازم ترد على رسالة الشخص اللي تريد تضاربه.')
         return
     try:
         count = int(event.pattern_match.group(1))
     except ValueError:
-        await event.reply(' تأكد من كتابة رقم صحيح بعد كلمة مضاربة.')
+        await event.reply('تأكد من كتابة رقم صحيح بعد كلمة مضاربة.')
         return
     if count <= 3000:
-        await event.reply(' المبلغ يجب أن يكون أكبر من 3000 الاف.')
+        await event.reply('المبلغ يجب أن يكون أكبر من 3000.')
+        return
+    user1_id = reply.sender_id
+    user2_id = event.sender_id 
+    gid = str(event.chat_id)
+    user_data = load_user_data()
+    current_time = int(time.time())
+    last_time_1 = user_data.get(str(user1_id), {}).get("boxing", 0)
+    if current_time - last_time_1 < 10 * 60:
+        remaining = 10 * 60 - (current_time - last_time_1)
+        minutes = remaining // 60
+        seconds = remaining % 60
+        await event.reply(f"🕒 الشخص الذي تريد مضاربته يجب أن ينتظر {minutes:02}:{seconds:02} دقيقة.")
+        return
+    last_time_2 = user_data.get(str(user2_id), {}).get("boxing", 0)
+    if current_time - last_time_2 < 10 * 60:
+        remaining = 10 * 60 - (current_time - last_time_2)
+        minutes = remaining // 60
+        seconds = remaining % 60
+        await event.reply(f"🕒 يجب عليك الانتظار {minutes:02}:{seconds:02} قبل اللعب مجددًا.")
         return
     if str(user1_id) not in points or gid not in points[str(user1_id)]:
-        await event.reply(' الشخص الذي تم الرد عليه لا يملك نقاط.')
+        await event.reply('الشخص الذي تم الرد عليه لا يملك نقاط.')
         return
     if str(user2_id) not in points or gid not in points[str(user2_id)]:
-        await event.reply(' أنت لا تملك نقاط.')
+        await event.reply('أنت لا تملك نقاط.')
         return
     mu1 = points[str(user1_id)][gid]['points']
     mu2 = points[str(user2_id)][gid]['points']
     if count > mu1:
-        await event.reply(' فلوس الشخص الذي تم الرد عليه أقل من مبلغ المضاربة.')
+        await event.reply('فلوس الشخص الذي تم الرد عليه أقل من مبلغ المضاربة.')
         return
     if count > mu2:
-        await event.reply(' فلوسك أقل من مبلغ المضاربة.')
+        await event.reply('فلوسك أقل من مبلغ المضاربة.')
         return
     user1_entity = await ABH.get_entity(user1_id)
     user2_entity = await ABH.get_entity(user2_id)
@@ -73,6 +78,8 @@ async def boxing(event):
         f"💰 الجائزة: {count} نقطة 🎉"
     )
     user_data[str(user1_id)] = {"boxing": current_time}
+    user_data[str(user2_id)] = {"boxing": current_time}
+    save_user_data(user_data)
 user_state = {}
 @ABH.on(events.NewMessage(pattern='/football|كرة قدم'))
 async def start_handler(event):
