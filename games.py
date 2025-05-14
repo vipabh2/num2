@@ -18,19 +18,16 @@ async def buy(event):
         answer = r.get('answer', 'ما محدد الجواب')
         caption = r.get('caption', '')
         photo_ref = r.get('photo')
-        try:
-            message_id = int(photo_ref.split("/")[-1])
-            message = await ABH.get_messages("LANBOT2", ids=message_id)
-            if message and message.media:
-                file_path = await ABH.download_media(message.media)
-                await ABH.send_file(event.chat_id, file_path, caption=caption)
-                if os.path.exists(file_path):
-                    os.remove(file_path)
-                await event.reply(f" الجواب الصحيح هو:\n`{answer}`")
-            else:
-                await event.reply("فشل في جلب الصورة من البوت المصدر.")
-        except Exception as e:
-            await event.reply(f"حدث خطأ أثناء جلب الملف: {e}")
+        message_id = int(photo_ref.split("/")[-1])
+        message = await ABH.get_messages("LANBOT2", ids=message_id)
+        if message and message.media:
+            file_path = await ABH.download_media(message.media)
+            await ABH.send_file(event.chat_id, file_path, caption=caption)
+            if os.path.exists(file_path):
+                os.remove(file_path)
+            await event.reply(f" الجواب الصحيح هو:\n`{answer}`")
+        else:
+            await event.reply("فشل في جلب الصورة من البوت المصدر.")
 USER_DATA_FILE = "boxing.json"
 def load_user_data():
     if os.path.exists(USER_DATA_FILE):
