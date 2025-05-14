@@ -10,9 +10,9 @@ async def buy(event):
     user_id = event.sender_id
     type = event.pattern_match.group(1)
     valid_types = {'/football', 'كرة قدم', '/quist', '/sport'}
-    if type not in valid_types:
-        await event.reply('ماكو هيج لعبة')
-        return
+    # if type not in valid_types:
+    #     await event.reply('ماكو هيج لعبة')
+    #     return
     if type == '/football':
         r = random.choice(football)
         answer = r.get('answer', 'ما محدد الجواب')
