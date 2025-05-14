@@ -14,14 +14,14 @@ async def buy(event):
         await event.reply('ماكو هيج لعبة')
         return
     if type == '/football':
-    r = random.choice(football)
-    answer = r.get('answer', 'ما محدد الجواب')
-    photo_ref = r.get('photo')
-    message_id = int(photo_ref.split("/")[-1])
-    message = await ABH.get_messages("LANBOT2", ids=message_id)
-    if message and message.media:
-        file_path = await ABH.download_media(message.media)
-        await ABH.send_file(user_id, file_path, caption=answer)
+        r = random.choice(football)
+        answer = r.get('answer', 'ما محدد الجواب')
+        photo_ref = r.get('photo')
+        message_id = int(photo_ref.split("/")[-1])
+        message = await ABH.get_messages("LANBOT2", ids=message_id)
+        if message and message.media:
+            file_path = await ABH.download_media(message.media)
+            await ABH.send_file(user_id, file_path, caption=answer)
 USER_DATA_FILE = "boxing.json"
 def load_user_data():
     if os.path.exists(USER_DATA_FILE):
