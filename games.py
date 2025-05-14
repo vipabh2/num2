@@ -6,23 +6,38 @@ from ABH import ABH #type: ignore
 from faker import Faker
 @ABH.on(events.NewMessage(pattern=r'^شراء حل\s+(.+)$'))
 async def buy(event):
-    import random, os
     user_id = event.sender_id
-    type = event.pattern_match.group(1)
-    valid_types = {'/football', 'كرة قدم', '/quist', '/sport'}
+    gid = event.chat_id
+    type = event.pattern_match.group(1).strip()
+    valid_types = {
+        'كرة قدم': 999,
+        '/football': 999,
+        '/quist': 250,
+        '/sport': 300,
+    }
     if type not in valid_types:
         await event.reply('ماكو هيج لعبة')
         return
-    if type == 'كرة قدم':
-        await event.reply('تم خصم منك 999 وارسال الحل في الخاص😀')
+    user_points = points.get(str(user_id), {}).get(gid, {}).get('points', 0)
+    price = valid_types[type]
+    if user_points < price:
+        await event.reply(f'عزيزي سعر الشراء {price} وانت ماعندك هلمبغ.')
+        return
+    points[str(user_id)][gid]['points'] -= price
+    await event.reply(f'تم خصم منك {price} وارسال الحل في الخاص 😀')
+    if type in {'كرة قدم', '/football'}:
         r = random.choice(football)
         answer = r.get('answer', 'ما محدد الجواب')
         photo_ref = r.get('photo')
         message_id = int(photo_ref.split("/")[-1])
         message = await ABH.get_messages("LANBOT2", ids=message_id)
-        if message and message.media:
-            file_path = await ABH.download_media(message.media)
-            await ABH.send_file(user_id, file_path, caption=answer)
+    if message and message.media:
+        file_path = await ABH.download_media(message.media)
+        await ABH.send_file(user_id, file_path, caption=answer)
+        if os.path.exists(file_path):
+            os.remove(file_path)
+    else:
+        await event.reply("تعذر إرسال الوسائط.")
 USER_DATA_FILE = "boxing.json"
 def load_user_data():
     if os.path.exists(USER_DATA_FILE):
