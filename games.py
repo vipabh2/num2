@@ -4,18 +4,6 @@ import random, asyncio, time, os, json
 from telethon import Button, events
 from ABH import ABH #type: ignore
 from faker import Faker
-@ABH.on(events.NewMessage(pattern=r'^شراء حل\s+([^\d\W]\w*)'))
-async def buy(event):
-    user_id = event.sender_id
-    game_type = event.pattern_match.group(1).strip()
-    supported_games = {'football', 'sport', 'quist', 'rings', 'num', 'كرةقدم'}
-    if game_type not in supported_games:
-        await event.reply('❌ لا توجد لعبة بهذا الاسم.')
-        return
-    if user_id not in user_state or 'answer' not in user_state[user_id]:
-        await event.reply("❌ لا توجد إجابة محفوظة لك.")
-        return
-    await event.reply(f"✅ الإجابة: {user_state[user_id]['answer']}")
 USER_DATA_FILE = "boxing.json"
 def load_user_data():
     if os.path.exists(USER_DATA_FILE):
