@@ -48,7 +48,7 @@ async def m(event):
         m = points[uid][gid]['points']
     else:
         m = 0
-    await event.reply(f'فلوسك ↢ ( {m} )')
+    await event.reply(f'فلوسك ↢ ( `{m}` )')
 @ABH.on(events.NewMessage(pattern='ثروته|الثروه'))
 async def replym(event):
     r = await event.get_reply_message()
@@ -58,7 +58,7 @@ async def replym(event):
         m = points[uid][gid]['points']
     else:
         m = 0
-    await event.reply(f'فلوسه ↢ ( {m} )')
+    await event.reply(f'فلوسه ↢ ( `{m}` )')
 @ABH.on(events.NewMessage(pattern=r'^حول (\d+(\.\d+)?)'))
 async def send_money(event):
     reply = await event.get_reply_message()
