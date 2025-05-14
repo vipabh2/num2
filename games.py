@@ -7,12 +7,15 @@ from faker import Faker
 @ABH.on(events.NewMessage(pattern=r'^شراء حل\s+([^\d\W]\w*)'))
 async def buy(event):
     user_id = event.sender_id
-    type = event.pattern_match.group(1)
-    x = {'/football', 'كرة قدم', '/quist', '/sport', '/rings', '/num'}
-    if type not in x:
-        await event.reply('ماكو هيج لعبة')
-    elif type == '/football':
-        await event.reply(user_state[user_id]['answer'])
+    game_type = event.pattern_match.group(1).strip()
+    supported_games = {'football', 'sport', 'quist', 'rings', 'num', 'كرةقدم'}
+    if game_type not in supported_games:
+        await event.reply('❌ لا توجد لعبة بهذا الاسم.')
+        return
+    if user_id not in user_state or 'answer' not in user_state[user_id]:
+        await event.reply("❌ لا توجد إجابة محفوظة لك.")
+        return
+    await event.reply(f"✅ الإجابة: {user_state[user_id]['answer']}")
 USER_DATA_FILE = "boxing.json"
 def load_user_data():
     if os.path.exists(USER_DATA_FILE):
