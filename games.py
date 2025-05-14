@@ -4,18 +4,16 @@ import random, asyncio, time, os, json
 from telethon import Button, events
 from ABH import ABH #type: ignore
 from faker import Faker
-@ABH.on(events.NewMessage(pattern=r'^شراء حل\s+([^\d\W]\w*)'))
+@ABH.on(events.NewMessage(pattern=r'^شراء حل\s+(.+)$'))
 async def buy(event):
     import random, os
     user_id = event.sender_id
     type = event.pattern_match.group(1)
-    print(type)
     valid_types = {'/football', 'كرة قدم', '/quist', '/sport'}
     if type not in valid_types:
         await event.reply('ماكو هيج لعبة')
         return
         x = 'كرة قدم'
-        print(x)
     if type == x:
         await event.reply('تم خصم منك 999 وارسال الحل في الخاص😀')
         r = random.choice(football)
