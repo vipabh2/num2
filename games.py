@@ -4,6 +4,15 @@ import random, asyncio, time, os, json
 from telethon import Button, events
 from ABH import ABH #type: ignore
 from faker import Faker
+@ABH.on(events.NewMessage(pattern=r'^شراء حل \s+([^\d\W]\w*)'))
+async def buy(event):
+    user_id = event.sender_id
+    type = event.pattern_match.group(1)
+    x = {'/football', 'كرة قدم', '/quist', '/sport', '/rings', '/num'}
+    if type not in x:
+        await event.reply('ماكو هيج لعبة')
+    elif type == '/football':
+        await event.reply(user_state[user_id]['answer'])
 USER_DATA_FILE = "boxing.json"
 def load_user_data():
     if os.path.exists(USER_DATA_FILE):
@@ -705,26 +714,37 @@ async def rock(event):
     ]
     await event.respond("اختر أحد الاختيارات 🌚", buttons=buttons, reply_to=event.id)
 async def choice(event, user_choice):
-    game_owner = active_games.get(event.chat_id)
     gid = event.chat_id
-    if game_owner != event.sender_id:
-        await event.answer("من تدخل في ما لا يعنيه لقي كلام لا يرضيه 🙄", alert=True)
-        return  
-    bot_choice_key = random.choice(list(choices.keys()))
-    bot_choice = choices[bot_choice_key]  
     user_id = event.sender_id
-    result = "🤝تعادل" if user_choice == bot_choice_key else "🎉فزت" if (
-        (user_choice == "rock" and bot_choice_key == "cuter") or 
-        (user_choice == "paper" and bot_choice_key == "rock") or 
-        (user_choice == "cuter" and bot_choice_key == "paper")
-    ) else "😢خسرت"
-    if result == '🎉فزت':
-        p = random.randint(10, 150)
-        add_points(user_id, gid, points, amount=p)
-    elif result == '🤝تعادل':
+    game_owner = active_games.get(gid)
+    if game_owner != user_id:
+        await event.answer("من تدخل في ما لا يعنيه لقي كلام لا يرضيه 🙄", alert=True)
+        return
+    bot_choice_key = random.choice(list(choices.keys()))
+    bot_choice = choices[bot_choice_key]
+    if user_choice == bot_choice_key:
+        result = "🤝 تعادل"
         p = random.randint(10, 50)
+    elif (
+        (user_choice == "rock" and bot_choice_key == "cuter") or
+        (user_choice == "paper" and bot_choice_key == "rock") or
+        (user_choice == "cuter" and bot_choice_key == "paper")
+    ):
+        result = "🎉 فزت"
+        p = random.randint(10, 150)
+    else:
+        result = "😢 خسرت"
+        p = 0
+    if p > 0:
         add_points(user_id, gid, points, amount=p)
-    await event.edit(f"[{n}](tg://user?id={user_id}) {choices[user_choice]}\n[مخفي](tg://user?id=7908156943) {bot_choice}\n\n{result} تم اضافة (` {p} `) لحسابك")
+    user_entity = await event.client.get_entity(user_id)
+    name = user_entity.first_name
+    await event.edit(
+        f"[{name}](tg://user?id={user_id}) {choices[user_choice]}\n"
+        f"[مخفي](tg://user?id=7908156943) {bot_choice}\n\n"
+        f"{result}"
+        f"{f' تم إضافة ({p}) نقطة إلى حسابك' if p > 0 else ''}"
+    )
 @ABH.on(events.CallbackQuery(data=b"rock"))
 async def rock_callback(event):
     await choice(event, "rock")
