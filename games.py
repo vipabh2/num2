@@ -8,11 +8,21 @@ from faker import Faker
 async def buy(event):
     user_id = event.sender_id
     type = event.pattern_match.group(1)
-    x = {'/football', 'كرة قدم', '/quist', '/sport', '/rings', '/num'}
+    x = {'/football', 'كرة قدم', '/quist', '/sport',}
     if type not in x:
         await event.reply('ماكو هيج لعبة')
     elif type == '/football':
-        await event.reply(user_state[user_id]['answer'])
+        r = random.choice(football)
+        a = {'answer': r['answer']}
+    message_id = int(r['photo'].split("/")[-1])
+    message = await ABH.get_messages("LANBOT2", ids=message_id)
+    if message and message.media:
+        file_path = await ABH.download_media(message.media)
+        await ABH.send_file(event.chat_id, file_path, caption=r['caption'])
+    if os.path.exists(file_path):
+        os.remove(file_path)
+        await ABH.send_file(event.chat_id, file_path, caption=a)
+        return
 USER_DATA_FILE = "boxing.json"
 def load_user_data():
     if os.path.exists(USER_DATA_FILE):
@@ -99,8 +109,7 @@ async def answer_football(event):
     sender = await event.get_sender()
     user_id = sender.id
     r = random.choice(football)
-    user_state[user_id] = {
-        'answer': r['answer']
+    user_state[user_id] = {'answer': r['answer']
     }
     message_id = int(r['photo'].split("/")[-1])
     message = await ABH.get_messages("LANBOT2", ids=message_id)
