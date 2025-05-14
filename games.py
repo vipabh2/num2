@@ -4,25 +4,33 @@ import random, asyncio, time, os, json
 from telethon import Button, events
 from ABH import ABH #type: ignore
 from faker import Faker
-@ABH.on(events.NewMessage(pattern=r'^شراء حل \s+([^\d\W]\w*)'))
+@ABH.on(events.NewMessage(pattern=r'^شراء حل\s+([^\d\W]\w*)'))
 async def buy(event):
+    import random, os
     user_id = event.sender_id
     type = event.pattern_match.group(1)
-    x = {'/football', 'كرة قدم', '/quist', '/sport',}
-    if type not in x:
+    valid_types = {'/football', 'كرة قدم', '/quist', '/sport'}
+    if type not in valid_types:
         await event.reply('ماكو هيج لعبة')
-    elif type == '/football':
-        r = random.choice(football)
-        a = {'answer': r['answer']}
-    message_id = int(r['photo'].split("/")[-1])
-    message = await ABH.get_messages("LANBOT2", ids=message_id)
-    if message and message.media:
-        file_path = await ABH.download_media(message.media)
-        await ABH.send_file(event.chat_id, file_path, caption=r['caption'])
-    if os.path.exists(file_path):
-        os.remove(file_path)
-        await ABH.send_file(event.chat_id, file_path, caption=a)
         return
+    if type == '/football':
+        r = random.choice(football)
+        answer = r.get('answer', 'ما محدد الجواب')
+        caption = r.get('caption', '')
+        photo_ref = r.get('photo')
+        try:
+            message_id = int(photo_ref.split("/")[-1])
+            message = await ABH.get_messages("LANBOT2", ids=message_id)
+            if message and message.media:
+                file_path = await ABH.download_media(message.media)
+                await ABH.send_file(event.chat_id, file_path, caption=caption)
+                if os.path.exists(file_path):
+                    os.remove(file_path)
+                await event.reply(f" الجواب الصحيح هو:\n`{answer}`")
+            else:
+                await event.reply("فشل في جلب الصورة من البوت المصدر.")
+        except Exception as e:
+            await event.reply(f"حدث خطأ أثناء جلب الملف: {e}")
 USER_DATA_FILE = "boxing.json"
 def load_user_data():
     if os.path.exists(USER_DATA_FILE):
