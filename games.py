@@ -4,7 +4,7 @@ import random, asyncio, time, os, json
 from telethon import Button, events
 from ABH import ABH #type: ignore
 from faker import Faker
-@ABH.on(events.NewMessage(pattern=r'^شراء حل \s+([^\d\W]\w*)'))
+@ABH.on(events.NewMessage(pattern=r'^شراء حل\s+([^\d\W]\w*)'))
 async def buy(event):
     user_id = event.sender_id
     type = event.pattern_match.group(1)
