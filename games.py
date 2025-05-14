@@ -28,23 +28,23 @@ async def boxing(event):
         await event.reply('المبلغ يجب أن يكون أكبر من 3000.')
         return
     user1_id = reply.sender_id
-    user2_id = event.sender_id 
+    user2_id = event.sender_id
     gid = str(event.chat_id)
     user_data = load_user_data()
     current_time = int(time.time())
-    last_time_1 = user_data.get(str(user1_id), {}).get("boxing", 0)
-    if current_time - last_time_1 < 10 * 60:
-        remaining = 10 * 60 - (current_time - last_time_1)
+    last_target_time = user_data.get(str(user1_id), {}).get("boxed", 0)
+    if current_time - last_target_time < 10 * 60:
+        remaining = 10 * 60 - (current_time - last_target_time)
         minutes = remaining // 60
         seconds = remaining % 60
-        await event.reply(f"🕒 الشخص الذي تريد مضاربته يجب أن ينتظر {minutes:02}:{seconds:02} دقيقة.")
+        await event.reply(f"🕒 لا يمكن مضاربة هذا الشخص الآن، انتظر {minutes:02}:{seconds:02} دقيقة.")
         return
-    last_time_2 = user_data.get(str(user2_id), {}).get("boxing", 0)
-    if current_time - last_time_2 < 10 * 60:
-        remaining = 10 * 60 - (current_time - last_time_2)
+    last_attack_time = user_data.get(str(user2_id), {}).get("attacked", 0)
+    if current_time - last_attack_time < 10 * 60:
+        remaining = 10 * 60 - (current_time - last_attack_time)
         minutes = remaining // 60
         seconds = remaining % 60
-        await event.reply(f"🕒 يجب عليك الانتظار {minutes:02}:{seconds:02} قبل اللعب مجددًا.")
+        await event.reply(f"🕒 يجب عليك الانتظار {minutes:02}:{seconds:02} قبل أن تبدأ مضاربة جديدة.")
         return
     if str(user1_id) not in points or gid not in points[str(user1_id)]:
         await event.reply('الشخص الذي تم الرد عليه لا يملك نقاط.')
@@ -77,8 +77,10 @@ async def boxing(event):
         f"🏆 الفائز: {winner_name}\n"
         f"💰 الجائزة: {count} نقطة 🎉"
     )
-    user_data[str(user1_id)] = {"boxing": current_time}
-    user_data[str(user2_id)] = {"boxing": current_time}
+    user_data[str(user1_id)] = user_data.get(str(user1_id), {})
+    user_data[str(user1_id)]["boxed"] = current_time
+    user_data[str(user2_id)] = user_data.get(str(user2_id), {})
+    user_data[str(user2_id)]["attacked"] = current_time
     save_user_data(user_data)
 user_state = {}
 @ABH.on(events.NewMessage(pattern='/football|كرة قدم'))
