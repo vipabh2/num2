@@ -4,7 +4,7 @@ import random, asyncio, time, os, json
 from telethon import Button, events
 from ABH import ABH #type: ignore
 from faker import Faker
-USER_DATA_FILE = "user_data.json"
+USER_DATA_FILE = "boxing.json"
 def load_user_data():
     if os.path.exists(USER_DATA_FILE):
         with open(USER_DATA_FILE, "r", encoding="utf-8") as file:
@@ -13,10 +13,6 @@ def load_user_data():
 def save_user_data(data):
     with open(USER_DATA_FILE, "w", encoding="utf-8") as file:
         json.dump(data, file, ensure_ascii=False, indent=4)
-@ABH.on(events.NewMessage(pattern=r'.*'))
-async def telegramgames(event):
-    if not event.message.dice:
-        return    
 @ABH.on(events.NewMessage(pattern=r'مضاربة (\d+)'))
 async def boxing(event):
     reply = await event.get_reply_message()
