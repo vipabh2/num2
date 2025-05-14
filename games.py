@@ -114,7 +114,7 @@ async def answer_handler(event):
     sender = await event.get_sender()
     user_id = sender.id
     msg = event.raw_text.strip()
-    if msg.startswith('/'):
+    if msg.startswith('/') or msg == 'كرة قدم':
         return
     if user_id in user_state:
         correct_answer = user_state[user_id]['answer']
