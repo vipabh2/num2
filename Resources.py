@@ -9,6 +9,10 @@ group = -1001784332159
 hint_gid = -1002168230471
 bot = "Anymous"
 wfffp = 1910015590
+async def mention(event, sender):
+        name = sender.first_name or 'name'
+        id = sender.id
+        return f"[{name}](tg://user?id={id})"
 football = [
         {
             "answer": "الميعوف",
