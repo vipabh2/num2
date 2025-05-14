@@ -14,6 +14,7 @@ async def buy(event):
         await event.reply('ماكو هيج لعبة')
         return
     if type == '/football':
+        await event.reply('تم خصم منك 999وارسال الحل في الخاص😀')
         r = random.choice(football)
         answer = r.get('answer', 'ما محدد الجواب')
         photo_ref = r.get('photo')
