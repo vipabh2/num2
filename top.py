@@ -50,7 +50,7 @@ async def m(event):
         m = 0
     await event.reply(f'فلوسك ↢ ( {m} )')
 @ABH.on(events.NewMessage(pattern='ثروته|الثروه'))
-async def m(event):
+async def replym(event):
     r = await event.get_reply_message()
     uid = str(r.sender_id)
     gid = str(event.chat_id)
