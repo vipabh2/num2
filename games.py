@@ -4,12 +4,21 @@ import random, asyncio, time, os, json
 from telethon import Button, events
 from ABH import ABH #type: ignore
 from faker import Faker
+USER_DATA_FILE = "user_data.json"
+def load_user_data():
+    if os.path.exists(USER_DATA_FILE):
+        with open(USER_DATA_FILE, "r", encoding="utf-8") as file:
+            return json.load(file)
+    return {}
+def save_user_data(data):
+    with open(USER_DATA_FILE, "w", encoding="utf-8") as file:
+        json.dump(data, file, ensure_ascii=False, indent=4)
+@ABH.on(events.NewMessage(pattern=r'.*'))
+async def telegramgames(event):
+    if not event.message.dice:
+        return    
 @ABH.on(events.NewMessage(pattern=r'مضاربة (\d+)'))
 async def boxing(event):
-    reply = await event.get_reply_message()
-    if not reply:
-        await event.reply(' عزيزي، لازم ترد على رسالة الشخص اللي تريد تضاربه.')
-        return
     user1_id = reply.sender_id
     user2_id = event.sender_id
     gid = str(event.chat_id)
@@ -18,11 +27,15 @@ async def boxing(event):
     current_time = int(time.time())
     time_diff = current_time - boxing
     if time_diff < 10 * 60:
-        remaining = 10 * 60 - time_diff
+        remaining = 5 * 60 - time_diff
         minutes = remaining // 60
         seconds = remaining % 60
         formatted_time = f"{minutes:02}:{seconds:02}"
         await event.reply(f" يجب عليك الانتظار {formatted_time} قبل اللعب مجددًا.")
+        return
+    reply = await event.get_reply_message()
+    if not reply:
+        await event.reply(' عزيزي، لازم ترد على رسالة الشخص اللي تريد تضاربه.')
         return
     try:
         count = int(event.pattern_match.group(1))
@@ -58,8 +71,8 @@ async def boxing(event):
         json.dump(points, f, ensure_ascii=False, indent=2)
     winner_name = mention1 if winner_id == user1_id else mention2
     await event.reply(
-        f"🌺 تمت المضاربة!\n"
-        f"👤 {mention2} 🌟 {mention1}\n\n"
+        f"🥊 تمت المضاربة!\n\n"
+        f"👤 {mention2} 🆚 {mention1}\n\n"
         f"🏆 الفائز: {winner_name}\n"
         f"💰 الجائزة: {count} نقطة 🎉"
     )
