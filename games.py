@@ -95,7 +95,7 @@ async def boxing(event):
     save_user_data(user_data)
 user_state = {}
 @ABH.on(events.NewMessage(pattern='/football|كرة قدم'))
-async def football(event):
+async def answer_football(event):
     sender = await event.get_sender()
     user_id = sender.id
     r = random.choice(football)
