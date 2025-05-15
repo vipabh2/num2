@@ -8,25 +8,32 @@ import asyncio, re
 import json
 import os
 CONFIG_FILE = "config.json"
-def configc(group_id, hint_cid):
-    config = {}
-    if os.path.exists(CONFIG_FILE):
-        with open(CONFIG_FILE, "r", encoding="utf-8") as f:
-            config = json.load(f)
-    config[str(group_id)] = {"hint_gid": hint_cid}
-    with open(CONFIG_FILE, "w", encoding="utf-8") as f:
-        json.dump(config, f, ensure_ascii=False, indent=4)
-def LC():
-    if os.path.exists(CONFIG_FILE):
-        with open(CONFIG_FILE, "r", encoding="utf-8") as f:
-            config = json.load(f)
-            if not config:
+CONFIG_FILE = "config.json"
+config_lock = asyncio.Lock()
+async def configc(group_id, hint_cid):
+    async with config_lock:
+        config = {}
+        if os.path.exists(CONFIG_FILE):
+            try:
+                with open(CONFIG_FILE, "r", encoding="utf-8") as f:
+                    config = json.load(f)
+            except json.JSONDecodeError:
+                config = {}
+        config[str(group_id)] = {"hint_gid": hint_cid}
+        with open(CONFIG_FILE, "w", encoding="utf-8") as f:
+            json.dump(config, f, ensure_ascii=False, indent=4)
+async def LC(group_id):
+    async with config_lock:
+        if os.path.exists(CONFIG_FILE):
+            try:
+                with open(CONFIG_FILE, "r", encoding="utf-8") as f:
+                    config = json.load(f)
+            except json.JSONDecodeError:
                 return None
-            last_group_id = list(config.keys())[-1]
-            group_config = config.get(last_group_id)
+            group_config = config.get(str(group_id))
             if group_config:
                 return group_config.get("hint_gid")
-    return None
+        return None
 @ABH.on(events.NewMessage(pattern='اضف قناة التبليغات'))
 async def add_hint_channel(event):
     if not event.is_group:
@@ -37,7 +44,7 @@ async def add_hint_channel(event):
     cid_text = r.raw_text.strip()
     if cid_text.startswith("-100") and cid_text[4:].isdigit():
         chat_id = event.chat_id
-        configc(chat_id, cid_text)
+        await configc(chat_id, cid_text)
         await event.reply(f"︙تم حفظ قناة التبليغات لهذه المجموعة:\n`{cid_text}`")
     else:
         await event.reply("︙المعرف غير صالح، تأكد أنه يبدأ بـ -100 ويتكون من أرقام فقط.")
