@@ -154,17 +154,19 @@ async def handler_res(event):
             warns[user_id][chat.id] += 1
             chat_id = event.chat_id
             hint_channel = await LC(chat_id)
-            if not hint_channel:
+            if hint_channel:
                 c = int(hint_channel)
-            if user_id in warns and chat.id in warns[user_id] and warns[user_id][chat.id] >= 2:
-                await ABH(EditBannedRequest(chat.id, user_id, restrict_rights))
+            else:
+                c = None
+            if user_id in warns and chat_id in warns[user_id] and warns[user_id][chat_id] >= 2:
+                await ABH(EditBannedRequest(chat_id, user_id, restrict_rights))
                 sender = await event.get_sender()
                 name = await mention(event, sender)
-                warns[user_id][chat.id] = 0
-            if c:
-                await ABH.send_message(c, f'تم تقييد المستخدم {name}')
-                await asyncio.sleep(20 * 60)
-                await ABH(EditBannedRequest(chat.id, user_id, unrestrict_rights))
+                warns[user_id][chat_id] = 0
+                if c:
+                    await ABH.send_message(c, f'تم تقييد المستخدم {name}')
+                    await asyncio.sleep(20 * 60)    
+                    await ABH(EditBannedRequest(chat_id, user_id, unrestrict_rights))
 # @ABH.on(events.NewMessage(pattern='!تجربة'))
 # async def test_broadcast(event):
 #     if not event.is_group:
