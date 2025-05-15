@@ -139,7 +139,7 @@ async def handler_res(event):
             if chat.id not in warns[user_id]:
                 warns[user_id][chat.id] = 0
             warns[user_id][chat.id] += 1
-            c = LC(chat.id)
+            c = await LC(chat.id)
             if warns[user_id][chat.id] >= 2:
                 await ABH(EditBannedRequest(chat.id, user_id, restrict_rights))
                 sender = await event.get_sender()
