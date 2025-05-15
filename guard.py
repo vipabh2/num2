@@ -1,4 +1,5 @@
-from telethon.tl.types import ChatBannedRights, EditBannedRequest, MessageEntityUrl
+from telethon.tl.types import ChatBannedRights, MessageEntityUrl
+from telethon.tl.functions.channels import EditBannedRequest
 from Resources import hint_gid 
 from Resources import group
 from ABH import ABH, events
