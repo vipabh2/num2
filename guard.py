@@ -168,15 +168,14 @@ async def test_broadcast(event):
         return await event.reply("↯︙هذا الأمر يعمل فقط داخل المجموعات.")
     
     chat_id = event.chat_id
-    # استرجاع معرف قناة التبليغات من ملف JSON
     hint_channel = await LC(chat_id)
     
     if not hint_channel:
         return await event.reply("↯︙لم يتم تعيين قناة تبليغات لهذه المجموعة بعد. استخدم الأمر 'اضف قناة التبليغات' أولاً.")
     
     try:
-        # إرسال رسالة اختبار إلى قناة التبليغات
-        await ABH.send_message(hint_channel, f"هذه رسالة تجربة من المجموعة: {chat_id}")
+        hint_channel_id = int(hint_channel)
+        await ABH.send_message(hint_channel_id, f"هذه رسالة تجربة من المجموعة: {chat_id}")
         await event.reply("✔︙تم إرسال رسالة التجربة إلى قناة التبليغات بنجاح.")
     except Exception as e:
         await event.reply(f"❌︙حدث خطأ أثناء إرسال الرسالة: {e}")
