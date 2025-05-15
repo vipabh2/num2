@@ -10,7 +10,6 @@ import os
 import os
 import json
 import asyncio
-
 CONFIG_FILE = "vars.json"
 config_lock = asyncio.Lock()
 async def configc(group_id, hint_cid):
@@ -163,3 +162,21 @@ async def handler_res(event):
                 await ABH.send_message(int(c), f'تم تقييد المستخدم {name}')
                 await asyncio.sleep(20 * 60)
                 await ABH(EditBannedRequest(chat.id, user_id, unrestrict_rights))
+@ABH.on(events.NewMessage(pattern='!تجربة'))
+async def test_broadcast(event):
+    if not event.is_group:
+        return await event.reply("↯︙هذا الأمر يعمل فقط داخل المجموعات.")
+    
+    chat_id = event.chat_id
+    # استرجاع معرف قناة التبليغات من ملف JSON
+    hint_channel = await LC(chat_id)
+    
+    if not hint_channel:
+        return await event.reply("↯︙لم يتم تعيين قناة تبليغات لهذه المجموعة بعد. استخدم الأمر 'اضف قناة التبليغات' أولاً.")
+    
+    try:
+        # إرسال رسالة اختبار إلى قناة التبليغات
+        await ABH.send_message(hint_channel, f"هذه رسالة تجربة من المجموعة: {chat_id}")
+        await event.reply("✔︙تم إرسال رسالة التجربة إلى قناة التبليغات بنجاح.")
+    except Exception as e:
+        await event.reply(f"❌︙حدث خطأ أثناء إرسال الرسالة: {e}")
