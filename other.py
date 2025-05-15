@@ -26,7 +26,7 @@ def ask_ai(q):
         return res.json().get("data", "ماكو رد واضح من الذكاء.")
     else:
         return "صار خطأ بالسيرفر، جرب بعدين."
-@ِABH.on(events.NewMessage(pattern=r"^مخفي\s*(.*)"))
+@ABH.on(events.NewMessage(pattern=r"^مخفي\s*(.*)"))
 async def ai_handler(event):
     user_q = event.pattern_match.group(1).strip()
     if not user_q:
