@@ -152,29 +152,30 @@ async def handler_res(event):
             if chat.id not in warns[user_id]:
                 warns[user_id][chat.id] = 0
             warns[user_id][chat.id] += 1
-            chat_id = event.chat_id
-            hint_channel = await LC(chat_id)
-            if hint_channel:
-                c = int(hint_channel)
-            else:
-                c = None
-            if user_id in warns and chat_id in warns[user_id] and warns[user_id][chat_id] >= 2:
-                await ABH(EditBannedRequest(chat_id, user_id, restrict_rights))
+            if user_id in warns and chat.id in warns[user_id] and warns[user_id][chat.id] >= 2:
+                await ABH(EditBannedRequest(chat.id, user_id, restrict_rights))
                 sender = await event.get_sender()
                 name = await mention(event, sender)
-                warns[user_id][chat_id] = 0
-                if c:
-                    await ABH.send_message(c, f'تم تقييد المستخدم {name}')
-                    await asyncio.sleep(20 * 60)    
-                    await ABH(EditBannedRequest(chat_id, user_id, unrestrict_rights))
-# @ABH.on(events.NewMessage(pattern='!تجربة'))
-# async def test_broadcast(event):
-#     if not event.is_group:
-#         return await event.reply("↯︙هذا الأمر يعمل فقط داخل المجموعات.")
-#     chat_id = event.chat_id
-#     hint_channel = await LC(chat_id)
-#     if not hint_channel:
-#         return await event.reply("↯︙لم يتم تعيين قناة تبليغات لهذه المجموعة بعد. استخدم الأمر 'اضف قناة التبليغات' أولاً.")
-#     hint_channel_id = int(hint_channel)
-#     await ABH.send_message(hint_channel_id, f"هذه رسالة تجربة من المجموعة: {chat_id}")
-#     await event.reply("✔︙تم إرسال رسالة التجربة إلى قناة التبليغات بنجاح.")
+                warns[user_id][chat.id] = 0
+                c = await LC(chat.id)
+            if c:
+                await ABH.send_message(int(c), f'تم تقييد المستخدم {name}')
+                await asyncio.sleep(20 * 60)
+                await ABH(EditBannedRequest(chat.id, user_id, unrestrict_rights))
+@ABH.on(events.NewMessage(pattern='!تجربة'))
+async def test_broadcast(event):
+    if not event.is_group:
+        return await event.reply("↯︙هذا الأمر يعمل فقط داخل المجموعات.")
+    
+    chat_id = event.chat_id
+    hint_channel = await LC(chat_id)
+    
+    if not hint_channel:
+        return await event.reply("↯︙لم يتم تعيين قناة تبليغات لهذه المجموعة بعد. استخدم الأمر 'اضف قناة التبليغات' أولاً.")
+    
+    try:
+        hint_channel_id = int(hint_channel)
+        await ABH.send_message(hint_channel_id, f"هذه رسالة تجربة من المجموعة: {chat_id}")
+        await event.reply("✔︙تم إرسال رسالة التجربة إلى قناة التبليغات بنجاح.")
+    except Exception as e:
+        await event.reply(f"❌︙حدث خطأ أثناء إرسال الرسالة: {e}")
