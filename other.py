@@ -4,7 +4,6 @@ import asyncio, os, json, random, uuid, operator
 from ABH import ABH, events #type: ignore
 from telethon import Button
 AI_SECRET = "AIChatPowerBrain123@2024"
-
 def ask_ai(q):
     url = "https://powerbrainai.com/app/backend/api/api.php"
     headers = {
@@ -31,7 +30,7 @@ async def ai_handler(event):
     user_q = event.pattern_match.group(1).strip()
     if not user_q:
         return
-    async with event.ABH.action(event.chat_id, 'typing'):
+        async with event.client.action(event.chat_id, 'typing'):
         response = await asyncio.to_thread(ask_ai, user_q)
     await event.reply(response)
     # `🏀` لمقدار المربح = 5
