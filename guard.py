@@ -7,6 +7,10 @@ from ABH import ABH
 import asyncio, re
 import json
 import os
+import os
+import json
+import asyncio
+
 CONFIG_FILE = "vars.json"
 config_lock = asyncio.Lock()
 async def configc(group_id, hint_cid):
@@ -22,7 +26,7 @@ async def configc(group_id, hint_cid):
         with open(CONFIG_FILE, "w", encoding="utf-8") as f:
             json.dump(config, f, ensure_ascii=False, indent=4)
 async def LC(group_id):
-    async with config_lock:
+    async with config_lock: 
         if os.path.exists(CONFIG_FILE):
             try:
                 with open(CONFIG_FILE, "r", encoding="utf-8") as f:
@@ -34,12 +38,14 @@ async def LC(group_id):
                 return group_config.get("hint_gid")
         return None
 @ABH.on(events.NewMessage(pattern='اضف قناة التبليغات'))
-async def add_hint_channel(event):
+async def add_hintchannel(event):
     if not event.is_group:
         return await event.reply("↯︙يجب تنفيذ هذا الأمر داخل مجموعة.")
+    
     r = await event.get_reply_message()
     if not r:
         return await event.reply("↯︙يجب الرد على رسالة تحتوي على معرف القناة مثل -100xxxxxxxxxx")
+    
     cid_text = r.raw_text.strip()
     if cid_text.startswith("-100") and cid_text[4:].isdigit():
         chat_id = event.chat_id
@@ -47,6 +53,15 @@ async def add_hint_channel(event):
         await event.reply(f"︙تم حفظ قناة التبليغات لهذه المجموعة:\n`{cid_text}`")
     else:
         await event.reply("︙المعرف غير صالح، تأكد أنه يبدأ بـ -100 ويتكون من أرقام فقط.")
+
+@ABH.on(events.NewMessage(pattern='اعرض قناة التبليغات'))
+async def show_hintchannel(event):
+    chat_id = event.chat_id
+    c = await LC(chat_id)
+    if c:
+        await event.reply(f"︙قناة التبليغات لهذه المجموعة هي:\n`{c}`")
+    else:
+        await event.reply("︙لم يتم تعيين قناة تبليغات لهذه المجموعة بعد.")
 @ABH.on(events.MessageEdited)
 async def edited(event):
     msg = event.message
@@ -148,8 +163,3 @@ async def handler_res(event):
                     await ABH.send_message(c, f'تم تقييد المستخدم {name}')
                 await asyncio.sleep(20 * 60)
                 await ABH(EditBannedRequest(chat.id, user_id, unrestrict_rights))
-@ABH.on(events.NewMessage(pattern='قناة'))
-async def add_hintchannel(event):
-    chat = await event.get_chat()
-    c = await LC(chat.id)
-    await event.respond(c)
