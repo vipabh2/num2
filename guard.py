@@ -1,9 +1,44 @@
 from telethon.tl.types import ChatBannedRights, MessageEntityUrl
-from telethon.tl.functions.channels import EditBannedRequest
-from Resources import hint_gid 
-from Resources import group
-from ABH import ABH, events
+from telethon.tl.types import ChannelParticipantAdmin, ChannelParticipantCreator
+from telethon.tl.functions.channels import EditBannedRequest, GetParticipantRequest
+from Resources import group, mention
+from telethon import events
+from ABH import ABH
 import asyncio, re
+import json
+import os
+CONFIG_FILE = "config.json"
+def configc(group_id, hint_cid):
+    config = {}
+    if os.path.exists(CONFIG_FILE):
+        with open(CONFIG_FILE, "r", encoding="utf-8") as f:
+            config = json.load(f)
+    config[str(group_id)] = {"hint_gid": hint_cid}
+    with open(CONFIG_FILE, "w", encoding="utf-8") as f:
+        json.dump(config, f, ensure_ascii=False, indent=4)
+def LC(group_id):
+    if os.path.exists(CONFIG_FILE):
+        with open(CONFIG_FILE, "r", encoding="utf-8") as f:
+            config = json.load(f)
+            group_config = config.get(str(group_id))
+            if group_config:
+                return group_config.get("hint_gid")
+    return None
+
+@ABH.on(events.NewMessage(pattern='اضف قناة التبليغات'))
+async def add_hint_channel(event):
+    if not event.is_group:
+        return await event.reply("↯︙يجب تنفيذ هذا الأمر داخل مجموعة.")
+    r = await event.get_reply_message()
+    if not r:
+        return await event.reply("↯︙يجب الرد على رسالة تحتوي على معرف القناة مثل -100xxxxxxxxxx")
+    cid_text = r.raw_text.strip()
+    if cid_text.startswith("-100") and cid_text[4:].isdigit():
+        chat_id = event.chat_id
+        configc(chat_id, cid_text)
+        await event.reply(f"︙تم حفظ قناة التبليغات لهذه المجموعة:\n`{cid_text}`")
+    else:
+        await event.reply("︙المعرف غير صالح، تأكد أنه يبدأ بـ -100 ويتكون من أرقام فقط.")
 @ABH.on(events.MessageEdited)
 async def edited(event):
     msg = event.message
@@ -83,22 +118,26 @@ warns = {}
 async def handler_res(event):
     if event.is_group:
         message_text = event.raw_text.strip()
-        if contains_banned_word(message_text):
-            user_id = event.sender_id
-            chat = await event.get_chat()
-            if await is_admin(chat, user_id):
-                await event.delete()
-                return
-            await event.delete()
-            if user_id not in warns:
-                warns[user_id] = {}
-            if chat.id not in warns[user_id]:
-                warns[user_id][chat.id] = 0
-            warns[user_id][chat.id] += 1
-            if warns[user_id][chat.id] >= 2:
-                await ABH(EditBannedRequest(chat.id, user_id, restrict_rights))
-                sender = await event.get_sender()
-                name = sender.first_name
-                warns[user_id][chat.id] = 0
-                await asyncio.sleep(20 * 60)
-                await ABH(EditBannedRequest(chat.id, user_id, unrestrict_rights))
+    if contains_banned_word(message_text):
+        user_id = event.sender_id
+        chat = await event.get_chat()
+    if await is_admin(chat, user_id):
+        await event.delete()
+        return
+    await event.delete()
+    if user_id not in warns:
+        warns[user_id] = {}
+    if chat.id not in warns[user_id]:
+        warns[user_id][chat.id] = 0
+    warns[user_id][chat.id] += 1
+    c = await LC(chat.id)
+    if warns[user_id][chat.id] >= 2:
+        await ABH(EditBannedRequest(chat.id, user_id, restrict_rights))
+        sender = await event.get_sender()
+        name = await mention(event, sender)
+        warns[user_id][chat.id] = 0
+        if c:
+            await ABH.send_message(c, f'تم تقييد المستخدم {name}')
+            return
+        await asyncio.sleep(20 * 60)
+        await ABH(EditBannedRequest(chat.id, user_id, unrestrict_rights))
