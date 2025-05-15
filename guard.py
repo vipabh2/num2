@@ -16,15 +16,17 @@ def configc(group_id, hint_cid):
     config[str(group_id)] = {"hint_gid": hint_cid}
     with open(CONFIG_FILE, "w", encoding="utf-8") as f:
         json.dump(config, f, ensure_ascii=False, indent=4)
-def LC(group_id):
+def LC():
     if os.path.exists(CONFIG_FILE):
         with open(CONFIG_FILE, "r", encoding="utf-8") as f:
             config = json.load(f)
-            group_config = config.get(str(group_id))
+            if not config:
+                return None
+            last_group_id = list(config.keys())[-1]
+            group_config = config.get(last_group_id)
             if group_config:
                 return group_config.get("hint_gid")
     return None
-
 @ABH.on(events.NewMessage(pattern='اضف قناة التبليغات'))
 async def add_hint_channel(event):
     if not event.is_group:
