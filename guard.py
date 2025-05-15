@@ -159,7 +159,7 @@ async def handler_res(event):
                 sender = await event.get_sender()
                 name = await mention(event, sender)
                 warns[user_id][chat.id] = 0
-                if c:
-                    await ABH.send_message(c, f'تم تقييد المستخدم {name}')
+            if c:
+                await ABH.send_message(c, f'تم تقييد المستخدم {name}')
                 await asyncio.sleep(20 * 60)
                 await ABH(EditBannedRequest(chat.id, user_id, unrestrict_rights))
