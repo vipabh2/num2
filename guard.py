@@ -125,6 +125,8 @@ unrestrict_rights = ChatBannedRights(
 warns = {}
 @ABH.on(events.NewMessage)
 async def handler_res(event):
+    c = await LC(chat.id)
+    await event.respond(c)
     if event.is_group:
         message_text = event.raw_text.strip()
         if contains_banned_word(message_text):
