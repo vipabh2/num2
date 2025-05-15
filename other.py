@@ -29,10 +29,10 @@ def ask_ai(q):
 async def ai_handler(event):
     user_q = event.pattern_match.group(1).strip()
     if not user_q:
-        return
-        async with event.client.action(event.chat_id, 'typing'):
+        return 
+    async with event.client.action(event.chat_id, 'typing'):
         response = await asyncio.to_thread(ask_ai, user_q)
-    await event.reply(response)
+    await event.respond(response, reply_to=event.id)
     # `🏀` لمقدار المربح = 5
 @ABH.on(events.NewMessage(pattern='اوامر الحظ'))
 async def luck_list(event):                          
