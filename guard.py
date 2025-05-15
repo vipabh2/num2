@@ -125,8 +125,6 @@ unrestrict_rights = ChatBannedRights(
 warns = {}
 @ABH.on(events.NewMessage)
 async def handler_res(event):
-    c = await LC(chat.id)
-    await event.respond(c)
     if event.is_group:
         message_text = event.raw_text.strip()
         if contains_banned_word(message_text):
@@ -151,3 +149,8 @@ async def handler_res(event):
                     await ABH.send_message(c, f'تم تقييد المستخدم {name}')
                 await asyncio.sleep(20 * 60)
                 await ABH(EditBannedRequest(chat.id, user_id, unrestrict_rights))
+@ABH.on(events.NewMessage(pattern='قناة'))
+async def add_hintchannel(event):
+    chat = await event.get_chat()
+    c = await LC(chat.id)
+    await event.respond(c)
