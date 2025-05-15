@@ -157,6 +157,7 @@ async def handler_res(event):
                 sender = await event.get_sender()
                 name = await mention(event, sender)
                 warns[user_id][chat.id] = 0
+        chat = await event.get_chat()
         c = await LC(chat.id)
         if c:
             await ABH.send_message(int(c), f'تم تقييد المستخدم {name}')
