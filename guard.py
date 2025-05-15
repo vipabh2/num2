@@ -78,8 +78,6 @@ unrestrict_rights = ChatBannedRights(
     embed_links=False
 )
 warns = {}
-hint_gid = -100123456789
-bot = 'Anymous'
 @ABH.on(events.NewMessage)
 async def handler_res(event):
     if event.is_group:
@@ -100,11 +98,6 @@ async def handler_res(event):
                 await ABH(EditBannedRequest(chat.id, user_id, restrict_rights))
                 sender = await event.get_sender()
                 name = sender.first_name
-                await ABH.send_message(
-                    hint_gid,
-                    f"🚫 تم تقييد المستخدم [{name}](tg://user?id={user_id}) بسبب استخدام كلمات ممنوعة.\nنفّذ الإجراء: {bot}",
-                    parse_mode='markdown'
-                )
                 warns[user_id][chat.id] = 0
                 await asyncio.sleep(20 * 60)
                 await ABH(EditBannedRequest(chat.id, user_id, unrestrict_rights))
