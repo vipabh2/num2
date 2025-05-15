@@ -4,6 +4,7 @@ import asyncio, os, json, random, uuid, operator
 from ABH import ABH, events #type: ignore
 from telethon import Button
 AI_SECRET = "AIChatPowerBrain123@2024"
+
 def ask_ai(q):
     url = "https://powerbrainai.com/app/backend/api/api.php"
     headers = {
