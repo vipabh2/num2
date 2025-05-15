@@ -7,8 +7,7 @@ from ABH import ABH
 import asyncio, re
 import json
 import os
-CONFIG_FILE = "config.json"
-CONFIG_FILE = "config.json"
+CONFIG_FILE = "vars.json"
 config_lock = asyncio.Lock()
 async def configc(group_id, hint_cid):
     async with config_lock:
