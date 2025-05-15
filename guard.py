@@ -143,10 +143,10 @@ async def handler_res(event):
     message_text = event.raw_text.strip()
     if contains_banned_word(message_text):
         user_id = event.sender_id
-        chat = await event.get_chat()        
+        chat = await event.get_chat()
         if await is_admin(chat, user_id):
             await event.delete()
-            return        
+            return
         await event.delete()
         if user_id not in warns:
             warns[user_id] = {}
@@ -157,14 +157,14 @@ async def handler_res(event):
             await ABH(EditBannedRequest(chat.id, user_id, restrict_rights))
             sender = await event.get_sender()
             name = await mention(event, sender)
-            warns[user_id][chat.id] = 0            
+            warns[user_id][chat.id] = 0
             hint_channel = await LC(chat.id)
             if hint_channel:
                 try:
                     await ABH.send_message(int(hint_channel), f'تم تقييد المستخدم {name}')
-                except Exception as e:
-                    print(f"Error sending message to hint channel: {e}")            
-            await asyncio.sleep(20 * 60)
+                except:
+                    pass
+            await asyncio.sleep(1200)
             await ABH(EditBannedRequest(chat.id, user_id, unrestrict_rights))
 @ABH.on(events.NewMessage(pattern='!تجربة'))
 async def test_broadcast(event):
