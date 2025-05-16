@@ -5,15 +5,6 @@ from Resources import group, mention
 from telethon import events, Button
 from ABH import ABH
 import os, asyncio, re, json
-def load_whitelist():
-    try:
-        with open("whitelist.json", "r") as f:
-            return json.load(f)["whitelist"]
-    except FileNotFoundError:
-        return []
-def save_whitelist(data):
-    with open("whitelist.json", "w") as f:
-        json.dump({"whitelist": data}, f, indent=2)
 CONFIG_FILE = "vars.json"
 config_lock = asyncio.Lock()
 async def configc(group_id, hint_cid):
@@ -71,17 +62,10 @@ async def edited(event):
     has_media = bool(msg.media)
     has_document = bool(msg.document)
     has_url = any(isinstance(entity, MessageEntityUrl) for entity in (msg.entities or []))
-    if not (has_media or has_document or has_url):
-        return
     uid = event.sender_id
-    whitelist = load_whitelist()
-    if uid in whitelist:
-        return
     perms = await ABH.get_permissions(chat_id, uid)
-    if perms.is_admin:
+    if not (has_media or has_document or has_url) or perms.is_admin:
         return
-    await asyncio.sleep(60)
-    await event.delete()
     sender = await event.get_sender()
     m = await mention(event, sender)
     chat_obj = await event.get_chat()
@@ -109,6 +93,8 @@ async def edited(event):
         buttons=b,
         link_preview=True
     )
+    await asyncio.sleep(60)
+    await event.delete()
 banned_words = [
     "احط رجلي", "عاهرات", "عواهر", "عاهره", "عاهرة", "ناكك", "اشتعل دينه", "احترك دينك",
     "نيچني", "نودز", "نتلاوط", "لواط", "لوطي", "فروخ", "منيوك", "خربدينه", "خربدينك", 
