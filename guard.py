@@ -87,23 +87,23 @@ async def edited(event):
     perms = await ABH.get_permissions(chat, uid)
     if perms.is_admin:
         return
-    c = event.chat_id
-    s = await event.get_sender()
-    m = await mention(event, s)
-    HID = int(LC(c))
-    i = c.replace("-100", "")
-    الرابط = f"http://t.me/c/{i}/{event.id}"
-    b = [Button.inline('نعم', data='yes'), Button.inline('لا', data='no')]
-    await ABH.send_message(HID, f"""
-تم تعديل رسالة من {m}
-
-الرابط ⇠ ( {الرابط} )
-
-ايديه ⇠ {c.id}
-هل كان هذا تلغيم؟
-""", Button=b)
-    await asyncio.sleep(60)
     if uid not in load_whitelist():
+        c = event.chat_id
+        s = await event.get_sender()
+        m = await mention(event, s)
+        HID = int(str(LC(c)))
+        i = c.replace("-100", "")
+        الرابط = f"http://t.me/c/{i}/{event.id}"
+        b = [Button.inline('نعم', data='yes'), Button.inline('لا', data='no')]
+        await ABH.send_message(HID, f"""
+    تم تعديل رسالة من {m}
+
+    الرابط ⇠ ( {الرابط} )
+
+    ايديه ⇠ {c.id}
+    هل كان هذا تلغيم؟
+    """, Button=b)
+        await asyncio.sleep(60)
         await event.delete()
 banned_words = [
     "احط رجلي", "عاهرات", "عواهر", "عاهره", "عاهرة", "ناكك", "اشتعل دينه", "احترك دينك",
