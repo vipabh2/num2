@@ -65,8 +65,8 @@ async def show_hintchannel(event):
 @ABH.on(events.MessageEdited)
 async def edited(event):
     msg = event.message
-    chat = event.chat_id
-    if chat != group or not msg.edit_date:
+    chat_id = event.chat_id
+    if chat_id != group or not msg.edit_date:
         return
     has_media = bool(msg.media)
     has_document = bool(msg.document)
@@ -77,35 +77,38 @@ async def edited(event):
     whitelist = load_whitelist()
     if uid in whitelist:
         return
-    perms = await ABH.get_permissions(chat, uid)
+    perms = await ABH.get_permissions(chat_id, uid)
     if perms.is_admin:
         return
-    if uid not in whitelist:
-        s = await event.get_sender()
-        chat = await event.get_chat()
-        m = await mention(event, s)
-        الرابط = f"https://t.me/{event.chat.username}/{event.id}" if getattr(event.chat, 'username', None) else "رابط غير متوفر"
-        b = [Button.inline('نعم', data='yes'), Button.inline('لا', data='no')]
-        chat_id_str = await LC(chat)
-        if not chat_id_str:
-            return
-        try:
-            HID = int(chat_id_str)
-        except ValueError:
-            return
-        await ABH.send_message(
-            int(chat_id_str),
-            f"""تم تعديل رسالة من {m}
+    sender = await event.get_sender()
+    m = await mention(event, sender)
+    chat_obj = await event.get_chat()
+    if getattr(chat_obj, "username", None):
+        الرابط = f"https://t.me/{chat_obj.username}/{event.id}"
+    else:
+        clean_id = str(chat_obj.id).replace("-100", "")
+        الرابط = f"https://t.me/c/{clean_id}/{event.id}"
+    b = [Button.inline('نعم', data='yes'), Button.inline('لا', data='no')]
+    chat_dest = await LC(chat_obj.id)
+    if not chat_dest:
+        return
+    try:
+        HID = int(chat_dest)
+    except ValueError:
+        return
+    await ABH.send_message(
+        HID,
+        f"""تم تعديل رسالة من {m}
 
 الرابط ⇠ ( {الرابط} )
 
 ايديه ⇠ {uid}
 هل كان هذا تلغيم؟""",
-            buttons=b,
-            link_preview=True
-        )
-        await asyncio.sleep(60)
-        await event.delete()
+        buttons=b,
+        link_preview=True
+    )
+    await asyncio.sleep(60)
+    await event.delete()
 banned_words = [
     "احط رجلي", "عاهرات", "عواهر", "عاهره", "عاهرة", "ناكك", "اشتعل دينه", "احترك دينك",
     "نيچني", "نودز", "نتلاوط", "لواط", "لوطي", "فروخ", "منيوك", "خربدينه", "خربدينك", 
