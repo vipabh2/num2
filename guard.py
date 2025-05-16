@@ -4,12 +4,7 @@ from telethon.tl.types import ChatBannedRights, MessageEntityUrl
 from Resources import group, mention
 from telethon import events, Button
 from ABH import ABH
-import asyncio, re
-import json
-import os
-import os
-import json
-import asyncio
+import os, asyncio, re, json
 def load_whitelist():
     try:
         with open("whitelist.json", "r") as f:
@@ -89,7 +84,7 @@ async def edited(event):
         s = await event.get_sender()
         chat = await event.get_chat()
         m = await mention(event, s)
-        الرابط = f"https://t.me/{chat.title}/{event.id}"
+        الرابط = f"https://t.me/{event.chat.username}/{event.id}" if getattr(event.chat, 'username', None) else "رابط غير متوفر"
         b = [Button.inline('نعم', data='yes'), Button.inline('لا', data='no')]
         chat_id_str = await LC(chat)
         if not chat_id_str:
