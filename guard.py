@@ -49,11 +49,9 @@ async def LC(group_id):
 async def add_hintchannel(event):
     if not event.is_group:
         return await event.reply("↯︙يجب تنفيذ هذا الأمر داخل مجموعة.")
-    
     r = await event.get_reply_message()
     if not r:
         return await event.reply("↯︙يجب الرد على رسالة تحتوي على معرف القناة مثل -100xxxxxxxxxx")
-    
     cid_text = r.raw_text.strip()
     if cid_text.startswith("-100") and cid_text[4:].isdigit():
         chat_id = event.chat_id
@@ -93,6 +91,7 @@ async def edited(event):
         chat_id_clean = str(group).replace("-100", "")
         الرابط = f"https://t.me/c/{chat_id_clean}/{event.id}"
         b = [Button.inline('نعم', data='yes'), Button.inline('لا', data='no')]
+        chat_id_str = await LC(chat)
         await ABH.send_message(
             int(chat_id_str),
             f"""تم تعديل رسالة من {m}
