@@ -90,8 +90,7 @@ async def edited(event):
     if uid not in whitelist:
         s = await event.get_sender()
         m = await mention(event, s)
-        chat_id_str = await LC(chat)
-        chat_id_clean = str(chat_id_str).replace("-100", "")
+        chat_id_clean = str(group).replace("-100", "")
         الرابط = f"https://t.me/c/{chat_id_clean}/{event.id}"
         b = [Button.inline('نعم', data='yes'), Button.inline('لا', data='no')]
         await ABH.send_message(
