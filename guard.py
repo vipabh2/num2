@@ -1,8 +1,8 @@
-from telethon.tl.types import ChatBannedRights, MessageEntityUrl
 from telethon.tl.types import ChannelParticipantAdmin, ChannelParticipantCreator
 from telethon.tl.functions.channels import EditBannedRequest, GetParticipantRequest
+from telethon.tl.types import ChatBannedRights, MessageEntityUrl
 from Resources import group, mention
-from telethon import events
+from telethon import events, Button
 from ABH import ABH
 import asyncio, re
 import json
@@ -10,6 +10,15 @@ import os
 import os
 import json
 import asyncio
+def load_whitelist():
+    try:
+        with open("whitelist.json", "r") as f:
+            return json.load(f)["whitelist"]
+    except FileNotFoundError:
+        return []
+def save_whitelist(data):
+    with open("whitelist.json", "w") as f:
+        json.dump({"whitelist": data}, f, indent=2)
 CONFIG_FILE = "vars.json"
 config_lock = asyncio.Lock()
 async def configc(group_id, hint_cid):
@@ -52,7 +61,6 @@ async def add_hintchannel(event):
         await event.reply(f"︙تم حفظ قناة التبليغات لهذه المجموعة:\n`{cid_text}`")
     else:
         await event.reply("︙المعرف غير صالح، تأكد أنه يبدأ بـ -100 ويتكون من أرقام فقط.")
-
 @ABH.on(events.NewMessage(pattern='اعرض قناة التبليغات'))
 async def show_hintchannel(event):
     chat_id = event.chat_id
@@ -65,20 +73,37 @@ async def show_hintchannel(event):
 async def edited(event):
     msg = event.message
     chat = event.chat_id
-    if chat != group:
+    if chat != group or not msg.edit_date:
         return
-    if not msg.edit_date:
-        return
-    if msg.entities:
-        if any(isinstance(entity, MessageEntityUrl) for entity in msg.entities):
-            return
     has_media = bool(msg.media)
     has_document = bool(msg.document)
     has_url = any(isinstance(entity, MessageEntityUrl) for entity in (msg.entities or []))
-    perms = await ABH.get_permissions(event.chat_id, event.sender_id)
+    if not (has_media or has_document or has_url):
+        return
     uid = event.sender_id
-    if (has_media or has_document or has_url) and not perms.is_admin:
-        await asyncio.sleep(60)
+    whitelist = load_whitelist()
+    if uid in whitelist:
+        return
+    perms = await ABH.get_permissions(chat, uid)
+    if perms.is_admin:
+        return
+    c = event.chat_id
+    s = await event.get_sender()
+    m = await mention(event, s)
+    HID = int(LC(c))
+    i = c.replace("-100", "")
+    الرابط = f"http://t.me/c/{i}/{event.id}"
+    b = [Button.inline('نعم', data='yes'), Button.inline('لا', data='no')]
+    await ABH.send_message(HID, f"""
+تم تعديل رسالة من {m}
+
+الرابط ⇠ ( {الرابط} )
+
+ايديه ⇠ {c.id}
+هل كان هذا تلغيم؟
+""", Button=b)
+    await asyncio.sleep(60)
+    if uid not in load_whitelist():
         await event.delete()
 banned_words = [
     "احط رجلي", "عاهرات", "عواهر", "عاهره", "عاهرة", "ناكك", "اشتعل دينه", "احترك دينك",
@@ -176,10 +201,9 @@ async def test_broadcast(event):
     
     if not hint_channel:
         return await event.reply("↯︙لم يتم تعيين قناة تبليغات لهذه المجموعة بعد. استخدم الأمر 'اضف قناة التبليغات' أولاً.")
-    
     try:
         hint_channel_id = int(hint_channel)
         await ABH.send_message(hint_channel_id, f"هذه رسالة تجربة من المجموعة: {chat_id}")
         await event.reply("✔︙تم إرسال رسالة التجربة إلى قناة التبليغات بنجاح.")
     except Exception as e:
-        await event.reply(f"❌︙حدث خطأ أثناء إرسال الرسالة: {e}")
+        await event.reply(f"︙حدث خطأ أثناء إرسال الرسالة: {e}")
