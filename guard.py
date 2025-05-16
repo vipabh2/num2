@@ -104,7 +104,10 @@ async def edited(event):
 
     ايديه ⇠ {uid}
     هل كان هذا تلغيم؟
-    """, Button=b)
+    """,                           
+    buttons=b,
+    link_preview=True
+    )
         await asyncio.sleep(60)
         await event.delete()
 banned_words = [
