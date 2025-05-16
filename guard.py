@@ -95,7 +95,7 @@ async def edited(event):
         chat_id = await LC(c)
         i = str(chat_id).replace("-100", "")
         ch = i.replace("-100", "")
-        الرابط = f"http://t.me/c/{ch}/{event.id}"
+        الرابط = f"https://t.me/c/{ch}/{event.id}"
         b = [Button.inline('نعم', data='yes'), Button.inline('لا', data='no')]
         await ABH.send_message(HID, f"""
     تم تعديل رسالة من {m}
@@ -104,7 +104,7 @@ async def edited(event):
 
     ايديه ⇠ {uid}
     هل كان هذا تلغيم؟
-    """, buttons=b, link_preview=True)
+    """, Button=b)
         await asyncio.sleep(60)
         await event.delete()
 banned_words = [
