@@ -91,7 +91,7 @@ async def edited(event):
         c = event.chat_id
         s = await event.get_sender()
         m = await mention(event, s)
-        HID = int(str(LC(c)))
+        HID = int(str(await LC(c)))
         i = c.replace("-100", "")
         الرابط = f"http://t.me/c/{i}/{event.id}"
         b = [Button.inline('نعم', data='yes'), Button.inline('لا', data='no')]
