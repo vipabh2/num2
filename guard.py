@@ -89,7 +89,7 @@ async def edited(event):
         s = await event.get_sender()
         chat = await event.get_chat()
         m = await mention(event, s)
-        الرابط = f"https://t.me/c/{chat.title}/{event.id}"
+        الرابط = f"https://t.me/{chat.username}/{event.id}"
         b = [Button.inline('نعم', data='yes'), Button.inline('لا', data='no')]
         chat_id_str = await LC(chat)
         await ABH.send_message(
