@@ -102,7 +102,7 @@ async def edited(event):
 
     الرابط ⇠ ( {الرابط} )
 
-    ايديه ⇠ {c.id}
+    ايديه ⇠ {uid}
     هل كان هذا تلغيم؟
     """, Button=b)
         await asyncio.sleep(60)
