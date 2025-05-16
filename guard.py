@@ -80,6 +80,8 @@ async def edited(event):
     perms = await ABH.get_permissions(chat_id, uid)
     if perms.is_admin:
         return
+    await asyncio.sleep(60)
+    await event.delete()
     sender = await event.get_sender()
     m = await mention(event, sender)
     chat_obj = await event.get_chat()
@@ -107,8 +109,6 @@ async def edited(event):
         buttons=b,
         link_preview=True
     )
-    await asyncio.sleep(60)
-    await event.delete()
 banned_words = [
     "احط رجلي", "عاهرات", "عواهر", "عاهره", "عاهرة", "ناكك", "اشتعل دينه", "احترك دينك",
     "نيچني", "نودز", "نتلاوط", "لواط", "لوطي", "فروخ", "منيوك", "خربدينه", "خربدينك", 
