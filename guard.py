@@ -89,9 +89,15 @@ async def edited(event):
         s = await event.get_sender()
         chat = await event.get_chat()
         m = await mention(event, s)
-        الرابط = f"https://t.me/{chat.username}/{event.id}"
+        الرابط = f"https://t.me/{chat.title}/{event.id}"
         b = [Button.inline('نعم', data='yes'), Button.inline('لا', data='no')]
         chat_id_str = await LC(chat)
+        if not chat_id_str:
+            return
+        try:
+            HID = int(chat_id_str)
+        except ValueError:
+            return
         await ABH.send_message(
             int(chat_id_str),
             f"""تم تعديل رسالة من {m}
