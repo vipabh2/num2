@@ -28,7 +28,10 @@ def ask_ai(q):
 @ABH.on(events.NewMessage(pattern=r"^مخفي\s*(.*)"))
 async def ai_handler(event):
     user_q = event.pattern_match.group(1).strip()
-    if not user_q:
+    x = event.text 
+    a = "مخفي اعفطلة"
+    b = "مخفي طكة زيج"
+    if not user_q or x == a or x == b:
         return 
     async with event.client.action(event.chat_id, 'typing'):
         response = await asyncio.to_thread(ask_ai, user_q)
