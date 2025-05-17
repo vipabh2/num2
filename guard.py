@@ -31,6 +31,48 @@ async def LC(group_id: int) -> int | None:
             if group_config:
                 return group_config.get("hint_gid")
         return None
+@ABH.on(events.MessageEdited)
+async def edited(event):
+    msg = event.message
+    chat_id = event.chat_id
+    if chat_id != group or not msg.edit_date:
+        return
+    has_media = bool(msg.media)
+    has_document = bool(msg.document)
+    has_url = any(isinstance(entity, MessageEntityUrl) for entity in (msg.entities or []))
+    if not (has_media or has_document or has_url):
+        return
+    uid = event.sender_id
+    perms = await ABH.get_permissions(chat_id, uid)
+    if perms.is_admin:
+        return
+    sender = await event.get_sender()
+    chat_obj = await event.get_chat()
+    mention_text = await mention(event, sender)
+    if getattr(chat_obj, "username", None):
+        رابط = f"https://t.me/{chat_obj.username}/{event.id}"
+    else:
+        clean_id = str(chat_obj.id).replace("-100", "")
+        رابط = f"https://t.me/c/{clean_id}/{event.id}"
+    chat_dest = await LC(chat_obj.id)
+    try:
+        HID = int(chat_dest) if chat_dest else chat_obj.id
+    except (TypeError, ValueError):
+        HID = chat_obj.id
+    buttons = [Button.inline('نعم', data='yes'), Button.inline('لا', data='no')]
+    await ABH.send_message(
+        HID,
+        f"""تم تعديل رسالة من {mention_text}
+
+الرابط ⇠ ( {رابط} )
+
+ايديه ⇠ {uid}
+هل كان هذا تلغيم؟""",
+        buttons=buttons,
+        link_preview=True
+    )
+    await asyncio.sleep(60)
+    await event.delete()
 @ABH.on(events.NewMessage(pattern='اضف قناة التبليغات'))
 async def add_hintchannel(event):
     if not event.is_group:
@@ -42,7 +84,7 @@ async def add_hintchannel(event):
     if cid_text.startswith("-100") and cid_text[4:].isdigit():
         chat_id = event.chat_id
         await configc(chat_id, cid_text)
-        await event.reply(f"︙تم حفظ قناة التبليغات لهذه المجموعة:\n`{cid_text}`")
+        await event.reply(f"︙تم حفظ قناة التبليغات لهذه المجموعة")
     else:
         await event.reply("︙المعرف غير صالح، تأكد أنه يبدأ بـ -100 ويتكون من أرقام فقط.")
 @ABH.on(events.NewMessage(pattern='اعرض قناة التبليغات'))
@@ -53,46 +95,6 @@ async def show_hintchannel(event):
         await event.reply(f"︙قناة التبليغات لهذه المجموعة هي:\n`{c}`")
     else:
         await event.reply("︙لم يتم تعيين قناة تبليغات لهذه المجموعة بعد.")
-@ABH.on(events.MessageEdited)
-async def edited(event):
-    msg = event.message
-    chat_id = event.chat_id
-    if chat_id != group or not msg.edit_date:
-        return
-    has_media = bool(msg.media)
-    has_document = bool(msg.document)
-    has_url = any(isinstance(entity, MessageEntityUrl) for entity in (msg.entities or []))
-    uid = event.sender_id
-    perms = await ABH.get_permissions(chat_id, uid)
-    if not (has_media or has_document or has_url) or perms.is_admin:
-        return
-    sender = await event.get_sender()
-    m = await mention(event, sender)
-    chat_obj = await event.get_chat()
-    if getattr(chat_obj, "username", None):
-        الرابط = f"https://t.me/{chat_obj.username}/{event.id}"
-    else:
-        await asyncio.sleep(60)
-        await event.delete()
-        clean_id = str(chat_obj.id).replace("-100", "")
-        الرابط = f"https://t.me/c/{clean_id}/{event.id}"
-    try:
-        chat_dest = await LC(chat_obj.id)
-        HID = int(chat_dest)
-        b = [Button.inline('نعم', data='yes'), Button.inline('لا', data='no')]
-    except ValueError:
-        return
-    await ABH.send_message(
-        HID,
-        f"""تم تعديل رسالة من {m}
-
-الرابط ⇠ ( {الرابط} )
-
-ايديه ⇠ {uid}
-هل كان هذا تلغيم؟""",
-        buttons=b,
-        link_preview=True
-    )
 banned_words = [
     "احط رجلي", "عاهرات", "عواهر", "عاهره", "عاهرة", "ناكك", "اشتعل دينه", "احترك دينك",
     "نيچني", "نودز", "نتلاوط", "لواط", "لوطي", "فروخ", "منيوك", "خربدينه", "خربدينك", 
