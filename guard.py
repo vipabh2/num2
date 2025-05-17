@@ -77,9 +77,9 @@ async def edited(event):
         clean_id = str(chat_obj.id).replace("-100", "")
         الرابط = f"https://t.me/c/{clean_id}/{event.id}"
     try:
+        chat_dest = await LC(chat_obj.id)
         HID = int(chat_dest)
         b = [Button.inline('نعم', data='yes'), Button.inline('لا', data='no')]
-        chat_dest = await LC(chat_obj.id)
     except ValueError:
         return
     await ABH.send_message(
