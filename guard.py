@@ -5,6 +5,34 @@ from Resources import group, mention
 from telethon import events, Button
 from ABH import ABH
 import os, asyncio, re, json
+WHITELIST_FILE = "whitelist.json"
+whitelist_lock = asyncio.Lock()
+async def ads(group_id: int, user_id: int) -> None:
+    async with whitelist_lock:
+        data = {}
+        if os.path.exists(WHITELIST_FILE):
+            try:
+                with open(WHITELIST_FILE, "r", encoding="utf-8") as f:
+                    data = json.load(f)
+            except json.JSONDecodeError:
+                data = {}
+        group_key = str(group_id)
+        group_list = data.get(group_key, [])
+        if user_id not in group_list:
+            group_list.append(user_id)
+            data[group_key] = group_list
+            with open(WHITELIST_FILE, "w", encoding="utf-8") as f:
+                json.dump(data, f, ensure_ascii=False, indent=4)
+async def lw(group_id: int) -> list[int]:
+    async with whitelist_lock:
+        if not os.path.exists(WHITELIST_FILE):
+            return []
+        try:
+            with open(WHITELIST_FILE, "r", encoding="utf-8") as f:
+                data = json.load(f)
+        except json.JSONDecodeError:
+            return []
+        return data.get(str(group_id), [])
 CONFIG_FILE = "vars.json"
 config_lock = asyncio.Lock()
 async def configc(group_id: int, hint_cid: int) -> None:
@@ -33,9 +61,13 @@ async def LC(group_id: int) -> int | None:
         return None
 @ABH.on(events.MessageEdited)
 async def edited(event):
+    global uid
     msg = event.message
     chat_id = event.chat_id
     if chat_id != group or not msg.edit_date:
+        return
+    whitelist = await lw(event.chat_id)
+    if event.sender_id in whitelist:
         return
     has_media = bool(msg.media)
     has_document = bool(msg.document)
@@ -73,6 +105,13 @@ async def edited(event):
     )
     await asyncio.sleep(60)
     await event.delete()
+@ABH.on(events.CallbackQuery(data='yes'))
+async def yes(event):
+    await event.answer('تم تسجيلة ك تلغيم', alert=True)
+@ABH.on(events.CallbackQuery(data='no'))
+async def yes(event):
+    await event.answer('تم اضافة المستخدم للقائمة البيضاء', alert=True)
+    await ads(group, uid)
 @ABH.on(events.NewMessage(pattern='اضف قناة التبليغات'))
 async def add_hintchannel(event):
     if not event.is_group:
