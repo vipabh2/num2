@@ -28,8 +28,8 @@ async def LC(group_id: int) -> int | None:
             except json.JSONDecodeError:
                 return None
             group_config = config.get(str(group_id))
-            if group_config:
-                return group_config.get("hint_gid")
+            if group_config and "hint_gid" in group_config:
+                return int(group_config["hint_gid"])
         return None
 @ABH.on(events.MessageEdited)
 async def edited(event):
@@ -46,6 +46,11 @@ async def edited(event):
     perms = await ABH.get_permissions(chat_id, uid)
     if perms.is_admin:
         return
+    chat_dest = await LC(chat_id)
+    if not chat_dest:
+        await asyncio.sleep(60)
+        await event.delete()
+        return
     sender = await event.get_sender()
     chat_obj = await event.get_chat()
     mention_text = await mention(event, sender)
@@ -54,14 +59,9 @@ async def edited(event):
     else:
         clean_id = str(chat_obj.id).replace("-100", "")
         رابط = f"https://t.me/c/{clean_id}/{event.id}"
-    chat_dest = await LC(chat_obj.id)
-    try:
-        HID = int(chat_dest) if chat_dest else chat_obj.id
-    except (TypeError, ValueError):
-        HID = chat_obj.id
     buttons = [Button.inline('نعم', data='yes'), Button.inline('لا', data='no')]
     await ABH.send_message(
-        HID,
+        int(chat_dest),
         f"""تم تعديل رسالة من {mention_text}
 
 الرابط ⇠ ( {رابط} )
