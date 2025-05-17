@@ -1,6 +1,6 @@
 from ABH import ABH, events
 import random
-@ABH.on(events.NewMessage(pattern=r'^(مخفي طكة زيج|زيج)$'))
+@ABH.on(events.NewMessage(pattern=r'^(مخفي طكة زيج|زيج|مخفي اعفطلة)$'))
 async def reply_abh(event):
     replied_message = await event.get_reply_message()
     if replied_message and replied_message.sender_id == 1910015590:
