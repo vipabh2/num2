@@ -72,14 +72,14 @@ async def edited(event):
     if getattr(chat_obj, "username", None):
         الرابط = f"https://t.me/{chat_obj.username}/{event.id}"
     else:
+        await asyncio.sleep(60)
+        await event.delete()
         clean_id = str(chat_obj.id).replace("-100", "")
         الرابط = f"https://t.me/c/{clean_id}/{event.id}"
-    b = [Button.inline('نعم', data='yes'), Button.inline('لا', data='no')]
-    chat_dest = await LC(chat_obj.id)
-    if not chat_dest:
-        return
     try:
         HID = int(chat_dest)
+        b = [Button.inline('نعم', data='yes'), Button.inline('لا', data='no')]
+        chat_dest = await LC(chat_obj.id)
     except ValueError:
         return
     await ABH.send_message(
@@ -93,8 +93,6 @@ async def edited(event):
         buttons=b,
         link_preview=True
     )
-    await asyncio.sleep(60)
-    await event.delete()
 banned_words = [
     "احط رجلي", "عاهرات", "عواهر", "عاهره", "عاهرة", "ناكك", "اشتعل دينه", "احترك دينك",
     "نيچني", "نودز", "نتلاوط", "لواط", "لوطي", "فروخ", "منيوك", "خربدينه", "خربدينك", 
