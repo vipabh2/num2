@@ -287,7 +287,7 @@ def reset_game(chat_id):
 group_game_status = {}
 @ABH.on(events.NewMessage(pattern='/rings|محيبس'))
 async def rings(event):
-    username = event.sender.username or "unknown"
+    username = event.sender.username or "sszxl"
     markup = [[Button.inline("ابدأ اللعبة", b"startGame")]]
     await event.reply(
         f"أهلاً [{event.sender.first_name}](https://t.me/{username})! حياك الله. اضغط على الزر لبدء اللعبة.",
@@ -300,7 +300,7 @@ async def handle_rings(event):
     global number2
     chat_id = event.chat_id
     user_id = event.sender_id
-    username = event.sender.username or "unknown"
+    username = event.sender.username or "sszxl"
     if chat_id not in group_game_status:
         group_game_status[chat_id] = {'game_active': False, 'active_player_id': None}    
     if not group_game_status[chat_id]['game_active']:
@@ -396,8 +396,8 @@ games = {}
 async def xo(event):
     chat_id = event.chat_id
     player1_id = event.sender_id
-    username1 = event.sender.username or "unknown"
-    t1 = event.sender.first_name or "unknown"
+    username1 = event.sender.username or "sszxl"
+    t1 = event.sender.first_name or "sszxl"
     games[chat_id] = {
         "player1": player1_id,
         "player2": None,
@@ -427,8 +427,8 @@ async def start_game(event):
         await event.answer("لا يمكنك اللعب ضد نفسك.")
         return
     game["player2"] = player2_id
-    game["username2"] = event.sender.username or "unknown"
-    game["t2"] = event.sender.first_name or "unknown"
+    game["username2"] = event.sender.username or "sszxl"
+    game["t2"] = event.sender.first_name or "sszxl"
     game["turn"] = game["player1"]
     await show_board(event, chat_id)
 async def show_board(event, chat_id, winner=None):
