@@ -563,8 +563,6 @@ def reset_game():
     player1 = None
     player2 = None
     turn = None
-if not any([player1, player2]): 
-    reset_game()
 questions_and_answers_q = [
     {"question": "من هم ال البيت؟", "answer": ["هم اهل بيت رسول الله", 'اهل بيت رسول الله', "ال بيت رسول الله"]},
     {"question": "من هو الخليفة الاول؟", "answer": ["ابا الحسن علي", "الامام علي", "علي ابن ابي طالب"]},
