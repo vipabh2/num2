@@ -391,121 +391,157 @@ async def show_number(event):
         await event.reply("تم إرسال الرقم السري إلى @k_4x1.")
     else:
         await event.reply("لم تبدأ اللعبة بعد. أرسل /rings لبدء اللعبة.")
-player1 = None
-player2 = None
-turn = None  
-game_board = [" " for _ in range(9)] 
+games = {}
 restart_confirmations = {}
+def game_key(chat_id):
+    return f"{chat_id}"
 @ABH.on(events.NewMessage(pattern='اكس او|/xo|/Xo'))
 async def xo(event):
-    global player1, player2, username1, t1
-    player1 = event.sender_id
-    username1 = event.sender.username or "unknown"
-    t1 = event.sender.first_name or "unknown"
-    markup = [[Button.inline("ابدأ اللعبة", b"start")]]
+    chat_id = event.chat_id
+    sender = event.sender
+    if game_key(chat_id) in games:
+        return await event.reply("يوجد لعبة جارية بالفعل في هذه المحادثة.")
+    games[game_key(chat_id)] = {
+        "player1": sender.id,
+        "username1": sender.username or "unknown",
+        "t1": sender.first_name or "unknown",
+        "state": "waiting"
+    }
     await event.reply(
-        f"أهلاً [{event.sender.first_name}](https://t.me/{username1})! تم تسجيلك في لعبة x o انت الاعب الاول و دورك هو x.",
-        file="https://t.me/VIPABH/1216",  
+        f"أهلاً [{sender.first_name}](https://t.me/{sender.username or 'unknown'})! تم تسجيلك في لعبة X O.\n"
+        f"أنت اللاعب الأول، وستلعب بـ **X**. الرجاء انتظار لاعب آخر.",
+        file="https://t.me/VIPABH/1216",
         parse_mode="Markdown",
-        buttons=markup
+        buttons=[[Button.inline("ابدأ اللعبة", b"start")]]
     )
 @ABH.on(events.CallbackQuery(func=lambda call: call.data == b"start"))
-async def start_xo(event):
-    global player1, player2, turn, game_board, username1, username2, t1, t2
-    player2 = event.sender_id
-    username2 = event.sender.username or "unknown"
-    t2 = event.sender.first_name or "unknown"
-    if player1 == player2:
-        await event.answer(" لا يمكنك اللعب ضد نفسك يا متوحد!")
+async def start_game(event):
+    chat_id = event.chat_id
+    sender = event.sender
+    key = game_key(chat_id)
+    game = games.get(key)
+    if not game or game["state"] != "waiting":
+        return await event.answer("لا يوجد لعبة بانتظار لاعب للانضمام.")
+    if sender.id == game["player1"]:
+        return await event.answer("لا يمكنك اللعب ضد نفسك.")
+    game.update({
+        "player2": sender.id,
+        "username2": sender.username or "unknown",
+        "t2": sender.first_name or "unknown",
+        "turn": game["player1"],
+        "game_board": [" "] * 9,
+        "state": "playing"
+    })
+    await show_board(event, key)
+async def show_board(event, key, winner=None):
+    game = games.get(key)
+    if not game:
         return
-    turn = player1
-    game_board = [" " for _ in range(9)]
-    await show_board(event)
-async def show_board(event, winner=None):
+    board = game["game_board"]
     if winner:
-        markup = [
-            [Button.inline("إعادة اللعبة", b"restart"), Button.inline("إلغاء", b"cancel")]
-        ]
-        user_id = event.sender_id
-        gid = event.chat_id
+        markup = [[Button.inline("إعادة اللعبة", b"restart"), Button.inline("إلغاء", b"cancel")]]
         p = random.randint(50, 500)
-        add_points(user_id, gid, points, amount=p)
+        add_points(winner['id'], event.chat_id, points, amount=p)
         await event.edit(
-            f"اللاعب [{winner['name']}](https://t.me/{winner['username']}) فاز باللعبة! \n تم اضافة (`{p}`) فلوس",
+            f"🥇 اللاعب [{winner['name']}](https://t.me/{winner['username']}) فاز!\n"
+            f"💰 تم منحه `{p}` نقطة.",
             buttons=markup,
             parse_mode="Markdown"
         )
-    elif " " not in game_board:
-        markup = [
-            [Button.inline("إعادة اللعبة", b"restart"), Button.inline("إلغاء", b"cancel")]
-        ]
-        await event.edit(
-            "اللعبة انتهت بالتعادل!",
-            buttons=markup,
-            parse_mode="Markdown"
-        )
-    else:
-        markup = [
-            [Button.inline(game_board[0], b"move_0"), Button.inline(game_board[1], b"move_1"), Button.inline(game_board[2], b"move_2")],
-            [Button.inline(game_board[3], b"move_3"), Button.inline(game_board[4], b"move_4"), Button.inline(game_board[5], b"move_5")],
-            [Button.inline(game_board[6], b"move_6"), Button.inline(game_board[7], b"move_7"), Button.inline(game_board[8], b"move_8")]
-        ]
-        current_player = t1 if turn == player1 else t2
-        current_username = username1 if turn == player1 else username2
-        try:
-            await event.edit(
-                f"اللاعب الأول —> [{t1}](https://t.me/{username1})\nاللاعب الثاني —> [{t2}](https://t.me/{username2})\n\nدور اللاعب —> [{current_player}](https://t.me/{current_username})",
-                buttons=markup,
-                parse_mode="Markdown")
-        except Exception:
-            await event.reply(
-                f"اللاعب الأول —> [{t1}](https://t.me/{username1})\nاللاعب الثاني —> [{t2}](https://t.me/{username2})\n\nدور اللاعب —> [{current_player}](https://t.me/{current_username})",
-                buttons=markup,
-                parse_mode="Markdown"
-            )
+        return
+    if " " not in board:
+        markup = [[Button.inline("إعادة اللعبة", b"restart"), Button.inline("إلغاء", b"cancel")]]
+        await event.edit("🤝 انتهت اللعبة بالتعادل!", buttons=markup)
+        return
+    buttons = [
+        [Button.inline(board[i], f"move_{i}".encode()) for i in range(j, j+3)]
+        for j in range(0, 9, 3)
+    ]
+    turn_id = game["turn"]
+    current = game["t1"] if turn_id == game["player1"] else game["t2"]
+    current_username = game["username1"] if turn_id == game["player1"] else game["username2"]
+    await event.edit(
+        f"🎮 اللعبة بين:\n"
+        f"🅇 اللاعب الأول: [{game['t1']}](https://t.me/{game['username1']})\n"
+        f"🅞 اللاعب الثاني: [{game['t2']}](https://t.me/{game['username2']})\n"
+        f"\n🎯 الدور الحالي: [{current}](https://t.me/{current_username})",
+        buttons=buttons,
+        parse_mode="Markdown"
+    )
 @ABH.on(events.CallbackQuery(func=lambda call: call.data.startswith(b"move_")))
 async def make_move(event):
-    global game_board, turn, t1, t2
-    move = int(event.data.decode("utf-8").split("_")[1])
-    if move < 0 or move >= len(game_board):
-        await event.answer("التحرك غير صالح! اختر مربعاً آخر.")
-        return
-    if game_board[move] != " ":
-        await event.answer("المربع هذا مشغول بالفعل! اختر مربعاً آخر.")
-        return
-    if event.sender_id == player1 and turn == player1:
-        game_board[move] = "X"
-        turn = player2  
-    elif event.sender_id == player2 and turn == player2:
-        game_board[move] = "O"
-        turn = player1 
+    chat_id = event.chat_id
+    sender = event.sender
+    key = game_key(chat_id)
+    game = games.get(key)
+    if not game or game["state"] != "playing":
+        return await event.answer("لا توجد لعبة نشطة حالياً.")
+    move = int(event.data.decode().split("_")[1])
+    board = game["game_board"]
+    if board[move] != " ":
+        return await event.answer("❌ هذا المربع مشغول!")
+    if sender.id != game["turn"]:
+        return await event.answer("ليس دورك الآن!")
+    symbol = "X" if sender.id == game["player1"] else "O"
+    board[move] = symbol
+    game["turn"] = game["player2"] if sender.id == game["player1"] else game["player1"]
+    winner_symbol = check_winner(board)
+    if winner_symbol:
+        winner = {
+            "id": game["player1"] if winner_symbol == "X" else game["player2"],
+            "name": game["t1"] if winner_symbol == "X" else game["t2"],
+            "username": game["username1"] if winner_symbol == "X" else game["username2"]
+        }
+        await show_board(event, key, winner)
+        games.pop(key, None)
+    elif " " not in board:
+        await show_board(event, key)
+        games.pop(key, None)
     else:
-        await event.answer("ليس دورك الآن!")
-        return
-    winner = check_winner()
-    if winner:
-        winner_name = t1 if winner == "X" else t2
-        winner_username = username1 if winner == "X" else username2
-        await show_board(event, winner={"name": winner_name, "username": winner_username})
-    elif " " not in game_board:
-        await show_board(event)
+        await show_board(event, key)
+@ABH.on(events.CallbackQuery(func=lambda call: call.data == b"restart"))
+async def restart_game(event):
+    chat_id = event.chat_id
+    sender = event.sender
+    key = game_key(chat_id)
+    restart_confirmations.setdefault(key, set()).add(sender.id)
+    game = games.get(key)
+    if not game:
+        return await event.answer("انتهت اللعبة بالفعل.")
+    if {game["player1"], game["player2"]} == restart_confirmations[key]:
+        game.update({
+            "turn": game["player1"],
+            "game_board": [" "] * 9,
+            "state": "playing"
+        })
+        restart_confirmations[key] = set()
+        await show_board(event, key)
     else:
-        await show_board(event)
-def check_winner():
-    lines = [
-        [0, 1, 2],
-        [3, 4, 5],
-        [6, 7, 8],
-        [0, 3, 6],
-        [1, 4, 7],
-        [2, 5, 8],
-        [0, 4, 8],
-        [2, 4, 6]
+        await event.answer("بانتظار موافقة اللاعب الآخر لإعادة اللعبة.")
+@ABH.on(events.CallbackQuery(func=lambda call: call.data == b"cancel"))
+async def cancel_game(event):
+    chat_id = event.chat_id
+    key = game_key(chat_id)
+    games.pop(key, None)
+    restart_confirmations.pop(key, None)
+    await event.edit(" تم إلغاء اللعبة بنجاح.")
+def check_winner(board):
+    combos = [
+        [0,1,2], [3,4,5], [6,7,8],
+        [0,3,6], [1,4,7], [2,5,8],
+        [0,4,8], [2,4,6]
     ]
-    for line in lines:
-        if game_board[line[0]] == game_board[line[1]] == game_board[line[2]] and game_board[line[0]] != " ":
-            return game_board[line[0]]  
+    for combo in combos:
+        a, b, c = combo
+        if board[a] == board[b] == board[c] and board[a] != " ":
+            return board[a]
     return None
+def add_points(user_id, chat_id, points_dict, amount):
+    if chat_id not in points_dict:
+        points_dict[chat_id] = {}
+    if user_id not in points_dict[chat_id]:
+        points_dict[chat_id][user_id] = 0
+    points_dict[chat_id][user_id] += amount
 @ABH.on(events.CallbackQuery(func=lambda call: call.data == b"restart"))
 async def restart_game(event):
     global restart_confirmations, player1, player2, turn, game_board
