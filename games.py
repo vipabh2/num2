@@ -395,9 +395,6 @@ games = {}
 @ABH.on(events.NewMessage(pattern='اكس او|/xo|/Xo'))
 async def xo(event):
     chat_id = event.chat_id
-    if chat_id in games:
-        await event.reply("يوجد لعبة جارية بالفعل في هذه المحادثة!")
-        return
     player1_id = event.sender_id
     username1 = event.sender.username or "unknown"
     t1 = event.sender.first_name or "unknown"
