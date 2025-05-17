@@ -7,7 +7,7 @@ from ABH import ABH
 import os, asyncio, re, json
 CONFIG_FILE = "vars.json"
 config_lock = asyncio.Lock()
-async def configc(group_id, hint_cid):
+async def configc(group_id: int, hint_cid: int) -> None:
     async with config_lock:
         config = {}
         if os.path.exists(CONFIG_FILE):
@@ -16,11 +16,11 @@ async def configc(group_id, hint_cid):
                     config = json.load(f)
             except json.JSONDecodeError:
                 config = {}
-        config[str(group_id)] = {"hint_gid": hint_cid}
+        config[str(group_id)] = {"hint_gid": int(hint_cid)}
         with open(CONFIG_FILE, "w", encoding="utf-8") as f:
             json.dump(config, f, ensure_ascii=False, indent=4)
-async def LC(group_id):
-    async with config_lock: 
+async def LC(group_id: int) -> int | None:
+    async with config_lock:
         if os.path.exists(CONFIG_FILE):
             try:
                 with open(CONFIG_FILE, "r", encoding="utf-8") as f:
