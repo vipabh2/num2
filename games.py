@@ -34,7 +34,7 @@ async def buy(event):
         message = await ABH.get_messages("LANBOT2", ids=message_id)
     if message and message.media:
         file_path = await ABH.download_media(message.media)
-        await ABH.send_file(user_id, file_path, caption=answer)
+        await ABH.send_file(user_id, file_path, caption=answer, parse_mode=None)
         if os.path.exists(file_path):
             os.remove(file_path)
     else:
