@@ -60,12 +60,12 @@ football = [
             "photo": "https://t.me/LANBOT2/70"
         },
         {
-            "answer": "كريستيانو رونالدو",
+            "answer": ["كريستيانو رونالدو", 'رونالدو'],
             "caption": "شنو اسم الاعب ؟",
             "photo": "https://t.me/LANBOT2/72"
         },
         {
-            "answer": "امبابي",
+            "answer": ["امبابي", 'مبابي', 'كيليان مبابي'],
             "caption": "شنو اسم الاعب ؟",
             "photo": "https://t.me/LANBOT2/74"
         },
@@ -75,7 +75,7 @@ football = [
             "photo": "https://t.me/LANBOT2/76"
         },
         {
-            "answer": "بنزيما",
+            "answer": ["بنزيما", "كريم بنزيما"],
             "caption": "شنو اسم الاعب ؟",
             "photo": "https://t.me/LANBOT2/78"
         },
@@ -85,12 +85,12 @@ football = [
             "photo": "https://t.me/LANBOT2/80"
         },
         {
-            "answer": "ميسي",
+            "answer": ["ميسي", 'ليونيل ميسي'],
             "caption": "شنو اسم الاعب ؟",
             "photo": "https://t.me/LANBOT2/82"
         },
         {
-            "answer": "راموس",
+            "answer": ["راموس", 'سيرخيو راموس', 'سيرخيوس راموس']
             "caption": "شنو اسم الاعب ؟",
             "photo": "https://t.me/LANBOT2/84"
         },
@@ -130,12 +130,12 @@ football = [
             "photo": "https://t.me/LANBOT2/98"
         },
         {
-            "answer": "بيكيه",
+            "answer": ["بيكيه", 'جيرارد بيكيه'],
             "caption": "شنو اسم الاعب ؟",
             "photo": "https://t.me/LANBOT2/100"
         },
         {
-            "answer": "بيل",
+            "answer": ["بيل", 'غارث بيل'],
             "caption": "شنو اسم الاعب ؟",
             "photo": "https://t.me/LANBOT2/102"
         },
