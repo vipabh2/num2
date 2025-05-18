@@ -130,7 +130,7 @@ async def answer_football(event):
     message = await ABH.get_messages("LANBOT2", ids=message_id)
     if message and message.media:
         file_path = await ABH.download_media(message.media)
-        await ABH.send_file(event.chat_id, file_path, caption=r['caption'])
+        await ABH.send_file(event.chat_id, file_path, caption=r['caption'], reply_to=message.id)
     if os.path.exists(file_path):
         os.remove(file_path)
 @ABH.on(events.NewMessage)
