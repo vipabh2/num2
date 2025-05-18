@@ -18,7 +18,8 @@ async def buy(event):
     if type not in valid_types:
         await event.reply('ماكو هيج لعبة')
         return
-    user_points = points.get(str(user_id), {}).get(gid, {}).get('points', 0)
+    user_points = {points[str(user_id)][str(gid)]["points"]}
+
     price = valid_types[type]
     if user_points < price:
         await event.reply(f'عزيزي سعر الشراء {price} وانت ماعندك هلمبغ.')
