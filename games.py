@@ -122,6 +122,7 @@ user_state = {}
 @ABH.on(events.NewMessage(pattern='/football|كرة قدم'))
 async def answer_football(event):
     sender = await event.get_sender()
+    a = event.id
     user_id = sender.id
     r = random.choice(football)
     user_state[user_id] = {'answer': r['answer']
@@ -130,7 +131,7 @@ async def answer_football(event):
     message = await ABH.get_messages("LANBOT2", ids=message_id)
     if message and message.media:
         file_path = await ABH.download_media(message.media)
-        await ABH.send_file(event.chat_id, file_path, caption=r['caption'], reply_to=message.id)
+        await ABH.send_file(event.chat_id, file_path, caption=r['caption'], reply_to=a)
     if os.path.exists(file_path):
         os.remove(file_path)
 @ABH.on(events.NewMessage)
