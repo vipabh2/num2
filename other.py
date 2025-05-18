@@ -3,6 +3,40 @@ from playwright.async_api import async_playwright
 import asyncio, os, json, random, uuid, operator, requests
 from ABH import ABH, events #type: ignore
 from telethon import Button
+from Resources import CHANNEL, suras
+@ABH.on(events.NewMessage)
+async def handler(event):
+    text = event.raw_text.strip()
+    name = (await event.get_client().get_me()).username
+    c = f'**[Enjoy dear]**(https://t.me/{name})'
+    button = [Button.url("chanel", "https://t.me/sszxl")]
+    if text.lower() in ['قرآن', 'قران']:
+        sura_number = random.randint(1, 114)
+        message = await ABH.get_messages('theholyqouran', ids=sura_number + 1)
+        if message and message.media:
+            await ABH.send_file(
+                event.chat_id,
+                file=message.media,
+                caption=c,
+                buttons=button, 
+                reply_to=event.id
+            )
+        else:
+            return
+    for names, num in suras.items():
+        if text in names:
+            link_id = int(num) + 1
+            message = await ABH.get_messages('theholyqouran', ids=link_id)
+            if message and message.media:
+                await ABH.send_file(
+                    event.chat_id,
+                    file=message.media,
+                    caption=c,
+                    buttons=button, 
+                    reply_to=event.id
+                )
+            else:
+                return
 AI_SECRET = "AIChatPowerBrain123@2024"
 def ask_ai(q):
     url = "https://powerbrainai.com/app/backend/api/api.php"
