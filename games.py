@@ -25,8 +25,7 @@ async def buy(event):
         return
     points[str(user_id)][str(gid)]['points'] -= price
     await event.reply(f'تم خصم منك {price} وارسال الحل في الخاص 😀')
-if type in {'كرة قدم', '/football'}:
-    try:
+    if type in {'كرة قدم', '/football'}:
         r = random.choice(football)
         answer = r.get('answer', 'ما محدد الجواب')
         photo_ref = r.get('photo')
@@ -42,14 +41,12 @@ if type in {'كرة قدم', '/football'}:
                 await ABH.send_file(user_id, file_path, caption=answer, parse_mode=None)
             else:
                 await event.reply("لم أتمكن من العثور على الصورة.")
-    except Exception as e:
-        await event.reply(f"حدث خطأ أثناء جلب السؤال: {e}")
-else:
-    await event.reply("نوع السؤال غير مدعوم حالياً.")
-    if os.path.exists(file_path):
-        os.remove(file_path)
     else:
-        await event.reply("تعذر إرسال الوسائط.")
+        await event.reply("نوع السؤال غير مدعوم حالياً.")
+        if os.path.exists(file_path):
+            os.remove(file_path)
+        else:
+            await event.reply("تعذر إرسال الوسائط.")
 USER_DATA_FILE = "boxing.json"
 def load_user_data():
     if os.path.exists(USER_DATA_FILE):
