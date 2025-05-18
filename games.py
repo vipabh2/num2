@@ -20,21 +20,32 @@ async def buy(event):
         return
     user_points = points[str(user_id)][str(gid)]["points"]
     price = valid_types[type]
-
     if user_points < price:
         await event.reply(f'عزيزي سعر الشراء {price} وانت ماعندك هلمبغ.')
         return
     points[str(user_id)][str(gid)]['points'] -= price
     await event.reply(f'تم خصم منك {price} وارسال الحل في الخاص 😀')
-    if type in {'كرة قدم', '/football'}:
+if type in {'كرة قدم', '/football'}:
+    try:
         r = random.choice(football)
         answer = r.get('answer', 'ما محدد الجواب')
         photo_ref = r.get('photo')
-        message_id = int(photo_ref.split("/")[-1])
-        message = await ABH.get_messages("LANBOT2", ids=message_id)
-    if message and message.media:
-        file_path = await ABH.download_media(message.media)
-        await ABH.send_file(user_id, file_path, caption=answer, parse_mode=None)
+        if not photo_ref or not isinstance(photo_ref, str) or "/" not in photo_ref:
+            await event.reply("حدث خطأ في تحديد صورة السؤال.")
+        else:
+            message_id = int(photo_ref.split("/")[-1])
+            message = await ABH.get_messages("LANBOT2", ids=message_id)
+            if message and message.media:
+                file_path = await ABH.download_media(message.media)
+                if isinstance(answer, list):
+                    answer = "\n".join(map(str, answer))
+                await ABH.send_file(user_id, file_path, caption=answer, parse_mode=None)
+            else:
+                await event.reply("لم أتمكن من العثور على الصورة.")
+    except Exception as e:
+        await event.reply(f"حدث خطأ أثناء جلب السؤال: {e}")
+else:
+    await event.reply("نوع السؤال غير مدعوم حالياً.")
         if os.path.exists(file_path):
             os.remove(file_path)
     else:
