@@ -213,7 +213,7 @@ async def handler_res(event):
         sender = await event.get_sender()
         await ABH.send_message(
             int(hint_channel),
-            f'المستخدم {await mention(sender)} \n ارسل كلمة ممنوعة: ~~{contains_banned_word(message_text)}~~ \n تحذيراته {w}' 
+            f'المستخدم {await mention(event, sender)} \n ارسل كلمة ممنوعة: ~~{contains_banned_word(message_text)}~~ \n تحذيراته {w}' 
             )
         if warns[user_id][chat.id] >= 2:
             await ABH(EditBannedRequest(chat.id, user_id, restrict_rights))
