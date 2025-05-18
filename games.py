@@ -46,8 +46,8 @@ if type in {'كرة قدم', '/football'}:
         await event.reply(f"حدث خطأ أثناء جلب السؤال: {e}")
 else:
     await event.reply("نوع السؤال غير مدعوم حالياً.")
-        if os.path.exists(file_path):
-            os.remove(file_path)
+    if os.path.exists(file_path):
+        os.remove(file_path)
     else:
         await event.reply("تعذر إرسال الوسائط.")
 USER_DATA_FILE = "boxing.json"
