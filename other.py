@@ -7,8 +7,10 @@ from Resources import CHANNEL, suras
 @ABH.on(events.NewMessage)
 async def handler(event):
     text = event.raw_text.strip()
-    name = (await event.get_client().get_me()).username
-    c = f'**[Enjoy dear]**(https://t.me/{name})'
+    client = event.get_client()
+    me = await client.get_me()
+    username = me.username
+    c = f'**[Enjoy dear]**(https://t.me/{username})'
     button = [Button.url("chanel", "https://t.me/sszxl")]
     if text.lower() in ['قرآن', 'قران']:
         sura_number = random.randint(1, 114)
