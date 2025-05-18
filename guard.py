@@ -207,6 +207,14 @@ async def handler_res(event):
         if chat.id not in warns[user_id]:
             warns[user_id][chat.id] = 0
         warns[user_id][chat.id] += 1
+        w = warns[user_id][chat.id] 
+        chat_id = event.chat_id
+        hint_channel = await LC(chat_id)
+        sender = await event.get_sender()
+        await ABH.send_message(
+            int(hint_channel),
+            f'المستخدم {await mention(sender)} \n ارسل كلمة ممنوعة: ~~{contains_banned_word(message_text)}~~ \n تحذيراته {w}' 
+            )
         if warns[user_id][chat.id] >= 2:
             await ABH(EditBannedRequest(chat.id, user_id, restrict_rights))
             sender = await event.get_sender()
@@ -224,10 +232,8 @@ async def handler_res(event):
 async def test_broadcast(event):
     if not event.is_group:
         return await event.reply("↯︙هذا الأمر يعمل فقط داخل المجموعات.")
-    
     chat_id = event.chat_id
     hint_channel = await LC(chat_id)
-    
     if not hint_channel:
         return await event.reply("↯︙لم يتم تعيين قناة تبليغات لهذه المجموعة بعد. استخدم الأمر 'اضف قناة التبليغات' أولاً.")
     try:
