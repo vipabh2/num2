@@ -18,12 +18,13 @@ async def buy(event):
     if type not in valid_types:
         await event.reply('ماكو هيج لعبة')
         return
-    user_points = points[str(user_id)][str(gid)]["points"]
+    user_points = {points[str(user_id)][str(gid)]["points"]}
+
     price = valid_types[type]
     if user_points < price:
         await event.reply(f'عزيزي سعر الشراء {price} وانت ماعندك هلمبغ.')
         return
-    points[str(user_id)][str(gid)]['points'] -= price
+    points[str(user_id)][gid]['points'] -= price
     await event.reply(f'تم خصم منك {price} وارسال الحل في الخاص 😀')
     if type in {'كرة قدم', '/football'}:
         r = random.choice(football)
@@ -33,7 +34,7 @@ async def buy(event):
         message = await ABH.get_messages("LANBOT2", ids=message_id)
     if message and message.media:
         file_path = await ABH.download_media(message.media)
-        await ABH.send_file(user_id, file_path, caption=answer, parse_mode=None)
+        await ABH.send_file(user_id, file_path, caption=answer)
         if os.path.exists(file_path):
             os.remove(file_path)
     else:
