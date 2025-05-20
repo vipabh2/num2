@@ -3,7 +3,66 @@ from playwright.async_api import async_playwright
 import asyncio, os, json, random, uuid, operator, requests
 from ABH import ABH, events #type: ignore
 from telethon import Button
-from Resources import CHANNEL, suras
+from Resources import CHANNEL, suras, mention
+@ABH.one(events.NewMessage(pattern="^اسمي$"))
+async def myname(event):
+ s = await event.get_sender()
+ name = await mention(event, s)
+ await event.reply(name)
+@ABH.one(events.NewMessage(pattern="^اسمه|اسمة$"))
+async def myname(event):
+ r = await event.get_reply_message()
+ s = await r.get_sender()
+ name = await mention(event, s)
+ await event.reply(name)
+@ABH.on(events.NewMessage(pattern="^رقمي$"))
+async def handler(event):
+ s=await event.get_sender()
+ p=s.phone if getattr(s,"phone",None) else None
+ await event.reply(f"`+{p}` +{p} " if p else "رقمك غير متاح")
+@ABH.on(events.NewMessage(pattern="^رقمة|رقمه$"))
+async def handler(event):
+ r=await event.get_reply_message()
+ if not r:
+  await event.reply("يجب الرد على رسالة المستخدم")
+  return
+ s=await r.get_sender()
+ p=s.phone if getattr(s,"phone",None) else None
+ await event.reply(f"`+{p}` +{p} " if p else "رقمه غير متاح")
+@ABH.on(events.NewMessage(pattern="^يوزراتي$"))
+async def handler(event):
+ s=await event.get_sender()
+ usernames=[x.username for x in s.usernames] if getattr(s,"usernames",None) else []
+ if s.username: usernames.insert(0, s.username)
+ usernames=list(dict.fromkeys(usernames))
+ utext="\n".join(f"@{u}" for u in usernames)
+ await event.reply(utext if usernames else "ليس لديك أي يوزرات NFT")
+@ABH.on(events.NewMessage(pattern="^يوزراته$"))
+async def handler(event):
+ r=await event.get_reply_message()
+ if not r:
+  await event.reply("يجب الرد على رسالة المستخدم")
+  return
+ s=await r.get_sender()
+ usernames=[x.username for x in s.usernames] if getattr(s,"usernames",None) else []
+ if s.username: usernames.insert(0, s.username)
+ usernames=list(dict.fromkeys(usernames))
+ utext="\n".join(f"@{u}" for u in usernames)
+ await event.reply(utext if usernames else "ليس لديه أي يوزرات NFT")
+@ABH.on(events.NewMessage(pattern="^يوزري$"))
+async def handler(event):
+ s=await event.get_sender()
+ u=s.username or (list(dict.fromkeys([x.username for x in s.usernames]))[0] if getattr(s,"usernames",None) else None)
+ await event.reply(f"`@{u}` @{u}" if u else "ليس لديك يوزر")
+@ABH.on(events.NewMessage(pattern="^يوزره|يوزرة|اليوزر$"))
+async def handler(event):
+ r=await event.get_reply_message()
+ if not r:
+  await event.reply("يجب الرد على رسالة المستخدم")
+  return
+ s=await r.get_sender()
+ u=s.username or (list(dict.fromkeys([x.username for x in s.usernames]))[0] if getattr(s,"usernames",None) else None)
+ await event.reply(f"`@{u}` @{u}" if u else "ليس لديه يوزر")
 @ABH.on(events.NewMessage)
 async def handler(event):
     text = event.raw_text.strip()
