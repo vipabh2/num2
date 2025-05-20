@@ -4,12 +4,12 @@ import asyncio, os, json, random, uuid, operator, requests
 from ABH import ABH, events #type: ignore
 from telethon import Button
 from Resources import CHANNEL, suras, mention
-@ABH.one(events.NewMessage(pattern="^اسمي$"))
+@ABH.on(events.NewMessage(pattern="^اسمي$"))
 async def myname(event):
  s = await event.get_sender()
  name = await mention(event, s)
  await event.reply(name)
-@ABH.one(events.NewMessage(pattern="^اسمه|اسمة$"))
+@ABH.on(events.NewMessage(pattern="^اسمه|اسمة$"))
 async def myname(event):
  r = await event.get_reply_message()
  s = await r.get_sender()
