@@ -33,7 +33,7 @@ async def add_assistant(event):
     sm = await mention(event, s)
     chat_id = str(event.chat_id)
     user_id = event.sender_id
-    if not (await is_owner(event.chat_id, user_id) or user_id == 6505528233):
+    if not (await is_owner(event.chat_id, user_id) or user_id == 1910015590):
         return await event.reply(f"عذراً {sm}، هذا الأمر مخصص للمالك فقط.")
     reply = await event.get_reply_message()
     if not reply:
