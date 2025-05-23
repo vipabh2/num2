@@ -1,10 +1,66 @@
-from telethon.tl.types import ChannelParticipantAdmin, ChannelParticipantCreator
+from telethon.tl.types import ChannelParticipantCreator, ChannelParticipantAdmin, ChatBannedRights
 from telethon.tl.functions.channels import EditBannedRequest, GetParticipantRequest
 from telethon.tl.types import ChatBannedRights, MessageEntityUrl
 from Resources import group, mention
 from telethon import events, Button
+import os, asyncio, re, json, time
+from other import is_assistant
 from ABH import ABH
-import os, asyncio, re, json
+restriction_end_times = {}
+@ABH.on(events.NewMessage(pattern='^تقييد عام|مخفي قيده|مخفي قيدة$'))
+async def restrict_user(event):
+    chat = await event.get_chat()
+    sender = await r.get_sender()
+    user_id = event.sender_id   
+    if not is_assistant(chat.id, user_id):
+        await event.reply("جا قيدته الك بس انت مو معاون")
+        return
+    if not event.is_group:
+        return
+    r = await event.get_reply_message()
+    if not r:
+        return await event.reply(" يجب الرد على رسالة العضو الذي تريد تقييده.")    
+    name = await mention(event, sender)
+    try:
+        participant = await ABH(GetParticipantRequest(channel=chat.id, participant=sender.id))
+        if isinstance(participant.participant, (ChannelParticipantCreator, ChannelParticipantAdmin)):
+            return await event.reply(f"لا يمكنك تقييد {name} لانه مشرف ")
+    except:
+        return
+    user_to_restrict = await r.get_sender()
+    user_id = user_to_restrict.id
+    now = int(time.time())
+    restriction_duration = 10 * 60
+    restriction_end_times[user_id] = now + restriction_duration
+    rights = ChatBannedRights(
+        until_date=now + restriction_duration,
+        send_messages=True
+    )
+    try:
+        await ABH(EditBannedRequest(channel=chat.id, participant=user_id, banned_rights=rights))
+        await event.reply(f" تم تقييد {user_to_restrict.first_name} لمدة 10 دقائق.")
+    except Exception as e:
+        await event.reply(f" ياريت اقيده بس ماكدر")
+@ABH.on(events.NewMessage)
+async def monitor_messages(event):
+    if not event.is_group:
+        return
+    user_id = event.sender_id
+    now = int(time.time())
+    if user_id in restriction_end_times:
+        end_time = restriction_end_times[user_id]
+        if now < end_time:
+            remaining = end_time - now
+            try:
+                chat = await event.get_chat()
+                rights = ChatBannedRights(
+                    until_date=now + remaining,
+                    send_messages=True
+                )
+                await ABH(EditBannedRequest(channel=chat.id, participant=user_id, banned_rights=rights))
+                await event.reply(f" لا يمكنك إرسال الرسائل الآن. تم إعادة تقييدك لمدة || {remaining//60} دقيقة و {remaining%60} ثانية. ||")
+            except:
+                pass
 WHITELIST_FILE = "whitelist.json"
 whitelist_lock = asyncio.Lock()
 async def ads(group_id: int, user_id: int) -> None:
