@@ -13,7 +13,7 @@ async def restrict_user(event):
     if not event.is_group:
         return
     chat = await event.get_chat()
-    chat_id = chat.id
+    chat_id = str(event.chat_id)
     user_id = event.sender_id
     r = await event.get_reply_message()
     if not r:
