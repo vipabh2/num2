@@ -12,7 +12,8 @@ restriction_end_times = {}
 async def restrict_user(event):
     if not event.is_group:
         return
-    chat_id = event.chat_id
+    chat_id = await event.chat().id
+    chat = await event.chat()
     user_id = event.sender_id
     r = await event.get_reply_message()
     sender = await r.get_sender()
