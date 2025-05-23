@@ -9,6 +9,7 @@ from ABH import ABH
 restriction_end_times = {}
 @ABH.on(events.NewMessage(pattern='^تقييد عام|مخفي قيده|مخفي قيدة$'))
 async def restrict_user(event):
+    r = await event.get_reply_message()
     chat = await event.get_chat()
     sender = await r.get_sender()
     user_id = event.sender_id   
@@ -17,7 +18,6 @@ async def restrict_user(event):
         return
     if not event.is_group:
         return
-    r = await event.get_reply_message()
     if not r:
         return await event.reply(" يجب الرد على رسالة العضو الذي تريد تقييده.")    
     name = await mention(event, sender)
