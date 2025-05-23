@@ -7,7 +7,7 @@ import os, asyncio, re, json, time
 from other import is_assistant
 from ABH import ABH
 restriction_end_times = {}
-@ABH.on(events.NewMessage(pattern='^تقييد عام|مخفي قيده|مخفي قيدة$'))
+# @ABH.on(events.NewMessage(pattern='^تقييد عام|مخفي قيده|مخفي قيدة$'))
 async def restrict_user(event):
     if not event.is_group:
         return
