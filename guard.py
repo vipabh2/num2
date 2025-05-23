@@ -17,9 +17,6 @@ async def restrict_user(event):
     if not is_assistant(chat_id, user_id):
         await event.reply("جا قيدته الك بس انت مو معاون")
         return
-    else:
-        await event.reply("أهلاً معاون!")
-        return
     if not r:
         return await event.reply(" يجب الرد على رسالة العضو الذي تريد تقييده.")    
     name = await mention(event, sender)
