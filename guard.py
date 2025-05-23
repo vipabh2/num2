@@ -116,14 +116,14 @@ async def LC(group_id: int) -> int | None:
             if group_config and "hint_gid" in group_config:
                 return int(group_config["hint_gid"])
         return None
+report_data = {}
 @ABH.on(events.MessageEdited)
 async def edited(event):
-    global uid
     msg = event.message
     chat_id = event.chat_id
     if chat_id != group or not msg.edit_date:
         return
-    whitelist = await lw(event.chat_id)
+    whitelist = await lw(chat_id)
     if event.sender_id in whitelist:
         return
     has_media = bool(msg.media)
@@ -148,26 +148,34 @@ async def edited(event):
     else:
         clean_id = str(chat_obj.id).replace("-100", "")
         رابط = f"https://t.me/c/{clean_id}/{event.id}"
-    buttons = [Button.inline('نعم', data='yes'), Button.inline('لا', data='no')]
+    report_data[event.id] = uid
+    buttons = [Button.inline('✅ نعم', data=f'yes:{event.id}'), Button.inline('❌ لا', data=f'no:{event.id}')]
     await ABH.send_message(
         int(chat_dest),
-        f"""تم تعديل رسالة من {mention_text}
-
-الرابط ⇠ ( {رابط} )
-
-ايديه ⇠ {uid}
-هل كان هذا تلغيم؟""",
+        f"""🚨 تم تعديل رسالة مشتبه بها:
+ المستخدم: {mention_text}  
+ [رابط الرسالة]({رابط})  
+ معرفه: `{uid}`
+ هل تعتقد أن هذه الرسالة تحتوي على تلغيم؟""",
         buttons=buttons,
         link_preview=True
     )
     await asyncio.sleep(60)
     await event.delete()
-@ABH.on(events.CallbackQuery(data='yes'))
-async def yes(event):
-    await event.answer('تم تسجيلة ك تلغيم', alert=True)
-@ABH.on(events.CallbackQuery(data='no'))
-async def yes(event):
-    await event.answer('تم اضافة المستخدم للقائمة البيضاء', alert=True)
+@ABH.on(events.CallbackQuery(pattern=b'yes:(\d+)'))
+async def yes_callback(event):
+    msg_id = int(event.pattern_match.group(1))
+    uid = report_data.get(msg_id)
+    if not uid or event.sender_id != uid:
+        return await event.answer(" لا تملك صلاحية الرد على هذا التبليغ.", alert=True)
+    await event.answer(' تم تسجيل المستخدم كملغّم.', alert=True)
+@ABH.on(events.CallbackQuery(pattern=b'no:(\d+)'))
+async def no_callback(event):
+    msg_id = int(event.pattern_match.group(1))
+    uid = report_data.get(msg_id)
+    if not uid or event.sender_id != uid:
+        return await event.answer(" لا تملك صلاحية الرد على هذا التبليغ.", alert=True)
+    await event.answer('👤 تم إضافة المستخدم إلى القائمة البيضاء.', alert=True)
     await ads(group, uid)
 @ABH.on(events.NewMessage(pattern='اضف قناة التبليغات'))
 async def add_hintchannel(event):
