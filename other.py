@@ -18,7 +18,9 @@ def save_auth(data):
         json.dump(data, f)
 def is_assistant(chat_id, user_id):
     data = load_auth()
-    return user_id in data.get(str(chat_id), [])
+    assistants = data.get(str(chat_id), [])
+    print(f"Assistants for chat {chat_id}:", assistants)
+    return user_id in assistants
 async def is_owner(chat_id, user_id):
     try:
         participant = await ABH(GetParticipantRequest(channel=chat_id, participant=user_id))
