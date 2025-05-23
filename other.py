@@ -97,18 +97,18 @@ async def myname(event):
  name = await mention(event, s)
  await event.reply(name)
 @ABH.on(events.NewMessage(pattern="^اسمه|اسمة$"))
-async def myname(event):
+async def hisname(event):
  r = await event.get_reply_message()
  s = await r.get_sender()
  name = await mention(event, s)
  await event.reply(name)
 @ABH.on(events.NewMessage(pattern="^رقمي$"))
-async def handler(event):
+async def num(event):
  s=await event.get_sender()
  p=s.phone if getattr(s,"phone",None) else None
  await event.reply(f"`+{p}` +{p} " if p else "رقمك غير متاح")
 @ABH.on(events.NewMessage(pattern="^رقمة|رقمه$"))
-async def handler(event):
+async def hisnum(event):
  r=await event.get_reply_message()
  if not r:
   await event.reply("يجب الرد على رسالة المستخدم")
@@ -117,7 +117,7 @@ async def handler(event):
  p=s.phone if getattr(s,"phone",None) else None
  await event.reply(f"`+{p}` +{p} " if p else "رقمه غير متاح")
 @ABH.on(events.NewMessage(pattern="^يوزراتي$"))
-async def handler(event):
+async def uss(event):
  s=await event.get_sender()
  usernames=[x.username for x in s.usernames] if getattr(s,"usernames",None) else []
  if s.username: usernames.insert(0, s.username)
@@ -125,7 +125,7 @@ async def handler(event):
  utext="\n".join(f"@{u}" for u in usernames)
  await event.reply(utext if usernames else "ليس لديك أي يوزرات NFT")
 @ABH.on(events.NewMessage(pattern="^يوزراته$"))
-async def handler(event):
+async def hisuss(event):
  r=await event.get_reply_message()
  if not r:
   await event.reply("يجب الرد على رسالة المستخدم")
@@ -137,12 +137,12 @@ async def handler(event):
  utext="\n".join(f"@{u}" for u in usernames)
  await event.reply(utext if usernames else "ليس لديه أي يوزرات NFT")
 @ABH.on(events.NewMessage(pattern="^يوزري$"))
-async def handler(event):
+async def mu(event):
  s=await event.get_sender()
  u=s.username or (list(dict.fromkeys([x.username for x in s.usernames]))[0] if getattr(s,"usernames",None) else None)
  await event.reply(f"`@{u}` @{u}" if u else "ليس لديك يوزر")
 @ABH.on(events.NewMessage(pattern="^يوزره|يوزرة|اليوزر$"))
-async def handler(event):
+async def hisu(event):
  r=await event.get_reply_message()
  if not r:
   await event.reply("يجب الرد على رسالة المستخدم")
@@ -151,7 +151,7 @@ async def handler(event):
  u=s.username or (list(dict.fromkeys([x.username for x in s.usernames]))[0] if getattr(s,"usernames",None) else None)
  await event.reply(f"`@{u}` @{u}" if u else "ليس لديه يوزر")
 @ABH.on(events.NewMessage)
-async def handler(event):
+async def quran(event):
     text = event.raw_text.strip()
     me = await event.client.get_me()
     username = me.username
@@ -209,11 +209,10 @@ def ask_ai(q):
 @ABH.on(events.NewMessage(pattern=r"^مخفي\s*(.*)"))
 async def ai_handler(event):
     user_q = event.pattern_match.group(1).strip()
-    x = event.text 
-    a = "مخفي اعفطلة"
-    b = "مخفي طكة زيج"
-    if not user_q or x == a or x == b:
-        return 
+    x = event.text
+    ignore_phrases = ["مخفي اعفطلة", "مخفي قيده", "مخفي قيدة", "مخفي طكة زيج"]
+    if not user_q or x in ignore_phrases:
+        return
     async with event.client.action(event.chat_id, 'typing'):
         response = await asyncio.to_thread(ask_ai, user_q)
     await event.respond(response, reply_to=event.id)
