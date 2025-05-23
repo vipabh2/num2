@@ -13,12 +13,13 @@ async def restrict_user(event):
     if not event.is_group:
         return
     r = await event.get_reply_message()
+    if not r:
+        return await event.reply("يرجى الرد على رسالة المستخدم.")
     chat = await event.get_chat()
     sender = await r.get_sender()
-    user_id = event.sender_id   
-    chat = await event.get_chat()
     user_id = event.sender_id
-    if not is_assistant(chat.id, user_id):
+    chat_id_str = str(chat.id
+    if not is_assistant(chat_id_str, user_id):
         await event.reply("جا قيدته الك بس انت مو معاون")
         return
     if not r:
