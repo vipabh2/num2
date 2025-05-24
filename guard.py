@@ -256,7 +256,7 @@ unrestrict_rights = ChatBannedRights(
 warns = {}
 @ABH.on(events.NewMessage)
 async def handler_res(event):
-    if event.message.action:
+    if event.message.action or not event.raw_text:
         return 
     if not event.is_group:
         return
