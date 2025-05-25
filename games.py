@@ -6,28 +6,31 @@ from ABH import ABH #type: ignore
 from faker import Faker
 import random
 from telethon import events
-price = 100
+import random
 @ABH.on(events.NewMessage(pattern=r'^تداول$'))
 async def trade(event):
     user_id = str(event.sender_id)
     gid = str(event.chat_id)
     if user_id not in points or gid not in points[user_id]:
-        await event.reply("ماعندك فلوس💔.")
+        await event.reply("❌ ماعندك فلوس 💔.")
         return
     user_points = points[user_id][gid]["points"]
-    if user_points < price:
-        await event.reply(f' عزيزي، الحد الأدنى للتداول هو {price} نقطة.\n💰 رصيدك الحالي: {user_points} نقطة.')
+    if user_points < 10:
+        await event.reply(f"❌ تحتاج إلى 10 نقاط على الأقل للتداول.\n💰 رصيدك الحالي: {user_points} نقطة.")
         return
+    trade_amount = int(user_points / 5)
     success_rate = random.randint(10, 75)
-    gain = int(price * (success_rate / 100))
-    win = random.choice([True, False])
-    if win:
-        points[user_id][gid]["points"] += gain
-        await event.reply(f' نجح التداول بنسبة {success_rate}%!\n💰 ربحت {gain} نقطة.\n📊 رصيدك الجديد: {points[user_id][gid]["points"]}')
+    change = int(trade_amount * (success_rate / 100))
+    if success_rate >= 50:
+        points[user_id][gid]["points"] += change
+        await event.reply(
+            f"✅ تداول ناجح!\n📈 نسبة النجاح: {success_rate}%\n💰 ربحت: {change} نقطة (من أصل {trade_amount})\n📊 رصيدك الآن: {points[user_id][gid]['points']}"
+        )
     else:
-        points[user_id][gid]["points"] -= price
-        await event.reply(f' فشل التداول بنسبة {success_rate}%.\n💸 خسرت {price} نقطة.\n📉 رصيدك الجديد: {points[user_id][gid]["points"]}')
-        # add_points(user_id, gid, points, amount=) 
+        points[user_id][gid]["points"] -= trade_amount
+        await event.reply(
+            f"❌ التداول فشل.\n📉 نسبة النجاح: {success_rate}%\n💸 خسرته: {trade_amount} نقطة (20% من رصيدك)\n📊 رصيدك الآن: {points[user_id][gid]['points']}"
+        )
 @ABH.on(events.NewMessage(pattern=r'^شراء حل\s+(.+)$'))
 async def buy(event):
     user_id = event.sender_id
