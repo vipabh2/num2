@@ -268,7 +268,6 @@ async def initiate_game(event):
 async def guess(event):
     global game_active, number, attempts, max_attempts
     if not game_active:
-        await event.reply("اللعبة ليست نشطة حاليًا، ابدأ لعبة جديدة.")
         return
     guess = int(event.text)
     if guess < 1 or guess > 10:
