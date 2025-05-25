@@ -77,7 +77,7 @@ async def show_res(event):
     await asyncio.sleep(1)
     guid = str(event.chat_id)
     sorted_users = sorted(
-        uinfo.items(), 
+        WEAK.items(), 
         key=lambda x: x[1].get(guid, {}).get('msg', 0), 
         reverse=True
     )[:10]
