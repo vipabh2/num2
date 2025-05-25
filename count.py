@@ -72,7 +72,7 @@ async def show_res(event):
         await x.delete()
     else:
         await event.reply("لا توجد بيانات لعرضها.")
-@ABH.on(events.NewMessage(pattern="توب الاسبوعي|التفاعل"))
+@ABH.on(events.NewMessage(pattern="توب الاسبوعي|تفاعل"))
 async def show_res(event):
     await asyncio.sleep(1)
     guid = str(event.chat_id)
@@ -119,4 +119,4 @@ async def his_res(event):
         await event.reply(f"المستخدم [{uid1}](tg://user?id={unm1}) أرسل {msg_count} رسالة في هذه المجموعة.")
 @ABH.on(events.NewMessage(pattern='^اوامر التوب$'))
 async def title(event):
-    await event.reply('اهلا صديقي , اوامر الرسائل \n ارسل `المتفاعلين` | `توب اليومي` ل اضهار توب 15 تفاعل \n ارسل `التفاعل` | `توب الاسبوعي` ل اظهار تفاعل المجموعه في اسبوع \n ارسل `رسائلي` ل اضهار رسائلك في اخر يوم \n ارسل `رسائله` ل اضهار رساله الشخص بالرد \n استمتع')
+    await event.reply('اهلا صديقي , اوامر الرسائل \n ارسل `المتفاعلين` | `توب اليومي` ل اضهار توب 15 تفاعل \n ارسل `تفاعل` | `توب الاسبوعي` ل اظهار تفاعل المجموعه في اسبوع \n ارسل `رسائلي` ل اضهار رسائلك في اخر يوم \n ارسل `رسائله` ل اضهار رساله الشخص بالرد \n استمتع')
