@@ -117,6 +117,6 @@ async def his_res(event):
     if unm1 in uinfo and guid1 in uinfo[unm1]:
         msg_count = uinfo[unm1][guid1]["msg"]
         await event.reply(f"المستخدم [{uid1}](tg://user?id={unm1}) أرسل {msg_count} رسالة في هذه المجموعة.")
-@ABH.on(events.NewMessage(pattern='الرسائل'))
+@ABH.on(events.NewMessage(pattern='^اوامر التوب$'))
 async def title(event):
-    await event.reply('اهلا صديقي , اوامر الرسائل \n ارسل `المتفاعلين` ل اضهار توب 15 تفاعل \n ارسل `رسائلي` ل اضهار رسائلك في اخر يوم \n ارسل `رسائله` ل اضهار رساله الشخص بالرد \n استمتع')
+    await event.reply('اهلا صديقي , اوامر الرسائل \n ارسل `المتفاعلين` | `توب اليومي` ل اضهار توب 15 تفاعل \n ارسل `التفاعل` | `توب الاسبوعي` ل اظهار تفاعل المجموعه في اسبوع \n ارسل `رسائلي` ل اضهار رسائلك في اخر يوم \n ارسل `رسائله` ل اضهار رساله الشخص بالرد \n استمتع')
