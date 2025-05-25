@@ -4,6 +4,30 @@ import random, asyncio, time, os, json
 from telethon import Button, events
 from ABH import ABH #type: ignore
 from faker import Faker
+import random
+from telethon import events
+price = 100
+@ABH.on(events.NewMessage(pattern=r'^تداول$'))
+async def trade(event):
+    user_id = str(event.sender_id)
+    gid = str(event.chat_id)
+    if user_id not in points or gid not in points[user_id]:
+        await event.reply("ماعندك فلوس💔.")
+        return
+    user_points = points[user_id][gid]["points"]
+    if user_points < price:
+        await event.reply(f' عزيزي، الحد الأدنى للتداول هو {price} نقطة.\n💰 رصيدك الحالي: {user_points} نقطة.')
+        return
+    success_rate = random.randint(10, 75)
+    gain = int(price * (success_rate / 100))
+    win = random.choice([True, False])
+    if win:
+        points[user_id][gid]["points"] += gain
+        await event.reply(f' نجح التداول بنسبة {success_rate}%!\n💰 ربحت {gain} نقطة.\n📊 رصيدك الجديد: {points[user_id][gid]["points"]}')
+    else:
+        points[user_id][gid]["points"] -= price
+        await event.reply(f' فشل التداول بنسبة {success_rate}%.\n💸 خسرت {price} نقطة.\n📉 رصيدك الجديد: {points[user_id][gid]["points"]}')
+        # add_points(user_id, gid, points, amount=) 
 @ABH.on(events.NewMessage(pattern=r'^شراء حل\s+(.+)$'))
 async def buy(event):
     user_id = event.sender_id
