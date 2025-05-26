@@ -18,6 +18,8 @@ def save_user_data(data):
         json.dump(data, file, ensure_ascii=False, indent=4)
 @ABH.on(events.NewMessage(pattern=r'^تداول$'))
 async def trade(event):
+    user_id = str(event.sender_id)
+    gid = str(event.chat_id)
     user_data = load_user_data()
     last_play_time = user_data.get(str(user_id), {}).get("last_play_time", 0)
     current_time = int(time.time())
@@ -29,8 +31,6 @@ async def trade(event):
         formatted_time = f"{minutes:02}:{seconds:02}"
         await event.reply(f" يجب عليك الانتظار {formatted_time} قبل التداول مجددًا.")
         return
-    user_id = str(event.sender_id)
-    gid = str(event.chat_id)
     if user_id not in points or gid not in points[user_id]:
         await event.reply("ماعندك فلوس 💔.")
         return
