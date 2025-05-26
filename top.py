@@ -33,27 +33,27 @@ def add_user(uid, gid, name, rose, amount):
 @ABH.on(events.NewMessage(pattern=r'^الاغنياء$'))
 async def show_top_10_rich(event):
     gid = str(event.chat_id)
-    if gid not in points:
-        await event.reply("لا يوجد مشاركون في هذه المجموعة.")
+    if gid.startswith("-100") is False:
+        await event.reply("❌ هذا الأمر يعمل فقط في المجموعات.")
         return
-    all_users = []
-    for uid, user_data in points.items():
-        if gid in user_data and "points" in user_data[gid]:
-            all_users.append((uid, user_data[gid]["points"]))
-    if not all_users:
-        await event.reply("لا يوجد مشاركون في هذه المجموعة.")
+    top_users = []
+    for uid, groups in points.items():
+        if gid in groups and "points" in groups[gid]:
+            top_users.append((uid, groups[gid]["points"]))
+    if not top_users:
+        await event.reply("لا يوجد مشاركون يملكون نقاط في هذه المجموعة.")
         return
-    top_users = sorted(all_users, key=lambda x: x[1], reverse=True)[:10]
-    message = "**🏅 أفضل 10 لاعبين في هذه المجموعة:**\n"
+    top_users = sorted(top_users, key=lambda x: x[1], reverse=True)[:10]
+    message = "**🏆 قائمة أغنى 10 أعضاء في هذه المجموعة:**\n"
     for i, (uid, score) in enumerate(top_users, 1):
         try:
-            user = await ABH.get_entity(uid)
+            user = await ABH.get_entity(int(uid))
             name = user.first_name or "مستخدم"
             mention = f"[{name}](tg://user?id={uid})"
-            message += f"{i}. {mention} - `{score}` نقطة\n"
+            message += f"{i}. {mention} — `{score}` دينار\n"
         except Exception:
             continue
-    await event.reply(message, parse_mode='md')
+    await event.reply(message, parse_mode="md")
 @ABH.on(events.NewMessage(pattern=r'^اضف فلوس (\d+)$'))
 async def add_money(event):
     uid = event.sender_id
