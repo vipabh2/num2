@@ -21,7 +21,7 @@ async def trade(event):
                           f"يجب أن يكون رصيدك 9999 نقطة على الأقل للتداول.")
         return
     f = user_points // 5
-    r = random.randint(75, -50)
+    r = random.randint(-50, 75)
     if r > 0:
         profit = int(f * (100 + r) / 100)
         points[user_id][gid]["points"] += profit
