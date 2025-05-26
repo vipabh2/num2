@@ -31,9 +31,12 @@ async def ABN_HASHEM(event):
 async def replys(event):
     text = event.text
     x = "ادونيس"
+    a = 'ابو ذيبه'
     c = event.chat_id
     if x in text and int(c) == int(group):
         await event.reply("@rizrz")
+    elif a in text and int(c) == int(group):
+        await event.reply("@AlconALI")
 @ABH.on(events.NewMessage(pattern='زهراء'))
 async def reply_zahraa(event):
     if event.chat_id == group:
@@ -65,12 +68,6 @@ async def reply_amer(event):
         url = random.choice(ur)
         caption = "@xcxx1x" 
         await event.client.send_file(event.chat_id, url, caption=caption, reply_to=event.message.id)    
-    else: 
-        return
-@ABH.on(events.NewMessage(pattern='ابو ذيبه'))
-async def reply_mohamed(event):
-    if event.chat_id == group:
-        await event.reply('@AlconALI ')
     else: 
         return
 @ABH.on(events.NewMessage(pattern='هاكس'))
