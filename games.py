@@ -35,11 +35,11 @@ async def trade(event):
         await event.reply("ماعندك فلوس 💔.")
         return
     user_points = points[user_id][gid]["points"]
-    if user_points < 9999:
+    if user_points < 1000:
         await event.reply(
             f"ماتكدر تتداول حاليا 💔\n"
             f"رصيدك الحالي {user_points} نقطة.\n"
-            f"يجب أن يكون رصيدك 9999 نقطة على الأقل للتداول."
+            f"يجب أن يكون رصيدك 1000 نقطة على الأقل للتداول."
         )
         return
     f = user_points // 5
