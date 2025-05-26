@@ -41,13 +41,13 @@ async def show_top_10_rich(event):
         await event.reply("لا يوجد مشاركون في هذه المجموعة.")
         return
     top_users=sorted(all_users,key=lambda x:x[1],reverse=True)[:10]
-    message="**🏅 أفضل 10 لاعبين في هذه المجموعة:**\n"
+    # message="**🏅 أفضل 10 لاعبين في هذه المجموعة:**\n"
     for i,(uid,score) in enumerate(top_users,1):
         try:
             user=await ABH.get_entity(uid)
             name=user.first_name or "مستخدم"
             mention=f"[{name}](tg://user?id={uid})"
-            message+=f"{i}. {mention} - `{score}` نقطة\n"
+            message+=f"**🏅 أفضل 10 لاعبين في هذه المجموعة:**\n {i}. {mention} - `{score}` نقطة\n"
         except:continue
     await event.reply(message,parse_mode='md')
 @ABH.on(events.NewMessage(pattern=r'^اضف فلوس (\d+)$'))
