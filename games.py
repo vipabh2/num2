@@ -7,8 +7,28 @@ from faker import Faker
 import random
 from telethon import events
 import random
+USER_DATA_FILE = "trade.json"
+def load_user_data():
+    if os.path.exists(USER_DATA_FILE):
+        with open(USER_DATA_FILE, "r", encoding="utf-8") as file:
+            return json.load(file)
+    return {}
+def save_user_data(data):
+    with open(USER_DATA_FILE, "w", encoding="utf-8") as file:
+        json.dump(data, file, ensure_ascii=False, indent=4)
 @ABH.on(events.NewMessage(pattern=r'^تداول$'))
 async def trade(event):
+    user_data = load_user_data()
+    last_play_time = user_data.get(str(user_id), {}).get("last_play_time", 0)
+    current_time = int(time.time())
+    time_diff = current_time - last_play_time
+    if time_diff < 10 * 60:
+        remaining = 10 * 60 - time_diff
+        minutes = remaining // 60
+        seconds = remaining % 60
+        formatted_time = f"{minutes:02}:{seconds:02}"
+        await event.reply(f" يجب عليك الانتظار {formatted_time} قبل التداول مجددًا.")
+        return
     user_id = str(event.sender_id)
     gid = str(event.chat_id)
     if user_id not in points or gid not in points[user_id]:
@@ -25,13 +45,11 @@ async def trade(event):
     if r > 0:
         profit = int(f * (100 + r) / 100)
         points[user_id][gid]["points"] += profit
-        await event.reply(f"تم التداول بنجاح! ربحت {profit} نقطة 🎉\n"
-                        f"رصيدك الحالي: {points[user_id][gid]['points']} نقطة.")
+        await event.reply(f"تم التداول بنجاح \n نسبة نجاح {r}% \n فلوس الربح `{profit}` نقطة 🎉\n")
     else:
         loss = int(f * (100 + r) / 100)
         points[user_id][gid]["points"] -= abs(loss)
-        await event.reply(f"تم التداول بنجاح! خسرت {abs(loss)} نقطة 💔\n"
-                        f"رصيدك الحالي: {points[user_id][gid]['points']} نقطة.")
+        await event.reply(f"تداول ب نسبة فاشله {r}% \n خسرت `{abs(loss)}` نقطة 💔\n")
 @ABH.on(events.NewMessage(pattern=r'^شراء حل\s+(.+)$'))
 async def buy(event):
     user_id = event.sender_id
