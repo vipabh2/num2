@@ -21,7 +21,7 @@ async def trade(event):
     user_id = str(event.sender_id)
     gid = str(event.chat_id)
     user_data = tlo()
-    last_play_time = user_data.get(str(user_id), {}).get("last_play_time", 0)
+    last_play_time = user_data.get(user_id, {}).get("last_play_time", 0)
     current_time = int(time.time())
     time_diff = current_time - last_play_time
     if time_diff < 10 * 60:
@@ -29,27 +29,37 @@ async def trade(event):
         minutes = remaining // 60
         seconds = remaining % 60
         formatted_time = f"{minutes:02}:{seconds:02}"
-        await event.reply(f" يجب عليك الانتظار {formatted_time} قبل التداول مجددًا.")
+        await event.reply(f"يجب عليك الانتظار {formatted_time} قبل التداول مجددًا.")
         return
     if user_id not in points or gid not in points[user_id]:
         await event.reply("ماعندك فلوس 💔.")
         return
     user_points = points[user_id][gid]["points"]
     if user_points < 9999:
-        await event.reply(f"ماتكدر تتداول حاليا 💔\n"
-                          f"رصيدك الحالي {user_points} نقطة.\n"
-                          f"يجب أن يكون رصيدك 9999 نقطة على الأقل للتداول.")
+        await event.reply(
+            f"ماتكدر تتداول حاليا 💔\n"
+            f"رصيدك الحالي {user_points} نقطة.\n"
+            f"يجب أن يكون رصيدك 9999 نقطة على الأقل للتداول."
+        )
         return
     f = user_points // 5
     r = random.randint(-50, 75)
     if r > 0:
         profit = int(f * (100 + r) / 100)
         points[user_id][gid]["points"] += profit
-        await event.reply(f"تم التداول بنجاح \n نسبة نجاح {r}% \n فلوس الربح `{profit}` نقطة 🎉\n")
+        await event.reply(
+            f"تم التداول بنجاح \n نسبة نجاح {r}% \n فلوس الربح `{profit}` نقطة 🎉\n"
+        )
     else:
         loss = int(f * (100 + r) / 100)
         points[user_id][gid]["points"] -= abs(loss)
-        await event.reply(f"تداول ب نسبة فاشله {r}% \n خسرت `{abs(loss)}` نقطة 💔\n")
+        await event.reply(
+            f"تداول بنسبة فاشلة {r}% \n خسرت `{abs(loss)}` نقطة 💔\n"
+        )
+    if user_id not in user_data:
+        user_data[user_id] = {}
+    user_data[user_id]["last_play_time"] = current_time
+    save_user_data(user_data)
 @ABH.on(events.NewMessage(pattern=r'^شراء حل\s+(.+)$'))
 async def buy(event):
     user_id = event.sender_id
