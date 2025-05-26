@@ -8,7 +8,7 @@ import random
 from telethon import events
 import random
 USER_DATA_FILE = "trade.json"
-def load_user_data():
+def tlo():
     if os.path.exists(USER_DATA_FILE):
         with open(USER_DATA_FILE, "r", encoding="utf-8") as file:
             return json.load(file)
@@ -20,7 +20,7 @@ def save_user_data(data):
 async def trade(event):
     user_id = str(event.sender_id)
     gid = str(event.chat_id)
-    user_data = load_user_data()
+    user_data = tlo()
     last_play_time = user_data.get(str(user_id), {}).get("last_play_time", 0)
     current_time = int(time.time())
     time_diff = current_time - last_play_time
