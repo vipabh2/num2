@@ -41,29 +41,30 @@ async def add_money(event):
         add_points(user_id, gid, points, amount=p)
         await event.reply(f"تم اضافة {p} دينار ل {r.sender.first_name}")
 @ABH.on(events.NewMessage(pattern=r'^الاغنياء$'))
-async def rich(event):
+async def show_all_rich(event):
     gid = str(event.chat_id)
     if gid not in points:
-        await event.reply("لا يوجد أغنياء في هذه المجموعة.")
+        await event.reply("لا يوجد مشاركون في هذه المجموعة.")
         return
-    rich_users = []
+    all_users = []
     for uid, user_data in points.items():
-        if gid in user_data and user_data[gid]["points"] >= 3000:
-            rich_users.append((uid, user_data[gid]["points"]))
-    if not rich_users:
-        await event.reply("لا يوجد أغنياء في هذه المجموعة.")
+        if gid in user_data:
+            score = user_data[gid].get("points", 0)
+            all_users.append((uid, score))
+    if not all_users:
+        await event.reply("لا يوجد مشاركون في هذه المجموعة.")
         return
-    rich_users.sort(key=lambda x: x[1], reverse=True)
-    rich_list = "**💰 قائمة الأغنياء في هذه المجموعة:**\n"
-    for i, (uid, _) in enumerate(rich_users):
+    all_users.sort(key=lambda x: x[1], reverse=True)
+    message = "**📊 ترتيب الأعضاء حسب النقاط في هذه المجموعة:**\n"
+    for i, (uid, score) in enumerate(all_users, 1):
         try:
             user = await ABH.get_entity(uid)
-            mention = f"[{user.first_name}](tg://user?id={uid})"
-            amount = points[uid][gid]["points"]
-            rich_list += f"{i + 1}. {mention} - `{amount}` دينار\n"
+            name = user.first_name or "مستخدم"
+            mention = f"[{name}](tg://user?id={uid})"
+            message += f"{i}. {mention} - `{score}` نقطة\n"
         except:
             continue
-    await event.reply(rich_list, parse_mode='md')
+    await event.reply(message, parse_mode='md')
 @ABH.on(events.NewMessage(pattern='ثروتي'))
 async def m(event):
     uid = str(event.sender_id)
