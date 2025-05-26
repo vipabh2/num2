@@ -30,6 +30,26 @@ def add_user(uid, gid, name, rose, amount):
             "m": amount,
             "promote_value": 0
         }
+@ABH.on(events.NewMessage(pattern=r'^الاغنياء$'))
+async def show_top_10_rich(event):
+    gid=str(event.chat_id)
+    if gid not in points:
+        await event.reply("لا يوجد مشاركون في هذه المجموعة.")
+        return
+    all_users=[(uid,user_data[gid]["points"]) for uid,user_data in points.items() if gid in user_data]
+    if not all_users:
+        await event.reply("لا يوجد مشاركون في هذه المجموعة.")
+        return
+    top_users=sorted(all_users,key=lambda x:x[1],reverse=True)[:10]
+    message="**🏅 أفضل 10 لاعبين في هذه المجموعة:**\n"
+    for i,(uid,score) in enumerate(top_users,1):
+        try:
+            user=await ABH.get_entity(uid)
+            name=user.first_name or "مستخدم"
+            mention=f"[{name}](tg://user?id={uid})"
+            message+=f"{i}. {mention} - `{score}` نقطة\n"
+        except:continue
+    await event.reply(message,parse_mode='md')
 @ABH.on(events.NewMessage(pattern=r'^اضف فلوس (\d+)$'))
 async def add_money(event):
     uid = event.sender_id
@@ -40,31 +60,6 @@ async def add_money(event):
         user_id = r.sender_id
         add_points(user_id, gid, points, amount=p)
         await event.reply(f"تم اضافة {p} دينار ل {r.sender.first_name}")
-@ABH.on(events.NewMessage(pattern=r'^الاغنياء$'))
-async def show_all_rich(event):
-    gid = str(event.chat_id)
-    if gid not in points:
-        await event.reply("لا يوجد مشاركون في هذه المجموعة.")
-        return
-    all_users = []
-    for uid, user_data in points.items():
-        if gid in user_data:
-            score = user_data[gid].get("points", 0)
-            all_users.append((uid, score))
-    if not all_users:
-        await event.reply("لا يوجد مشاركون في هذه المجموعة.")
-        return
-    all_users.sort(key=lambda x: x[1], reverse=True)
-    message = "**📊 ترتيب الأعضاء حسب النقاط في هذه المجموعة:**\n"
-    for i, (uid, score) in enumerate(all_users, 1):
-        try:
-            user = await ABH.get_entity(uid)
-            name = user.first_name or "مستخدم"
-            mention = f"[{name}](tg://user?id={uid})"
-            message += f"{i}. {mention} - `{score}` نقطة\n"
-        except:
-            continue
-    await event.reply(message, parse_mode='md')
 @ABH.on(events.NewMessage(pattern='ثروتي'))
 async def m(event):
     uid = str(event.sender_id)
