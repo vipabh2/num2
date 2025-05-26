@@ -22,9 +22,11 @@ async def anymous(event):
     else:
         await event.reply(vipabh)
 @ABH.on(events.NewMessage(pattern=r'^ابن هاشم$'))
-async def anymous(event):
-    url = f"https://t.me/VIPABH/1242"
-    pic = await event.client.download_media(url)
+async def ABN_HASHEM(event):
+    channel = 'VIPABH'
+    message_id = 1242
+    m = await event.client.get_messages(channel, ids=message_id)
+    pic = await event.client.download_media(m.media)
     caption = "أبن هاشم (رض) مرات متواضع ،🌚 @K_4x1"
     button = [Button.url(text="click", url="t.me/wfffp")]
     await event.client.send_file(event.chat_id, pic, caption=caption, reply_to=event.message.id, buttons=button)
