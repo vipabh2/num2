@@ -47,7 +47,7 @@ async def show_top_10_rich(event):
             user=await ABH.get_entity(uid)
             name=user.first_name or "مستخدم"
             mention=f"[{name}](tg://user?id={uid})"
-            message+=f"**🏅 أفضل 10 لاعبين في هذه المجموعة:**\n {i}. {mention} - `{score}` نقطة\n"
+            message=f"**🏅 أفضل 10 لاعبين في هذه المجموعة:**\n {i}. {mention} - `{score}` نقطة\n"
         except:continue
     await event.reply(message,parse_mode='md')
 @ABH.on(events.NewMessage(pattern=r'^اضف فلوس (\d+)$'))
