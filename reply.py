@@ -54,10 +54,23 @@ async def reply_amer(event):
         await event.client.send_file(event.chat_id, url, caption=caption, reply_to=event.message.id)    
     else: 
         return
-@ABH.on(events.NewMessage(pattern='محمد موسى'))
+@ABH.on(events.NewMessage(pattern='جاثوم'))
+async def reply_amer(event):
+    if event.chat_id == group:
+        ur = [
+        'https://t.me/dbdbdbdbdbzbzbzbzbzb/4',
+        'https://t.me/dbdbdbdbdbzbzbzbzbzb/3',
+        'https://t.me/dbdbdbdbdbzbzbzbzbzb/2'
+               ]
+        url = random.choice(ur)
+        caption = "@xcxx1x" 
+        await event.client.send_file(event.chat_id, url, caption=caption, reply_to=event.message.id)    
+    else: 
+        return
+@ABH.on(events.NewMessage(pattern='ابو ذيبه'))
 async def reply_mohamed(event):
     if event.chat_id == group:
-        await event.reply('@E_0_0_0 ')
+        await event.reply('@AlconALI ')
     else: 
         return
 @ABH.on(events.NewMessage(pattern='هاكس'))
