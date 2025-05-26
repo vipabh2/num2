@@ -20,19 +20,18 @@ async def trade(event):
                           f"رصيدك الحالي {user_points} نقطة.\n"
                           f"يجب أن يكون رصيدك 9999 نقطة على الأقل للتداول.")
         return
-    trade_amount = int(user_points / 5)
-    success_rate = random.randint(10, 75)
-    change = int(trade_amount * (success_rate / 100))
-    if success_rate >= 50:
-        points[user_id][gid]["points"] += change
-        await event.reply(
-            f"✅ تداول ناجح!\n📈 نسبة النجاح: {success_rate}%\n💰 ربحت: `{change}` `{trade_amount})`\n📊 رصيدك الآن: `{points[user_id][gid]['points']}`"
-        )
+    f = user_points // 5
+    r = random.randint(75, -50)
+    if r > 0:
+        profit = int(f * (100 + r) / 100)
+        points[user_id][gid]["points"] += profit
+        await event.reply(f"تم التداول بنجاح! ربحت {profit} نقطة 🎉\n"
+                        f"رصيدك الحالي: {points[user_id][gid]['points']} نقطة.")
     else:
-        points[user_id][gid]["points"] -= trade_amount
-        await event.reply(
-            f"❌ التداول فاشل.\n📉 نسبة النجاح: {success_rate}%\n💸 خسرته: `{trade_amount}`\n📊 رصيدك الآن: `{points[user_id][gid]['points']}`"
-        )
+        loss = int(f * (100 + r) / 100)
+        points[user_id][gid]["points"] -= abs(loss)
+        await event.reply(f"تم التداول بنجاح! خسرت {abs(loss)} نقطة 💔\n"
+                        f"رصيدك الحالي: {points[user_id][gid]['points']} نقطة.")
 @ABH.on(events.NewMessage(pattern=r'^شراء حل\s+(.+)$'))
 async def buy(event):
     user_id = event.sender_id
