@@ -1,7 +1,6 @@
 from ABH import ABH, events
 from Resources import group
 from telethon import Button
-
 import random
 abh = [
     "ها",
@@ -22,6 +21,13 @@ async def anymous(event):
         await event.reply(file=vipabh)
     else:
         await event.reply(vipabh)
+@ABH.on(events.NewMessage(pattern=r'^ابن هاشم$'))
+async def anymous(event):
+    url = f"https://t.me/VIPABH/1242"
+    pic = await event.client.download_media(url)
+    caption = "أبن هاشم (رض) مرات متواضع ،🌚 @K_4x1"
+    button = [Button.url(text="click", url="t.me/wfffp")]
+    await event.client.send_file(event.chat_id, pic, caption=caption, reply_to=event.message.id, buttons=button)
 @ABH.on(events.NewMessage)
 async def replys(event):
     text = event.text
@@ -29,13 +35,6 @@ async def replys(event):
     c = event.chat_id
     if x in text and int(c) == int(group):
         await event.reply("@rizrz")
-    abh = "ابن هاشم"
-    if abh in text:
-        rl = random.randint(1222, 1241)
-        url = f"https://t.me/VIPABH/{rl}"
-        caption = "أبن هاشم (رض) مرات متواضع ،🌚 @K_4x1"
-        button = [Button.url(text="click", url="https://t.me/K_4x1")]
-        await event.client.send_file(event.chat_id, url, caption=caption, reply_to=event.message.id, buttons=button)
 @ABH.on(events.NewMessage(pattern='زهراء'))
 async def reply_zahraa(event):
     if event.chat_id == group:
