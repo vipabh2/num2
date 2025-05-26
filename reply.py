@@ -66,7 +66,7 @@ async def reply_amer(event):
         'https://t.me/dbdbdbdbdbzbzbzbzbzb/2'
                ]
         url = random.choice(ur)
-        caption = "@xcxx1x" 
+        caption = "@xJathom" 
         await event.client.send_file(event.chat_id, url, caption=caption, reply_to=event.message.id)    
     else: 
         return
