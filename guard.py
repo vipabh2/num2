@@ -38,7 +38,7 @@ async def toggle_feature(event):
 async def restrict_user(event):
     if not event.is_group:
         return
-    if not get_group_toggle(event.chat_id, "تقييد"):
+    if not get_group_feature(event.chat_id, "التقييد"):
         await event.reply("هذه الميزة غير مفعلة في هذه المجموعة.")
         return
     chat = await event.get_chat()
