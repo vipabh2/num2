@@ -29,7 +29,7 @@ def get_group_toggle(chat_id) -> bool:
 restriction_end_times = {}
 from telethon import events
 
-@ABH.on(events.NewMessage(pattern=r"^(تفعيل|تعطيل) التقييد$", outgoing=True))
+@ABH.on(events.NewMessage(pattern=r"^(تفعيل|تعطيل) التقييد$"))
 async def toggle_feature(event):
     action = event.pattern_match.group(1)
     value = True if action == "تفعيل" else False
