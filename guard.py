@@ -27,8 +27,6 @@ def get_group_toggle(chat_id) -> bool:
     settings = load_settings()
     return settings.get(str(chat_id), {}).get("t", False)  
 restriction_end_times = {}
-from telethon import events
-
 @ABH.on(events.NewMessage(pattern=r"^(تفعيل|تعطيل) التقييد$"))
 async def toggle_feature(event):
     action = event.pattern_match.group(1)
@@ -40,7 +38,7 @@ async def toggle_feature(event):
 async def restrict_user(event):
     if not event.is_group:
         return
-    if not get_group_feature(event.chat_id, "تقييد"):
+    if not get_group_toggle(event.chat_id, "تقييد"):
         await event.reply("هذه الميزة غير مفعلة في هذه المجموعة.")
         return
     chat = await event.get_chat()
