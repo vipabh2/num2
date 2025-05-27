@@ -6,36 +6,36 @@ from telethon import events, Button
 import os, asyncio, re, json, time
 from other import is_assistant
 from ABH import ABH
-import json
-import os
+import json, os
 SETTINGS_FILE = "settings.json"
 def load_settings():
     if not os.path.exists(SETTINGS_FILE):
         return {}
-    with open(SETTINGS_FILE, "r") as f:
+    with open(SETTINGS_FILE, "r", encoding="utf-8") as f:
         return json.load(f)
 def save_settings(settings):
-    with open(SETTINGS_FILE, "w") as f:
-        json.dump(settings, f, indent=4, ensure_ascii=False)
-def set_group_feature(chat_id, feature_name, value: bool):
+    with open(SETTINGS_FILE, "w", encoding="utf-8") as f:
+        json.dump(settings, f, ensure_ascii=False, indent=2)
+def set_group_toggle(chat_id, value: bool):
     settings = load_settings()
-    if str(chat_id) not in settings:
-        settings[str(chat_id)] = {}
-    settings[str(chat_id)][feature_name] = value
+    chat_key = str(chat_id)
+    if chat_key not in settings:
+        settings[chat_key] = {}
+    settings[chat_key]["t"] = value
     save_settings(settings)
-def get_group_feature(chat_id, feature_name):
+def get_group_toggle(chat_id) -> bool:
     settings = load_settings()
-    return settings.get(str(chat_id), {}).get(feature_name, False)
+    return settings.get(str(chat_id), {}).get("t", False)  
 restriction_end_times = {}
-@ABH.on(events.NewMessage(pattern=r"^(تفعيل|تعطيل) (\w+)$", outgoing=True))
-async def toggle_group_feature(event):
+from telethon import events
+
+@ABH.on(events.NewMessage(pattern=r"^(تفعيل|تعطيل) التقييد$", outgoing=True))
+async def toggle_feature(event):
     action = event.pattern_match.group(1)
-    feature = event.pattern_match.group(2)
-    chat_id = event.chat_id
-    new_value = True if action == "تفعيل" else False
-    set_group_feature(chat_id, feature, new_value)
-    state = "مُفعّلة " if new_value else "معطّلة "
-    await event.edit(f"🔧 تم {action} `{feature}` في هذه المجموعة: {state}")
+    value = True if action == "تفعيل" else False
+    set_group_toggle(event.chat_id, value)
+    status = "مُفعّلة " if value else "معطّلة "
+    await event.reply(f"تم {action} الميزة `t` لهذه المجموعة.\nالحالة: {status}")
 @ABH.on(events.NewMessage(pattern='^تقييد عام|مخفي قيده|مخفي قيدة$'))
 async def restrict_user(event):
     if not event.is_group:
