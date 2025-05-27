@@ -6,7 +6,6 @@ from telethon import events, Button
 import os, asyncio, re, json, time
 from other import is_assistant
 from ABH import ABH
-import json, os
 SETTINGS_FILE = "settings.json"
 def load_settings():
     if not os.path.exists(SETTINGS_FILE):
@@ -25,20 +24,20 @@ def set_group_toggle(chat_id, value: bool):
     save_settings(settings)
 def get_group_toggle(chat_id) -> bool:
     settings = load_settings()
-    return settings.get(str(chat_id), {}).get("t", False)  
+    return settings.get(str(chat_id), {}).get("t", False)
 restriction_end_times = {}
 @ABH.on(events.NewMessage(pattern=r"^(تفعيل|تعطيل) التقييد$"))
 async def toggle_feature(event):
     action = event.pattern_match.group(1)
     value = True if action == "تفعيل" else False
     set_group_toggle(event.chat_id, value)
-    status = "مُفعّلة " if value else "معطّلة "
+    status = "مُفعّلة" if value else "معطّلة"
     await event.reply(f"تم {action} الميزة `t` لهذه المجموعة.\nالحالة: {status}")
 @ABH.on(events.NewMessage(pattern='^تقييد عام|مخفي قيده|مخفي قيدة$'))
 async def restrict_user(event):
     if not event.is_group:
         return
-    if not get_group_toggle(event.chat_id, "التقييد"):
+    if not get_group_toggle(event.chat_id):
         await event.reply("هذه الميزة غير مفعلة في هذه المجموعة.")
         return
     chat = await event.get_chat()
