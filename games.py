@@ -200,7 +200,7 @@ async def answer_football(event):
 @ABH.on(events.NewMessage)
 async def answer_handler(event):
     sender = await event.get_sender()
-    user_id = sender.id
+    user_id = sender.id if sender else event.sender_id
     msg = event.raw_text.strip()
     if msg.startswith('/') or msg == 'كرة قدم':
         return
