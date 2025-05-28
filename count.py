@@ -51,21 +51,44 @@ async def msgs(event):
         WEAK[unm][guid]["msg"] += 1
         WEAK[unm][guid]["fname"] = uid
         save_json(DATA_FILE_WEAK, WEAK)
+@ABH.on(events.NewMessage)
+async def msgs(event):
+    global uinfo
+    if event.is_group:
+        now = datetime.now()
+        current_time = now.strftime("%H:%M")
+        uid = event.sender.first_name if event.sender else "الاسم غير متوفر"
+        unm = str(event.sender_id)
+        guid = str(event.chat_id)
+        print(current_time)
+        if current_time == "00:00":
+            for user_id in uinfo:
+                for group_id in uinfo[user_id]:
+                    uinfo[user_id][group_id]["msg"] = 0
+            save_data(uinfo)
+        if unm not in uinfo:
+            uinfo[unm] = {}
+        if guid not in uinfo[unm]:
+            uinfo[unm][guid] = {"msg": 0, "guid": guid, "unm": unm, "fname": uid}
+        uinfo[unm][guid]["msg"] += 1
+        uinfo[unm][guid]["fname"] = uid
+        save_data(uinfo)
 @ABH.on(events.NewMessage(pattern="توب اليومي|المتفاعلين"))
 async def اليومي(event):
     await asyncio.sleep(1)
     guid = str(event.chat_id)
     sorted_users = sorted(
-        uinfo.items(),
-        key=lambda x: x[1].get(guid, {}).get('msg', 0),
+        uinfo.items(), 
+        key=lambda x: x[1].get(guid, {}).get('msg', 0), 
         reverse=True
     )[:10]
     top_users = []
-    for idx, (user, data) in enumerate(sorted_users, 1):
+    for user, data in sorted_users:
         if guid in data:
-            fname = data[guid].get('fname', 'مجهول')
+            first_name = data[guid].get('fname', 'مجهول')
+            user_id = user
             msg_count = data[guid]["msg"]
-            top_users.append(f"{idx}. [{fname}](tg://user?id={user}) - {msg_count} رسالة")
+            top_users.append(f"المستخدم [{first_name}](tg://user?id={user_id}) رسائله -> {msg_count}")
     if top_users:
         x = await event.reply("\n".join(top_users))
         await asyncio.sleep(60)
