@@ -50,7 +50,7 @@ async def msgs(event):
         WEAK[unm][guid]["fname"] = uid
         save_dataWEAK(WEAK)
 @ABH.on(events.NewMessage(pattern="توب اليومي|المتفاعلين"))
-async def show_res(event):
+async def اليومي(event):
     await asyncio.sleep(1)
     guid = str(event.chat_id)
     sorted_users = sorted(
@@ -73,7 +73,7 @@ async def show_res(event):
     else:
         await event.reply("لا توجد بيانات لعرضها.")
 @ABH.on(events.NewMessage(pattern="توب الاسبوعي|تفاعل"))
-async def show_res(event):
+async def الاسبوعي(event):
     await asyncio.sleep(1)
     guid = str(event.chat_id)
     sorted_users = sorted(
