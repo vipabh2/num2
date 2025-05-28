@@ -101,6 +101,9 @@ async def myname(event):
 async def hisname(event):
  r = await event.get_reply_message()
  s = await r.get_sender()
+ if not s:
+    await event.reply("يجب الرد على رسالة المستخدم")
+    return
  name = await mention(event, s)
  await event.reply(name)
 @ABH.on(events.NewMessage(pattern="^رقمي$"))
