@@ -1,12 +1,10 @@
 from Resources import football, questions, mention #type: ignore
 from top import points, add_points #type: ignore
+from datetime import datetime, timedelta
 import random, asyncio, time, os, json
 from telethon import Button, events
 from ABH import ABH #type: ignore
 from faker import Faker
-import random
-from telethon import events
-import random
 USER_DATA_FILE = "trade.json"
 def tlo():
     if os.path.exists(USER_DATA_FILE):
