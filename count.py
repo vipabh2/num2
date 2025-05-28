@@ -2,70 +2,70 @@ from ABH import ABH #type: ignore
 from datetime import datetime
 from telethon import events
 import asyncio, os, json
-DATA_FILE_WEAK = "uinfoWEAK.json"
 DATA_FILE = "uinfo.json"
-def load_dataWEAK():
-    if os.path.exists(DATA_FILE_WEAK):
-        with open(DATA_FILE_WEAK, 'r', encoding='utf-8') as f:
+DATA_FILE_WEAK = "uinfoWEAK.json"
+RESET_FILE = "last_reset.txt"
+def load_json(file):
+    if os.path.exists(file):
+        with open(file, 'r', encoding='utf-8') as f:
             return json.load(f)
     return {}
-def save_dataWEAK(data):
-    with open(DATA_FILE_WEAK, 'w', encoding='utf-8') as f:
+def save_json(file, data):
+    with open(file, 'w', encoding='utf-8') as f:
         json.dump(data, f, ensure_ascii=False, indent=2)
-def load_data():
-    if os.path.exists(DATA_FILE):
-        with open(DATA_FILE, 'r', encoding='utf-8') as f:
-            return json.load(f)
-    return {}
-def save_data(data):
-    with open(DATA_FILE, 'w', encoding='utf-8') as f:
-        json.dump(data, f, ensure_ascii=False, indent=2)
-uinfo = load_data()
-WEAK = load_dataWEAK()
+def last_reset_date():
+    if os.path.exists(RESET_FILE):
+        with open(RESET_FILE, 'r') as f:
+            return f.read().strip()
+    return ""
+def update_reset_date(date_str):
+    with open(RESET_FILE, 'w') as f:
+        f.write(date_str)
+uinfo = load_json(DATA_FILE)
+WEAK = load_json(DATA_FILE_WEAK)
 @ABH.on(events.NewMessage)
 async def msgs(event):
     global uinfo, WEAK
     if event.is_group:
         now = datetime.now()
         weekday = now.weekday()
-        current_time = now.strftime("%H:%M")
+        current_date = now.strftime("%Y-%m-%d")
         uid = event.sender.first_name if event.sender else "الاسم غير متوفر"
         unm = str(event.sender_id)
         guid = str(event.chat_id)
-        if weekday == 4 and current_time == "00:00":
+        if weekday == 4 and current_date != last_reset_date():
             WEAK = {}
-            save_dataWEAK(WEAK)
+            save_json(DATA_FILE_WEAK, WEAK)
+            update_reset_date(current_date)
         if unm not in uinfo:
             uinfo[unm] = {}
         if guid not in uinfo[unm]:
             uinfo[unm][guid] = {"msg": 0, "guid": guid, "unm": unm, "fname": uid}
         uinfo[unm][guid]["msg"] += 1
         uinfo[unm][guid]["fname"] = uid
-        save_data(uinfo)
+        save_json(DATA_FILE, uinfo)
         if unm not in WEAK:
             WEAK[unm] = {}
         if guid not in WEAK[unm]:
             WEAK[unm][guid] = {"msg": 0, "guid": guid, "unm": unm, "fname": uid}
         WEAK[unm][guid]["msg"] += 1
         WEAK[unm][guid]["fname"] = uid
-        save_dataWEAK(WEAK)
+        save_json(DATA_FILE_WEAK, WEAK)
 @ABH.on(events.NewMessage(pattern="توب اليومي|المتفاعلين"))
 async def اليومي(event):
     await asyncio.sleep(1)
     guid = str(event.chat_id)
     sorted_users = sorted(
-        uinfo.items(), 
-        key=lambda x: x[1].get(guid, {}).get('msg', 0), 
+        uinfo.items(),
+        key=lambda x: x[1].get(guid, {}).get('msg', 0),
         reverse=True
     )[:10]
-
     top_users = []
-    for user, data in sorted_users:
+    for idx, (user, data) in enumerate(sorted_users, 1):
         if guid in data:
-            first_name = data[guid].get('fname', 'مجهول')
-            user_id = user
+            fname = data[guid].get('fname', 'مجهول')
             msg_count = data[guid]["msg"]
-            top_users.append(f"المستخدم [{first_name}](tg://user?id={user_id}) رسائله -> {msg_count}")
+            top_users.append(f"{idx}. [{fname}](tg://user?id={user}) - {msg_count} رسالة")
     if top_users:
         x = await event.reply("\n".join(top_users))
         await asyncio.sleep(60)
@@ -77,18 +77,16 @@ async def الاسبوعي(event):
     await asyncio.sleep(1)
     guid = str(event.chat_id)
     sorted_users = sorted(
-        WEAK.items(), 
-        key=lambda x: x[1].get(guid, {}).get('msg', 0), 
+        WEAK.items(),
+        key=lambda x: x[1].get(guid, {}).get('msg', 0),
         reverse=True
     )[:10]
-
     top_users = []
-    for user, data in sorted_users:
+    for idx, (user, data) in enumerate(sorted_users, 1):
         if guid in data:
-            first_name = data[guid].get('fname', 'مجهول')
-            user_id = user
+            fname = data[guid].get('fname', 'مجهول')
             msg_count = data[guid]["msg"]
-            top_users.append(f"المستخدم [{first_name}](tg://user?id={user_id}) رسائله -> {msg_count}")
+            top_users.append(f"{idx}. [{fname}](tg://user?id={user}) - {msg_count} رسالة")
     if top_users:
         x = await event.reply("\n".join(top_users))
         await asyncio.sleep(60)
