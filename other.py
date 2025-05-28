@@ -101,7 +101,7 @@ async def myname(event):
 async def hisname(event):
  r = await event.get_reply_message()
  s = await r.get_sender()
- if not s:
+ if not r:
     await event.reply("يجب الرد على رسالة المستخدم")
     return
  name = await mention(event, s)
