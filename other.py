@@ -157,7 +157,7 @@ async def quran(event):
     me = await event.client.get_me()
     username = me.username
     c = f'**[Enjoy dear]**(https://t.me/{username})'
-    button = [Button.url("CHANNEL", "https://t.me/sszxl")]
+    button = [Button.url("CHANNEL", "https://t.me/x04ou")]
     if text.lower() in ['قرآن', 'قران']:
         sura_number = random.randint(1, 114)
         message = await ABH.get_messages('theholyqouran', ids=sura_number + 1)
