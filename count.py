@@ -68,7 +68,6 @@ async def msgs(event):
         uid = event.sender.first_name if event.sender else "الاسم غير متوفر"
         unm = str(event.sender_id)
         guid = str(event.chat_id)
-        print(current_time)
         if current_time == "00:00":
             for user_id in uinfo:
                 for group_id in uinfo[user_id]:
