@@ -72,7 +72,7 @@ async def show_players(event):
     for uid in game["players"]:
         user = await ABH.get_entity(uid)
         mentions.append(f"[{user.first_name}](tg://user?id={uid})")
-    await event.respond("👥 **اللاعبون المسجلون**\n" + "\n ●".join(mentions), parse_mode='md')
+    await event.respond("👥 **اللاعبون المسجلون**\n" ● + "\n ●".join(mentions), parse_mode='md')
 @ABH.on(events.NewMessage(incoming=True))
 async def monitor_messages(event):
     chat_id = event.chat_id
@@ -103,7 +103,7 @@ async def monitor_messages(event):
             await announce_winner(chat_id)
 async def track_inactive_players(chat_id):
     while chat_id in games and games[chat_id]["game_started"]:
-        await asyncio.sleep(60)
+        await asyncio.sleep(60 * 5)
         game = games.get(chat_id)
         if not game:
             break
