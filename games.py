@@ -1183,4 +1183,3 @@ async def announce_winner(chat_id):
         parse_mode='md'
     )
     reset_game(chat_id)
-ABH.run_until_disconnected()
