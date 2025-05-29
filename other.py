@@ -125,8 +125,8 @@ async def myid(event):
     user = await ABH.get_entity(sender_id)
     user_id = user.id
     chat_id = event.chat_id
-    phone = user.phone if hasattr(user, 'phone') and user.phone else "😶"
-    premium = "yes" if user.premium else "no"
+    phone = user.phone if hasattr(user, 'phone') and user.phone else "غير متوفر💔"
+    premium = "عنده مميز" if user.premium else "ماعنده مميز"
     usernames = [f"@{username.username}" for username in user.usernames] if user.usernames else [f"@{user.username}"] if user.username else ["—"]
     usernames_list = ", ".join(usernames)
     dates = await date(user_id)
@@ -134,12 +134,14 @@ async def myid(event):
     FullUser = (await event.client(GetFullUserRequest(user.id))).full_user
     bio = FullUser.about
     bio_text = f"\n{bio}" if bio and bio.strip() else ""
+    year = int(dates.split("/")[0])
+    x = "انت من جماعة الباند؟؟" if year < 2016 else "nice"
     message_text = (
-        f"𖡋 𝐔𝐒𝐄 ⌯ {usernames_list}\n"
-        f"𖡋 𝐈𝐒𝐏 ⌯ {premium}\n"
-        f"𖡋 𝐏𝐇𝐍 ⌯ {'+' + phone if phone != '—' else phone}\n"
-        f"𖡋 𝐂𝐑 ⌯ {dates}\n"
-        f"𖡋 𝐑𝐎𝐋𝐄 ⌯ {states}"
+        f"اليوزر ↔ {usernames_list}\n"
+        f"هل انت غني؟ ↔ {premium}\n"
+        f"الرقم  {'+' + phone if phone != '—' else phone}\n"
+        f" الانشاء ↔ {dates} {x}\n"
+        f"رتبتك بالمجموعة ↔ {states}"
         f"{bio_text}"
     )
     if user.photo:
