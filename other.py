@@ -82,10 +82,10 @@ LOCAL_PHOTO_DIR = "/tmp"
 async def handler(event):
     if event.is_reply or id:
         replied_message = await event.get_reply_message()
-        sender_id = replied_message.sender_id
-    if not sender_id:
+    if not replied_message:
         await event.reply("😶")
         return
+    sender_id = replied_message.sender_id
     user = await ABH.get_entity(sender_id)
     user_id = user.id
     chat_id = event.chat_id
