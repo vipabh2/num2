@@ -78,8 +78,8 @@ async def date(user_id):
             else:
                 return "غير معروف"
 LOCAL_PHOTO_DIR = "/tmp"
-@ABH.on(events.NewMessage(pattern='^(id|اا|افتار|ايدي)$'))
-async def handler(event):
+@ABH.on(events.NewMessage(pattern='^(id|اا|افتار)$'))
+async def hisid(event):
     if event.is_reply or id:
         replied_message = await event.get_reply_message()
     if not replied_message:
@@ -115,7 +115,7 @@ async def handler(event):
     else:
         await event.respond(message_text, reply_to=event.message.id)
 @ABH.on(events.NewMessage(pattern='^(id|ا|افتاري|ايدي|.)$'))
-async def handler(event):
+async def myid(event):
     if event.is_private or id:
         return
     sender_id = event.sender_id
