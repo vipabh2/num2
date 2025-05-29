@@ -135,13 +135,18 @@ async def myid(event):
     bio = FullUser.about
     bio_text = f"\n{bio}" if bio and bio.strip() else ""
     year = int(dates.split("/")[0])
-    x = "انت من جماعة الباند؟؟" if year < 2016 else "nice"
+    if year < 2016:
+        x = "انت من جماعة الباند؟؟"
+    elif 2016 <= year < 2023:
+        x = "مو كلش قديم"
+    else:
+        x = "جديد"
     message_text = (
-        f"اليوزر ↔ {usernames_list}\n"
-        f"هل انت غني؟ ↔ {premium}\n"
+        f"اليوزر ⇠ {usernames_list}\n"
+        f"هل انت غني؟ ⇠ {premium}\n"
         f"الرقم  {'+' + phone if phone != '—' else phone}\n"
-        f" الانشاء ↔ {dates} {x}\n"
-        f"رتبتك بالمجموعة ↔ {states}"
+        f" الانشاء ⇠ {dates} {x}\n"
+        f"رتبتك بالمجموعة ⇠ {states}"
         f"{bio_text}"
     )
     if user.photo:
@@ -232,7 +237,7 @@ async def show_list(event):
             try:
                 user = await ABH.get_entity(user_id)
                 user_mention = await mention(event, user)
-                msg += f"• {user_mention} ↔ `{user.id}`\n"
+                msg += f"• {user_mention} ⇠ `{user.id}`\n"
             except:
                 msg += f"• معرف غير صالح: `{user_id}`\n"
     else:
