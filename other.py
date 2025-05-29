@@ -1,15 +1,14 @@
 from telethon.tl.types import ChannelParticipantAdmin, ChannelParticipantCreator
+import asyncio, os, json, random, uuid, operator, requests, aiohttp
 from telethon.tl.functions.channels import GetParticipantRequest
 from database import store_whisper, get_whisper #type: ignore
 from Resources import CHANNEL, suras, mention #type: ignore
-import asyncio, os, json, random, uuid, operator, requests
 from telethon.tl.functions.users import GetFullUserRequest
 from telethon.tl.types import Channel, ChannelParticipant
 from playwright.async_api import async_playwright 
 from ABH import ABH, events #type: ignore
 from datetime import datetime
 from telethon import Button
-import os, aiohttp, asyncio
 wfffp = 1910015590
 id = True
 @ABH.on(events.NewMessage(pattern='الايدي تفعيل'))
@@ -85,7 +84,8 @@ async def handler(event):
         replied_message = await event.get_reply_message()
         sender_id = replied_message.sender_id
     if not sender_id:
-        sender_id = event.sender_id
+        await event.reply("😶")
+        return
     user = await ABH.get_entity(sender_id)
     user_id = user.id
     chat_id = event.chat_id
@@ -114,7 +114,7 @@ async def handler(event):
         await msg.delete()
     else:
         await event.respond(message_text, reply_to=event.message.id)
-@ABH.on(events.NewMessage(pattern='^(id|ا|افتاري|ايدي)$'))
+@ABH.on(events.NewMessage(pattern='^(id|ا|افتاري|ايدي|.)$'))
 async def handler(event):
     if event.is_private or id:
         return
