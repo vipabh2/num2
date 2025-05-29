@@ -10,8 +10,8 @@ from ABH import ABH, events #type: ignore
 from datetime import datetime
 from telethon import Button
 import os, aiohttp, asyncio
-id = True
 wfffp = 1910015590
+id = True
 @ABH.on(events.NewMessage(pattern='الايدي تفعيل'))
 async def turn_on(event):
     global id
@@ -38,7 +38,6 @@ async def get_user_role(user_id, chat_id):
         if isinstance(chat, Channel):
             result = await ABH(GetParticipantRequest(channel=chat, participant=user_id))
             participant = result.participant
-
             if isinstance(participant, ChannelParticipantCreator):
                 return "مالك"
             elif isinstance(participant, ChannelParticipantAdmin):
@@ -80,39 +79,6 @@ async def date(user_id):
             else:
                 return "غير معروف"
 LOCAL_PHOTO_DIR = "/tmp"
-@ABH.on(events.NewMessage(pattern='^(id|ا|افتاري|ايدي)$'))
-async def handler(event):
-    if event.is_private or id:
-        return
-    sender_id = event.sender_id
-    user = await ABH.get_entity(sender_id)
-    user_id = user.id
-    chat_id = event.chat_id
-    phone = user.phone if hasattr(user, 'phone') and user.phone else "😶"
-    premium = "yes" if user.premium else "no"
-    usernames = [f"@{username.username}" for username in user.usernames] if user.usernames else [f"@{user.username}"] if user.username else ["—"]
-    usernames_list = ", ".join(usernames)
-    dates = await date(user_id)
-    states = await get_user_role(user_id, chat_id)
-    FullUser = (await event.client(GetFullUserRequest(user.id))).full_user
-    bio = FullUser.about
-    bio_text = f"\n{bio}" if bio and bio.strip() else ""
-    message_text = (
-        f"𖡋 𝐔𝐒𝐄 ⌯ {usernames_list}\n"
-        f"𖡋 𝐈𝐒𝐏 ⌯ {premium}\n"
-        f"𖡋 𝐏𝐇𝐍 ⌯ {'+' + phone if phone != '—' else phone}\n"
-        f"𖡋 𝐂𝐑 ⌯ {dates}\n"
-        f"𖡋 𝐑𝐎𝐋𝐄 ⌯ {states}"
-        f"{bio_text}"
-    )
-    if user.photo:
-        photo_path = os.path.join(LOCAL_PHOTO_DIR, f"{user_id}.jpg")
-        await ABH.download_profile_photo(user.id, file=photo_path)
-        msg = await ABH.send_file(event.chat_id, photo_path, caption=message_text, force_document=False, reply_to=event.message.id)
-        await asyncio.sleep(60*3)
-        await msg.delete()
-    else:
-        await event.respond(message_text, reply_to=event.message.id)
 @ABH.on(events.NewMessage(pattern='^(id|اا|افتار|ايدي)$'))
 async def handler(event):
     if event.is_reply or id:
@@ -134,6 +100,39 @@ async def handler(event):
         f"𖡋 𝐔𝐒𝐄 ⌯ {usernames_list}\n"
         f"𖡋 𝐈𝐒𝐏 ⌯ {premium}\n"
             f"𖡋 𝐏𝐇𝐍 ⌯ {phone if phone != '—' else phone}\n"
+        f"𖡋 𝐂𝐑 ⌯ {dates}\n"
+        f"𖡋 𝐑𝐎𝐋𝐄 ⌯ {states}"
+        f"{bio_text}"
+    )
+    if user.photo:
+        photo_path = os.path.join(LOCAL_PHOTO_DIR, f"{user_id}.jpg")
+        await ABH.download_profile_photo(user.id, file=photo_path)
+        msg = await ABH.send_file(event.chat_id, photo_path, caption=message_text, force_document=False, reply_to=event.message.id)
+        await asyncio.sleep(60*3)
+        await msg.delete()
+    else:
+        await event.respond(message_text, reply_to=event.message.id)
+@ABH.on(events.NewMessage(pattern='^(id|ا|افتاري|ايدي)$'))
+async def handler(event):
+    if event.is_private or id:
+        return
+    sender_id = event.sender_id
+    user = await ABH.get_entity(sender_id)
+    user_id = user.id
+    chat_id = event.chat_id
+    phone = user.phone if hasattr(user, 'phone') and user.phone else "😶"
+    premium = "yes" if user.premium else "no"
+    usernames = [f"@{username.username}" for username in user.usernames] if user.usernames else [f"@{user.username}"] if user.username else ["—"]
+    usernames_list = ", ".join(usernames)
+    dates = await date(user_id)
+    states = await get_user_role(user_id, chat_id)
+    FullUser = (await event.client(GetFullUserRequest(user.id))).full_user
+    bio = FullUser.about
+    bio_text = f"\n{bio}" if bio and bio.strip() else ""
+    message_text = (
+        f"𖡋 𝐔𝐒𝐄 ⌯ {usernames_list}\n"
+        f"𖡋 𝐈𝐒𝐏 ⌯ {premium}\n"
+        f"𖡋 𝐏𝐇𝐍 ⌯ {'+' + phone if phone != '—' else phone}\n"
         f"𖡋 𝐂𝐑 ⌯ {dates}\n"
         f"𖡋 𝐑𝐎𝐋𝐄 ⌯ {states}"
         f"{bio_text}"
