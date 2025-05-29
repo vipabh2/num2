@@ -114,7 +114,7 @@ async def hisid(event):
         await msg.delete()
     else:
         await event.respond(message_text, reply_to=event.message.id)
-@ABH.on(events.NewMessage(pattern='^(id|ا|افتاري|ايدي|.)$'))
+@ABH.on(events.NewMessage(pattern=r"^(id|ايدي|افتاري|ا|\.)$"))
 async def myid(event):
     if event.is_private or id:
         return
