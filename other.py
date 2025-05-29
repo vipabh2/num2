@@ -10,23 +10,23 @@ from ABH import ABH, events #type: ignore
 from datetime import datetime
 from telethon import Button
 wfffp = 1910015590
-id = True
+id_status_per_chat = {}
 @ABH.on(events.NewMessage(pattern='الايدي تفعيل'))
 async def turn_on(event):
-    global id
     uid = event.sender_id
+    chat_id = event.chat_id
     if uid == wfffp:
-        id = False
-        await event.reply('تم التفعيل')
+        id_status_per_chat[chat_id] = True
+        await event.reply('تم تفعيل الايدي')
     else:
         return
 @ABH.on(events.NewMessage(pattern='الايدي تعطيل'))
-async def turn(event):
-    global id
+async def turn_off(event):
     uid = event.sender_id
+    chat_id = event.chat_id
     if uid == wfffp:
-        id = True
-        await event.reply('تم التفعيل')
+        id_status_per_chat[chat_id] = False
+        await event.reply('تم تعطيل الايدي')
     else:
         return
 LOCAL_PHOTO_DIR = "photos"
@@ -80,8 +80,10 @@ async def date(user_id):
 LOCAL_PHOTO_DIR = "/tmp"
 @ABH.on(events.NewMessage(pattern='^(id|اا|افتار)$'))
 async def hisid(event):
-    if event.is_reply or id:
-        replied_message = await event.get_reply_message()
+    chat_id = event.chat_id
+    if not id_status_per_chat.get(chat_id, True):
+        return  
+    replied_message = await event.get_reply_message()
     if not replied_message:
         await event.reply("😶")
         return
@@ -116,7 +118,8 @@ async def hisid(event):
         await event.respond(message_text, reply_to=event.message.id)
 @ABH.on(events.NewMessage(pattern=r"^(id|ايدي|افتاري|ا|\.)$"))
 async def myid(event):
-    if event.is_private or id:
+    chat_id = event.chat_id
+    if not id_status_per_chat.get(chat_id, True):
         return
     sender_id = event.sender_id
     user = await ABH.get_entity(sender_id)
