@@ -85,7 +85,6 @@ async def hisid(event):
         return  
     replied_message = await event.get_reply_message()
     if not replied_message:
-        await event.reply("😶")
         return
     sender_id = replied_message.sender_id
     user = await ABH.get_entity(sender_id)
@@ -100,12 +99,19 @@ async def hisid(event):
     FullUser = (await event.client(GetFullUserRequest(user.id))).full_user
     bio = FullUser.about
     bio_text = f"\n{bio}" if bio and bio.strip() else ""
+    year = int(dates.split("/")[0])
+    if year < 2016:
+        x = "انت من جماعة الباند؟؟"
+    elif 2016 <= year < 2023:
+        x = "لا بأس"
+    else:
+        x = "جديد"
     message_text = (
-        f"𖡋 𝐔𝐒𝐄 ⌯ {usernames_list}\n"
-        f"𖡋 𝐈𝐒𝐏 ⌯ {premium}\n"
-            f"𖡋 𝐏𝐇𝐍 ⌯ {phone if phone != '—' else phone}\n"
-        f"𖡋 𝐂𝐑 ⌯ {dates}\n"
-        f"𖡋 𝐑𝐎𝐋𝐄 ⌯ {states}"
+        f"⌯ اليوزر ⇠ {usernames_list}\n"
+        f"⌯ الرقم  {'+' + phone if phone != '—' else phone}\n"
+        f"⌯ غني ام فقير ⇠ {premium}\n"
+        f"⌯ الانشاء ⇠ {dates} {x}\n"
+        f"⌯ رتبتك بالمجموعة ⇠ {states}"
         f"{bio_text}"
     )
     if user.photo:
