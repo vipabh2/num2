@@ -138,15 +138,15 @@ async def myid(event):
     if year < 2016:
         x = "انت من جماعة الباند؟؟"
     elif 2016 <= year < 2023:
-        x = "مو كلش قديم"
+        x = "لا بأس"
     else:
         x = "جديد"
     message_text = (
         f"⌯ اليوزر ⇠ {usernames_list}\n"
         f"⌯ الرقم  {'+' + phone if phone != '—' else phone}\n"
         f"⌯ غني ام فقير ⇠ {premium}\n"
-        f"⌯ رتبتك بالمجموعة ⇠ {states}\n"
         f"⌯ الانشاء ⇠ {dates} {x}\n"
+        f"⌯ رتبتك بالمجموعة ⇠ {states}"
         f"{bio_text}"
     )
     if user.photo:
