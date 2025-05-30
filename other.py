@@ -145,7 +145,7 @@ async def myid(event):
         f"⌯ اليوزر ⇠ {usernames_list}\n"
         f"⌯ الرقم  {'+' + phone if phone != '—' else phone}\n"
         f"⌯ غني ام فقير ⇠ {premium}\n"
-        f"⌯ رتبتك بالمجموعة ⇠ {states}"
+        f"⌯ رتبتك بالمجموعة ⇠ {states}\n"
         f"⌯ الانشاء ⇠ {dates} {x}\n"
         f"{bio_text}"
     )
