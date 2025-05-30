@@ -16,7 +16,7 @@ async def turn_on(event):
     uid = event.sender_id
     chat_id = event.chat_id
     if uid == wfffp:
-        id_status_per_chat[chat_id] = True
+        id_status_per_chat[chat_id] = False
         await event.reply('تم تفعيل الايدي')
     else:
         return
@@ -25,7 +25,7 @@ async def turn_off(event):
     uid = event.sender_id
     chat_id = event.chat_id
     if uid == wfffp:
-        id_status_per_chat[chat_id] = False
+        id_status_per_chat[chat_id] = True
         await event.reply('تم تعطيل الايدي')
     else:
         return
