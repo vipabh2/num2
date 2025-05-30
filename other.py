@@ -144,9 +144,9 @@ async def myid(event):
     message_text = (
         f"⌯ اليوزر ⇠ {usernames_list}\n"
         f"⌯ الرقم  {'+' + phone if phone != '—' else phone}\n"
-        # f"⌯ غني ام فقير ⇠ {premium}\n"
-        f"⌯ الانشاء ⇠ {dates} {x}\n"
+        f"⌯ غني ام فقير ⇠ {premium}\n"
         f"⌯ رتبتك بالمجموعة ⇠ {states}"
+        f"⌯ الانشاء ⇠ {dates} {x}\n"
         f"{bio_text}"
     )
     if user.photo:
