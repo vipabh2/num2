@@ -143,8 +143,8 @@ async def myid(event):
         x = "جديد"
     message_text = (
         f"⌯ اليوزر ⇠ {usernames_list}\n"
-        f"⌯ غني ام فقير ⇠ {premium}\n"
         f"⌯ الرقم  {'+' + phone if phone != '—' else phone}\n"
+        # f"⌯ غني ام فقير ⇠ {premium}\n"
         f"⌯ الانشاء ⇠ {dates} {x}\n"
         f"⌯ رتبتك بالمجموعة ⇠ {states}"
         f"{bio_text}"
