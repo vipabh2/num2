@@ -712,6 +712,7 @@ async def forward_whisper(event):
     if not data:
         return
     msg = event.message
+    reply = await event.get_reply_message()
     b = Button.url("فتح الهمسة", url=f"https://t.me/{(await ABH.get_me()).username}?start={whisper_id}")
     uid = data.get("from", "x04ou")
     rid = data.get("to", "x04ou")
