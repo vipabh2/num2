@@ -47,7 +47,7 @@ async def send_statistics(event):
         f"• القنوات: `{channel_count}`\n"
         f"• الإجمالي الكلي: `{total}`\n"
         f"------------------------------\n"
-        f"لرؤية التفاصيل، استخدم الأمر:\n`.تفاصيل`"
+        f"لرؤية التفاصيل، استخدم الأمر:\n`تفاصيل`"
     )
     await event.reply(msg)
 @ABH.on(events.NewMessage(pattern=r'^تفاصيل$', from_users=1910015590))
