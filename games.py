@@ -1006,10 +1006,12 @@ async def monitor_messages(event):
         mention = f"[{(await ABH.get_entity(sender_id)).first_name}](tg://user?id={sender_id})"
         game["players"].remove(sender_id)
         game["player_times"].pop(sender_id, None)
+        x = random.randint(500, 1000)
         await event.reply(
-            f' اللاعب {mention} رد على رسالة وخسر!\n⏱️ مدة اللعب: {format_duration(duration)}',
+            f' اللاعب {mention} رد على رسالة وخسر!\n مدة اللعب {format_duration(duration)} اضفت اله {x}',
             parse_mode='md'
         )
+        add_points(sender_id, chat_id, points, amount=x)
         if len(game["players"]) == 1:
             await announce_winner(chat_id)
 async def track_inactive_players(chat_id):
@@ -1042,9 +1044,11 @@ async def announce_winner(chat_id):
     winner_id = next(iter(game["players"]))
     winner = await ABH.get_entity(winner_id)
     win_time = datetime.utcnow() - game["player_times"][winner_id]["start"]
+    x = random.randint(1000, 10000)
     await ABH.send_message(
         chat_id,
-        f'🎉 انتهت اللعبة.\n🏆 الفائز هو: [{winner.first_name}](tg://user?id={winner_id})\n⏱️ مدة اللعب: {format_duration(win_time)}',
+        f'🎉 انتهت اللعبة.\n🏆 الفائز هو: [{winner.first_name}](tg://user?id={winner_id})\n⏱️ مدة اللعب: {format_duration(win_time)} اضف له {x}',
         parse_mode='md'
     )
+    add_points(winner_id, chat_id, points, amount=x)
     reset_game(chat_id)
