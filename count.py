@@ -64,6 +64,24 @@ async def msgs(event):
         WEAK[unm][guid]["msg"] += 1
         WEAK[unm][guid]["fname"] = uid
         save_json(DATA_FILE_WEAK, WEAK)
+def clean_json_file(file_path):
+    with open(file_path, 'r', encoding='utf-8') as f:
+        lines = f.readlines()
+    for i in range(len(lines)):
+        try:
+            data = json.loads("".join(lines))
+            print("✅ تم إصلاح الملف بنجاح.")
+            return data
+        except json.JSONDecodeError as e:
+            error_line = e.lineno - 1
+            print(f"🛠 حذف السطر المعطوب رقم {e.lineno}: {lines[error_line].strip()}")
+            lines.pop(error_line)
+    print("❌ لم نتمكن من إصلاح الملف.")
+    return {}
+fixed_data = clean_json_file("uinfo.json")
+if fixed_data:
+    with open("uinfo.json", "w", encoding="utf-8") as f:
+        json.dump(fixed_data, f, ensure_ascii=False, indent=2)
 @ABH.on(events.NewMessage)
 async def msgs(event):
     global uinfo
