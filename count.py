@@ -70,7 +70,6 @@ def clean_json_file(file_path):
     for i in range(len(lines)):
         try:
             data = json.loads("".join(lines))
-            print("✅ تم إصلاح الملف بنجاح.")
             return data
         except json.JSONDecodeError as e:
             error_line = e.lineno - 1
