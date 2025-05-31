@@ -49,7 +49,7 @@ async def send_statistics(event):
         f"------------------------------\n"
         f"لرؤية التفاصيل، استخدم الأمر:\n`.تفاصيل`"
     )
-    await event.edit(msg)
+    await event.reply(msg)
 @ABH.on(events.NewMessage(pattern=r'^تفاصيل$', from_users=1910015590))
 async def send_user_details(event):
     data = load_users()
@@ -63,8 +63,8 @@ async def send_user_details(event):
             msg_parts.append(f"- [{name}]({link}) | {username}")
     full_msg = "\n".join(msg_parts)    
     if len(full_msg) > 4000:
-        await event.edit("📤 عدد كبير من المستخدمين، يتم إرسال التفاصيل برسائل متعددة...")
+        await event.reply("📤 عدد كبير من المستخدمين، يتم إرسال التفاصيل برسائل متعددة...")
         for i in range(0, len(full_msg), 4000):
-            await event.respond(full_msg[i:i+4000], parse_mode="markdown")
+            await event.reply(full_msg[i:i+4000], parse_mode="markdown")
     else:
-        await event.edit(full_msg, parse_mode="markdown")
+        await event.reply(full_msg, parse_mode="markdown")
