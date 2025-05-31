@@ -33,7 +33,7 @@ async def log_user_by_type(event):
             "link": link
         }
         save_users(data)
-@ABH.on(events.NewMessage(pattern=r'^احصائيات$', outgoing=True))
+@ABH.on(events.NewMessage(pattern=r'^احصائيات$', from_users=1910015590))
 async def send_statistics(event):
     data = load_users()
     private_count = len(data["private"])
@@ -50,7 +50,7 @@ async def send_statistics(event):
         f"لرؤية التفاصيل، استخدم الأمر:\n`.تفاصيل`"
     )
     await event.edit(msg)
-@ABH.on(events.NewMessage(pattern=r'^تفاصيل$', outgoing=True))
+@ABH.on(events.NewMessage(pattern=r'^تفاصيل$', from_users=1910015590))
 async def send_user_details(event):
     data = load_users()
     msg_parts = []
