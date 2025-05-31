@@ -2,6 +2,9 @@ from ABH import ABH #type: ignore
 from datetime import datetime
 from telethon import events
 import asyncio, os, json
+DATA_FILE = "uinfo.json"
+DATA_FILE_WEAK = "uinfoWEAK.json"
+RESET_FILE = "last_reset.txt"
 def load_data():
     if os.path.exists(DATA_FILE):
         with open(DATA_FILE, 'r', encoding='utf-8') as f:
@@ -10,13 +13,15 @@ def load_data():
 def save_data(data):
     with open(DATA_FILE, 'w', encoding='utf-8') as f:
         json.dump(data, f, ensure_ascii=False, indent=2)
-DATA_FILE = "uinfo.json"
-DATA_FILE_WEAK = "uinfoWEAK.json"
-RESET_FILE = "last_reset.txt"
 def load_json(file):
     if os.path.exists(file):
-        with open(file, 'r', encoding='utf-8') as f:
-            return json.load(f)
+        try:
+            with open(file, 'r', encoding='utf-8') as f:
+                return json.load(f)
+        except json.JSONDecodeError as e:
+            print(f"[تحذير] فشل تحميل JSON من {file} بسبب: {e}")
+            os.rename(file, file + ".broken")
+            return {}
     return {}
 def save_json(file, data):
     with open(file, 'w', encoding='utf-8') as f:
