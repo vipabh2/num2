@@ -513,14 +513,6 @@ async def delete_whisper(event):
     if not whisper:
         await event.answer(" تم حذف الهمسة مسبقًا أو غير موجودة.", alert=True)
         return
-    store_whisper(
-        whisper_id=whisper_id,
-        sender=whisper.from_user,
-        reciver_id=whisper.to_user,
-        username=whisper.username,
-        message=whisper.text,
-        delete=True
-    )
     await event.edit("🗑️ تم حذف الهمسة بنجاح", buttons=None)
 @ABH.on(events.CallbackQuery(data=(b"^view:(.+)")))
 async def view_whisper(event):
