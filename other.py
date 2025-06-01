@@ -514,9 +514,9 @@ async def delete_whisper(event):
         await event.answer(" تم حذف الهمسة مسبقًا أو غير موجودة.", alert=True)
         return
     await event.edit("🗑️ تم حذف الهمسة بنجاح", buttons=None)
-@ABH.on(events.CallbackQuery(data=re.compile(rb"^delete:(.+)")))
+@ABH.on(events.CallbackQuery(data=re.compile(rb"^view:(.+)")))
 async def delete_whisper(event):
-    match = re.match(rb"^delete:(.+)", event.data)
+    match = re.match(rb"^view:(.+)", event.data)
     if not match:
         await event.answer("طلب غير صالح", alert=True)
         return
