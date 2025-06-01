@@ -526,7 +526,7 @@ async def show_whisper(event):
     whisper_id = match.group(1).decode()
     whisper = get_whisper(whisper_id)
     uid = event.sender_id
-    if uid != whisper.sender_id or uid != whisper.reciver_id:
+    if not uid == whisper.sender_id or not uid == whisper.reciver_id:
         await event.answer("لا يمكنك رؤية همسة ليست لك")
         return
     if not whisper:
