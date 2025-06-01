@@ -485,21 +485,19 @@ async def Whisper(event):
         else:
             return
         await event.answer([result])
-@ABH.on(events.CallbackQuery)
+@ABH.on(events.CallbackQuery(data=re.compile(b"^send:(.+)")))
 async def callback_Whisper(event):
-    data = event.data.decode('utf-8')
-    if data.startswith('send:'):
-        whisper_id = data.split(':')[1]
-        whisper = get_whisper(whisper_id)
-        if whisper:
-            b = [Button.inline("حذف الهمسة؟", data=f'delete'), 
-                 Button.url("رؤية الهمسة", data='see')]
-            if event.sender_id == whisper.sender_id or event.sender_id == whisper.reciver_id:
-                await event.answer(f"{whisper.message}", alert=True)
-                await event.edit(f"همسة سرية إلى \n الله يثخن اللبن عمي 😌 ({whisper.username})", button=b)
-            else:
-                await event.answer("عزيزي الحشري، هذه الهمسة ليست موجهة إليك!", alert=True)
-
+        whisper_id = event.data.decode().split(":")[1]
+        whisper = get_whisper_by_id(whisper_id)
+        if not whisper:
+            await event.answer("تم حذف الهمسة لا يمكنك رؤيتها", alert=True)
+            return
+        msg = f"""
+**📥 همسة سرية من {whisper['sender_name']}**
+{whisper['message']}
+"""
+        await event.answer()
+        await event.respond(msg, parse_mode="markdown")
 BANNED_SITES = [
     "porn", "xvideos", "xnxx", "redtube", "xhamster",
     "brazzers", "youjizz", "spankbang", "erotic", "sex"
