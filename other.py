@@ -503,15 +503,15 @@ async def callback_Whisper(event):
         await event.edit(msg, buttons=b)
 @ABH.on(events.CallbackQuery(data=re.compile(rb"^delete:(.+)")))
 async def delete_whisper(event):
+    match = re.match(rb"^delete:(.+)", event.data)
+    if not match:
+        await event.answer("طلب غير صالح", alert=True)
+        return
     whisper_id = match.group(1).decode()
     whisper = get_whisper(whisper_id)
     uid = event.sender_id
     if uid != whisper.sender_id:
         await event.answer("لا يمكنك حذف همسة ليست لك")
-        return
-    match = re.match(rb"^delete:(.+)", event.data)
-    if not match:
-        await event.answer("طلب غير صالح", alert=True)
         return
     if not whisper:
         await event.answer(" تم حذف الهمسة مسبقًا أو غير موجودة.", alert=True)
@@ -519,15 +519,15 @@ async def delete_whisper(event):
     await event.edit("🗑️ تم حذف الهمسة بنجاح", buttons=None)
 @ABH.on(events.CallbackQuery(data=re.compile(rb"^view:(.+)")))
 async def show_whisper(event):
+    match = re.match(rb"^view:(.+)", event.data)
+    if not match:
+        await event.answer("طلب غير صالح", alert=True)
+        return
     whisper_id = match.group(1).decode()
     whisper = get_whisper(whisper_id)
     uid = event.sender_id
     if uid != whisper.sender_id or uid != whisper.reciver_id:
         await event.answer("لا يمكنك رؤية همسة ليست لك")
-        return
-    match = re.match(rb"^view:(.+)", event.data)
-    if not match:
-        await event.answer("طلب غير صالح", alert=True)
         return
     if not whisper:
         await event.answer("تم حذف الهمسة لا يمكنك رؤيتها", alert=True)
