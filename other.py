@@ -502,16 +502,26 @@ async def callback_Whisper(event):
 """
         await event.answer(whisper.message, alert=True)
         await event.edit(msg, buttons=b)
-@ABH.on(events.CallbackQuery(data=(b"^delete:(.+)")))
+@ABH.on(events.CallbackQuery(data=re.compile(rb"^delete:(.+)")))
 async def delete_whisper(event):
-        whisper_id = event.data.decode()
-        whisper = get_whisper(whisper_id)
-        if not whisper:
-            await event.answer("تم حذف الهمسة لا يمكنك حذفها", alert=True)
-            return
-        store_whisper(whisper_id, whisper.from_user, whisper.to_user, whisper.username, whisper.text, delete=True)
-        await event.answer("تم حذف الهمسة بنجاح", alert=True)
-        await event.delete()
+    match = re.match(rb"^delete:(.+)", event.data)
+    if not match:
+        await event.answer("طلب غير صالح", alert=True)
+        return
+    whisper_id = match.group(1).decode()
+    whisper = get_whisper(whisper_id)
+    if not whisper:
+        await event.answer(" تم حذف الهمسة مسبقًا أو غير موجودة.", alert=True)
+        return
+    store_whisper(
+        whisper_id=whisper_id,
+        sender=whisper.from_user,
+        reciver_id=whisper.to_user,
+        username=whisper.username,
+        message=whisper.text,
+        delete=True
+    )
+    await event.edit("🗑️ تم حذف الهمسة بنجاح", buttons=None)
 @ABH.on(events.CallbackQuery(data=(b"^view:(.+)")))
 async def view_whisper(event):
         whisper_id = event.data.decode()
