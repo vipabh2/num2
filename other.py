@@ -497,8 +497,8 @@ async def callback_Whisper(event):
         whisper = get_whisper(whisper_id)
         if whisper:
             if event.sender_id == whisper.sender_id or event.sender_id == whisper.reciver_id:
-                ms = await event.answer(f"{whisper.message}", alert=True)
-                await ms.edit(".")
+                await event.answer(f"{whisper.message}", alert=True)
+                await event.edit(".")
             else:
                 await event.answer("عزيزي الحشري، هذه الهمسة ليست موجهة إليك!", alert=True)
 BANNED_SITES = [
