@@ -492,11 +492,14 @@ async def callback_Whisper(event):
         whisper_id = data.split(':')[1]
         whisper = get_whisper(whisper_id)
         if whisper:
+            b = [Button.inline("حذف الهمسة؟", data=f'delete'), 
+                 Button.url("رؤية الهمسة", data='see')]
             if event.sender_id == whisper.sender_id or event.sender_id == whisper.reciver_id:
                 await event.answer(f"{whisper.message}", alert=True)
-                await event.edit(f"عزيزي {whisper.reciver_name}، هذه همسة من {whisper.sender_name}:\n\n{whisper.message}")
+                await event.edit(f"همسة سرية إلى \n الله يثخن اللبن عمي 😌 ({whisper.username})", button=b)
             else:
                 await event.answer("عزيزي الحشري، هذه الهمسة ليست موجهة إليك!", alert=True)
+
 BANNED_SITES = [
     "porn", "xvideos", "xnxx", "redtube", "xhamster",
     "brazzers", "youjizz", "spankbang", "erotic", "sex"
