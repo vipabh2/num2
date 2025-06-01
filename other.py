@@ -485,7 +485,7 @@ async def Whisper(event):
         else:
             return
         await event.answer([result])
-@ABH.on(events.CallbackQuery(data='^view1:(.+)'))
+@ABH.on(events.CallbackQuery(data=(b"^view1:(.+)")))
 async def callback_Whisper(event):
         whisper_id = event.data.decode()
         whisper = get_whisper(whisper_id)
@@ -499,7 +499,7 @@ async def callback_Whisper(event):
 """
         await event.answer(whisper.message, alert=True)
         await event.edit(msg, buttons=b)
-@ABH.on(events.CallbackQuery(data=re.compile(b"^delete:(.+)")))
+@ABH.on(events.CallbackQuery(data=(b"^delete:(.+)")))
 async def delete_whisper(event):
         whisper_id = event.data.decode()
         whisper = get_whisper(whisper_id)
@@ -509,7 +509,7 @@ async def delete_whisper(event):
         store_whisper(whisper_id, whisper.from_user, whisper.to_user, whisper.username, whisper.text, delete=True)
         await event.answer("تم حذف الهمسة بنجاح", alert=True)
         await event.delete()
-@ABH.on(events.CallbackQuery(data=re.compile(b"^view:(.+)")))
+@ABH.on(events.CallbackQuery(data=(b"^view:(.+)")))
 async def view_whisper(event):
         whisper_id = event.data.decode()
         whisper = get_whisper(whisper_id)
