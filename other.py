@@ -498,6 +498,11 @@ async def callback_Whisper(event):
         if whisper:
             if event.sender_id == whisper.sender_id or event.sender_id == whisper.reciver_id:
                 await event.answer(f"{whisper.message}", alert=True)
+                await event.client.send_message(
+                    event.sender_id,
+                    f"همسة من {whisper.sender_name} إلى {whisper.reciver_name}:\n\n{whisper.message}",
+                    reply_to=event.id
+                )
             else:
                 await event.answer("عزيزي الحشري، هذه الهمسة ليست موجهة إليك!", alert=True)
 BANNED_SITES = [
