@@ -508,12 +508,12 @@ async def delete_whisper(event):
     if not match:
         await event.answer("طلب غير صالح", alert=True)
         return
+    whisper_id = match.group(1).decode()
+    whisper = get_whisper(whisper_id)
     uid = event.sender_id
     if uid != whisper.sender:
         await event.answer("لا يمكنك حذف همسة ليست لك")
         return
-    whisper_id = match.group(1).decode()
-    whisper = get_whisper(whisper_id)
     if not whisper:
         await event.answer(" تم حذف الهمسة مسبقًا أو غير موجودة.", alert=True)
         return
