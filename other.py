@@ -722,7 +722,7 @@ async def forward_whisper(event):
     m2 = await ABH.send_message(
         data['chat_id'],
         f'همسة مرسلة من ( [{from_name}](tg://user?id={uid}) ) إلى ( [{to_name}](tg://user?id={rid}) )',
-        buttons=[b], reply_to=reply.id)
+        buttons=[b], reply_to=reply)
     if msg.media:
         whisper_links[whisper_id]['original_msg_id'] = msg.id
         whisper_links[whisper_id]['from_user_chat_id'] = sender_id
