@@ -492,11 +492,31 @@ async def callback_Whisper(event):
         if not whisper:
             await event.answer("تم حذف الهمسة لا يمكنك رؤيتها", alert=True)
             return
+        b = [Button.inline("حذف الهمسة", data=f'delete:{whisper_id}'),
+             Button.inline("رؤية الهمسة", data=f'view:{whisper_id}')]
         msg = f"""
-**📥 همسة سرية من **
+الهمسة تم رؤيتها من ( {whisper.username} ) عزيزي المرسل هل تريد حذفها؟
 """
         await event.answer()
         await event.edit(msg, parse_mode="markdown")
+@ABH.on(events.CallbackQuery(data=re.compile(b"^delete:(.+)")))
+async def delete_whisper(event):
+        whisper_id = event.data.decode().split(":")[1]
+        whisper = get_whisper(whisper_id)
+        if not whisper:
+            await event.answer("تم حذف الهمسة لا يمكنك حذفها", alert=True)
+            return
+        store_whisper(whisper_id, whisper.from_user, whisper.to_user, whisper.username, whisper.text, delete=True)
+        await event.answer("تم حذف الهمسة بنجاح", alert=True)
+        await event.delete()
+@ABH.on(events.CallbackQuery(data=re.compile(b"^view:(.+)")))
+async def view_whisper(event):
+        whisper_id = event.data.decode().split(":")[1]
+        whisper = get_whisper(whisper_id)
+        if not whisper:
+            await event.answer("تم حذف الهمسة لا يمكنك رؤيتها", alert=True)
+            return
+        await event.answer(whisper.message, alert=True)
 BANNED_SITES = [
     "porn", "xvideos", "xnxx", "redtube", "xhamster",
     "brazzers", "youjizz", "spankbang", "erotic", "sex"
