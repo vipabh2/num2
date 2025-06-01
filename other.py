@@ -480,7 +480,6 @@ async def Whisper(event):
                         )
                     ]
                 )
-                print(f"تم تخزين الهمسة بنجاح: {whisper_id}"),
             except Exception:
                 return
         else:
@@ -511,7 +510,7 @@ async def delete_whisper(event):
     whisper_id = match.group(1).decode()
     whisper = get_whisper(whisper_id)
     uid = event.sender_id
-    if uid != whisper.sender:
+    if uid != whisper.sender_id:
         await event.answer("لا يمكنك حذف همسة ليست لك")
         return
     if not whisper:
