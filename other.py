@@ -488,7 +488,7 @@ async def Whisper(event):
 @ABH.on(events.CallbackQuery(data=re.compile(b"^send:(.+)")))
 async def callback_Whisper(event):
         whisper_id = event.data.decode().split(":")[1]
-        whisper = get_whisper_by_id(whisper_id)
+        whisper = store_whisper(whisper_id)
         if not whisper:
             await event.answer("تم حذف الهمسة لا يمكنك رؤيتها", alert=True)
             return
