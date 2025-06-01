@@ -514,14 +514,18 @@ async def delete_whisper(event):
         await event.answer(" تم حذف الهمسة مسبقًا أو غير موجودة.", alert=True)
         return
     await event.edit("🗑️ تم حذف الهمسة بنجاح", buttons=None)
-@ABH.on(events.CallbackQuery(data=(b"^view:(.+)")))
-async def view_whisper(event):
-        whisper_id = event.data.decode()
-        whisper = get_whisper(whisper_id)
-        if not whisper:
-            await event.answer("تم حذف الهمسة لا يمكنك رؤيتها", alert=True)
-            return
-        await event.answer(whisper.message, alert=True)
+@ABH.on(events.CallbackQuery(data=re.compile(rb"^delete:(.+)")))
+async def delete_whisper(event):
+    match = re.match(rb"^delete:(.+)", event.data)
+    if not match:
+        await event.answer("طلب غير صالح", alert=True)
+        return
+    whisper_id = match.group(1).decode()
+    whisper = get_whisper(whisper_id)
+    if not whisper:
+        await event.answer("تم حذف الهمسة لا يمكنك رؤيتها", alert=True)
+        return
+    await event.answer(whisper.message, alert=True)
 BANNED_SITES = [
     "porn", "xvideos", "xnxx", "redtube", "xhamster",
     "brazzers", "youjizz", "spankbang", "erotic", "sex"
