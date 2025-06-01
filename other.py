@@ -493,11 +493,10 @@ async def callback_Whisper(event):
             await event.answer("تم حذف الهمسة لا يمكنك رؤيتها", alert=True)
             return
         msg = f"""
-**📥 همسة سرية من {whisper['sender_name']}**
-{whisper['message']}
+**📥 همسة سرية من **
 """
         await event.answer()
-        await event.respond(msg, parse_mode="markdown")
+        await event.edit(msg, parse_mode="markdown")
 BANNED_SITES = [
     "porn", "xvideos", "xnxx", "redtube", "xhamster",
     "brazzers", "youjizz", "spankbang", "erotic", "sex"
