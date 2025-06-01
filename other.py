@@ -480,6 +480,7 @@ async def Whisper(event):
                         )
                     ]
                 )
+                print(f"تم تخزين الهمسة بنجاح: {whisper_id}"),
             except Exception:
                 return
         else:
@@ -488,6 +489,7 @@ async def Whisper(event):
 @ABH.on(events.CallbackQuery(data=(b"^view1:(.+)")))
 async def callback_Whisper(event):
         whisper_id = event.data.decode()
+        print(f"Received whisper ID: {whisper_id}")
         whisper = get_whisper(whisper_id)
         if not whisper:
             await event.answer("تم حذف الهمسة لا يمكنك رؤيتها", alert=True)
