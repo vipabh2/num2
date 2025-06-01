@@ -480,12 +480,8 @@ async def Whisper(event):
                         )
                     ]
                 )
-            except Exception as e:
-                result = builder.article(
-                    title='خطأ في الإرسال',
-                    description="حدث خطأ أثناء معالجة طلبك.",
-                    # text=f' خطأ: {str(e)}'
-                )
+            except Exception:
+                return
         else:
             return
         await event.answer([result])
@@ -498,7 +494,7 @@ async def callback_Whisper(event):
         if whisper:
             if event.sender_id == whisper.sender_id or event.sender_id == whisper.reciver_id:
                 await event.answer(f"{whisper.message}", alert=True)
-                await event.edit(".")
+                await event.edit(f"عزيزي {whisper.reciver_name}، هذه همسة من {whisper.sender_name}:\n\n{whisper.message}")
             else:
                 await event.answer("عزيزي الحشري، هذه الهمسة ليست موجهة إليك!", alert=True)
 BANNED_SITES = [
@@ -538,7 +534,7 @@ async def take_screenshot(url, device="pc"):
 async def screen_shot(event):
     url = event.pattern_match.group(1)
     if any(banned in url.lower() for banned in BANNED_SITES):
-        await event.reply("🚫 هذا الموقع محظور!\nجرب تتواصل مع المطور @k_4x1")
+        await event.reply(" هذا الموقع محظور!\nجرب تتواصل مع المطور @k_4x1")
         return
     devices = ['pc', 'android']
     screenshot_paths = []
@@ -551,7 +547,7 @@ async def screen_shot(event):
         await asyncio.sleep(60)
         await event.delete()
     else:
-        await event.reply("❌ فشل التقاط لقطة الشاشة، تأكد من صحة الرابط أو جرب مجددًا.")
+        await event.reply("فشل التقاط لقطة الشاشة، تأكد من صحة الرابط أو جرب مجددًا.")
 FILE = "dialogs.json"
 K_4X1 = 1910015590
 def load_alert():
