@@ -491,16 +491,18 @@ async def callback_Whisper(event):
     if data.startswith('send:'):
         whisper_id = data.split(':')[1]
         whisper = get_whisper(whisper_id)
-        if not whisper:
-            await event.answer("تم حذف الهمسة لا يمكنك رؤيتها", alert=True)
-            return
-        b = [Button.inline("حذف الهمسة", data=f'delete:{whisper_id}'),
-             Button.inline("رؤية الهمسة", data=f'view:{whisper_id}')]
-        msg = f"""
+    if whisper and event.sender_id == whisper.sender_id or event.sender_id == whisper.reciver_id:
+        await event.answer(f"{whisper.message}", alert=True)
+    else:
+        await event.answer("عزيزي الحشري، هذه الهمسة ليست موجهة إليك!", alert=True)
+        return
+    b = [Button.inline("حذف الهمسة", data=f'delete:{whisper_id}'),
+        Button.inline("رؤية الهمسة", data=f'view:{whisper_id}')]
+    msg = f"""
 الهمسة تم رؤيتها من ( {whisper.username} ) عزيزي المرسل هل تريد حذفها؟
 """
-        await event.answer(whisper.message, alert=True)
-        await event.edit(msg, buttons=b)
+    await event.answer(whisper.message, alert=True)
+    await event.edit(msg, buttons=b)
 @ABH.on(events.CallbackQuery(data=re.compile(rb"^delete:(.+)")))
 async def delete_whisper(event):
     match = re.match(rb"^delete:(.+)", event.data)
