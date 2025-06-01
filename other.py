@@ -497,7 +497,7 @@ async def callback_Whisper(event):
         msg = f"""
 الهمسة تم رؤيتها من ( {whisper.username} ) عزيزي المرسل هل تريد حذفها؟
 """
-        await event.answer()
+        await event.answer(whisper.message, alert=True)
         await event.edit(msg, buttons=b)
 @ABH.on(events.CallbackQuery(data=re.compile(b"^delete:(.+)")))
 async def delete_whisper(event):
