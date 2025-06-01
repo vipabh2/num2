@@ -503,8 +503,8 @@ async def callback_Whisper(event):
         await event.edit(msg, buttons=b)
 @ABH.on(events.CallbackQuery(data=re.compile(rb"^delete:(.+)")))
 async def delete_whisper(event):
-    whisper = get_whisper(whisper_id)
     whisper_id = match.group(1).decode()
+    whisper = get_whisper(whisper_id)
     uid = event.sender_id
     if uid != whisper.sender_id:
         await event.answer("لا يمكنك حذف همسة ليست لك")
@@ -519,8 +519,8 @@ async def delete_whisper(event):
     await event.edit("🗑️ تم حذف الهمسة بنجاح", buttons=None)
 @ABH.on(events.CallbackQuery(data=re.compile(rb"^view:(.+)")))
 async def show_whisper(event):
-    whisper = get_whisper(whisper_id)
     whisper_id = match.group(1).decode()
+    whisper = get_whisper(whisper_id)
     uid = event.sender_id
     if uid != whisper.sender_id or uid != whisper.reciver_id:
         await event.answer("لا يمكنك رؤية همسة ليست لك")
