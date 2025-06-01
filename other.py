@@ -634,6 +634,7 @@ def save_sent_log():
         json.dump(sent_whispers, f, ensure_ascii=False, indent=2)
 user_sessions = {}
 l = {}
+anymous = await event.client.get_me()
 @ABH.on(events.NewMessage(pattern='اهمس'))
 async def handle_whisper(event):
     global l, m1, reply
@@ -647,6 +648,9 @@ async def handle_whisper(event):
         return
     if reply.sender_id == sender_id:
         await event.reply("شني خالي تسوي همسه لنفسك")
+        return
+    if reply.sender_id == anymous.id:
+        await event.reply("تسويلي همسه 😁؟")
         return
     to_user = await reply.get_sender()
     from_user = await event.get_sender()
