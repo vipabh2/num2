@@ -476,7 +476,7 @@ async def Whisper(event):
                     buttons=[
                         Button.inline(
                             text='🫵🏾 اضغط لعرض الهمسة',
-                            data=f'view1:{whisper_id}'
+                            data=f'send:{whisper_id}'
                         )
                     ]
                 )
@@ -486,10 +486,11 @@ async def Whisper(event):
         else:
             return
         await event.answer([result])
-@ABH.on(events.CallbackQuery(data=(b"^view1:(.+)")))
+@ABH.on(events.CallbackQuery)
 async def callback_Whisper(event):
-        whisper_id = event.data.decode()
-        print(f"Received whisper ID: {whisper_id}")
+    data = event.data.decode('utf-8')
+    if data.startswith('send:'):
+        whisper_id = data.split(':')[1]
         whisper = get_whisper(whisper_id)
         if not whisper:
             await event.answer("تم حذف الهمسة لا يمكنك رؤيتها", alert=True)
