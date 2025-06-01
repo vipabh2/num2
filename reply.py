@@ -67,7 +67,7 @@ async def reply_amer(event):
                ]
         url = random.choice(ur)
         caption = "@xJathom" 
-        await event.client.send_file(event.chat_id, url, caption=caption, reply_to=event.message.id)    
+        await event.client.send_file(event.chat_id, url, caption=caption, reply_to=event.id)    
     else: 
         return
 @ABH.on(events.NewMessage(pattern='هاكس'))
