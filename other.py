@@ -515,10 +515,12 @@ async def delete_whisper(event):
     if uid != whisper.sender_id:
         await event.answer("لا يمكنك حذف همسة ليست لك")
         return
+    b = [Button.inline("همسة جديده", url=f"https://t.me/{(await ABH.get_me()).username}?start={whisper_id}"),
+        Button.inline("الزر هاذ ما يسوي شيء لاتدوسه", data=f'view:{whisper_id}')]
     if not whisper:
         await event.answer(" تم حذف الهمسة مسبقًا أو غير موجودة.", alert=True)
         return
-    await event.edit("🗑️ تم حذف الهمسة بنجاح", buttons=None)
+    await event.edit("🗑️ تم حذف الهمسة بنجاح", buttons=b)
 @ABH.on(events.CallbackQuery(data=re.compile(rb"^view:(.+)")))
 async def show_whisper(event):
     match = re.match(rb"^view:(.+)", event.data)
@@ -674,7 +676,7 @@ async def handle_whisper(event):
     global l, m1, reply
     sender_id = event.sender_id
     if sender_id in l and l[sender_id]:
-        await event.reply("هيييي ماتكدر تسوي همستين بوقت واحد")
+        await event.reply("هيييي ماتكدر تسوي همستين بوقت واحد \n || جرب تدز نقطة بالخاص ||")
         return
     reply = await event.get_reply_message()
     if not reply:
