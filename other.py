@@ -509,13 +509,13 @@ async def delete_whisper(event):
     if not match:
         await event.answer("طلب غير صالح", alert=True)
         return
-    x = "كيف_يمكنني_ان_اهمس"
     whisper_id = match.group(1).decode()
     whisper = get_whisper(whisper_id)
     uid = event.sender_id
     if uid != whisper.sender_id:
         await event.answer("لا يمكنك حذف همسة ليست لك")
         return
+    x = "كيف_يمكنني_ان_اهمس"
     b = Button.url("كيف اهمس", url=f"https://t.me/{(await ABH.get_me()).username}?start={x}")
     if not whisper:
         await event.answer(" تم حذف الهمسة مسبقًا أو غير موجودة.", alert=True)
@@ -707,7 +707,7 @@ async def handle_whisper(event):
     save_whispers()
     button = Button.url("اضغط هنا للبدء", url=f"https://t.me/{(await ABH.get_me()).username}?start={whisper_id}")
     m1 = await event.reply(
-        f'همسة مرسلة من ( [{name}](tg://user?id={sender_id}) ) إلى ( [{to_name}](tg://user?id={rid}) 🙂🙂)',
+        f'همسة مرسلة من ( [{name}](tg://user?id={sender_id}) ) إلى ( [{to_name}](tg://user?id={rid}) ) 🙂🙂',
         buttons=[button]
     )
     l[sender_id] = True
@@ -852,5 +852,5 @@ async def start_handlers(event):
         url = 'https://t.me/recoursec/11'
         await event.reply('**اوامر الهمسة** \n همسة نص , ايدي او يوزر \n همسة ميديا او نص بالرد فقط', url, b)
     elif parm == "همسة_يوزر":
-        url = 'https://t.me/recoursec/1'
+        url = 'https://t.me/recoursec/12'
         await event.reply('**اوامر الهمسة** \n همسة نص , ايدي او يوزر \n همسة ميديا او نص بالرد فقط', url, b)
