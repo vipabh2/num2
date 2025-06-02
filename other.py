@@ -677,8 +677,7 @@ async def handle_whisper(event):
     sender_id = event.sender_id
     if sender_id in l and l[sender_id]:
         await event.reply(
-            "هيييي ماتكدر تسوي همستين بوقت واحد \n \|\|جرب تدز نقطة بالخاص\|\|",
-            parse_mode="MarkdownV2"
+            "هيييي ماتكدر تسوي همستين بوقت واحد \n **جرب تدز نقطة بالخاص**",
         )
         return
     reply = await event.get_reply_message()
