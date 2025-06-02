@@ -58,7 +58,7 @@ async def reply_amer(event):
     else: 
         return
 @ABH.on(events.NewMessage(pattern='جاثوم'))
-async def reply_amer(event):
+async def reply_jathom(event):
     if event.chat_id == group:
         ur = [
         'https://t.me/dbdbdbdbdbzbzbzbzbzb/4',
