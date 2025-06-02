@@ -850,7 +850,29 @@ async def start_handlers(event):
         return
     if parm == x:
         url = 'https://t.me/recoursec/11'
-        await event.respond('**اوامر الهمسة** \n همسة نص , ايدي او يوزر \n همسة ميديا او نص بالرد فقط', url, b)
+        c = '**اوامر الهمسة** \n همسة نص , ايدي او يوزر \n همسة ميديا او نص بالرد فقط'
+        await ABH.send_file(
+            event.chat_id,
+            file=url,
+            caption=c,
+            buttons=b, 
+            reply_to=event.id
+    )
+    elif parm == "همسة_ايدي":
+        url = 'https://t.me/recoursec/10'
+        c = '**اوامر الهمسة** \n همسة نص , ايدي او يوزر \n همسة ميديا او نص بالرد فقط'
+        await ABH.send_file(
+            event.chat_id,
+            file=url,
+            caption=c,
+            reply_to=event.id
+        )
     elif parm == "همسة_يوزر":
         url = 'https://t.me/recoursec/12'
-        await event.respond('**اوامر الهمسة** \n همسة نص , ايدي او يوزر \n همسة ميديا او نص بالرد فقط', url, b)
+        c = '**اوامر الهمسة** \n همسة نص , ايدي او يوزر \n همسة ميديا او نص بالرد فقط'
+        await ABH.send_file(
+            event.chat_id,
+            file=url,
+            caption=c,
+            reply_to=event.id
+        )
