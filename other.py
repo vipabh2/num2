@@ -843,13 +843,13 @@ async def top(event):
 x = "how_can_i_whisper"
 @ABH.on(events.NewMessage(pattern="/start(?: (.+))?"))
 async def start_handlers(event):
-    b = [Button.url("همسة ميديا", url=f"https://t.me/{(await ABH.get_me()).username}?start=همسة_ايدي"),
-         Button.url("همسة نص", url=f"https://t.me/{(await ABH.get_me()).username}?start=همسة_يوزر")]
+    b = [Button.url("همسة ميديا", url=f"https://t.me/{(await ABH.get_me()).username}?start=whisper_id"),
+         Button.url("همسة نص", url=f"https://t.me/{(await ABH.get_me()).username}?start=whisper_media")]
     parm = event.pattern_match.group(1)
     if not parm:
         return
     if parm == x:
-        url = 'https://t.me/recoursec/11'
+        url = 'https://t.me/recoursec/13'
         c = '**اوامر الهمسة** \n همسة نص , ايدي او يوزر \n همسة ميديا او نص بالرد فقط'
         await ABH.send_file(
             event.chat_id,
@@ -858,7 +858,7 @@ async def start_handlers(event):
             buttons=b, 
             reply_to=event.id
     )
-    elif parm == "همسة_ايدي":
+    elif parm == "whisper_id":
         url = 'https://t.me/recoursec/10'
         c = '**اوامر الهمسة** \n همسة نص , ايدي او يوزر \n همسة ميديا او نص بالرد فقط'
         await ABH.send_file(
@@ -867,7 +867,7 @@ async def start_handlers(event):
             caption=c,
             reply_to=event.id
         )
-    elif parm == "همسة_يوزر":
+    elif parm == "whisper_media":
         url = 'https://t.me/recoursec/12'
         c = '**اوامر الهمسة** \n همسة نص , ايدي او يوزر \n همسة ميديا او نص بالرد فقط'
         await ABH.send_file(
