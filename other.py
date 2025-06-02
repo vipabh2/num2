@@ -377,7 +377,6 @@ async def ai_handler(event):
     async with event.client.action(event.chat_id, 'typing'):
         response = await asyncio.to_thread(ask_ai, user_q)
     await event.respond(response, reply_to=event.id)
-    # `🏀` لمقدار المربح = 5
 @ABH.on(events.NewMessage(pattern='اوامر الحظ'))
 async def luck_list(event):                          
     await event.reply('''
@@ -439,8 +438,7 @@ async def calc(event):
 c = [
     "ههههههه",
     "😂",
-    "يسعدلي مسائك😀"
-]
+    "يسعدلي مسائك😀"]
 @ABH.on(events.NewMessage(pattern='ميم|ميمز'))
 async def meme(event):
     rl = random.randint(2, 273)
@@ -532,15 +530,12 @@ async def show_whisper(event):
         return
     whisper_id = match.group(1).decode()
     whisper = get_whisper(whisper_id)
+    if not whisper:
+        return
     uid = event.sender_id
-    if not uid == whisper.sender_id or not uid == whisper.reciver_id:
+    if uid == whisper.sender_id or uid == whisper.reciver_id:
         await event.answer(whisper.message, alert=True)
         return
-    # await event.answer(whisper.message, alert=True)
-    if not whisper:
-        await event.answer("تم حذف الهمسة لا يمكنك رؤيتها", alert=True)
-        return
-    await event.answer(whisper.message, alert=True)
 BANNED_SITES = [
     "porn", "xvideos", "xnxx", "redtube", "xhamster",
     "brazzers", "youjizz", "spankbang", "erotic", "sex"
