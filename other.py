@@ -515,7 +515,7 @@ async def delete_whisper(event):
     if uid != whisper.sender_id:
         await event.answer("لا يمكنك حذف همسة ليست لك")
         return
-    x = "كيف_يمكنني_ان_اهمس"
+    x = "how_can_i_whisper"
     b = Button.url("كيف اهمس", url=f"https://t.me/{(await ABH.get_me()).username}?start={x}")
     if not whisper:
         await event.answer(" تم حذف الهمسة مسبقًا أو غير موجودة.", alert=True)
@@ -840,7 +840,7 @@ async def top(event):
         await event.reply('**اوامر الحسبان كآلاتي** \n *امر `/dates` يحسب لك كم باقي على رجب | شعبان |رمضان | محرم او تاريخ خاص فيك')
     elif event.text == 'اوامر الميمز':
         await event.reply('**اوامر الميمز كآلاتي** \n *امر `مخفي طكة زيج` \n بالرد ليرسل بصمه زيج للرساله المردود عليها \n `هاي بعد` ارسال فيديو للتعبير عن عدم فهمك لكلام الشخص \n `ميعرف` ارسال فيديو يعبر عن فهمك لموضوع عكس الشخص المقابل \n `استرجل`')
-x = "كيف_يمكنني_ان_اهمس"
+x = "how_can_i_whisper"
 @ABH.on(events.NewMessage(pattern="/start(?: (.+))?"))
 async def start_handlers(event):
     b = [Button.url("همسة ميديا", url=f"https://t.me/{(await ABH.get_me()).username}?start=همسة_ايدي"),
