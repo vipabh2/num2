@@ -534,9 +534,9 @@ async def show_whisper(event):
     whisper = get_whisper(whisper_id)
     uid = event.sender_id
     if not uid == whisper.sender_id or not uid == whisper.reciver_id:
-        await event.answer("لا يمكنك رؤية همسة ليست لك")
+        await event.answer(whisper.message, alert=True)
         return
-    await event.answer(whisper.message, alert=True)
+    # await event.answer(whisper.message, alert=True)
     if not whisper:
         await event.answer("تم حذف الهمسة لا يمكنك رؤيتها", alert=True)
         return
