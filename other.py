@@ -849,7 +849,7 @@ async def start_handlers(event):
     if not parm:
         return
     if parm == x:
-        url = 'https://t.me/recoursec/13'
+        url = 'https://files.catbox.moe/7lnpz4.jpg'
         c = '**اوامر الهمسة** \n همسة نص , ايدي او يوزر \n همسة ميديا او نص بالرد فقط'
         await ABH.send_file(
             event.chat_id,
