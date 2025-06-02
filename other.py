@@ -716,7 +716,6 @@ async def start_with_param(event):
     whisper_id = event.pattern_match.group(1)
     data = whisper_links.get(whisper_id)
     if not data:
-        await event.reply("الهمسة غير موجودة في التخزين.")
         return
     if event.sender_id != data['to'] and event.sender_id != data['from']:
         await event.reply("لا يمكنك مشاهدة هذه الهمسة.")
