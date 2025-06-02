@@ -497,7 +497,6 @@ async def callback_Whisper(event):
         else:
             await event.answer("عزيزي الحشري، هذه الهمسة ليست موجهة إليك!", alert=True)
             return
-        # await event.answer(whisper.message, alert=True)
         b = [Button.inline("حذف الهمسة", data=f'delete:{whisper_id}'),
             Button.inline("رؤية الهمسة", data=f'view:{whisper_id}')]
         msg = f"""
