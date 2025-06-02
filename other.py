@@ -509,14 +509,14 @@ async def delete_whisper(event):
     if not match:
         await event.answer("طلب غير صالح", alert=True)
         return
+    x = "كيف_يمكنني_ان_اهمس"
     whisper_id = match.group(1).decode()
     whisper = get_whisper(whisper_id)
     uid = event.sender_id
     if uid != whisper.sender_id:
         await event.answer("لا يمكنك حذف همسة ليست لك")
         return
-    b = [Button.url("همسة جديده", url=f"https://t.me/{(await ABH.get_me()).username}?start={whisper_id}"),
-        Button.inline("الزر هاذ ما يسوي شيء لاتدوسه", data=f'view:{whisper_id}')]
+    b = Button.url("كيف اهمس", url=f"https://t.me/{(await ABH.get_me()).username}?start={x}")
     if not whisper:
         await event.answer(" تم حذف الهمسة مسبقًا أو غير موجودة.", alert=True)
         return
@@ -676,7 +676,7 @@ async def handle_whisper(event):
     global l, m1, reply
     sender_id = event.sender_id
     if sender_id in l and l[sender_id]:
-        await event.reply("هيييي ماتكدر تسوي همستين بوقت واحد \n || جرب تدز نقطة بالخاص ||")
+        await event.reply("هيييي ماتكدر تسوي همستين بوقت واحد \n ||جرب تدز نقطة بالخاص||")
         return
     reply = await event.get_reply_message()
     if not reply:
@@ -838,3 +838,17 @@ async def top(event):
         await event.reply('**اوامر الحسبان كآلاتي** \n *امر `/dates` يحسب لك كم باقي على رجب | شعبان |رمضان | محرم او تاريخ خاص فيك')
     elif event.text == 'اوامر الميمز':
         await event.reply('**اوامر الميمز كآلاتي** \n *امر `مخفي طكة زيج` \n بالرد ليرسل بصمه زيج للرساله المردود عليها \n `هاي بعد` ارسال فيديو للتعبير عن عدم فهمك لكلام الشخص \n `ميعرف` ارسال فيديو يعبر عن فهمك لموضوع عكس الشخص المقابل \n `استرجل`')
+x = "كيف_يمكنني_ان_اهمس"
+@ABH.on(events.NewMessage(pattern="/start(?: (.+))?"))
+async def start_handlers(event):
+    b = [Button.url("همسة ميديا", url=f"https://t.me/{(await ABH.get_me()).username}?start=همسة_ايدي"),
+         Button.url("همسة نص", url=f"https://t.me/{(await ABH.get_me()).username}?start=همسة_يوزر")]
+    parm = event.pattern_match.group(1)
+    if not parm:
+        return
+    if parm == x:
+        url = 'https://t.me/recoursec/11'
+        await event.reply('**اوامر الهمسة** \n همسة نص , ايدي او يوزر \n همسة ميديا او نص بالرد فقط', url, b)
+    elif parm == "همسة_يوزر":
+        url = 'https://t.me/recoursec/1'
+        await event.reply('**اوامر الهمسة** \n همسة نص , ايدي او يوزر \n همسة ميديا او نص بالرد فقط', url, b)
