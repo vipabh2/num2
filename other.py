@@ -850,7 +850,7 @@ async def start_handlers(event):
         return
     if parm == x:
         url = 'https://t.me/recoursec/11'
-        await event.reply('**اوامر الهمسة** \n همسة نص , ايدي او يوزر \n همسة ميديا او نص بالرد فقط', url, b)
+        await event.respond('**اوامر الهمسة** \n همسة نص , ايدي او يوزر \n همسة ميديا او نص بالرد فقط', url, b)
     elif parm == "همسة_يوزر":
         url = 'https://t.me/recoursec/12'
-        await event.reply('**اوامر الهمسة** \n همسة نص , ايدي او يوزر \n همسة ميديا او نص بالرد فقط', url, b)
+        await event.respond('**اوامر الهمسة** \n همسة نص , ايدي او يوزر \n همسة ميديا او نص بالرد فقط', url, b)
