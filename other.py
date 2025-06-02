@@ -515,7 +515,7 @@ async def delete_whisper(event):
     if uid != whisper.sender_id:
         await event.answer("لا يمكنك حذف همسة ليست لك")
         return
-    b = [Button.inline("همسة جديده", url=f"https://t.me/{(await ABH.get_me()).username}?start={whisper_id}"),
+    b = [Button.url("همسة جديده", url=f"https://t.me/{(await ABH.get_me()).username}?start={whisper_id}"),
         Button.inline("الزر هاذ ما يسوي شيء لاتدوسه", data=f'view:{whisper_id}')]
     if not whisper:
         await event.answer(" تم حذف الهمسة مسبقًا أو غير موجودة.", alert=True)
