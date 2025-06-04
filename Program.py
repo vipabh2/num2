@@ -1,4 +1,5 @@
 from telethon import events
+from other import botuse
 from ABH import ABH
 import os, json
 DATA_FILE = "users_by_type.json"
@@ -36,6 +37,7 @@ async def log_user_by_type(event):
 @ABH.on(events.NewMessage(pattern=r'^احصائيات$', from_users=1910015590))
 async def send_statistics(event):
     data = load_users()
+    await botuse(event)
     private_count = len(data["private"])
     group_count = len(data["group"])
     channel_count = len(data["channel"])
@@ -52,6 +54,7 @@ async def send_statistics(event):
     await event.reply(msg)
 @ABH.on(events.NewMessage(pattern=r'^تفاصيل$', from_users=1910015590))
 async def send_user_details(event):
+    await botuse(event)
     data = load_users()
     msg_parts = []
     for chat_type, users in data.items():
