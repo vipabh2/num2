@@ -1,5 +1,5 @@
 from telethon.tl.types import ChannelParticipantAdmin, ChannelParticipantCreator
-import asyncio, os, json, random, uuid, operator, requests, aiohttp, re
+import asyncio, os, json, random, uuid, operator, requests, aiohttp, re, inspect
 from telethon.tl.functions.channels import GetParticipantRequest
 from database import store_whisper, get_whisper #type: ignore
 from Resources import CHANNEL, suras, mention #type: ignore
@@ -17,6 +17,8 @@ async def creat_useFILE():
 async def botuse(event):
     await creat_useFILE()
     x = event.pattern_match.group(0)
+    if not x:
+        x = inspect.currentframe().f_code.co_name
     data = {}
     with open('use.py', 'r', encoding='utf-8') as f:
         try:
@@ -33,6 +35,7 @@ wfffp = 1910015590
 id_status_per_chat = {}
 @ABH.on(events.NewMessage(pattern='الايدي تفعيل'))
 async def turn_on(event):
+    await botuse(event)
     uid = event.sender_id
     chat_id = event.chat_id
     if uid == wfffp:
@@ -42,6 +45,7 @@ async def turn_on(event):
         return
 @ABH.on(events.NewMessage(pattern='الايدي تعطيل'))
 async def turn_off(event):
+    await botuse(event)
     uid = event.sender_id
     chat_id = event.chat_id
     if uid == wfffp:
@@ -106,6 +110,7 @@ async def hisid(event):
     replied_message = await event.get_reply_message()
     if not replied_message:
         return
+    await botuse(event)
     sender_id = replied_message.sender_id
     user = await ABH.get_entity(sender_id)
     user_id = user.id
@@ -147,6 +152,7 @@ async def myid(event):
     chat_id = event.chat_id
     if not id_status_per_chat.get(chat_id, False):
         return
+    await botuse(event)
     sender_id = event.sender_id
     user = await ABH.get_entity(sender_id)
     user_id = user.id
@@ -207,7 +213,7 @@ async def is_owner(chat_id, user_id):
 async def add_assistant(event):
     if not event.is_group:
         return
-    s = await event.get_sender()
+    await botuse(event)
     sm = await mention(event)
     chat_id = str(event.chat_id)
     user_id = event.sender_id
@@ -232,7 +238,7 @@ async def add_assistant(event):
 async def remove_assistant(event):
     if not event.is_group:
         return
-    s = await event.get_sender()
+    await botuse(event)
     sm = await mention(event)
     chat_id = str(event.chat_id)
     user_id = event.sender_id
@@ -272,9 +278,9 @@ async def show_list(event):
     await event.reply(msg, parse_mode="md")
 @ABH.on(events.NewMessage(pattern="^اسمي$"))
 async def myname(event):
- s = await event.get_sender()
  name = await mention(event)
  await event.reply(name)
+ await botuse(event)
 @ABH.on(events.NewMessage(pattern="^اسمه|اسمة$"))
 async def hisname(event):
  r = await event.get_reply_message()
@@ -289,6 +295,7 @@ async def num(event):
  s=await event.get_sender()
  p=s.phone if getattr(s,"phone",None) else None
  await event.reply(f"`+{p}` +{p} " if p else "رقمك غير متاح")
+ await botuse(event)
 @ABH.on(events.NewMessage(pattern="^رقمة|رقمه$"))
 async def hisnum(event):
  r=await event.get_reply_message()
@@ -298,6 +305,7 @@ async def hisnum(event):
  s=await r.get_sender()
  p=s.phone if getattr(s,"phone",None) else None
  await event.reply(f"`+{p}` +{p} " if p else "رقمه غير متاح")
+ await botuse(event)
 @ABH.on(events.NewMessage(pattern="^يوزراتي$"))
 async def uss(event):
  s=await event.get_sender()
@@ -306,6 +314,7 @@ async def uss(event):
  usernames=list(dict.fromkeys(usernames))
  utext="\n".join(f"@{u}" for u in usernames)
  await event.reply(utext if usernames else "ليس لديك أي يوزرات NFT")
+ await botuse(event)
 @ABH.on(events.NewMessage(pattern="^يوزراته$"))
 async def hisuss(event):
  r=await event.get_reply_message()
@@ -318,11 +327,13 @@ async def hisuss(event):
  usernames=list(dict.fromkeys(usernames))
  utext="\n".join(f"@{u}" for u in usernames)
  await event.reply(utext if usernames else "ليس لديه أي يوزرات NFT")
+ await botuse(event)
 @ABH.on(events.NewMessage(pattern="^يوزري$"))
 async def mu(event):
  s=await event.get_sender()
  u=s.username or (list(dict.fromkeys([x.username for x in s.usernames]))[0] if getattr(s,"usernames",None) else None)
  await event.reply(f"`@{u}` @{u}" if u else "ليس لديك يوزر")
+ await botuse(event)
 @ABH.on(events.NewMessage(pattern="^يوزره|يوزرة|اليوزر$"))
 async def hisu(event):
  r=await event.get_reply_message()
@@ -332,8 +343,10 @@ async def hisu(event):
  s=await r.get_sender()
  u=s.username or (list(dict.fromkeys([x.username for x in s.usernames]))[0] if getattr(s,"usernames",None) else None)
  await event.reply(f"`@{u}` @{u}" if u else "ليس لديه يوزر")
+ await botuse(event)
 @ABH.on(events.NewMessage)
 async def quran(event):
+    await botuse(event)
     text = event.raw_text.strip()
     me = await event.client.get_me()
     username = me.username
@@ -390,16 +403,18 @@ def ask_ai(q):
         return "صار خطأ بالسيرفر، جرب بعدين."
 @ABH.on(events.NewMessage(pattern=r"^مخفي\s*(.*)"))
 async def ai_handler(event):
+    await botuse(event)
     user_q = event.pattern_match.group(1).strip()
     x = event.text
-    ignore_phrases = ["مخفي اعفطلة", "مخفي قيده", "مخفي قيدة", "مخفي طكة زيج"]
+    ignore_phrases = ["مخفي اعفطلة", "مخفي اعفطله", "مخفي قيده", "مخفي قيدة", "مخفي طكة زيج"]
     if not user_q or x in ignore_phrases:
         return
     async with event.client.action(event.chat_id, 'typing'):
         response = await asyncio.to_thread(ask_ai, user_q)
     await event.respond(response, reply_to=event.id)
 @ABH.on(events.NewMessage(pattern='اوامر الحظ'))
-async def luck_list(event):                          
+async def luck_list(event):
+    await botuse(event)
     await event.reply('''
     **اوامر الحظ** كآلاتي
     `🎲` المقدار المربح = 6
@@ -431,9 +446,11 @@ async def send_random_latmia(event):
         await event.reply(f"اعد المحاولة مره اخرى")
 @ABH.on(events.NewMessage(pattern=r"^(لطمية|لطميه)$"))
 async def handle_latmia_command(event):
+    await botuse(event)
     await send_random_latmia(event)
 @ABH.on(events.NewMessage(pattern='عاشوراء'))
 async def ashourau(event):
+    await botuse(event)
     pic = "links/abh.jpg"
     await ABH.send_file(event.chat_id, pic, caption="تقبل الله صالح الأعمال", reply_to=event.message.id)
 operations = {
@@ -444,6 +461,7 @@ operations = {
 }
 @ABH.on(events.NewMessage(pattern=r'احسب (\d+)\s*([\+\-\*/÷])\s*(\d+)'))
 async def calc(event):
+    await botuse(event)
     try:
         match = event.pattern_match 
         a = int(match.group(1))
@@ -462,12 +480,14 @@ c = [
     "يسعدلي مسائك😀"]
 @ABH.on(events.NewMessage(pattern='ميم|ميمز'))
 async def meme(event):
+    await botuse(event)
     rl = random.randint(2, 273)
     url = f"https://t.me/IUABH/{rl}"
     cap = random.choice(c)
     await ABH.send_file(event.chat_id, url, caption=f"{cap}", reply_to=event.id)
 @ABH.on(events.InlineQuery)
 async def Whisper(event):
+    await botuse(event)
     builder = event.builder
     query = event.text
     sender = event.sender_id
@@ -506,6 +526,7 @@ async def Whisper(event):
         await event.answer([result])
 @ABH.on(events.CallbackQuery)
 async def callback_Whisper(event):
+    await botuse(event)
     uid = event.sender_id
     data = event.data.decode('utf-8')
     if data.startswith('send:'):
@@ -527,6 +548,7 @@ async def callback_Whisper(event):
             return
 @ABH.on(events.CallbackQuery(data=re.compile(rb"^delete:(.+)")))
 async def delete_whisper(event):
+    await botuse(event)
     match = re.match(rb"^delete:(.+)", event.data)
     if not match:
         await event.answer("طلب غير صالح", alert=True)
@@ -545,6 +567,7 @@ async def delete_whisper(event):
     await event.edit("🗑️ تم حذف الهمسة بنجاح", buttons=b)
 @ABH.on(events.CallbackQuery(data=re.compile(rb"^view:(.+)")))
 async def show_whisper(event):
+    await botuse(event)
     match = re.match(rb"^view:(.+)", event.data)
     if not match:
         await event.answer("طلب غير صالح", alert=True)
@@ -592,6 +615,7 @@ async def take_screenshot(url, device="pc"):
     return screenshot_path
 @ABH.on(events.NewMessage(pattern=r'كشف رابط|سكرين (.+)'))
 async def screen_shot(event):
+    await botuse(event)
     url = event.pattern_match.group(1)
     if any(banned in url.lower() for banned in BANNED_SITES):
         await event.reply(" هذا الموقع محظور!\nجرب تتواصل مع المطور @k_4x1")
@@ -625,7 +649,8 @@ async def alert(message):
     except Exception as e:
         return
 @ABH.on(events.NewMessage)
-async def add_to(event):
+async def add_toalert(event):
+    await botuse(event)
     global alert_ids
     chat = await event.get_chat()
     if chat.id not in alert_ids:
@@ -693,6 +718,7 @@ user_sessions = {}
 l = {}
 @ABH.on(events.NewMessage(pattern='اهمس'))
 async def handle_whisper(event):
+    await botuse(event)
     global l, m1, reply
     sender_id = event.sender_id
     if sender_id in l and l[sender_id]:
@@ -733,6 +759,7 @@ async def handle_whisper(event):
     l[sender_id] = True
 @ABH.on(events.NewMessage(pattern=r'/start (\w+)'))
 async def start_with_param(event):
+    await botuse(event)
     whisper_id = event.pattern_match.group(1)
     data = whisper_links.get(whisper_id)
     if not data:
@@ -761,6 +788,7 @@ async def start_with_param(event):
     user_sessions[event.sender_id] = whisper_id
 @ABH.on(events.NewMessage(incoming=True))
 async def forward_whisper(event):
+    await botuse(event)
     global l, m2
     if not event.is_private or (event.text and event.text.startswith('/')):
         return
@@ -807,6 +835,7 @@ async def forward_whisper(event):
     l[sender_id] = False
 @ABH.on(events.NewMessage(pattern=r'^اوامري|اوامر$'))
 async def start(event):
+    await botuse(event)
     global sid
     sid = event.sender_id
     buttons = [[
@@ -861,7 +890,8 @@ async def top(event):
         await event.reply('**اوامر الميمز كآلاتي** \n *امر `مخفي طكة زيج` \n بالرد ليرسل بصمه زيج للرساله المردود عليها \n `هاي بعد` ارسال فيديو للتعبير عن عدم فهمك لكلام الشخص \n `ميعرف` ارسال فيديو يعبر عن فهمك لموضوع عكس الشخص المقابل \n `استرجل`')
 x = "how_can_i_whisper"
 @ABH.on(events.NewMessage(pattern="/start(?: (.+))?"))
-async def start_handlers(event):
+async def how_to_whisper(event):
+    await botuse(event)
     b = [Button.url("همسة ميديا", url=f"https://t.me/{(await ABH.get_me()).username}?start=whisper_id"),
          Button.url("همسة نص", url=f"https://t.me/{(await ABH.get_me()).username}?start=whisper_media")]
     parm = event.pattern_match.group(1)
