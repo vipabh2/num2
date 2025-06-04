@@ -200,11 +200,11 @@ async def edited(event):
 @ABH.on(events.CallbackQuery(pattern=r'^yes:(\d+)$'))
 async def yes_callback(event):
     uid = int(event.pattern_match.group(1))
-    await event.answer(' تم تسجيل المستخدم كملغّم.', alert=True)
+    await event.answer(' تم تسجيل المستخدم كملغّم.')
 @ABH.on(events.CallbackQuery(pattern=r'^no:(\d+)$'))
 async def no_callback(event):
     uid = int(event.pattern_match.group(1))
-    await event.answer(f" تم تجاهل التبليغ عن المستخدم {uid}", alert=True)
+    await event.answer(f" تم تجاهل التبليغ عن المستخدم {uid}")
     await ads(group, uid)
 @ABH.on(events.NewMessage(pattern='اضف قناة التبليغات'))
 async def add_hintchannel(event):
@@ -294,24 +294,27 @@ async def handler_res(event):
         return
     message_text = event.raw_text.strip()
     if contains_banned_word(message_text):
-        user_id = event.sender_id
-        chat = await event.get_chat()
-        if await is_admin(chat, user_id):
+        try:
+            user_id = event.sender_id
+            chat = await event.get_chat()
+            if await is_admin(chat, user_id):
+                await event.delete()
+                return
             await event.delete()
+            if user_id not in warns:
+                warns[user_id] = {}
+            if chat.id not in warns[user_id]:
+                warns[user_id][chat.id] = 0
+            warns[user_id][chat.id] += 1
+            s = await mention(event)
+            chat_id = event.chat_id
+            hint_channel = await LC(chat_id)
+            await ABH.send_message(
+                int(hint_channel),
+                f'المستخدم ( {s} ) ارسل كلمة غير مرغوب بها ( {message_text} ) تم تحذيره ومسحها \n تحذيراته ( 3\{warns[user_id][chat_id]} ) '
+                )
+        except:
             return
-        await event.delete()
-        if user_id not in warns:
-            warns[user_id] = {}
-        if chat.id not in warns[user_id]:
-            warns[user_id][chat.id] = 0
-        warns[user_id][chat.id] += 1
-        w = warns[user_id][chat.id] 
-        chat_id = event.chat_id
-        hint_channel = await LC(chat_id)
-        await ABH.send_message(
-            int(hint_channel),
-            f'المستخدم {await mention(event)} \n ارسل كلمة ممنوعة: ~~{message_text}~~ \n تحذيراته {w}' 
-            )
         if warns[user_id][chat.id] >= 2:
             await ABH(EditBannedRequest(chat.id, user_id, restrict_rights))
             name = await mention(event)
