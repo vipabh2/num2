@@ -50,7 +50,7 @@ async def restrict_user(event):
     if not is_assistant(chat_id, user_id):
         await event.reply("جا قيدته الك بس انت مو معاون")
         return
-    name = await mention(event, sender)
+    name = await mention(event)
     try:
         participant = await ABH(GetParticipantRequest(channel=chat.id, participant=sender.id))
         if isinstance(participant.participant, (ChannelParticipantCreator, ChannelParticipantAdmin)):
@@ -171,9 +171,8 @@ async def edited(event):
         await asyncio.sleep(60)
         await event.delete()
         return
-    sender = await event.get_sender()
     chat_obj = await event.get_chat()
-    mention_text = await mention(event, sender)
+    mention_text = await mention(event)
     if getattr(chat_obj, "username", None):
         رابط = f"https://t.me/{chat_obj.username}/{event.id}"
     else:
@@ -309,15 +308,13 @@ async def handler_res(event):
         w = warns[user_id][chat.id] 
         chat_id = event.chat_id
         hint_channel = await LC(chat_id)
-        sender = await event.get_sender()
         await ABH.send_message(
             int(hint_channel),
-            f'المستخدم {await mention(event, sender)} \n ارسل كلمة ممنوعة: ~~{message_text}~~ \n تحذيراته {w}' 
+            f'المستخدم {await mention(event)} \n ارسل كلمة ممنوعة: ~~{message_text}~~ \n تحذيراته {w}' 
             )
         if warns[user_id][chat.id] >= 2:
             await ABH(EditBannedRequest(chat.id, user_id, restrict_rights))
-            sender = await event.get_sender()
-            name = await mention(event, sender)
+            name = await mention(event)
             warns[user_id][chat.id] = 0
             hint_channel = await LC(chat.id)
             if hint_channel:
