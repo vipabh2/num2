@@ -1,11 +1,10 @@
 from telethon.tl.types import ChannelParticipantCreator, ChannelParticipantAdmin, ChatBannedRights
 from telethon.tl.functions.channels import EditBannedRequest, GetParticipantRequest
 from telethon.tl.types import ChatBannedRights, MessageEntityUrl
+from other import is_assistant, botuse
 from Resources import group, mention
 from telethon import events, Button
 import os, asyncio, re, json, time
-from other import is_assistant
-from other import botuse
 from ABH import ABH
 SETTINGS_FILE = "settings.json"
 def load_settings():
