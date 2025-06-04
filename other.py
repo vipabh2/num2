@@ -188,7 +188,7 @@ async def add_assistant(event):
     if not event.is_group:
         return
     s = await event.get_sender()
-    sm = await mention(event, s)
+    sm = await mention(event)
     chat_id = str(event.chat_id)
     user_id = event.sender_id
     if not (await is_owner(event.chat_id, user_id) or user_id == 1910015590):
@@ -213,7 +213,7 @@ async def remove_assistant(event):
     if not event.is_group:
         return
     s = await event.get_sender()
-    sm = await mention(event, s)
+    sm = await mention(event)
     chat_id = str(event.chat_id)
     user_id = event.sender_id
     if not (await is_owner(event.chat_id, user_id) or user_id == 1910015590):
@@ -252,7 +252,7 @@ async def show_list(event):
 @ABH.on(events.NewMessage(pattern="^اسمي$"))
 async def myname(event):
  s = await event.get_sender()
- name = await mention(event, s)
+ name = await mention(event)
  await event.reply(name)
 @ABH.on(events.NewMessage(pattern="^اسمه|اسمة$"))
 async def hisname(event):
@@ -261,7 +261,7 @@ async def hisname(event):
     await event.reply("يجب الرد على رسالة المستخدم")
     return
  s = await r.get_sender()
- name = await mention(event, s)
+ name = await mention(event)
  await event.reply(name)
 @ABH.on(events.NewMessage(pattern="^رقمي$"))
 async def num(event):
