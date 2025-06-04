@@ -9,6 +9,23 @@ from playwright.async_api import async_playwright
 from ABH import ABH, events #type: ignore
 from datetime import datetime
 from telethon import Button
+from ABH import ABH, events
+async def creat_useFILE():
+    if not os.path.exists('use.py'):
+        with open('use.py', 'w', encoding='utf-8') as f:
+            json.dump({}, f, ensure_ascii=False, indent=4)
+@ABH.on(events.NewMessage(pattern='.تجربة'))
+async def bot_use(event):
+    x = 'تجربة'
+    data = {}
+    if os.path.exists('use.py'):
+        with open('use.py', 'r', encoding='utf-8') as f:
+         data = json.load(f)
+    if isinstance(data, dict):
+        data['test'] = x
+    with open('use.py', 'w', encoding='utf-8') as f:
+        json.dump(data, f, ensure_ascii=False, indent=4)
+        await event.reply('تم إضافة البيانات')
 wfffp = 1910015590
 id_status_per_chat = {}
 @ABH.on(events.NewMessage(pattern='الايدي تفعيل'))
