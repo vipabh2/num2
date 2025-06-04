@@ -14,18 +14,21 @@ async def creat_useFILE():
     if not os.path.exists('use.py'):
         with open('use.py', 'w', encoding='utf-8') as f:
             json.dump({}, f, ensure_ascii=False, indent=4)
-@ABH.on(events.NewMessage(pattern='.تجربة'))
-async def bot_use(event):
-    x = 'تجربة'
+async def botuse(event):
+    await creat_useFILE()
+    x = event.pattern_match.group(0)
     data = {}
-    if os.path.exists('use.py'):
-        with open('use.py', 'r', encoding='utf-8') as f:
-         data = json.load(f)
-    if isinstance(data, dict):
-        data['test'] = x
+    with open('use.py', 'r', encoding='utf-8') as f:
+        try:
+            data = json.load(f)
+        except:
+            data = {}
+    if x not in data:
+        data[x] = 1
+    else:
+        data[x] += 1
     with open('use.py', 'w', encoding='utf-8') as f:
         json.dump(data, f, ensure_ascii=False, indent=4)
-        await event.reply('تم إضافة البيانات')
 wfffp = 1910015590
 id_status_per_chat = {}
 @ABH.on(events.NewMessage(pattern='الايدي تفعيل'))
@@ -252,6 +255,7 @@ async def remove_assistant(event):
 async def show_list(event):
     if not event.is_group:
         return
+    await botuse(event)
     chat_id = str(event.chat_id)
     data = load_auth()
     msg = "**قائمة المعاونين في هذه المجموعة**\n\n"
