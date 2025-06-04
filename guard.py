@@ -5,6 +5,7 @@ from Resources import group, mention
 from telethon import events, Button
 import os, asyncio, re, json, time
 from other import is_assistant
+from other import botuse
 from ABH import ABH
 SETTINGS_FILE = "settings.json"
 def load_settings():
@@ -28,6 +29,7 @@ def get_group_toggle(chat_id) -> bool:
 restriction_end_times = {}
 @ABH.on(events.NewMessage(pattern=r"^(تفعيل|تعطيل) التقييد$"))
 async def toggle_feature(event):
+    await botuse(event)
     action = event.pattern_match.group(1)
     value = True if action == "تفعيل" else False
     set_group_toggle(event.chat_id, value)
@@ -35,6 +37,7 @@ async def toggle_feature(event):
     await event.reply(f"تم {action} الميزة `t` لهذه المجموعة.\nالحالة: {status}")
 @ABH.on(events.NewMessage(pattern='^تقييد عام|مخفي قيده|مخفي قيدة$'))
 async def restrict_user(event):
+    await botuse(event)
     if not event.is_group:
         return
     if not get_group_toggle(event.chat_id):
@@ -75,6 +78,7 @@ async def restrict_user(event):
         await event.reply(f" ياريت اقيده بس ماكدر")
 @ABH.on(events.NewMessage)
 async def monitor_messages(event):
+    await botuse(event)
     if not event.is_group:
         return
     user_id = event.sender_id
@@ -151,6 +155,7 @@ async def LC(group_id: int) -> int | None:
 report_data = {}
 @ABH.on(events.MessageEdited)
 async def edited(event):
+    await botuse(event)
     msg = event.message
     chat_id = event.chat_id
     if chat_id != group or not msg.edit_date:
@@ -209,6 +214,7 @@ async def no_callback(event):
     await ads(group, uid)
 @ABH.on(events.NewMessage(pattern='اضف قناة التبليغات'))
 async def add_hintchannel(event):
+    await botuse(event)
     if not event.is_group:
         return await event.reply("↯︙يجب تنفيذ هذا الأمر داخل مجموعة.")
     r = await event.get_reply_message()
@@ -223,6 +229,7 @@ async def add_hintchannel(event):
         await event.reply("︙المعرف غير صالح، تأكد أنه يبدأ بـ -100 ويتكون من أرقام فقط.")
 @ABH.on(events.NewMessage(pattern='اعرض قناة التبليغات'))
 async def show_hintchannel(event):
+    await botuse(event)
     chat_id = event.chat_id
     c = await LC(chat_id)
     if c:
@@ -287,6 +294,7 @@ unrestrict_rights = ChatBannedRights(
 warns = {}
 @ABH.on(events.NewMessage)
 async def handler_res(event):
+    await botuse(event)
     if not get_group_toggle(event.chat_id):
         return
     if event.message.action or not event.raw_text:
@@ -330,6 +338,7 @@ async def handler_res(event):
             await ABH(EditBannedRequest(chat.id, user_id, unrestrict_rights))
 @ABH.on(events.NewMessage(pattern='!تجربة'))
 async def test_broadcast(event):
+    await botuse(event)
     if not event.is_group:
         return await event.reply("↯︙هذا الأمر يعمل فقط داخل المجموعات.")
     chat_id = event.chat_id
