@@ -1,4 +1,6 @@
+
 import google.generativeai as genai
+from other import botuse
 from ABH import *
 import pytz
 timezone = pytz.timezone('Asia/Baghdad')
@@ -10,6 +12,7 @@ hint_gid = -1002168230471
 bot = "Anymous"
 wfffp = 1910015590
 async def mention(event):
+        await botuse(event)
         sender = await event.get_sender()
         name = sender.first_name or 'name'
         id = sender.id
