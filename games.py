@@ -457,6 +457,13 @@ async def show_number(event):
 games = {}
 @ABH.on(events.NewMessage(pattern='اكس او|/xo|/Xo'))
 async def xo(event):
+    reply = await event.get_reply_message()
+    if reply:
+        p1 = await event.get_sender()
+        p2 = await reply.get_sender()
+        if p1.id == p2.id:
+            await event.reply("لا يمكنك اللعب ضد نفسك.")
+            return
     chat_id = event.chat_id
     player1_id = event.sender_id
     username1 = event.sender.username or "x04ou"
@@ -774,55 +781,116 @@ async def check_sport(event):
         current_question = user_states_s[user_id].get("question", {})
         correct_answers = current_question.get('answer', [])
         if user_message in correct_answers:
-            p = random.randint(50, 500)
+            p = random.randint(500, 5000)
             add_points(user_id, gid, points, amount=p)
             await event.reply(f"احسنت اجابة صحيحة 🫡 \n ربحت (`{p}`) \n فلوسك ↢ {points[str(user_id)][str(gid)]['points']}")
             del user_states_s[user_id]
         else:
             pass
-choices = {"rock": "🪨حجره", "paper": "📜ورقة", "cuter": "✂️مقص"}
+choices = {
+    "rock": "🪨حجرة",
+    "paper": "📜ورقة",
+    "cuter": "✂️مقص"
+}
 active_games = {}
 @ABH.on(events.NewMessage(pattern="حجرة|/rock"))
 async def rock(event):
-    global n
-    active_games[event.chat_id] = event.sender_id
-    n = event.sender.first_name
-    buttons = [
-        [Button.inline("🪨", b"rock"), Button.inline("✂️", b"cuter"), Button.inline("📜", b"paper")]
-    ]
-    await event.respond("اختر أحد الاختيارات 🌚", buttons=buttons, reply_to=event.id)
-async def choice(event, user_choice):
-    gid = event.chat_id
-    user_id = event.sender_id
-    game_owner = active_games.get(gid)
-    if game_owner != user_id:
-        await event.answer("من تدخل في ما لا يعنيه لقي كلام لا يرضيه 🙄", alert=True)
-        return
-    bot_choice_key = random.choice(list(choices.keys()))
-    bot_choice = choices[bot_choice_key]
-    if user_choice == bot_choice_key:
-        result = "🤝 تعادل"
-        p = random.randint(10, 50)
-    elif (
-        (user_choice == "rock" and bot_choice_key == "cuter") or
-        (user_choice == "paper" and bot_choice_key == "rock") or
-        (user_choice == "cuter" and bot_choice_key == "paper")
-    ):
-        result = "🎉 فزت"
-        p = random.randint(10, 150)
+    chat_id = event.chat_id
+    sender_id = event.sender_id
+    reply_msg = await event.get_reply_message()
+    if reply_msg and reply_msg.sender_id != sender_id:
+        player1 = sender_id
+        player2 = reply_msg.sender_id
+        active_games[chat_id] = {
+            'player1_id': player1,
+            'player1_choice': None,
+            'player2_id': player2,
+            'player2_choice': None,
+            'is_bot_game': False
+        }
+        await event.respond(
+            f"لعبة بين لاعبين\n{(await event.client.get_entity(player1)).first_name} ضد {(await event.client.get_entity(player2)).first_name}",
+            buttons=[[Button.inline("🪨", b"rock"), Button.inline("✂️", b"cuter"), Button.inline("📜", b"paper")]],
+            reply_to=event.id
+        )
     else:
-        result = "😢 خسرت"
-        p = 0
-    if p > 0:
-        add_points(user_id, gid, points, amount=p)
-    user_entity = await event.client.get_entity(user_id)
-    name = user_entity.first_name
-    await event.edit(
-        f"[{name}](tg://user?id={user_id}) {choices[user_choice]}\n"
-        f"[مخفي](tg://user?id=7908156943) {bot_choice}\n\n"
-        f"{result}"
-        f"{f' تم إضافة ({p}) نقطة إلى حسابك' if p > 0 else ''}"
-    )
+        active_games[chat_id] = {
+            'player1_id': sender_id,
+            'player1_choice': None,
+            'player2_id': 'bot',
+            'player2_choice': None,
+            'is_bot_game': True
+        }
+        await event.respond(
+            "اختر أحد الاختيارات 🌚",
+            buttons=[[Button.inline("🪨", b"rock"), Button.inline("✂️", b"cuter"), Button.inline("📜", b"paper")]],
+            reply_to=event.id
+        )
+async def choice(event, user_choice):
+    chat_id = event.chat_id
+    user_id = event.sender_id
+    game = active_games.get(chat_id)
+    if not game:
+        await event.answer("لا توجد لعبة مفعلة في هذا الشات.")
+        return
+    if user_id not in [game['player1_id'], game['player2_id']]:
+        await event.answer("أنت لست ضمن هذه اللعبة 🙄")
+        return
+    if user_id == game['player1_id']:
+        game['player1_choice'] = user_choice
+    elif user_id == game['player2_id']:
+        game['player2_choice'] = user_choice
+    if game['is_bot_game']:
+        bot_choice_key = random.choice(list(choices.keys()))
+        bot_choice = choices[bot_choice_key]
+        if user_choice == bot_choice_key:
+            result = "🤝 تعادل"
+            p = random.randint(100, 500)
+        elif (
+            (user_choice == "rock" and bot_choice_key == "cuter") or
+            (user_choice == "paper" and bot_choice_key == "rock") or
+            (user_choice == "cuter" and bot_choice_key == "paper")
+        ):
+            result = "🎉 فزت"
+            p = random.randint(1000, 3000)
+        else:
+            result = "😢 خسرت"
+            p = 0
+        if p > 0:
+            add_points(user_id, chat_id, points, amount=p)
+        name = (await event.client.get_entity(user_id)).first_name
+        await event.edit(
+            f"[{name}](tg://user?id={user_id}) {choices[user_choice]}\n"
+            f"[البوت](tg://user?id=7908156943) {bot_choice}\n\n"
+            f"{result}"
+            f"{f' تم إضافة ({p}) نقطة إلى حسابك' if p > 0 else ''}"
+        )
+        del active_games[chat_id]
+    else:
+        if game['player1_choice'] and game['player2_choice']:
+            p1 = game['player1_id']
+            p2 = game['player2_id']
+            c1 = game['player1_choice']
+            c2 = game['player2_choice']
+            if c1 == c2:
+                result = "🤝 تعادل"
+                winner = None
+            elif (
+                (c1 == "rock" and c2 == "cuter") or
+                (c1 == "paper" and c2 == "rock") or
+                (c1 == "cuter" and c2 == "paper")
+            ):
+                result = f"🎉 الفائز: [{(await event.client.get_entity(p1)).first_name}](tg://user?id={p1})"
+                winner = p1
+            else:
+                result = f"🎉 الفائز: [{(await event.client.get_entity(p2)).first_name}](tg://user?id={p2})"
+                winner = p2
+            await event.edit(
+                f"[{(await event.client.get_entity(p1)).first_name}](tg://user?id={p1}) {choices[c1]}\n"
+                f"[{(await event.client.get_entity(p2)).first_name}](tg://user?id={p2}) {choices[c2]}\n\n"
+                f"{result}"
+            )
+            del active_games[chat_id]
 @ABH.on(events.CallbackQuery(data=b"rock"))
 async def rock_callback(event):
     await choice(event, "rock")
@@ -878,6 +946,7 @@ async def faster_done(event):
     global answer, is_on, start_time
     if is_on:
         await event.reply('تم بدء اللعبة، انتظر ثواني...')
+        is_on = False
         await asyncio.sleep(2)
         for _ in range(5):
             word = fake.word()
@@ -889,7 +958,6 @@ async def faster_done(event):
             await asyncio.sleep(s)
         points_list = "\n".join([f"{info['name']} - {info['score']} نقطة" for info in res.values()])
         await event.reply(f"**ترتيب اللاعبين بالنقاط**\n{points_list}")
-        is_on = False
 @ABH.on(events.NewMessage)
 async def faster_reult(event):
     global is_on, start_time, answer, a
@@ -906,7 +974,7 @@ async def faster_reult(event):
         res[username]["score"] += 1
         user_id = event.sender_id
         gid = event.chat_id
-        p = random.randint(1, 100)
+        p = random.randint(100, 500)
         a = points[str(user_id)][str(gid)]['points']
         await event.reply(f'احسنت جواب موفق \n الوقت ↞ {seconds} \n تم اضافه (`{p}`) \n `{a}` لفلوسك')
         add_points(user_id, gid, points, amount=p)
