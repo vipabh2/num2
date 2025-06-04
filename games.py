@@ -134,8 +134,7 @@ async def boxing(event):
         remaining = 10 * 60 - (current_time - last_target_time)
         minutes = remaining // 60
         seconds = remaining % 60
-        s = await event.get_sender()
-        x = await mention(s)
+        x = await mention(event)
         await event.reply(f"لا يمكن مضاربة {x} الآن، انتظر {minutes:02}:{seconds:02} دقيقة.")
         return
     last_attack_time = user_data.get(str(user2_id), {}).get("attacked", 0)
