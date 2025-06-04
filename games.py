@@ -298,7 +298,10 @@ async def guess(event):
     global game_active, number, attempts, max_attempts
     if not game_active:
         return
-    guess = int(event.text)
+    try:
+        guess = int(event.text)
+    except ValueError:
+        return
     if guess < 1 or guess > 10:
         await event.reply("يرجى اختيار رقم بين 1 و 10 فقط!")
         return
