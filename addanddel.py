@@ -1,10 +1,14 @@
+
 from top import points, add_user, save_points
 from ABH import ABH, events
+from other import botuse
 @ABH.on(events.NewMessage(pattern='اوامر الرفع'))
 async def promot_list(event):
+    await botuse(event)
     await event.reply('**اوامر الرفع كالاتي** \n `رفع سمب` + عدد فلوس \n لرفع الشخص في قائمة `السمبات` \n `تنزيل سمب` \n حتى ترفع لازم يكون رصيدك 1000 والتنزيل يُضرب المبلغ *1.5 \n * `اوامر الالعاب`')
 @ABH.on(events.NewMessage(pattern=r'رفع سمب(?:\s+(\d+))?'))
 async def promote_handler(event):
+    await botuse(event)
     message = await event.get_reply_message()
     if not message or not message.sender:
         await event.reply("يجب الرد على شخص حتى ترفعه.")
@@ -41,6 +45,7 @@ async def promote_handler(event):
     await event.reply(f" تم رفع {receiver_name} مقابل {amount} فلوس")
 @ABH.on(events.NewMessage(pattern='تنزيل سمب'))
 async def demote_handler(event):
+    await botuse(event)
     message = await event.get_reply_message()
     if not message or not message.sender:
         await event.reply("متكدر تنزل العدم , سوي رد على شخص")
@@ -70,6 +75,7 @@ async def demote_handler(event):
     await event.reply(f"تم تنزيل {r.sender.first_name}  من السمبية")
 @ABH.on(events.NewMessage(pattern='السمبات'))
 async def show_handler(event):
+    await botuse(event)
     chat_id = str(event.chat_id)
     if chat_id not in points or not points[chat_id]:
         await event.reply("ماكو سمبات هنا بالمجموعة")
@@ -90,9 +96,11 @@ async def show_handler(event):
     await event.reply(response if response.strip() != "قائمة السمبات👇" else "ماكو وردات مرفوعين بالمجموعة", parse_mode="Markdown")
 @ABH.on(events.NewMessage(pattern='اوامر الرفع'))
 async def promot_list(event):
+    await botuse(event)
     await event.reply('**اوامر الرفع كالاتي** \n `رفع سمب` + عدد فلوس \n لرفع الشخص في قائمة `السمبات` \n `تنزيل سمب` \n حتى ترفع لازم يكون رصيدك 1000 والتنزيل يُضرب المبلغ *1.5 \n * `اوامر الالعاب`')
 @ABH.on(events.NewMessage(pattern=r'رفع سمب(?:\s+(\d+))?'))
 async def promote_handler(event):
+    await botuse(event)
     message = await event.get_reply_message()
     if not message or not message.sender:
         await event.reply("يجب الرد على شخص حتى ترفعه.")
@@ -129,6 +137,7 @@ async def promote_handler(event):
     await event.reply(f" تم رفع {receiver_name} مقابل {amount} فلوس")
 @ABH.on(events.NewMessage(pattern='تنزيل سمب'))
 async def demote_handler(event):
+    await botuse(event)
     message = await event.get_reply_message()
     if not message or not message.sender:
         await event.reply("متكدر تنزل العدم , سوي رد على شخص")
@@ -158,6 +167,7 @@ async def demote_handler(event):
     await event.reply(f"تم تنزيل {r.sender.first_name}  من السمبية")
 @ABH.on(events.NewMessage(pattern='السمبات'))
 async def show_handler(event):
+    await botuse(event)
     chat_id = str(event.chat_id)
     if chat_id not in points or not points[chat_id]:
         await event.reply("ماكو سمبات هنا بالمجموعة")
