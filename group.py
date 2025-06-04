@@ -8,10 +8,12 @@ import google.generativeai as genai
 from datetime import datetime
 from telethon import Button
 from ABH import ABH, events
+from other import botuse
 import pytz
 @ABH.on(events.NewMessage(pattern='^/dates|مواعيد$'))
 async def show_dates(event):
     global uid, msg
+    await botuse(event)
     btton = [[
         Button.inline("محرم", b"m"),
         Button.inline("رمضان", b"rm"),
@@ -23,6 +25,7 @@ async def show_dates(event):
     uid = event.sender_id
 @ABH.on(events.CallbackQuery(data='set_date'))
 async def set_date(event):
+    await botuse(event)
     المرسل_الثاني = event.sender_id
     if المرسل_الثاني != uid:
         await event.answer('عزيزي الامر لا يخصك', alert=True)
@@ -68,6 +71,7 @@ async def set_user_date(event):
         await event.reply("التاريخ المدخل غير صالح، يرجى إدخاله بصيغة YYYY-MM-DD.")
 @ABH.on(events.NewMessage(pattern='^كم باقي$'))
 async def check_remaining_days(event):
+    await botuse(event)
     user_id = event.sender_id
     saved_date = get_saved_date(user_id)
     if saved_date:
@@ -80,12 +84,14 @@ async def check_remaining_days(event):
         await event.reply("لم تحدد تاريخًا بعد، يرجى تحديد تاريخ أولاً.")
 @ABH.on(events.NewMessage(pattern='^تاريخ$'))
 async def today(event):
+    await botuse(event)
     t = datetime.datetime.now().date()
     hd = Gregorian(t.year, t.month, t.day).to_hijri()
     hd_str = f"{hd.day} {hd.month_name('ar')} {hd.year} هـ"    
     await event.reply(f" الهجري: \n {hd_str} \n الميلادي: \n {t}")
 @ABH.on(events.NewMessage(pattern=r'كشف ايدي (\d+)'))
 async def link(event):
+    await botuse(event)
     global user, uid
     uid = event.sender_id
     user_id = event.pattern_match.group(1)
@@ -114,6 +120,7 @@ genai.configure(api_key=GEMINI)
 model = genai.GenerativeModel("gemini-1.5-flash")
 @ABH.on(events.NewMessage(pattern=r'(ترجمة|ترجمه)'))
 async def translation(event):
+    await botuse(event)
     translator = Translator()
     if event.is_reply:
         replied_message = await event.get_reply_message()
@@ -156,6 +163,7 @@ def translate_rights_lines(rights_obj):
     return "\n".join(lines) if lines else "لا يوجد صلاحيات"
 @ABH.on(events.NewMessage(pattern=r'^صلاحياته(?: (.+))?$'))
 async def his_rights(event):
+    await botuse(event)
     try:
         chat = await event.get_input_chat()
         match = event.pattern_match.group(1)
@@ -174,6 +182,7 @@ async def his_rights(event):
         await event.reply("لا يمكن عرض الصلاحيات.")
 @ABH.on(events.NewMessage(pattern=r'^لقبه(?: (.+))?$'))
 async def nickname_r(event):
+    await botuse(event)
     try:
         chat = await event.get_input_chat()
         match = event.pattern_match.group(1)
