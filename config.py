@@ -22,16 +22,13 @@ if not os.path.exists(اسم_الملف):
 @ABH.on(events.NewMessage(pattern='وقت التشغيل'))
 async def time_run(event):
     if event.sender_id==wfffp:
-        try:
-            with open(اسم_الملف,"r",encoding="utf-8") as ملف:
-                وقت_التشغيل=json.load(ملف)
-            baghdad_tz=pytz.timezone("Asia/Baghdad")
-            الآن=datetime.now(baghdad_tz)
-            الساعة=الآن.strftime("%I:%M %p")
-            الرسالة=f"🕒 وقت التشغيل: {وقت_التشغيل}\n🕰️ الوقت الحالي في بغداد: {الساعة}"
-            await event.reply(الرسالة)
-        except Exception as e:
-            await event.reply(f"خطأ: {str(e)}")
+        with open(اسم_الملف,"r",encoding="utf-8") as ملف:
+            وقت_التشغيل=json.load(ملف)
+        baghdad_tz=pytz.timezone("Asia/Baghdad")
+        الآن=datetime.now(baghdad_tz)
+        الساعة=الآن.strftime("%I:%M %p")
+        الرسالة=f"🕒 وقت التشغيل {وقت_التشغيل}\n🕰️ الوقت الحالي في بغداد {الساعة}"
+        await event.reply(الرسالة)
 print(f'anymous is working at {hour} ✓')
 def main():
     print("config is starting...")
