@@ -1,3 +1,4 @@
+
 from telethon.tl.types import ChannelParticipantAdmin, ChannelParticipantCreator
 import asyncio, os, json, random, uuid, operator, requests, aiohttp, re, inspect
 from telethon.tl.functions.channels import GetParticipantRequest
@@ -11,22 +12,24 @@ from datetime import datetime
 from telethon import Button
 from ABH import ABH, events
 async def creat_useFILE():
-    if not os.path.exists('use.py'):
-        with open('use.py', 'w', encoding='utf-8') as f:
+    if not os.path.exists('use.json'):
+        with open('use.json', 'w', encoding='utf-8') as f:
             json.dump({}, f, ensure_ascii=False, indent=4)
-async def botuse(type):
+async def botuse(types):
     await creat_useFILE()
-    data = {}
-    with open('use.py', 'r', encoding='utf-8') as f:
+    if isinstance(types, str):
+        types = [types]
+    with open('use.json', 'r', encoding='utf-8') as f:
         try:
             data = json.load(f)
-        except:
+        except json.JSONDecodeError:
             data = {}
-    if x not in data:
-        data[type] = 1
-    else:
-        data[type] += 1
-    with open('use.py', 'w', encoding='utf-8') as f:
+    for t in types:
+        if t in data:
+            data[t] += 1
+        else:
+            data[t] = 1
+    with open('use.json', 'w', encoding='utf-8') as f:
         json.dump(data, f, ensure_ascii=False, indent=4)
 wfffp = 1910015590
 id_status_per_chat = {}
