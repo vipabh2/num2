@@ -17,7 +17,8 @@ def save_user_data(data):
         json.dump(data, file, ensure_ascii=False, indent=4)
 @ABH.on(events.NewMessage(pattern=r'^تداول$'))
 async def trade(event):
-    await botuse(event)
+    type = "تداول"
+    await botuse(type)
     user_id = str(event.sender_id)
     gid = str(event.chat_id)
     user_data = tlo()
@@ -62,7 +63,8 @@ async def trade(event):
     save_user_data(user_data)
 @ABH.on(events.NewMessage(pattern=r'^شراء حل\s+(.+)$'))
 async def buy(event):
-    await botuse(event)
+    type = "شراء حل"
+    await botuse(type)
     user_id = event.sender_id
     gid = event.chat_id
     type = event.pattern_match.group(1).strip()
@@ -115,7 +117,8 @@ def save_user_data(data):
         json.dump(data, file, ensure_ascii=False, indent=4)
 @ABH.on(events.NewMessage(pattern=r'مضاربة (\d+)'))
 async def boxing(event):
-    await botuse(event)
+    type = "مضاربة"
+    await botuse(type)
     reply = await event.get_reply_message()
     if not reply:
         await event.reply('عزيزي، لازم ترد على رسالة الشخص اللي تريد تضاربه.')
@@ -187,7 +190,8 @@ async def boxing(event):
 user_state = {}
 @ABH.on(events.NewMessage(pattern='/football|كرة قدم'))
 async def answer_football(event):
-    await botuse(event)
+    type = "كرة قدم"
+    await botuse(type)
     sender = await event.get_sender()
     a = event.id
     user_id = sender.id
@@ -239,7 +243,8 @@ def save_user_data(data):
 async def telegramgames(event):
     if not event.message.dice:
         return
-    await botuse(event)
+    type = "الحظ"
+    await botuse(type)
     user_id = event.sender_id
     dice = event.message.dice
     emoji = dice.emoticon
@@ -279,7 +284,8 @@ active_player_id = None
 @ABH.on(events.NewMessage(pattern='/num|ارقام'))
 async def num(event):
     global game_active, number, attempts, active_player_id
-    await botuse(event)
+    type = "ارقام"
+    await botuse(type)
     if game_active:
         await event.reply("اللعبة قيد التشغيل بالفعل! حاول إنهاء اللعبة الحالية أولاً.")
         return
@@ -359,7 +365,8 @@ def reset_game(chat_id):
 group_game_status = {}
 @ABH.on(events.NewMessage(pattern='/rings|محيبس'))
 async def rings(event):
-    await botuse(event)
+    type = "محيبس"
+    await botuse(type)
     username = event.sender.username or "x04ou"
     markup = [[Button.inline("ابدأ اللعبة", b"startGame")]]
     await event.reply(
@@ -467,7 +474,8 @@ async def show_number(event):
 games = {}
 @ABH.on(events.NewMessage(pattern='اكس او|/xo|/Xo'))
 async def xo(event):
-    await botuse(event)
+    type = "اكس او"
+    await botuse(type)
     reply = await event.get_reply_message()
     if reply:
         p1 = await event.get_sender()
@@ -660,7 +668,8 @@ questions_and_answers_q = [
 states = {}
 @ABH.on(events.NewMessage(pattern='اسئلة|/quist'))
 async def quest(event):
-    await botuse(event)
+    type = "اسئلة"
+    await botuse(type)
     """بدء السؤال العشوائي"""
     user_id = event.sender_id
     quest = random.choice(questions_and_answers_q)
@@ -775,7 +784,8 @@ questions_and_answers = [
 user_states_s = {}
 @ABH.on(events.NewMessage(pattern='كره قدم|كرة القدم|/sport'))
 async def sport(event):
-    await botuse(event)
+    type = "كره قدم"
+    await botuse(type)
     user_id = event.sender_id
     question = random.choice(questions_and_answers)
     user_states_s[user_id] = {
@@ -808,7 +818,8 @@ choices = {
 active_games = {}
 @ABH.on(events.NewMessage(pattern="حجرة|/rock"))
 async def rock(event):
-    await botuse(event)
+    type = "حجرة"
+    await botuse(type)
     chat_id = event.chat_id
     sender_id = event.sender_id
     reply_msg = await event.get_reply_message()
@@ -923,7 +934,8 @@ start_time = None
 fake = Faker("ar_AA")
 @ABH.on(events.NewMessage(pattern=r"(?i)^(?:اسرع|/faster)$"))  
 async def faster(event):
-    await botuse(event)
+    type = "اسرع"
+    await botuse(type)
     global is_on, players
     is_on = True
     players.clear()
@@ -1006,7 +1018,8 @@ async def faster_reult(event):
             is_on = False
 @ABH.on(events.NewMessage(func=lambda event: event.text in ['كتويت']))
 async def send_random_question(event):
-    await botuse(event)
+    type = "كتويت"
+    await botuse(type)
     random_question = random.choice(questions)
     await event.reply(random_question)
 games = {}
