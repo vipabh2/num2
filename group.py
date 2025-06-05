@@ -14,7 +14,8 @@ import pytz
 @ABH.on(events.NewMessage(pattern='^/dates|مواعيد$'))
 async def show_dates(event):
     global uid, msg
-    await botuse(event)
+    type = "مواعيد"
+    await botuse(type)
     btton = [[
         Button.inline("محرم", b"m"),
         Button.inline("رمضان", b"rm"),
@@ -71,7 +72,8 @@ async def set_user_date(event):
         await event.reply("التاريخ المدخل غير صالح، يرجى إدخاله بصيغة YYYY-MM-DD.")
 @ABH.on(events.NewMessage(pattern='^كم باقي$'))
 async def check_remaining_days(event):
-    await botuse(event)
+    type = "كم باقي"
+    await botuse(type)
     user_id = event.sender_id
     saved_date = get_saved_date(user_id)
     if saved_date:
@@ -84,14 +86,16 @@ async def check_remaining_days(event):
         await event.reply("لم تحدد تاريخًا بعد، يرجى تحديد تاريخ أولاً.")
 @ABH.on(events.NewMessage(pattern='^تاريخ$'))
 async def today(event):
-    await botuse(event)
+    type = "تاريخ"
+    await botuse(type)
     t = datetime.datetime.now().date()
     hd = Gregorian(t.year, t.month, t.day).to_hijri()
     hd_str = f"{hd.day} {hd.month_name('ar')} {hd.year} هـ"    
     await event.reply(f" الهجري: \n {hd_str} \n الميلادي: \n {t}")
 @ABH.on(events.NewMessage(pattern=r'كشف ايدي (\d+)'))
 async def link(event):
-    await botuse(event)
+    type = "كشف ايدي"
+    await botuse(type)
     global user, uid
     uid = event.sender_id
     user_id = event.pattern_match.group(1)
@@ -120,7 +124,8 @@ genai.configure(api_key=GEMINI)
 model = genai.GenerativeModel("gemini-1.5-flash")
 @ABH.on(events.NewMessage(pattern=r'(ترجمة|ترجمه)'))
 async def translation(event):
-    await botuse(event)
+    type = "ترجمة"
+    await botuse(type)
     translator = Translator()
     if event.is_reply:
         replied_message = await event.get_reply_message()
@@ -163,7 +168,8 @@ def translate_rights_lines(rights_obj):
     return "\n".join(lines) if lines else "لا يوجد صلاحيات"
 @ABH.on(events.NewMessage(pattern=r'^صلاحياته(?: (.+))?$'))
 async def his_rights(event):
-    await botuse(event)
+    type = "صلاحياته"
+    await botuse(type)
     try:
         chat = await event.get_input_chat()
         match = event.pattern_match.group(1)
@@ -182,7 +188,8 @@ async def his_rights(event):
         await event.reply("لا يمكن عرض الصلاحيات.")
 @ABH.on(events.NewMessage(pattern=r'^لقبه(?: (.+))?$'))
 async def nickname_r(event):
-    await botuse(event)
+    type = "لقبه"
+    await botuse(type)
     try:
         chat = await event.get_input_chat()
         match = event.pattern_match.group(1)
