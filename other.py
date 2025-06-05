@@ -815,7 +815,6 @@ async def start_with_param(event):
     user_sessions[event.sender_id] = whisper_id
 @ABH.on(events.NewMessage(incoming=True))
 async def forward_whisper(event):
-    await botuse(event)
     global l, m2
     if not event.is_private or (event.text and event.text.startswith('/')):
         return
