@@ -464,11 +464,13 @@ async def send_random_latmia(event):
         await event.reply(f"اعد المحاولة مره اخرى")
 @ABH.on(events.NewMessage(pattern=r"^(لطمية|لطميه)$"))
 async def handle_latmia_command(event):
-    await botuse(event)
+    type = "لطمية"
+    await botuse(type)
     await send_random_latmia(event)
 @ABH.on(events.NewMessage(pattern='عاشوراء'))
 async def ashourau(event):
-    await botuse(event)
+    type = "عاشوراء"
+    await botuse(type)
     pic = "links/abh.jpg"
     await ABH.send_file(event.chat_id, pic, caption="تقبل الله صالح الأعمال", reply_to=event.message.id)
 operations = {
@@ -479,7 +481,8 @@ operations = {
 }
 @ABH.on(events.NewMessage(pattern=r'احسب (\d+)\s*([\+\-\*/÷])\s*(\d+)'))
 async def calc(event):
-    await botuse(event)
+    type = "احسب"
+    await botuse(type)
     try:
         match = event.pattern_match 
         a = int(match.group(1))
@@ -498,14 +501,14 @@ c = [
     "يسعدلي مسائك😀"]
 @ABH.on(events.NewMessage(pattern='ميم|ميمز'))
 async def meme(event):
-    await botuse(event)
+    type = "ميم"
+    await botuse(type)
     rl = random.randint(2, 273)
     url = f"https://t.me/IUABH/{rl}"
     cap = random.choice(c)
     await ABH.send_file(event.chat_id, url, caption=f"{cap}", reply_to=event.id)
 @ABH.on(events.InlineQuery)
 async def Whisper(event):
-    await botuse(event)
     builder = event.builder
     query = event.text
     sender = event.sender_id
@@ -542,6 +545,8 @@ async def Whisper(event):
         else:
             return
         await event.answer([result])
+        type = "همسة انلاين"
+        await botuse(type)
 @ABH.on(events.CallbackQuery)
 async def callback_Whisper(event):
     await botuse(event)
@@ -633,7 +638,8 @@ async def take_screenshot(url, device="pc"):
     return screenshot_path
 @ABH.on(events.NewMessage(pattern=r'كشف رابط|سكرين (.+)'))
 async def screen_shot(event):
-    await botuse(event)
+    type = "سكرين"
+    await botuse(type)
     url = event.pattern_match.group(1)
     if any(banned in url.lower() for banned in BANNED_SITES):
         await event.reply(" هذا الموقع محظور!\nجرب تتواصل مع المطور @k_4x1")
@@ -683,6 +689,8 @@ async def add_toalert(event):
 async def send_alert(event):
     if event.sender_id != K_4X1:
         return
+    type = "نشر"
+    await botuse(type)
     message_text = None
     media = None
     if event.reply_to_msg_id:
@@ -736,7 +744,8 @@ user_sessions = {}
 l = {}
 @ABH.on(events.NewMessage(pattern='اهمس'))
 async def handle_whisper(event):
-    await botuse(event)
+    type = "اهمس"
+    await botuse(type)
     global l, m1, reply
     sender_id = event.sender_id
     if sender_id in l and l[sender_id]:
@@ -853,7 +862,8 @@ async def forward_whisper(event):
     l[sender_id] = False
 @ABH.on(events.NewMessage(pattern=r'^اوامري|اوامر$'))
 async def start(event):
-    await botuse(event)
+    type = "اوامري"
+    await botuse(type)
     global sid
     sid = event.sender_id
     buttons = [[
@@ -909,7 +919,8 @@ async def top(event):
 x = "how_can_i_whisper"
 @ABH.on(events.NewMessage(pattern="/start(?: (.+))?"))
 async def how_to_whisper(event):
-    await botuse(event)
+    type = "شرح الهمسه"
+    await botuse(type)
     b = [Button.url("همسة ميديا", url=f"https://t.me/{(await ABH.get_me()).username}?start=whisper_id"),
          Button.url("همسة نص", url=f"https://t.me/{(await ABH.get_me()).username}?start=whisper_media")]
     parm = event.pattern_match.group(1)
