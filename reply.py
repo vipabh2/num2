@@ -16,6 +16,7 @@ abh = [
 async def anymous(event):
     if event.is_reply:
         return
+    await botuse(event)
     vipabh = random.choice(abh)
     if vipabh.startswith("http"):
         await event.reply(file=vipabh)
@@ -23,12 +24,14 @@ async def anymous(event):
         await event.reply(vipabh)
 @ABH.on(events.NewMessage(pattern=r'^ابن هاشم$'))
 async def ABN_HASHEM(event):
+    await botuse(event)
     caption = "أبن هاشم (رض) مرات متواضع ،🌚 @K_4x1"
     button = [Button.url(text="click", url="https://t.me/wfffp")]
     pic = 'links/photo_2025-02-08_00-25-24.jpg'
     await event.client.send_file(event.chat_id, pic, caption=caption, reply_to=event.message.id, buttons=button)
 @ABH.on(events.NewMessage)
 async def replys(event):
+    await botuse(event)
     text = event.text
     x = "ادونيس"
     a = 'ابو ذيبه'
@@ -37,17 +40,10 @@ async def replys(event):
         await event.reply("@rizrz")
     elif a in text and int(c) == int(group):
         await event.reply("@AlconALI")
-@ABH.on(events.NewMessage(pattern='زهراء'))
-async def reply_zahraa(event):
-    if event.chat_id == group:
-        url = "https://t.me/VIPABH/1220"  
-        caption = "@klix_78 ( لَقَدْ كَفَرَ الّذِينَ قَالُوا إنَّ الله هُو المَسِيحُ ابْنُ مَرْيَم)." 
-        await event.client.send_file(event.chat_id, url, caption=caption, reply_to=event.message.id)    
-    else: 
-        return
 @ABH.on(events.NewMessage(pattern='امير'))
 async def reply_amer(event):
     if event.chat_id == group:
+        await botuse(event)
         ur = ["https://files.catbox.moe/k44qq6.mp4",
                'https://t.me/KQK4Q/23',
                'https://t.me/KQK4Q/22'
@@ -55,25 +51,6 @@ async def reply_amer(event):
         url = random.choice(ur)
         caption = "@xcxx1x" 
         await event.client.send_file(event.chat_id, url, caption=caption, reply_to=event.message.id)    
-    else: 
-        return
-@ABH.on(events.NewMessage(pattern='جاثوم'))
-async def reply_jathom(event):
-    if event.chat_id == group:
-        ur = [
-        'https://t.me/dbdbdbdbdbzbzbzbzbzb/4',
-        'https://t.me/dbdbdbdbdbzbzbzbzbzb/3',
-        'https://t.me/dbdbdbdbdbzbzbzbzbzb/2'
-               ]
-        url = random.choice(ur)
-        caption = "@xJathom" 
-        await event.client.send_file(event.chat_id, url, caption=caption, reply_to=event.id)    
-    else: 
-        return
-@ABH.on(events.NewMessage(pattern='هاكس'))
-async def reply_mohamed(event):
-    if event.chat_id == group:
-        await event.reply('@c7cce')
     else: 
         return
 @ABH.on(events.NewMessage(pattern='مقتد'))
@@ -90,10 +67,12 @@ auto = [
         ]
 @ABH.on(events.NewMessage(pattern=r'^(سلام عليكم|السلام عليكم)$'))
 async def reply_hi(event):
-        abh = random.choice(auto)
-        await event.reply(abh)
+    await botuse(event)
+    abh = random.choice(auto)
+    await event.reply(abh)
 @ABH.on(events.NewMessage(pattern='النازية|الشعار'))
 async def nazi(event):
+    await botuse(event)
     n1 = """🟥🟥🟥🟥🟥🟥🟥🟥🟥
 🟥⬜⬜⬜⬜⬜⬜⬜🟥
 🟥⬜⬛⬜⬛⬛⬛⬜🟥
