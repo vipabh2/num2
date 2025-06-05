@@ -318,12 +318,13 @@ async def hisnum(event):
 @ABH.on(events.NewMessage(pattern="^يوزراتي$"))
 async def uss(event):
  s=await event.get_sender()
+ type = "يوزراتي"
+ await botuse(type)
  usernames=[x.username for x in s.usernames] if getattr(s,"usernames",None) else []
  if s.username: usernames.insert(0, s.username)
  usernames=list(dict.fromkeys(usernames))
  utext="\n".join(f"@{u}" for u in usernames)
  await event.reply(utext if usernames else "ليس لديك أي يوزرات NFT")
- await botuse(event)
 @ABH.on(events.NewMessage(pattern="^يوزراته$"))
 async def hisuss(event):
  r=await event.get_reply_message()
@@ -336,13 +337,15 @@ async def hisuss(event):
  usernames=list(dict.fromkeys(usernames))
  utext="\n".join(f"@{u}" for u in usernames)
  await event.reply(utext if usernames else "ليس لديه أي يوزرات NFT")
- await botuse(event)
+ type = "يوزراته"
+ await botuse(type)
 @ABH.on(events.NewMessage(pattern="^يوزري$"))
 async def mu(event):
  s=await event.get_sender()
  u=s.username or (list(dict.fromkeys([x.username for x in s.usernames]))[0] if getattr(s,"usernames",None) else None)
  await event.reply(f"`@{u}` @{u}" if u else "ليس لديك يوزر")
- await botuse(event)
+ type = "يوزري"
+ await botuse(type)
 @ABH.on(events.NewMessage(pattern="^يوزره|يوزرة|اليوزر$"))
 async def hisu(event):
  r=await event.get_reply_message()
@@ -352,10 +355,10 @@ async def hisu(event):
  s=await r.get_sender()
  u=s.username or (list(dict.fromkeys([x.username for x in s.usernames]))[0] if getattr(s,"usernames",None) else None)
  await event.reply(f"`@{u}` @{u}" if u else "ليس لديه يوزر")
- await botuse(event)
+ type = "يوزره"
+ await botuse(type)
 @ABH.on(events.NewMessage)
 async def quran(event):
-    await botuse(event)
     text = event.raw_text.strip()
     me = await event.client.get_me()
     username = me.username
@@ -372,10 +375,14 @@ async def quran(event):
                 buttons=button, 
                 reply_to=event.id
             )
+            type = "قران"
+            await botuse(type)
         else:
             return
     for names, num in suras.items():
         if text in names:
+            type = text
+            await botuse(type)
             link_id = int(num) + 1
             message = await ABH.get_messages('theholyqouran', ids=link_id)
             if message and message.media:
@@ -412,7 +419,8 @@ def ask_ai(q):
         return "صار خطأ بالسيرفر، جرب بعدين."
 @ABH.on(events.NewMessage(pattern=r"^مخفي\s*(.*)"))
 async def ai_handler(event):
-    await botuse(event)
+    type = "ai"
+    await botuse(type)
     user_q = event.pattern_match.group(1).strip()
     x = event.text
     ignore_phrases = ["مخفي اعفطلة", "مخفي اعفطله", "مخفي قيده", "مخفي قيدة", "مخفي طكة زيج"]
@@ -423,7 +431,8 @@ async def ai_handler(event):
     await event.respond(response, reply_to=event.id)
 @ABH.on(events.NewMessage(pattern='اوامر الحظ'))
 async def luck_list(event):
-    await botuse(event)
+    type = "اوامر الحظ"
+    await botuse(type)
     await event.reply('''
     **اوامر الحظ** كآلاتي
     `🎲` المقدار المربح = 6
