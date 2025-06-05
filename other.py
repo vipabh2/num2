@@ -19,7 +19,7 @@ async def botuse(event):
     # if event.pattern_match:
     #     x = event.pattern_match.group(0)
     # else:
-        inspect.currentframe().f_code.co_name
+    x = inspect.currentframe().f_code.co_name
     data = {}
     with open('use.py', 'r', encoding='utf-8') as f:
         try:
