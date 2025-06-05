@@ -28,17 +28,19 @@ def get_group_toggle(chat_id) -> bool:
 restriction_end_times = {}
 @ABH.on(events.NewMessage(pattern=r"^(تفعيل|تعطيل) التقييد$"))
 async def toggle_feature(event):
-    await botuse(event)
     action = event.pattern_match.group(1)
     value = True if action == "تفعيل" else False
+    type = f"{value} التقييد"
+    await botuse(type)
     set_group_toggle(event.chat_id, value)
     status = "مُفعّلة" if value else "معطّلة"
     await event.reply(f"تم {action} الميزة `t` لهذه المجموعة.\nالحالة: {status}")
 @ABH.on(events.NewMessage(pattern='^تقييد عام|مخفي قيده|مخفي قيدة$'))
 async def restrict_user(event):
-    await botuse(event)
     if not event.is_group:
         return
+    type = "تقييد عام"
+    await botuse(type)
     if not get_group_toggle(event.chat_id):
         await event.reply("هذه الميزة غير مفعلة في هذه المجموعة.")
         return
@@ -68,10 +70,11 @@ async def restrict_user(event):
     rights = ChatBannedRights(
         until_date=now + restriction_duration,
         send_messages=True
-    )
+    )      
+    ء = f"[{user_to_restrict}](tg://user?id={user_id})"
     try:
         await ABH(EditBannedRequest(channel=chat.id, participant=user_id, banned_rights=rights))
-        await event.reply(f" تم تقييد {user_to_restrict.first_name} لمدة 20 دقيقة.")
+        await event.reply(f" تم تقييد {ء} لمدة 20 دقيقة.")
         await event.delete()
     except Exception as e:
         await event.reply(f" ياريت اقيده بس ماكدر")
@@ -94,6 +97,8 @@ async def monitor_messages(event):
                 await event.delete()
                 await ABH(EditBannedRequest(channel=chat.id, participant=user_id, banned_rights=rights))
                 await event.respond(f" لا يمكنك إرسال الرسائل الآن. تم إعادة تقييدك لمدة ** {remaining//60} دقيقة و {remaining%60} ثانية.** ")
+                type = "تقييد مستخدمين"
+                await botuse(type)
             except:
                 pass
 WHITELIST_FILE = "whitelist.json"
@@ -211,7 +216,8 @@ async def no_callback(event):
     await ads(group, uid)
 @ABH.on(events.NewMessage(pattern='اضف قناة التبليغات'))
 async def add_hintchannel(event):
-    await botuse(event)
+    type = "اضافة قناة التبليغات"
+    await botuse(type)
     if not event.is_group:
         return await event.reply("↯︙يجب تنفيذ هذا الأمر داخل مجموعة.")
     r = await event.get_reply_message()
@@ -226,7 +232,8 @@ async def add_hintchannel(event):
         await event.reply("︙المعرف غير صالح، تأكد أنه يبدأ بـ -100 ويتكون من أرقام فقط.")
 @ABH.on(events.NewMessage(pattern='اعرض قناة التبليغات'))
 async def show_hintchannel(event):
-    await botuse(event)
+    type = "عرض قناة التبليغات"
+    await botuse(type)
     chat_id = event.chat_id
     c = await LC(chat_id)
     if c:
@@ -318,6 +325,9 @@ async def handler_res(event):
                 int(hint_channel),
                 f'المستخدم ( {s} ) ارسل كلمة غير مرغوب بها ( {message_text} ) \n   ايديه ( `{user_id}` ) تم تحذيره ومسحها \n تحذيراته ( 3\{warns[user_id][chat_id]} ) '
                 )
+            type = "تقييد بسبب الفشار"
+            await botuse(type)
+
         except:
             return
         if warns[user_id][chat.id] >= 2:
