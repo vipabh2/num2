@@ -918,13 +918,13 @@ async def top(event):
 x = "how_can_i_whisper"
 @ABH.on(events.NewMessage(pattern="/start(?: (.+))?"))
 async def how_to_whisper(event):
-    type = "شرح الهمسه"
-    await botuse(type)
     b = [Button.url("همسة ميديا", url=f"https://t.me/{(await ABH.get_me()).username}?start=whisper_id"),
          Button.url("همسة نص", url=f"https://t.me/{(await ABH.get_me()).username}?start=whisper_media")]
     parm = event.pattern_match.group(1)
     if not parm:
         return
+    type = "شرح الهمسه"
+    await botuse(type)
     if parm == x:
         url = 'https://files.catbox.moe/7lnpz4.jpg'
         c = '**اوامر الهمسة** \n همسة نص , ايدي او يوزر \n همسة ميديا او نص بالرد فقط'
