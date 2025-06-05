@@ -849,12 +849,14 @@ async def handle_choice(event, user_choice_key):
             points = 0
         if points > 0:
             add_points(event.sender_id, chat_id, points, amount=points)
-        await event.edit(
+        msg = (
             f"{game['name1']} {user_choice}\n"
             f"{game['name2']} {bot_choice}\n\n"
             f"{result}"
-            f"{f'\n🏅 تم إضافة `{points}` نقطة' if points > 0 else ''}"
         )
+        if points > 0:
+            msg += f"\n🏅 تم إضافة `{points}` نقطة"
+        await event.edit(msg)
     elif game["type"] == "pvp":
         if user_id not in [game["player1"], game["player2"]]:
             await event.answer("❌ لست من ضمن اللاعبين", alert=True)
