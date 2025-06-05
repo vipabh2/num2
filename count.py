@@ -105,7 +105,8 @@ async def msgs(event):
         save_data(uinfo)
 @ABH.on(events.NewMessage(pattern="توب اليومي|المتفاعلين"))
 async def اليومي(event):
-    await botuse(event)
+    type = "المتفاعلين"
+    await botuse(type)
     guid = str(event.chat_id)
     sorted_users = sorted(
         uinfo.items(), 
@@ -127,7 +128,8 @@ async def اليومي(event):
         await event.reply("لا توجد بيانات لعرضها.")
 @ABH.on(events.NewMessage(pattern="توب الاسبوعي|تفاعل"))
 async def الاسبوعي(event):
-    await botuse(event)
+    type = "تفاعل"
+    await botuse(type)
     guid = str(event.chat_id)
     sorted_users = sorted(
         WEAK.items(),
@@ -148,7 +150,8 @@ async def الاسبوعي(event):
         await event.reply("لا توجد بيانات لعرضها.")
 @ABH.on(events.NewMessage(pattern='رسائلي'))
 async def show_my_res(event):
-    await botuse(event)
+    type = "رسائلي"
+    await botuse(type)
     await asyncio.sleep(2)
     uid1 = event.sender.first_name
     unm1 = str(event.sender_id)
@@ -159,7 +162,8 @@ async def show_my_res(event):
         await event.reply(f"المستخدم [{uid1}](tg://user?id={unm1}) أرسلت {msg_count} رسالة في هذه المجموعة.")
 @ABH.on(events.NewMessage(pattern=r'^(رسائله|رسائلة|رسائل)$'))
 async def his_res(event):
-    await botuse(event)
+    type = "رسائله"
+    await botuse(type)
     r = await event.get_reply_message()  
     await asyncio.sleep(1)
     if not r:
@@ -172,5 +176,6 @@ async def his_res(event):
         await event.reply(f"المستخدم [{uid1}](tg://user?id={unm1}) أرسل {msg_count} رسالة في هذه المجموعة.")
 @ABH.on(events.NewMessage(pattern='^اوامر التوب$'))
 async def title(event):
-    await botuse(event)
+    type = "اوامر التوب"
+    await botuse(type)
     await event.reply('اهلا صديقي , اوامر الرسائل \n ارسل `المتفاعلين` | `توب اليومي` ل اضهار توب 15 تفاعل \n ارسل `تفاعل` | `توب الاسبوعي` ل اظهار تفاعل المجموعه في اسبوع \n ارسل `رسائلي` ل اضهار رسائلك في اخر يوم \n ارسل `رسائله` ل اضهار رساله الشخص بالرد \n استمتع')
