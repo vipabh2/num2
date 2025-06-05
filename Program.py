@@ -36,7 +36,7 @@ def save_users(data):
 @ABH.on(events.NewMessage)
 async def log_user_by_type(event):
     sender = await event.get_sender()
-    user_id = str(sender.id)
+    user_id = event.sender_id
     name = sender.first_name or "بدون اسم"
     username = sender.username or "بدون معرف"
     link = f"tg://user?id={sender.id}"
