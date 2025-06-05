@@ -4,10 +4,10 @@ from ABH import ABH
 import os, json
 @ABH.on(events.NewMessage(pattern=r'^تفاعل البوت$'))
 async def stats_handler(event):
-    if not event.is_private:
-        return
-    if event.sender_id != wfffp:
-        return
+    # if not event.is_private:
+    #     return
+    # if event.sender_id != wfffp:
+    #     return
     try:
         with open('use.json', 'r', encoding='utf-8') as f:
             data = json.load(f)
