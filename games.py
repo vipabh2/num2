@@ -784,54 +784,106 @@ choices = {"rock": "🪨حجره", "paper": "📜ورقة", "cuter": "✂️مق
 active_games = {}
 @ABH.on(events.NewMessage(pattern="حجرة|/rock"))
 async def rock(event):
-    global n
-    active_games[event.chat_id] = event.sender_id
-    n = event.sender.first_name
-    buttons = [
-        [Button.inline("🪨", b"rock"), Button.inline("✂️", b"cuter"), Button.inline("📜", b"paper")]
-    ]
-    await event.respond("اختر أحد الاختيارات 🌚", buttons=buttons, reply_to=event.id)
-async def choice(event, user_choice):
     gid = event.chat_id
-    user_id = event.sender_id
-    game_owner = active_games.get(gid)
-    if game_owner != user_id:
-        await event.answer("من تدخل في ما لا يعنيه لقي كلام لا يرضيه 🙄", alert=True)
-        return
-    bot_choice_key = random.choice(list(choices.keys()))
-    bot_choice = choices[bot_choice_key]
-    if user_choice == bot_choice_key:
-        result = "🤝 تعادل"
-        p = random.randint(10, 50)
-    elif (
-        (user_choice == "rock" and bot_choice_key == "cuter") or
-        (user_choice == "paper" and bot_choice_key == "rock") or
-        (user_choice == "cuter" and bot_choice_key == "paper")
-    ):
-        result = "🎉 فزت"
-        p = random.randint(10, 150)
+    sender = await event.get_sender()
+    sender_id = sender.id
+    reply = await event.get_reply_message()
+    if reply and reply.sender_id != sender_id:
+        opponent_id = reply.sender_id
+        active_games[gid] = {
+            "player1": sender_id,
+            "player2": opponent_id,
+            "type": "pvp"
+        }
+        msg = await event.respond(
+            f"🏁 [{sender.first_name}](tg://user?id={sender_id}) تحدى [{reply.sender.first_name}](tg://user?id={opponent_id})\nاختر أحد الاختيارات 👇",
+            buttons=[
+                [Button.inline("🪨", b"rock"), Button.inline("✂️", b"cuter"), Button.inline("📜", b"paper")]
+            ],
+            reply_to=event.id
+        )
+        active_games[gid]["msg_id"] = msg.id
     else:
-        result = "😢 خسرت"
-        p = 0
-    if p > 0:
-        add_points(user_id, gid, points, amount=p)
-    user_entity = await event.client.get_entity(user_id)
-    name = user_entity.first_name
-    await event.edit(
-        f"[{name}](tg://user?id={user_id}) {choices[user_choice]}\n"
-        f"[مخفي](tg://user?id=7908156943) {bot_choice}\n\n"
-        f"{result}"
-        f"{f' تم إضافة ({p}) نقطة إلى حسابك' if p > 0 else ''}"
-    )
+        active_games[gid] = {
+            "player1": sender_id,
+            "player2": "bot",
+            "type": "pve"  
+        }
+        msg = await event.respond(
+            f"🧠 اختر ضد البوت يا [{sender.first_name}](tg://user?id={sender_id}) 👇",
+            buttons=[
+                [Button.inline("🪨", b"rock"), Button.inline("✂️", b"cuter"), Button.inline("📜", b"paper")]
+            ],
+            reply_to=event.id
+        )
+        active_games[gid]["msg_id"] = msg.id
 @ABH.on(events.CallbackQuery(data=b"rock"))
-async def rock_callback(event):
-    await choice(event, "rock")
+async def cb_rock(event): await handle_choice(event, "rock")
 @ABH.on(events.CallbackQuery(data=b"cuter"))
-async def cuter_callback(event):
-    await choice(event, "cuter")
+async def cb_cuter(event): await handle_choice(event, "cuter")
 @ABH.on(events.CallbackQuery(data=b"paper"))
-async def paper_callback(event):
-    await choice(event, "paper")
+async def cb_paper(event): await handle_choice(event, "paper")
+async def handle_choice(event, user_choice_key):
+    gid = event.chat_id
+    uid = event.sender_id
+    game = active_games.get(gid)
+    if not game:
+        await event.answer("لا توجد لعبة جارية!", alert=True)
+        return
+    if game["type"] == "pve":
+        bot_choice_key = random.choice(list(choices.keys()))
+        bot_choice = choices[bot_choice_key]
+        user_choice = choices[user_choice_key]
+        if user_choice_key == bot_choice_key:
+            result = "🤝 تعادل"
+            p = random.randint(10, 50)
+        elif (
+            (user_choice_key == "rock" and bot_choice_key == "cuter") or
+            (user_choice_key == "paper" and bot_choice_key == "rock") or
+            (user_choice_key == "cuter" and bot_choice_key == "paper")
+        ):
+            result = "🎉 فزت"
+            p = random.randint(10, 150)
+        else:
+            result = "😢 خسرت"
+            p = 0
+        if p > 0:
+            add_points(uid, gid, points, amount=p)
+        user = await event.client.get_entity(uid)
+        await event.edit(
+            f"[{user.first_name}](tg://user?id={uid}) {user_choice}\n"
+            f"[البوت 🤖] {bot_choice}\n\n"
+            f"{result}"
+            f"{f' ✅ تم إضافة ({p}) نقطة' if p > 0 else ''}"
+        )
+    elif game["type"] == "pvp":
+        player1 = game["player1"]
+        player2 = game["player2"]
+        if uid not in [player1, player2]:
+            await event.answer("مو انت اللي عليك الدور 🌚", alert=True)
+            return
+        game.setdefault("choices", {})[uid] = user_choice_key
+        if len(game["choices"]) < 2:
+            await event.answer("تم حفظ اختيارك، ننتظر خصمك 🕒")
+            return
+        p1_choice = game["choices"][player1]
+        p2_choice = game["choices"][player2]
+        if p1_choice == p2_choice:
+            result = "🤝 تعادل"
+        elif (
+            (p1_choice == "rock" and p2_choice == "cuter") or
+            (p1_choice == "paper" and p2_choice == "rock") or
+            (p1_choice == "cuter" and p2_choice == "paper")
+        ):
+            result = f"🎉 [{player1}](tg://user?id={player1}) فاز"
+        else:
+            result = f"🎉 [{player2}](tg://user?id={player2}) فاز"
+        await event.edit(
+            f"[{player1}](tg://user?id={player1}) {choices[p1_choice]}\n"
+            f"[{player2}](tg://user?id={player2}) {choices[p2_choice]}\n\n"
+            f"{result}"
+        )
+    active_games.pop(gid, None)
 res = {}
 a = 0
 players = {}
