@@ -419,13 +419,13 @@ def ask_ai(q):
         return "صار خطأ بالسيرفر، جرب بعدين."
 @ABH.on(events.NewMessage(pattern=r"^مخفي\s*(.*)"))
 async def ai_handler(event):
-    type = "ai"
-    await botuse(type)
     user_q = event.pattern_match.group(1).strip()
     x = event.text
     ignore_phrases = ["مخفي اعفطلة", "مخفي اعفطله", "مخفي قيده", "مخفي قيدة", "مخفي طكة زيج"]
     if not user_q or x in ignore_phrases:
         return
+        type = "ai"
+        await botuse(type)
     async with event.client.action(event.chat_id, 'typing'):
         response = await asyncio.to_thread(ask_ai, user_q)
     await event.respond(response, reply_to=event.id)
