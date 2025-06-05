@@ -674,7 +674,6 @@ async def alert(message):
         return
 @ABH.on(events.NewMessage)
 async def add_toalert(event):
-
     global alert_ids
     chat = await event.get_chat()
     if chat.id not in alert_ids:
