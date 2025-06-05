@@ -552,7 +552,6 @@ async def Whisper(event):
         await botuse(type)
 @ABH.on(events.CallbackQuery)
 async def callback_Whisper(event):
-    await botuse(event)
     uid = event.sender_id
     data = event.data.decode('utf-8')
     if data.startswith('send:'):
@@ -574,7 +573,6 @@ async def callback_Whisper(event):
             return
 @ABH.on(events.CallbackQuery(data=re.compile(rb"^delete:(.+)")))
 async def delete_whisper(event):
-    await botuse(event)
     match = re.match(rb"^delete:(.+)", event.data)
     if not match:
         await event.answer("طلب غير صالح", alert=True)
@@ -593,7 +591,6 @@ async def delete_whisper(event):
     await event.edit("🗑️ تم حذف الهمسة بنجاح", buttons=b)
 @ABH.on(events.CallbackQuery(data=re.compile(rb"^view:(.+)")))
 async def show_whisper(event):
-    await botuse(event)
     match = re.match(rb"^view:(.+)", event.data)
     if not match:
         await event.answer("طلب غير صالح", alert=True)
@@ -788,7 +785,8 @@ async def handle_whisper(event):
     l[sender_id] = True
 @ABH.on(events.NewMessage(pattern=r'/start (\w+)'))
 async def start_with_param(event):
-    await botuse(event)
+    type = "مشاهده الهمسه"
+    await botuse(type)
     whisper_id = event.pattern_match.group(1)
     data = whisper_links.get(whisper_id)
     if not data:
