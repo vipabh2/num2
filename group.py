@@ -1,3 +1,4 @@
+
 from telethon.tl.types import KeyboardButtonCallback
 from telethon.tl.functions.channels import  GetParticipantRequest
 from db import save_date, get_saved_date #type: ignore
@@ -25,7 +26,6 @@ async def show_dates(event):
     uid = event.sender_id
 @ABH.on(events.CallbackQuery(data='set_date'))
 async def set_date(event):
-    await botuse(event)
     المرسل_الثاني = event.sender_id
     if المرسل_الثاني != uid:
         await event.answer('عزيزي الامر لا يخصك', alert=True)
