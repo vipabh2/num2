@@ -103,7 +103,7 @@ async def msgs(event):
         uinfo[unm][guid]["msg"] += 1
         uinfo[unm][guid]["fname"] = uid
         save_data(uinfo)
-@ABH.on(events.NewMessage(pattern="توب اليومي|المتفاعلين"))
+@ABH.on(events.NewMessage(pattern="^توب اليومي|المتفاعلين$"))
 async def اليومي(event):
     type = "المتفاعلين"
     await botuse(type)
@@ -126,7 +126,7 @@ async def اليومي(event):
         await x.delete()
     else:
         await event.reply("لا توجد بيانات لعرضها.")
-@ABH.on(events.NewMessage(pattern="توب الاسبوعي|تفاعل"))
+@ABH.on(events.NewMessage(pattern="^توب الاسبوعي|تفاعل$"))
 async def الاسبوعي(event):
     type = "تفاعل"
     await botuse(type)
