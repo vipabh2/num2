@@ -1,4 +1,5 @@
 from ABH import ABH, events
+from other import botuse
 import json
 def load_points(filename="points.json"):
     try:
@@ -32,7 +33,8 @@ def add_user(uid, gid, name, rose, amount):
         }
 @ABH.on(events.NewMessage(pattern=r'^الاغنياء$'))
 async def show_top_10_rich(event):
-    await botuse(event)
+    type = "الاغنياء"
+    await botuse(type)
     gid = str(event.chat_id)
     if gid.startswith("-100") is False:
         await event.reply("❌ هذا الأمر يعمل فقط في المجموعات.")
@@ -57,7 +59,8 @@ async def show_top_10_rich(event):
     await event.reply(message, parse_mode="md")
 @ABH.on(events.NewMessage(pattern=r'^اضف فلوس (\d+)$'))
 async def add_money(event):
-    await botuse(event)
+    type = "اضف فلوس"
+    await botuse(type)
     uid = event.sender_id
     r = await event.get_reply_message()
     if uid == 1910015590:
@@ -68,7 +71,8 @@ async def add_money(event):
         await event.reply(f"تم اضافة {p} دينار ل {r.sender.first_name}")
 @ABH.on(events.NewMessage(pattern='ثروتي'))
 async def m(event):
-    await botuse(event)
+    type = "ثروتي"
+    await botuse(type)
     uid = str(event.sender_id)
     gid = str(event.chat_id)
     if uid in points and gid in points[uid]:
@@ -78,7 +82,8 @@ async def m(event):
     await event.reply(f'فلوسك ↢ ( `{m}` )')
 @ABH.on(events.NewMessage(pattern='ثروته|الثروه'))
 async def replym(event):
-    await botuse(event)
+    type = "ثروته"
+    await botuse(type)
     r = await event.get_reply_message()
     uid = str(r.sender_id)
     gid = str(event.chat_id)
@@ -89,7 +94,8 @@ async def replym(event):
     await event.reply(f'فلوسه ↢ ( `{m}` )')
 @ABH.on(events.NewMessage(pattern=r'^حول (\d+(\.\d+)?)'))
 async def send_money(event):
-    await botuse(event)
+    type = "حول"
+    await botuse(type)
     reply = await event.get_reply_message()
     if not reply:
         await event.reply('عزيزي، لازم ترد على رسالة الشخص اللي تريد تحوّله.')
