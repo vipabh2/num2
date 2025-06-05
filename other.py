@@ -14,12 +14,8 @@ async def creat_useFILE():
     if not os.path.exists('use.py'):
         with open('use.py', 'w', encoding='utf-8') as f:
             json.dump({}, f, ensure_ascii=False, indent=4)
-async def botuse(event):
+async def botuse(type):
     await creat_useFILE()
-    # if event.pattern_match:
-    #     x = event.pattern_match.group(0)
-    # else:
-    x = inspect.currentframe().f_code.co_name
     data = {}
     with open('use.py', 'r', encoding='utf-8') as f:
         try:
@@ -27,16 +23,17 @@ async def botuse(event):
         except:
             data = {}
     if x not in data:
-        data[x] = 1
+        data[type] = 1
     else:
-        data[x] += 1
+        data[type] += 1
     with open('use.py', 'w', encoding='utf-8') as f:
         json.dump(data, f, ensure_ascii=False, indent=4)
 wfffp = 1910015590
 id_status_per_chat = {}
 @ABH.on(events.NewMessage(pattern='الايدي تفعيل'))
 async def turn_on(event):
-    await botuse(event)
+    type = "الايدي تفعيل"
+    await botuse(type)
     uid = event.sender_id
     chat_id = event.chat_id
     if uid == wfffp:
@@ -46,7 +43,8 @@ async def turn_on(event):
         return
 @ABH.on(events.NewMessage(pattern='الايدي تعطيل'))
 async def turn_off(event):
-    await botuse(event)
+    type = "الايدي تعطيل"
+    await botuse(type)
     uid = event.sender_id
     chat_id = event.chat_id
     if uid == wfffp:
@@ -111,7 +109,8 @@ async def hisid(event):
     replied_message = await event.get_reply_message()
     if not replied_message:
         return
-    await botuse(event)
+    type = "id"
+    await botuse(type)
     sender_id = replied_message.sender_id
     user = await ABH.get_entity(sender_id)
     user_id = user.id
@@ -153,7 +152,8 @@ async def myid(event):
     chat_id = event.chat_id
     if not id_status_per_chat.get(chat_id, False):
         return
-    await botuse(event)
+    type = "reply id"
+    await botuse(type)
     sender_id = event.sender_id
     user = await ABH.get_entity(sender_id)
     user_id = user.id
@@ -214,7 +214,8 @@ async def is_owner(chat_id, user_id):
 async def add_assistant(event):
     if not event.is_group:
         return
-    await botuse(event)
+    type = "رفع معاون"
+    await botuse(type)
     sm = await mention(event)
     chat_id = str(event.chat_id)
     user_id = event.sender_id
@@ -239,7 +240,8 @@ async def add_assistant(event):
 async def remove_assistant(event):
     if not event.is_group:
         return
-    await botuse(event)
+    type = "تنزيل معاون"
+    await botuse(type)
     sm = await mention(event)
     chat_id = str(event.chat_id)
     user_id = event.sender_id
@@ -262,7 +264,8 @@ async def remove_assistant(event):
 async def show_list(event):
     if not event.is_group:
         return
-    await botuse(event)
+    type = "المعاونين"
+    await botuse(type)
     chat_id = str(event.chat_id)
     data = load_auth()
     msg = "**قائمة المعاونين في هذه المجموعة**\n\n"
@@ -279,11 +282,14 @@ async def show_list(event):
     await event.reply(msg, parse_mode="md")
 @ABH.on(events.NewMessage(pattern="^اسمي$"))
 async def myname(event):
- name = await mention(event)
- await event.reply(name)
- await botuse(event)
+    type = "اسمي"
+    await botuse(type)
+    name = await mention(event)
+    await event.reply(name)
 @ABH.on(events.NewMessage(pattern="^اسمه|اسمة$"))
 async def hisname(event):
+    type = "اسمه"
+    await botuse(type)
  r = await event.get_reply_message()
  if not r:
     await event.reply("يجب الرد على رسالة المستخدم")
@@ -296,7 +302,8 @@ async def num(event):
  s=await event.get_sender()
  p=s.phone if getattr(s,"phone",None) else None
  await event.reply(f"`+{p}` +{p} " if p else "رقمك غير متاح")
- await botuse(event)
+ type = "رقمي"
+ await botuse(type)
 @ABH.on(events.NewMessage(pattern="^رقمة|رقمه$"))
 async def hisnum(event):
  r=await event.get_reply_message()
@@ -306,7 +313,8 @@ async def hisnum(event):
  s=await r.get_sender()
  p=s.phone if getattr(s,"phone",None) else None
  await event.reply(f"`+{p}` +{p} " if p else "رقمه غير متاح")
- await botuse(event)
+ type = "رقمه"
+ await botuse(type)
 @ABH.on(events.NewMessage(pattern="^يوزراتي$"))
 async def uss(event):
  s=await event.get_sender()
