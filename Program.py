@@ -16,7 +16,7 @@ async def stats_handler(event):
         await event.reply("📊 لا توجد أي استخدامات مسجلة بعد.")
         return
     msg = "📈 إحصائيات الاستخدام:\n\n"
-    for key, value in data.items():
+    for key, value in sorted(data.items(), key=lambda item: item[1], reverse=True):
         msg += f"• {key} : {value}\n"
     x = event.is_private
     if x:
