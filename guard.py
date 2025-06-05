@@ -334,7 +334,8 @@ async def handler_res(event):
             await ABH(EditBannedRequest(chat.id, user_id, unrestrict_rights))
 @ABH.on(events.NewMessage(pattern='!تجربة'))
 async def test_broadcast(event):
-    await botuse(event)
+    type = "تجربة"
+    await botuse(type)
     if not event.is_group:
         return await event.reply("↯︙هذا الأمر يعمل فقط داخل المجموعات.")
     chat_id = event.chat_id
