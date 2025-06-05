@@ -77,7 +77,6 @@ async def restrict_user(event):
         await event.reply(f" ياريت اقيده بس ماكدر")
 @ABH.on(events.NewMessage)
 async def monitor_messages(event):
-    await botuse(event)
     if not event.is_group:
         return
     user_id = event.sender_id
@@ -154,7 +153,6 @@ async def LC(group_id: int) -> int | None:
 report_data = {}
 @ABH.on(events.MessageEdited)
 async def edited(event):
-    await botuse(event)
     msg = event.message
     chat_id = event.chat_id
     if chat_id != group or not msg.edit_date:
@@ -293,7 +291,6 @@ unrestrict_rights = ChatBannedRights(
 warns = {}
 @ABH.on(events.NewMessage)
 async def handler_res(event):
-    await botuse(event)
     if not get_group_toggle(event.chat_id):
         return
     if event.message.action or not event.raw_text:
