@@ -1,7 +1,26 @@
 from telethon import events
-from other import botuse
+from other import botuse, wfffp
 from ABH import ABH
 import os, json
+@ABH.on(events.NewMessage(pattern=r'^تفاعل البوت$'))
+async def stats_handler(event):
+    if not event.is_private:
+        return
+    if event.sender_id != wfffp:
+        return
+    try:
+        with open('use.json', 'r', encoding='utf-8') as f:
+            data = json.load(f)
+    except (FileNotFoundError, json.JSONDecodeError):
+        await event.reply("لا توجد بيانات محفوظة بعد.")
+        return
+    if not data:
+        await event.reply("📊 لا توجد أي استخدامات مسجلة بعد.")
+        return
+    msg = "📈 إحصائيات الاستخدام:\n\n"
+    for key, value in data.items():
+        msg += f"• {key} : {value}\n"
+    await event.reply(msg)
 DATA_FILE = "users_by_type.json"
 def load_users():
     if os.path.exists(DATA_FILE):
