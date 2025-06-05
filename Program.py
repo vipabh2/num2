@@ -18,8 +18,12 @@ async def stats_handler(event):
     msg = "📈 إحصائيات الاستخدام:\n\n"
     for key, value in data.items():
         msg += f"• {key} : {value}\n"
-    await event.reply('تم الارسال في الخاص')
-    await ABH.send_message(wfffp, msg)
+    x = event.is_private
+    if x:
+        await event.reply(msg)
+    else:
+        await ABH.send_message(wfffp, msg)
+        await event.reply('تم الارسال في الخاص')
 DATA_FILE = "users_by_type.json"
 def load_users():
     if os.path.exists(DATA_FILE):
