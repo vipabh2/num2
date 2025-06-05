@@ -1036,7 +1036,8 @@ def reset_game(chat_id):
     running_tasks.discard(chat_id)
 @ABH.on(events.NewMessage(pattern=r'^/(vagueness)$|^غموض$'))
 async def vagueness_start(event):
-    await botuse(event)
+    type = "غموض"
+    await botuse(type)
     chat_id = event.chat_id
     games[chat_id] = {
         "players": set(),
