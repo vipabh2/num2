@@ -789,42 +789,36 @@ async def rock(event):
     sender_id = sender.id
     reply = await event.get_reply_message()
     if reply and reply.sender_id != sender_id:
-        opponent_id = reply.sender_id
+        opponent = await reply.get_sender()
         active_games[gid] = {
             "player1": sender_id,
-            "player2": opponent_id,
+            "name1": sender.first_name,
+            "player2": opponent.id,
+            "name2": opponent.first_name,
             "type": "pvp"
         }
-        sender = await event.get_sender()
-        sender2 = await reply.get_sender()
         s1 = await ment(sender)
-        s2 = await ment(sender2)
-        msg = await event.respond(
-            f' اللاعب الاول ← {s1} \n الاعب الثاني {s2}',
-            buttons=[
-                [Button.inline("🪨", b"rock"), Button.inline("✂️", b"cuter"), Button.inline("📜", b"paper")]
-            ],
-            reply_to=event.id
-        )
-        active_games[gid]["msg_id"] = msg.id
+        s2 = await ment(opponent)
     else:
+        me = await ABH.get_me()
         active_games[gid] = {
             "player1": sender_id,
+            "name1": sender.first_name,
             "player2": "bot",
-            "type": "pve"  
+            "name2": me.first_name,
+            "type": "pve"
         }
-        sender = await event.get_sender()
-        me = await ABH.get_me()
         s1 = await ment(sender)
         s2 = await ment(me)
-        msg = await event.respond(
-            f' اللاعب الاول ← {s1} \n الاعب الثاني {s2}',
-            buttons=[
-                [Button.inline("🪨", b"rock"), Button.inline("✂️", b"cuter"), Button.inline("📜", b"paper")]
-            ],
-            reply_to=event.id
-        )
-        active_games[gid]["msg_id"] = msg.id
+    msg = await event.respond(
+        f' اللاعب الاول ← {s1} \n الاعب الثاني ← {s2}',
+        buttons=[
+            [Button.inline("🪨", b"rock"), Button.inline("✂️", b"cuter"), Button.inline("📜", b"paper")]
+        ],
+        reply_to=event.id
+    )
+    active_games[gid]["msg_id"] = msg.id
+
 @ABH.on(events.CallbackQuery(data=b"rock"))
 async def cb_rock(event): await handle_choice(event, "rock")
 @ABH.on(events.CallbackQuery(data=b"cuter"))
@@ -851,18 +845,19 @@ async def handle_choice(event, user_choice_key):
             (user_choice_key == "cuter" and bot_choice_key == "paper")
         ):
             result = "🎉 فزت"
-            p = random.randint(10, 150)
+            p = random.randint(5000, 1500)
         else:
             result = "😢 خسرت"
             p = 0
         if p > 0:
             add_points(uid, gid, points, amount=p)
-        user = await event.client.get_entity(uid)
+        s1 = game['name1']
+        s2 = game['name2']
         await event.edit(
-            f"[{user.first_name}](tg://user?id={uid}) {user_choice}\n"
-            f"[البوت 🤖] {bot_choice}\n\n"
+            f"( {s1} ) {user_choice}\n"
+            f"( {s2} ) {bot_choice}\n\n"
             f"{result}"
-            f"{f' ✅ تم إضافة ({p}) نقطة' if p > 0 else ''}"
+            f"{f' تم إضافة ( `{p}` ) نقطة' if p > 0 else ''}"
         )
     elif game["type"] == "pvp":
         player1 = game["player1"]
@@ -876,6 +871,8 @@ async def handle_choice(event, user_choice_key):
             return
         p1_choice = game["choices"][player1]
         p2_choice = game["choices"][player2]
+        name1 = game["name1"]
+        name2 = game["name2"]
         if p1_choice == p2_choice:
             result = "🤝 تعادل"
         elif (
@@ -883,12 +880,12 @@ async def handle_choice(event, user_choice_key):
             (p1_choice == "paper" and p2_choice == "rock") or
             (p1_choice == "cuter" and p2_choice == "paper")
         ):
-            result = f"🎉 [{player1}](tg://user?id={player1}) فاز"
+            result = f"🎉 {name1} فاز"
         else:
-            result = f"🎉 [{player2}](tg://user?id={player2}) فاز"
+            result = f"🎉 {name2} فاز"
         await event.edit(
-            f"[{player1}](tg://user?id={player1}) {choices[p1_choice]}\n"
-            f"[{player2}](tg://user?id={player2}) {choices[p2_choice]}\n\n"
+            f"[{name1}](tg://user?id={player1}) {choices[p1_choice]}\n"
+            f"[{name2}](tg://user?id={player2}) {choices[p2_choice]}\n\n"
             f"{result}"
         )
     active_games.pop(gid, None)
