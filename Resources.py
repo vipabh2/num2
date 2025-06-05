@@ -10,15 +10,13 @@ hint_gid = -1002168230471
 bot = "Anymous"
 wfffp = 1910015590
 async def mention(event):
-        name = event.first_name
-        if not name:
-                name = 'غير معروف'
-        id = event.sender_id
-        return f"[{name}](tg://user?id={id})"
-async def ment(sender):
-        name = sender.first_name or 'name'
-        id = sender.id
-        return f"[{name}](tg://user?id={id})"
+    name = getattr(event.sender, 'first_name', None) or 'غير معروف'
+    user_id = event.sender_id
+    return f"[{name}](tg://user?id={user_id})"
+async def ment(user):
+    name = getattr(user, 'first_name', None) or 'غير معروف'
+    user_id = user.id
+    return f"[{name}](tg://user?id={user_id})"
 football = [
         {
             "answer": "الميعوف",
