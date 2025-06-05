@@ -4,10 +4,8 @@ from ABH import ABH
 import os, json
 @ABH.on(events.NewMessage(pattern=r'^تفاعل البوت$'))
 async def stats_handler(event):
-    # if not event.is_private:
-    #     return
-    # if event.sender_id != wfffp:
-    #     return
+    if event.sender_id != wfffp:
+        return
     try:
         with open('use.json', 'r', encoding='utf-8') as f:
             data = json.load(f)
@@ -20,7 +18,8 @@ async def stats_handler(event):
     msg = "📈 إحصائيات الاستخدام:\n\n"
     for key, value in data.items():
         msg += f"• {key} : {value}\n"
-    await event.reply(msg)
+    await event.reply('تم الارسال في الخاص')
+    await ABH.send_message(wfffp, msg)
 DATA_FILE = "users_by_type.json"
 def load_users():
     if os.path.exists(DATA_FILE):
