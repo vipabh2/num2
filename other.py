@@ -16,14 +16,16 @@ async def creat_useFILE():
             json.dump({}, f, ensure_ascii=False, indent=4)
 async def botuse(event):
     await creat_useFILE()
-    x = event.pattern_match.group(0) if event.pattern_match else inspect.currentframe().f_code.co_name
+    if hasattr(event, 'pattern_match') and event.pattern_match:
+        x = event.pattern_match.group(0)
+    else:
+        x = inspect.currentframe().f_code.co_name
     data = {}
-    if os.path.exists('use.py'):
+    try:
         with open('use.py', 'r', encoding='utf-8') as f:
-            try:
-                data = json.load(f)
-            except json.JSONDecodeError:
-                data = {}
+            data = json.load(f)
+    except (json.JSONDecodeError, FileNotFoundError):
+        data = {}
     data[x] = data.get(x, 0) + 1
     with open('use.py', 'w', encoding='utf-8') as f:
         json.dump(data, f, ensure_ascii=False, indent=4)
