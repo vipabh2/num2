@@ -1,4 +1,4 @@
-from Resources import football, questions, mention #type: ignore
+from Resources import football, questions, mention, ment #type: ignore
 from top import points, add_points #type: ignore
 from datetime import datetime, timedelta
 import random, asyncio, time, os, json
@@ -795,8 +795,12 @@ async def rock(event):
             "player2": opponent_id,
             "type": "pvp"
         }
+        sender = await event.get_sender()
+        sender2 = await reply.get_sender()
+        s1 = await ment(sender)
+        s2 = await ment(sender2)
         msg = await event.respond(
-            f"🏁 [{sender.first_name}](tg://user?id={sender_id}) تحدى [{reply.sender.first_name}](tg://user?id={opponent_id})\nاختر أحد الاختيارات 👇",
+            f' اللاعب الاول ← {s1} \n الاعب الثاني {s2}',
             buttons=[
                 [Button.inline("🪨", b"rock"), Button.inline("✂️", b"cuter"), Button.inline("📜", b"paper")]
             ],
@@ -809,8 +813,12 @@ async def rock(event):
             "player2": "bot",
             "type": "pve"  
         }
+        sender = await event.get_sender()
+        me = await ABH.get_me()
+        s1 = await ment(sender)
+        s2 = await ment(me)
         msg = await event.respond(
-            f"🧠 اختر ضد البوت يا [{sender.first_name}](tg://user?id={sender_id}) 👇",
+            f' اللاعب الاول ← {s1} \n الاعب الثاني {s2}',
             buttons=[
                 [Button.inline("🪨", b"rock"), Button.inline("✂️", b"cuter"), Button.inline("📜", b"paper")]
             ],
