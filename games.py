@@ -793,15 +793,15 @@ async def rock_handler(event):
         name1 = sender.first_name
         name2 = opponent.first_name
         player2_id = opponent.id
-        s1 = await mention(sender)
-        s2 = await mention(opponent)
+        s1 = await mention(event)
+        s2 = await ment(opponent)
     else:
         me = await ABH.get_me()
         game_type = "pve"
         name1 = sender.first_name
         name2 = me.first_name
         player2_id = "bot"
-        s1 = await mention(sender)
+        s1 = await mention(event)
         s2 = await mention(me)
     active_games[chat_id] = {
         "player1": sender.id,
