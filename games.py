@@ -802,7 +802,7 @@ async def rock_handler(event):
         name2 = me.first_name
         player2_id = "bot"
         s1 = await mention(event)
-        s2 = await mention(me)
+        s2 = await ment(me)
     active_games[chat_id] = {
         "player1": sender.id,
         "name1": name1,
