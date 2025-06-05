@@ -2,7 +2,7 @@ from telethon.tl.types import ChannelParticipantAdmin, ChannelParticipantCreator
 import asyncio, os, json, random, uuid, operator, requests, aiohttp, re, inspect
 from telethon.tl.functions.channels import GetParticipantRequest
 from database import store_whisper, get_whisper #type: ignore
-from Resources import CHANNEL, suras, mention #type: ignore
+from Resources import suras, mention #type: ignore
 from telethon.tl.functions.users import GetFullUserRequest
 from telethon.tl.types import Channel, ChannelParticipant
 from playwright.async_api import async_playwright 
