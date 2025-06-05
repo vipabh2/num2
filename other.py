@@ -290,13 +290,13 @@ async def myname(event):
 async def hisname(event):
     type = "اسمه"
     await botuse(type)
- r = await event.get_reply_message()
- if not r:
-    await event.reply("يجب الرد على رسالة المستخدم")
-    return
- s = await r.get_sender()
- name = await mention(event)
- await event.reply(name)
+    r = await event.get_reply_message()
+    if not r:
+        await event.reply("يجب الرد على رسالة المستخدم")
+        return
+        s = await r.get_sender()
+        name = await mention(event)
+        await event.reply(name)
 @ABH.on(events.NewMessage(pattern="^رقمي$"))
 async def num(event):
  s=await event.get_sender()
