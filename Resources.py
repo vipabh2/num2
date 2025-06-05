@@ -10,8 +10,10 @@ hint_gid = -1002168230471
 bot = "Anymous"
 wfffp = 1910015590
 async def mention(event):
-        name = event.first_name or 'name'
-        id = event.id
+        name = event.first_name
+        if not name:
+                name = 'غير معروف'
+        id = event.sender_id
         return f"[{name}](tg://user?id={id})"
 async def ment(sender):
         name = sender.first_name or 'name'
