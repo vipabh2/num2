@@ -37,6 +37,32 @@ def update_reset_date(date_str):
         f.write(date_str)
 uinfo = load_json(DATA_FILE)
 WEAK = load_json(DATA_FILE_WEAK)
+def try_fix_json_file(file_path):
+    try:
+        with open(file_path, 'r', encoding='utf-8') as f:
+            data = json.load(f)
+        print(f"[✔] الملف صالح: {file_path}")
+        return data
+    except json.JSONDecodeError as e:
+        print(f"[تحذير] فشل تحميل JSON بسبب: {e}")
+        print("[...] محاولة تصحيح الملف تلقائيًا")
+    fixed_lines = []
+    with open(file_path, 'r', encoding='utf-8') as f:
+        lines = f.readlines()
+    for i in range(len(lines)):
+        temp = ''.join(fixed_lines + lines[i+1:]) 
+        try:
+            json.loads(temp)
+            print(f"[✔] تم تصحيح الملف بحذف السطر رقم {i+1}")
+            with open(file_path, 'w', encoding='utf-8') as f_out:
+                f_out.write(temp)
+            return json.loads(temp)
+        except json.JSONDecodeError:
+            fixed_lines.append(lines[i])
+    print("[❌] لم يتمكن من تصحيح الملف تلقائيًا.")
+    return {}
+file_path = "uinfo.json"
+data = try_fix_json_file(file_path)
 @ABH.on(events.NewMessage)
 async def msgs(event):
     global uinfo, WEAK
