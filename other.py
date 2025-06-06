@@ -48,7 +48,7 @@ async def whisper_scanmeme(event):
             "كليلي ميو علمود ارفعج😭",
             "😭 😭 😭 😭"
     ])
-    await event.reply(x)
+        await event.reply(f"الهمسة 👇\n **{x}**")
 id_status_per_chat = {}
 @ABH.on(events.NewMessage(pattern='الايدي تفعيل'))
 async def turn_on(event):
