@@ -1,4 +1,3 @@
-
 from telethon.tl.types import ChannelParticipantAdmin, ChannelParticipantCreator
 import asyncio, os, json, random, uuid, operator, requests, aiohttp, re, validators
 from telethon.tl.functions.channels import GetParticipantRequest
@@ -32,40 +31,44 @@ async def botuse(types):
     with open('use.json', 'w', encoding='utf-8') as f:
         json.dump(data, f, ensure_ascii=False, indent=4)
 wfffp = 1910015590
-@ABH.on(events.NewMessage(pattern=r"/رد\s+(.+)"))
+@ABH.on(events.NewMessage(pattern=r"رد\s+(.+)"))
 async def handler(event):
+    def is_valid_url(url: str) -> bool:
+        return validators.url(url)
+
+    def build_buttons(items: list[str], max_per_row: int = 2) -> list[list[Button]]:
+        buttons, row = [], []
+        for i in range(0, len(items), 2):
+            text, url = items[i].strip(), items[i+1].strip()
+            if not text or not is_valid_url(url):
+                raise ValueError(f"زر غير صالح:\n{text}\n{url}")
+            row.append(Button.url(text, url))
+            if len(row) == max_per_row:
+                buttons.append(row)
+                row = []
+        if row:
+            buttons.append(row)
+        return buttons
+
     if not event.is_reply:
-        await event.reply("يجب الرد على رسالة تحتوي على كابشن.")
-        return
+        return await event.reply("يجب الرد على رسالة تحتوي على كابشن.")
+
     reply_msg = await event.get_reply_message()
     caption = reply_msg.text or getattr(reply_msg, 'message', None)
     if not caption:
-        await event.reply("الرسالة التي رددت عليها لا تحتوي على كابشن نصي.")
-        return
+        return await event.reply("الرسالة التي رددت عليها لا تحتوي على كابشن نصي.")
+
     full_text = event.pattern_match.group(1).strip()
-    pattern = r"\|\|(.+?)\|\|"
-    items = re.findall(pattern, full_text)
+    items = re.findall(r"\|\|(.+?)\|\|", full_text)
     if len(items) % 2 != 0:
-        await event.reply("❌ تأكد من كتابة كل زر بهذا الشكل: النص||الرابط||")
-        return
-    buttons = []
-    row = []
-    for i in range(0, len(items), 2):
-        text = items[i].strip()
-        url = items[i+1].strip()
-        if not text or not url or not validators.url(url):
-            await event.reply(
-                f"❌ زر غير صالح:\nالنص: {text or 'فارغ'}\nالرابط: {url or 'فارغ أو غير صالح'}"
-            )
-            return
-        row.append(Button.url(text, url))
-        if len(row) == 2:
-            buttons.append(row)
-            row = []
-    if row:
-        buttons.append(row)
-    print(buttons)
-    await event.respond(caption, buttons=buttons)
+        return await event.reply("تأكد من كتابة كل زر بهذا الشكل: النص||الرابط||")
+
+    try:
+        buttons = build_buttons(items)
+    except ValueError as e:
+        return await event.reply(str(e))
+
+    await event.respond(message=caption, buttons=buttons, reply_to=None)
 @ABH.on(events.NewMessage(pattern="^كشف همسة|كشف همسه$"))
 async def whisper_scanmeme(event):
     type = "كشف همسة"
