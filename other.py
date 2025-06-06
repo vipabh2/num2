@@ -38,7 +38,10 @@ async def handler(event):
         await event.reply("يجب الرد على رسالة تحتوي على كابشن.")
         return
     reply_msg = await event.get_reply_message()
-    caption = reply_msg.text or reply_msg.message or " "
+    caption = reply_msg.text or getattr(reply_msg, 'message', None)
+    if not caption:
+        await event.reply("الرسالة التي رددت عليها لا تحتوي على كابشن نصي.")
+        return
     full_text = event.pattern_match.group(1)
     pattern = r"\|\|(.+?)\|\|"
     items = re.findall(pattern, full_text)
@@ -46,11 +49,17 @@ async def handler(event):
         await event.reply("تأكد من كتابة كل زر بهذا الشكل: النص||الرابط||")
         return
     buttons = []
+    row = []
     for i in range(0, len(items), 2):
         text = items[i].strip()
         url = items[i+1].strip()
-        buttons.append([Button.url(text, url)])
-    await event.respond(caption, buttons=buttons)    
+        row.append(Button.url(text, url))
+        if len(row) == 2:
+            buttons.append(row)
+            row = []
+    if row:
+        buttons.append(row)
+    await event.respond(caption, buttons=buttons)
 @ABH.on(events.NewMessage(pattern="^كشف همسة|كشف همسه$"))
 async def whisper_scanmeme(event):
     type = "كشف همسة"
