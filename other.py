@@ -34,6 +34,8 @@ async def botuse(types):
 wfffp = 1910015590
 @ABH.on(events.NewMessage(pattern="^كشف همسة|كشف همسه$"))
 async def whisper_scanmeme(event):
+    type = "كشف همسة"
+    await botuse(type)
     r = await event.get_reply_message()
     if not r:
         await event.reply("لازم تسوي رد على همسة للكشف😎")
@@ -47,8 +49,13 @@ async def whisper_scanmeme(event):
             "المشرفين كلهم فيمبوي والله وكلهم مقدمين تنازلات",
             "كليلي ميو علمود ارفعج😭",
             "😭 😭 😭 😭"
+            "🍌🍌",
+            "🤤",
+            "😋😋😋😋",
+            "تره حته المالك!"
+            "سه كورد"
     ])
-        await event.reply(f"الهمسة 👇\n **{x}**")
+        await event.reply(f"الهمسة 👇\n \n **{x}**")
     else: 
         await event.reply("ماكدرت اكشفها💔")
 id_status_per_chat = {}
