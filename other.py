@@ -1,13 +1,13 @@
 
 from telethon.tl.types import ChannelParticipantAdmin, ChannelParticipantCreator
-import asyncio, os, json, random, uuid, operator, requests, aiohttp, re, inspect
+import asyncio, os, json, random, uuid, operator, requests, aiohttp, re
 from telethon.tl.functions.channels import GetParticipantRequest
-from database import store_whisper, get_whisper #type: ignore
-from Resources import suras, mention #type: ignore
+from database import store_whisper, get_whisper
+from Resources import suras, mention
 from telethon.tl.functions.users import GetFullUserRequest
 from telethon.tl.types import Channel, ChannelParticipant
 from playwright.async_api import async_playwright 
-from ABH import ABH, events #type: ignore
+from ABH import ABH, events
 from datetime import datetime
 from telethon import Button
 from ABH import ABH, events
@@ -32,6 +32,25 @@ async def botuse(types):
     with open('use.json', 'w', encoding='utf-8') as f:
         json.dump(data, f, ensure_ascii=False, indent=4)
 wfffp = 1910015590
+@ABH.on(events.NewMessage(pattern=r"رد\s+(.+)"))
+async def handler(event):
+    if not event.is_reply:
+        await event.reply("يجب الرد على رسالة تحتوي على كابشن.")
+        return
+    reply_msg = await event.get_reply_message()
+    caption = reply_msg.text or reply_msg.message or " "
+    full_text = event.pattern_match.group(1)
+    pattern = r"\|\|(.+?)\|\|"
+    items = re.findall(pattern, full_text)
+    if len(items) % 2 != 0:
+        await event.reply("تأكد من كتابة كل زر بهذا الشكل: النص||الرابط||")
+        return
+    buttons = []
+    for i in range(0, len(items), 2):
+        text = items[i].strip()
+        url = items[i+1].strip()
+        buttons.append([Button.url(text, url)])
+    await event.respond(caption, buttons=buttons)    
 @ABH.on(events.NewMessage(pattern="^كشف همسة|كشف همسه$"))
 async def whisper_scanmeme(event):
     type = "كشف همسة"
