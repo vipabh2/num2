@@ -33,16 +33,13 @@ async def botuse(types):
 wfffp = 1910015590
 @ABH.on(events.NewMessage(pattern=r"رد\s+(.+)"))
 async def handler(event):
-    def is_valid_url(url: str) -> bool:
-        return validators.url(url)
-
-    def build_buttons(items: list[str], max_per_row: int = 2) -> list[list[Button]]:
+    def build_buttons(items, max_per_row=2):
         buttons, row = [], []
         i = 0
         while i < len(items):
             text = items[i].strip()
-            url = items[i+1].strip() if (i+1) < len(items) else ""
-            if url:
+            url = items[i + 1].strip() if (i + 1) < len(items) else ""
+            if url.startswith("http://") or url.startswith("https://"):
                 row.append(Button.url(text, url))
                 i += 2
             else:
@@ -57,11 +54,24 @@ async def handler(event):
 
     if not event.is_reply:
         return await event.reply("يجب الرد على رسالة تحتوي على كابشن.")
-
+    
     reply_msg = await event.get_reply_message()
     caption = reply_msg.text or getattr(reply_msg, 'message', None)
     if not caption:
         return await event.reply("الرسالة التي رددت عليها لا تحتوي على كابشن نصي.")
+    
+    full_text = event.pattern_match.group(1).strip()
+    items = [p.strip() for p in full_text.split("||") if p.strip()]
+    
+    if not items:
+        return await event.reply("لم يتم العثور على أي أزرار. تأكد من كتابة الصيغة بالشكل الصحيح.")
+
+    try:
+        buttons = build_buttons(items)
+    except Exception as e:
+        return await event.reply(f"حدث خطأ أثناء بناء الأزرار: {e}")
+    
+    await event.respond(message=caption, buttons=buttons, reply_to=None)
 
     full_text = event.pattern_match.group(1).strip()
 
