@@ -42,8 +42,6 @@ async def handler(event):
         while i < len(items):
             text = items[i].strip()
             url = items[i+1].strip() if (i+1) < len(items) else ""
-            if url and not is_valid_url(url):
-                raise ValueError(f"الرابط غير صالح:\n{text}\n{url}")
             if url:
                 row.append(Button.url(text, url))
                 i += 2
