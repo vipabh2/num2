@@ -32,6 +32,22 @@ async def botuse(types):
     with open('use.json', 'w', encoding='utf-8') as f:
         json.dump(data, f, ensure_ascii=False, indent=4)
 wfffp = 1910015590
+@ABH.on(events.NewMessage(pattern="^كشف همسة|كشف همسه$"))
+async def whisper_scanmeme(event):
+    r = await event.get_reply_message()
+    if not r:
+        await event.reply("لازم تسوي رد على همسة للكشف😎")
+        return
+    if "همسة" in r or "همسه" in r:
+    x = random.choice([
+        "اييييع",
+        "عيني السكرينات عندي موجودة \n اي شيء يصير ادزهن",
+        "مامي 😭",
+        "بموووووت 😭",
+        "المشرفين كلهم فيمبوي والله وكلهم مقدمين تنازلات",
+        "كليلي ميو علمود ارفعج😭",
+        "😭 😭 😭 😭"
+    ])
 id_status_per_chat = {}
 @ABH.on(events.NewMessage(pattern='الايدي تفعيل'))
 async def turn_on(event):
