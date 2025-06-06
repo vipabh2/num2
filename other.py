@@ -38,7 +38,7 @@ async def whisper_scanmeme(event):
     if not r:
         await event.reply("لازم تسوي رد على همسة للكشف😎")
         return
-    if "همسة" in r or "همسه" in r:
+    if "همسة" in r or "همسه" in r.text:
         x = random.choice([
             "اييييع",
             "عيني السكرينات عندي موجودة \n اي شيء يصير ادزهن",
