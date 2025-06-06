@@ -1,6 +1,6 @@
 
 from telethon.tl.types import ChannelParticipantAdmin, ChannelParticipantCreator
-import asyncio, os, json, random, uuid, operator, requests, aiohttp, re
+import asyncio, os, json, random, uuid, operator, requests, aiohttp, re, validators
 from telethon.tl.functions.channels import GetParticipantRequest
 from database import store_whisper, get_whisper
 from Resources import suras, mention
@@ -32,7 +32,7 @@ async def botuse(types):
     with open('use.json', 'w', encoding='utf-8') as f:
         json.dump(data, f, ensure_ascii=False, indent=4)
 wfffp = 1910015590
-@ABH.on(events.NewMessage(pattern=r"رد\s+(.+)"))
+@ABH.on(events.NewMessage(pattern=r"/رد\s+(.+)"))
 async def handler(event):
     if not event.is_reply:
         await event.reply("يجب الرد على رسالة تحتوي على كابشن.")
@@ -42,23 +42,29 @@ async def handler(event):
     if not caption:
         await event.reply("الرسالة التي رددت عليها لا تحتوي على كابشن نصي.")
         return
-    full_text = event.pattern_match.group(1)
+    full_text = event.pattern_match.group(1).strip()
     pattern = r"\|\|(.+?)\|\|"
     items = re.findall(pattern, full_text)
     if len(items) % 2 != 0:
-        await event.reply("تأكد من كتابة كل زر بهذا الشكل: النص||الرابط||")
+        await event.reply("❌ تأكد من كتابة كل زر بهذا الشكل: النص||الرابط||")
         return
     buttons = []
     row = []
     for i in range(0, len(items), 2):
         text = items[i].strip()
         url = items[i+1].strip()
+        if not text or not url or not validators.url(url):
+            await event.reply(
+                f"❌ زر غير صالح:\nالنص: {text or 'فارغ'}\nالرابط: {url or 'فارغ أو غير صالح'}"
+            )
+            return
         row.append(Button.url(text, url))
         if len(row) == 2:
             buttons.append(row)
             row = []
     if row:
         buttons.append(row)
+    print(buttons)
     await event.respond(caption, buttons=buttons)
 @ABH.on(events.NewMessage(pattern="^كشف همسة|كشف همسه$"))
 async def whisper_scanmeme(event):
