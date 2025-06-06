@@ -43,7 +43,7 @@ async def handler(event):
                 row.append(Button.url(text, url))
                 i += 2
             else:
-                row.append(Button.text(text))
+                row.append(Button.inline(text, data=b'noop'))
                 i += 1
             if len(row) == max_per_row:
                 buttons.append(row)
@@ -71,19 +71,6 @@ async def handler(event):
     except Exception as e:
         return await event.reply(f"حدث خطأ أثناء بناء الأزرار: {e}")
     
-    await event.respond(message=caption, buttons=buttons, reply_to=None)
-
-    full_text = event.pattern_match.group(1).strip()
-
-    parts = full_text.split("||")
-
-    items = [p for p in parts if p.strip() != ""]
-
-    try:
-        buttons = build_buttons(items)
-    except ValueError as e:
-        return await event.reply(str(e))
-
     await event.respond(message=caption, buttons=buttons, reply_to=None)
 @ABH.on(events.NewMessage(pattern="^كشف همسة|كشف همسه$"))
 async def whisper_scanmeme(event):
