@@ -38,11 +38,18 @@ async def handler(event):
 
     def build_buttons(items: list[str], max_per_row: int = 2) -> list[list[Button]]:
         buttons, row = [], []
-        for i in range(0, len(items), 2):
-            text, url = items[i].strip(), items[i+1].strip()
-            if not text or not is_valid_url(url):
-                raise ValueError(f"زر غير صالح:\n{text}\n{url}")
-            row.append(Button.url(text, url))
+        i = 0
+        while i < len(items):
+            text = items[i].strip()
+            url = items[i+1].strip() if (i+1) < len(items) else ""
+            if url and not is_valid_url(url):
+                raise ValueError(f"الرابط غير صالح:\n{text}\n{url}")
+            if url:
+                row.append(Button.url(text, url))
+                i += 2
+            else:
+                row.append(Button.text(text))
+                i += 1
             if len(row) == max_per_row:
                 buttons.append(row)
                 row = []
@@ -59,9 +66,10 @@ async def handler(event):
         return await event.reply("الرسالة التي رددت عليها لا تحتوي على كابشن نصي.")
 
     full_text = event.pattern_match.group(1).strip()
-    items = re.findall(r"\|\|(.+?)\|\|", full_text)
-    if len(items) % 2 != 0:
-        return await event.reply("تأكد من كتابة كل زر بهذا الشكل: النص||الرابط||")
+
+    parts = full_text.split("||")
+
+    items = [p for p in parts if p.strip() != ""]
 
     try:
         buttons = build_buttons(items)
