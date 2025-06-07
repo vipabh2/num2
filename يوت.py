@@ -3,6 +3,7 @@ from telethon import events, Button
 from yt_dlp import YoutubeDL
 import os, asyncio, json
 from ABH import ABH
+COOKIES_FILE = 'c.txt'
 if not os.path.exists("downloads"):
     os.makedirs("downloads")
 CACHE_FILE = "audio_cache.json"
@@ -19,7 +20,7 @@ YDL_OPTIONS = {
     'outtmpl': 'downloads/%(title)s.%(ext)s',
     'noplaylist': True,
     'quiet': True,
-    'cookiefile': "c.txt",
+    'cookiefile': f"{COOKIES_FILE}",
     'postprocessors': [{
         'key': 'FFmpegExtractAudio',
         'preferredcodec': 'mp3',
@@ -95,7 +96,6 @@ async def download_audio(event):
         save_cache()
     except Exception as e:
         await ABH.send_message(1910015590, f"Error: {str(e)}")
-COOKIES_FILE = 'c.txt'
 @ABH.on(events.NewMessage(pattern='^اضف كوكيز$', from_users=[1910015590]))
 async def add_cookie_handler(event):
     r = await event.get_reply_message()
