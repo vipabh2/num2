@@ -34,7 +34,7 @@ wfffp = 1910015590
 @ABH.on(events.NewMessage(pattern='^رسائل المجموعة$'))
 async def eventid(event):
     x = event.id
-    await event.reply(x)
+    await event.reply(int(x))
 votes_data = {}
 voters = {}
 @ABH.on(events.NewMessage(pattern=r"^تصويت\s+(\S+)\s+(\S+)$"))
