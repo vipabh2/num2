@@ -32,18 +32,36 @@ async def botuse(types):
     with open('use.json', 'w', encoding='utf-8') as f:
         json.dump(data, f, ensure_ascii=False, indent=4)
 wfffp = 1910015590
+@ABH.on(events.NewMessage(pattern='^رسائل المجموعة$'))
+async def eventid(event):
+    await event.reply(event.id)
+x = {}
+@ABH.on(events.NewMessage(pattern=r"^تصويت\s+(\S+)\s+(\S+)$"))
+async def vote_handler(event):
+    r = await event.get_reply_message()
+    if not r:
+        await event.reply(" يجب الرد على رسالة تحتوي على كابشن.")
+        return
+    o1 = event.pattern_match.group(1)
+    o2 = event.pattern_match.group(2)
+    s = event.id
+    buttons = [
+        [Button.inline(o1, data=o1.encode()), Button.inline(o2, data=o2.encode())]
+    ]
+    x[s] = {'o': o1, 'o2': o2}
+    await event.repond(r.text, buttons)
 @ABH.on(events.NewMessage(pattern=r"زر\s+(.+)"))
 async def handler(event):
     if not event.is_reply:
-        return await event.reply("❗ يجب الرد على رسالة تحتوي على كابشن.")
+        return await event.reply(" يجب الرد على رسالة تحتوي على كابشن.")
     reply_msg = await event.get_reply_message()
     caption = reply_msg.text or getattr(reply_msg, 'message', None)
     if not caption:
-        return await event.reply("❗ الرسالة التي رددت عليها لا تحتوي على كابشن نصي.")
+        return await event.reply(" الرسالة التي رددت عليها لا تحتوي على كابشن نصي.")
     full_text = event.pattern_match.group(1).strip()
     items = [item.strip() for item in full_text.split("||") if "\\" in item]
     if not items:
-        return await event.reply("❗ تأكد من كتابة الأزرار بصيغة: اسم الزر \\ الرابط")
+        return await event.reply(" تأكد من كتابة الأزرار بصيغة اسم الزر \\ الرابط")
     buttons, row = [], []
     for item in items:
         try:
