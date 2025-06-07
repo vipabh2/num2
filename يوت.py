@@ -2,7 +2,7 @@ from telethon.tl.types import DocumentAttributeAudio
 from telethon import events, Button
 from yt_dlp import YoutubeDL
 import os, asyncio, json
-from other import botuse
+from other import botuse, is_assistant
 from ABH import ABH
 import os
 import json
@@ -136,6 +136,10 @@ async def add_cookie(event):
     await event.reply(" تم حفظ الكوكيز داخل ملف JSON بنجاح.")
 @ABH.on(events.NewMessage(pattern=r'^ال(\w+)\s+(تعطيل|تفعيل)$'))
 async def handle_flag(event):
+    type = "الايدي تفعيل"
+    await botuse(type)
+    if not is_assistant(event.chat_id, event.sender_id):
+        return
     key = event.pattern_match.group(1)
     value_str = event.pattern_match.group(2).lower()
     value = True if value_str == "تفعيل" else False
