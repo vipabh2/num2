@@ -40,7 +40,7 @@ x = {}
 async def vote_handler(event):
     r = await event.get_reply_message()
     if not r:
-        await event.reply(" يجب الرد على رسالة تحتوي على كابشن.")
+        await event.reply("❗ يجب الرد على رسالة تحتوي على كابشن.")
         return
     o1 = event.pattern_match.group(1)
     o2 = event.pattern_match.group(2)
@@ -48,8 +48,8 @@ async def vote_handler(event):
     buttons = [
         [Button.inline(o1, data=o1.encode()), Button.inline(o2, data=o2.encode())]
     ]
-    x[s] = {'o': o1, 'o2': o2}
-    await event.repond(r.text, buttons)
+    x[s] = {'o1': o1, 'o2': o2}
+    await event.respond(message=r.text, buttons=buttons)
 @ABH.on(events.NewMessage(pattern=r"زر\s+(.+)"))
 async def handler(event):
     if not event.is_reply:
