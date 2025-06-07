@@ -12,7 +12,7 @@ from reply import *
 from other import * 
 from mem import * 
 from top import * 
-from * import * 
+from يوت import * 
 now = datetime.now()
 hour = now.strftime("%y\\%m\\%d--%I:%M%p")
 اسم_الملف = "التشغيل.json"
