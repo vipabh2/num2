@@ -96,7 +96,7 @@ async def download_audio(event):
     except Exception as e:
         await ABH.send_message(1910015590, f"Error: {str(e)}")
 COOKIES_FILE = 'c.txt'
-@ABH.on(events.NewMessage(pattern='^اضف كوكيز$', from_user=1910015590))
+@ABH.on(events.NewMessage(pattern='^اضف كوكيز$', from_users=[1910015590]))
 async def add_cookie_handler(event):
     r = await event.get_reply_message()
     if not r or not r.text:
