@@ -100,8 +100,30 @@ async def download_audio(event):
 async def add_cookie(event):
     r = await event.get_reply_message()
     if not r or not r.document:
-        return await event.reply("❗️يرجى الرد على رسالة تحتوي على ملف كوكيز.")
-    if os.path.exists("c.txt"):
-        os.remove("c.txt")
-    await r.download_media(file="c.txt")
-    await event.reply("✅ تم استبدال ملف الكوكيز بنجاح.")
+        return await event.reply("❗️يرجى الرد على رسالة تحتوي على ملف كوكيز.")    
+    tmp_file = "temp_cookie.txt"
+    await r.download_media(file=tmp_file)
+    with open(tmp_file, "r", encoding="utf-8") as f:
+        content = f.read()
+    os.remove(tmp_file)
+    if os.path.exists("cookie.json"):
+        os.remove("cookie.json")
+    with open("cookie.json", "w", encoding="utf-8") as f:
+        json.dump({"cookie_data": content}, f, ensure_ascii=False, indent=2)
+    await event.reply("✅ تم حفظ الكوكيز داخل ملف JSON بنجاح.")
+@ABH.on(events.NewMessage(pattern=r'^ال(\w+)\s+(تعطيل|تفعيل)$'))
+async def handle_flag(event):
+    key = event.pattern_match.group(1)
+    value_str = event.pattern_match.group(2).lower()
+    value = True if value_str == "تفعيل" else False
+    data = {}
+    if os.path.exists("locks.json"):
+        with open("locks.json", "r", encoding="utf-8") as f:
+            try:
+                data = json.load(f)
+            except json.JSONDecodeError:
+                data = {}
+    data[key] = value
+    with open("locks.json", "w", encoding="utf-8") as f:
+        json.dump(data, f, ensure_ascii=False, indent=4)
+    await event.reply(f"✅ تم تعيين القيمة للعنصر '{key}' إلى {value}")
