@@ -123,6 +123,8 @@ async def handle_flag(event):
                 data = json.load(f)
             except json.JSONDecodeError:
                 data = {}
+                if event.chat_id not in data:
+                    data[event.chat_id] = {}
     data[event.chat_id][key] = value
     with open("locks.json", "w", encoding="utf-8") as f:
         json.dump(data, f, ensure_ascii=False, indent=4)
