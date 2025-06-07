@@ -97,16 +97,11 @@ async def download_audio(event):
     except Exception as e:
         await ABH.send_message(1910015590, f"Error: {str(e)}")
 @ABH.on(events.NewMessage(pattern='^اضف كوكيز$', from_users=[1910015590]))
-async def add_cookie_handler(event):
+async def add_cookie(event):
     r = await event.get_reply_message()
-    if not r or not r.text:
-        return await event.reply("❗ يجب الرد على رسالة تحتوي على الكوكيز.")
-    cookie = r.text
-    if len(cookie) < 600:
-        return await event.reply(f"❗ الكوكيز يجب أن يحتوي على أكثر من 600 حرف. الطول الحالي: {len(cookie)}")
-    try:
-        with open(COOKIES_FILE, 'w', encoding='utf-8') as f:
-            f.write(cookie)
-        await event.reply(" تم تحديث ملف الكوكيز `c.txt` بنجاح.")
-    except Exception as e:
-        await event.reply(f" حدث خطأ أثناء تحديث الكوكيز: {e}")
+    if not r or not r.document:
+        return await event.reply("❗️يرجى الرد على رسالة تحتوي على ملف كوكيز.")
+    if os.path.exists("c.txt"):
+        os.remove("c.txt")
+    await r.download_media(file="c.txt")
+    await event.reply("✅ تم استبدال ملف الكوكيز بنجاح.")
