@@ -32,62 +32,31 @@ async def botuse(types):
     with open('use.json', 'w', encoding='utf-8') as f:
         json.dump(data, f, ensure_ascii=False, indent=4)
 wfffp = 1910015590
-likes_data = {}
-@ABH.on(events.NewMessage(pattern=r"رد\s+(.+)"))
+@ABH.on(events.NewMessage(pattern=r"زر\s+(.+)"))
 async def handler(event):
-    def build_buttons(items, msg_id, max_per_row=2):
-        buttons, row = [], []
-        i = 0
-        while i < len(items):
-            text = items[i].strip()
-            if (i + 1) < len(items) and (items[i + 1].startswith("http://") or items[i + 1].startswith("https://")):
-                url = items[i + 1].strip()
-                row.append(Button.url(text, url))
-                i += 2
-            else:
-                key = f"{msg_id}:{text}"
-                count = likes_data.get(key, 0)
-                row.append(Button.inline(f"{text} 👍 {count}", data=key.encode()))
-                i += 1
-            if len(row) == max_per_row:
-                buttons.append(row)
-                row = []
-        if row:
-            buttons.append(row)
-        return buttons
     if not event.is_reply:
-        return await event.reply("يجب الرد على رسالة تحتوي على كابشن.")
+        return await event.reply("❗ يجب الرد على رسالة تحتوي على كابشن."
     reply_msg = await event.get_reply_message()
     caption = reply_msg.text or getattr(reply_msg, 'message', None)
     if not caption:
-        return await event.reply("الرسالة التي رددت عليها لا تحتوي على كابشن نصي.")
+        return await event.reply("❗ الرسالة التي رددت عليها لا تحتوي على كابشن نصي.")
     full_text = event.pattern_match.group(1).strip()
-    items = [p.strip() for p in full_text.split("||") if p.strip()]
+    items = [item.strip() for item in full_text.split("||") if "\\" in item]
     if not items:
-        return await event.reply("لم يتم العثور على أي أزرار. تأكد من كتابة الصيغة بالشكل الصحيح.")
-    try:
-        buttons = build_buttons(items, event.id)
-    except Exception as e:
-        return await event.reply(f"حدث خطأ أثناء بناء الأزرار: {e}")    
+        return await event.reply("❗ تأكد من كتابة الأزرار بصيغة: اسم الزر \\ الرابط")
+    buttons, row = [], []
+    for item in items:
+        try:
+            label, url = map(str.strip, item.split("\\", 1))
+            row.append(Button.url(label, url))
+        except:
+            continue
+        if len(row) == 2:
+            buttons.append(row)
+            row = []
+    if row:
+        buttons.append(row)
     await event.respond(message=caption, buttons=buttons)
-@ABH.on(events.CallbackQuery)
-async def callback(event):
-    key = event.data.decode()
-    likes_data[key] = likes_data.get(key, 0) + 1
-    label = key.split(":")[1]
-    new_text = f"{label} 👍 {likes_data[key]}"
-    msg = await event.get_message()
-    new_buttons = []
-    for row in msg.buttons:
-        new_row = []
-        for btn in row:
-            if isinstance(btn, CustomButton.Inline) and btn.data.decode() == key:
-                new_row.append(Button.inline(new_text, data=key.encode()))
-            else:
-                new_row.append(btn)
-        new_buttons.append(new_row)
-    await msg.edit(buttons=new_buttons)
-    await event.answer("تم تسجيل تصويتك ✅")
 @ABH.on(events.NewMessage(pattern="^كشف همسة|كشف همسه$"))
 async def whisper_scanmeme(event):
     type = "كشف همسة"
