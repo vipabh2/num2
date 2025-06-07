@@ -42,23 +42,21 @@ def load_data():
     try:
         with open(DATA_FILE, 'r', encoding='utf-8') as f:
             return json.load(f)
-    except Exception as e:
-        print(f"Error loading data: {e}")
+    except Exception:
         return {'votes': {}, 'voters': {}}
 def save_data(data):
     try:
         with open(DATA_FILE, 'w', encoding='utf-8') as f:
             json.dump(data, f, ensure_ascii=False, indent=2)
     except Exception as e:
-        print(f"Error saving data: {e}")
+        print(f"[خطأ في الحفظ] {e}")
 data_store = load_data()
 @ABH.on(events.NewMessage(pattern=r"^تصويت\s+(\S+)\s+(\S+)$"))
 async def vote_handler(event):
     reply_msg = await event.get_reply_message()
     if not reply_msg or not reply_msg.text:
         return await event.reply("❗ يجب الرد على رسالة تحتوي على كابشن نصي.")
-    o1 = event.pattern_match.group(1)
-    o2 = event.pattern_match.group(2)
+    o1, o2 = event.pattern_match.group(1), event.pattern_match.group(2)
     msg_id = str(event.id)
     data_store['votes'][msg_id] = {o1: 0, o2: 0}
     data_store['voters'][msg_id] = []
@@ -73,28 +71,28 @@ async def callback_handler(event):
     try:
         data = event.data.decode()
         if ':' not in data:
-            return await event.answer("❌ بيانات التصويت غير صالحة", alert=True)
-        msg_id, choice = data.split(':', 1) 
+            return await event.answer("❌ تنسيق التصويت غير صالح", alert=True)
+        msg_id, choice = data.split(':', 1)
         user_id = str(event.sender_id)
         if msg_id not in data_store['votes']:
-            return await event.answer("⛔ التصويت غير متوفر", alert=True)
+            return await event.answer("⛔ التصويت غير متاح", alert=True)
         if user_id in data_store['voters'].get(msg_id, []):
             return await event.answer("❗ لقد صوتت مسبقًا", alert=True)
+        if choice not in data_store['votes'][msg_id]:
+            return await event.answer("❌ خيار التصويت غير صالح", alert=True)
         data_store['votes'][msg_id][choice] += 1
         data_store['voters'][msg_id].append(user_id)
         save_data(data_store)
-        o1, o2 = list(data_store['votes'][msg_id].keys())
-        c1 = data_store['votes'][msg_id][o1]
-        c2 = data_store['votes'][msg_id][o2]
+        options = list(data_store['votes'][msg_id].items())
         buttons = [
-            [Button.inline(f"{o1} 👍 {c1}", data=f"{msg_id}:{o1}"),
-             Button.inline(f"{o2} 👍 {c2}", data=f"{msg_id}:{o2}")]
+            [Button.inline(f"{opt[0]} 👍 {opt[1]}", data=f"{msg_id}:{opt[0]}")
+             for opt in options]
         ]
         await event.edit(buttons=buttons)
-        await event.answer("✅ تم تسجيل تصويتك")
+        await event.answer("✅ تم تسجيل تصويتك بنجاح")
     except Exception as e:
-        print(f"Error in callback_handler: {e}")
-        await event.answer(f"حدث خطأ: {e}", alert=True)
+        print(f"[خطأ] callback_handler: {e}")
+        await event.answer("❌ حدث خطأ داخلي أثناء التصويت", alert=True)
 @ABH.on(events.NewMessage(pattern=r"زر\s+(.+)"))
 async def handler(event):
     if not event.is_reply:
