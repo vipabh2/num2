@@ -35,7 +35,7 @@ wfffp = 1910015590
 @ABH.on(events.NewMessage(pattern=r"زر\s+(.+)"))
 async def handler(event):
     if not event.is_reply:
-        return await event.reply("❗ يجب الرد على رسالة تحتوي على كابشن."
+        return await event.reply("❗ يجب الرد على رسالة تحتوي على كابشن.")
     reply_msg = await event.get_reply_message()
     caption = reply_msg.text or getattr(reply_msg, 'message', None)
     if not caption:
