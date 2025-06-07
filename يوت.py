@@ -41,7 +41,7 @@ YDL_OPTIONS = {
 }
 @ABH.on(events.NewMessage(pattern=r'^(يوت|yt) (.+)'))
 async def download_audio(event):
-    if not isc(event.chat_id, "يوتيوب"):
+    if not isc(event.chat_id, "اليوتيوب"):
         return
     try:
         query = event.pattern_match.group(2)
@@ -125,7 +125,7 @@ async def add_cookie(event):
     with open("cookie.json", "w", encoding="utf-8") as f:
         json.dump({"cookie_data": content}, f, ensure_ascii=False, indent=2)
     await event.reply(" تم حفظ الكوكيز داخل ملف JSON بنجاح.")
-@ABH.on(events.NewMessage(pattern=r'^ال(\w+)\s+(تعطيل|تفعيل)$', from_users=[1910015590]))
+@ABH.on(events.NewMessage(pattern=r'^ال(\w+)\s+(تعطيل|تفعيل)$'))
 async def handle_flag(event):
     key = event.pattern_match.group(1)
     value_str = event.pattern_match.group(2).lower()
@@ -142,4 +142,4 @@ async def handle_flag(event):
     data[event.chat_id][key] = value
     with open("locks.json", "w", encoding="utf-8") as f:
         json.dump(data, f, ensure_ascii=False, indent=4)
-    await event.reply(f" تم تعيين القيمة للعنصر '{key}' إلى {value}")
+    await event.reply(f"تم {value_str} ال{value} بحمده تعالى")
