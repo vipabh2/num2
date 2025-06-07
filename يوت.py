@@ -43,13 +43,14 @@ YDL_OPTIONS = {
 async def download_audio(event):
     if not isc(event.chat_id, "اليوتيوب"):
         return
+    c = event.chat_id
     try:
         query = event.pattern_match.group(2)
         b = Button.url('CHANNEL', 'https://t.me/X04OU')
         for val in audio_cache.values():
             if isinstance(val, dict) and val.get("query") == query:
                 await ABH.send_file(
-                    1910015590,
+                    c,
                     file=val["file_id"],
                     caption="[ENJOY DEAR](https://t.me/VIPABH_BOT)",
                     attributes=[
@@ -59,7 +60,8 @@ async def download_audio(event):
                             performer='ANYMOUS'
                         )
                     ],
-                    buttons=[b]
+                    buttons=[b],
+                    reply_to=event.message.id
                 )
                 return  
         ydl = YoutubeDL(YDL_OPTIONS)
@@ -72,7 +74,7 @@ async def download_audio(event):
         if video_id in audio_cache:
             val = audio_cache[video_id]
             await ABH.send_file(
-                1910015590,
+                c,
                 file=val["file_id"],
                 caption="[ENJOY DEAR](https://t.me/VIPABH_BOT)",
                 attributes=[
@@ -82,14 +84,15 @@ async def download_audio(event):
                         performer='ANYMOUS'
                     )
                 ],
-                buttons=[b]
+                buttons=[b],
+                reply_to=event.message.id
             )
             return
         download_info = await asyncio.to_thread(ydl.extract_info, f"ytsearch:{query}", download=True)
         downloaded_video = download_info['entries'][0]
         file_path = ydl.prepare_filename(downloaded_video).replace(".webm", ".mp3").replace(".m4a", ".mp3")
         msg = await ABH.send_file(
-            1910015590,
+            c,
             file=file_path,
             caption="[ENJOY DEAR](https://t.me/VIPABH_BOT)",
             attributes=[
@@ -99,7 +102,8 @@ async def download_audio(event):
                     performer='ANYMOUS'
                 )
             ],
-            buttons=[b]
+            buttons=[b],
+            reply_to=event.message.id
         )
         audio_cache[downloaded_video.get("id")] = {
             "file_id": msg.file.id,
