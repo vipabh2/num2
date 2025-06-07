@@ -74,7 +74,7 @@ async def callback_handler(event):
         data = event.data.decode()
         if ':' not in data:
             return await event.answer("بيانات غير صحيحة", alert=True)
-        msg_id, choice = data.split(":", 1)
+        msg_id, choice = data.split(":", 1)  
         user_id = str(event.sender_id)
         if msg_id not in data_store['votes']:
             return await event.answer("⛔ التصويت غير متوفر", alert=True)
