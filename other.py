@@ -35,7 +35,7 @@ wfffp = 1910015590
 @ABH.on(events.NewMessage(pattern='^رسائل المجموعة$'))
 async def eventid(event):
     await event.reply(event.id)
-x = {}
+votes = {}
 @ABH.on(events.NewMessage(pattern=r"^تصويت\s+(\S+)\s+(\S+)$"))
 async def vote_handler(event):
     r = await event.get_reply_message()
@@ -48,7 +48,7 @@ async def vote_handler(event):
     buttons = [
         [Button.inline(o1, data=o1.encode()), Button.inline(o2, data=o2.encode())]
     ]
-    x[s] = {'o1': o1, 'o2': o2}
+    votes[s] = {'o1': o1, 'o2': o2}
     await event.respond(message=r.text, buttons=buttons)
 @ABH.on(events.NewMessage(pattern=r"زر\s+(.+)"))
 async def handler(event):
