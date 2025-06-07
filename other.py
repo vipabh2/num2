@@ -3,14 +3,13 @@ import asyncio, os, json, random, uuid, operator, requests, aiohttp, re
 from telethon.tl.functions.channels import GetParticipantRequest
 from telethon.tl.functions.users import GetFullUserRequest
 from telethon.tl.types import Channel, ChannelParticipant
-from telethon.tl.custom import Button as CustomButton
-from playwright.async_api import async_playwright 
+from playwright.async_api import async_playwright
 from database import store_whisper, get_whisper
 from Resources import suras, mention
 from datetime import datetime
+from telethon import events
 from telethon import Button
-from ABH import ABH, events
-from ABH import ABH, events
+from ABH import ABH
 async def creat_useFILE():
     if not os.path.exists('use.json'):
         with open('use.json', 'w', encoding='utf-8') as f:
@@ -34,22 +33,49 @@ async def botuse(types):
 wfffp = 1910015590
 @ABH.on(events.NewMessage(pattern='^رسائل المجموعة$'))
 async def eventid(event):
-    await event.reply(event.id)
-votes = {}
+    x = event.id
+    await event.reply(x)
+votes_data = {}
+voters = {}
 @ABH.on(events.NewMessage(pattern=r"^تصويت\s+(\S+)\s+(\S+)$"))
 async def vote_handler(event):
-    r = await event.get_reply_message()
-    if not r:
-        await event.reply("❗ يجب الرد على رسالة تحتوي على كابشن.")
-        return
+    reply_msg = await event.get_reply_message()
+    if not reply_msg or not reply_msg.text:
+        return await event.reply("❗ يجب الرد على رسالة تحتوي على كابشن نصي.")
     o1 = event.pattern_match.group(1)
     o2 = event.pattern_match.group(2)
-    s = event.id
+    msg_id = event.id
+    votes_data[msg_id] = {o1: 0, o2: 0}
+    voters[msg_id] = set()
     buttons = [
-        [Button.inline(o1, data=o1.encode()), Button.inline(o2, data=o2.encode())]
+        [Button.inline(f"{o1} 👍 0", data=f"{msg_id}:{o1}".encode()),
+         Button.inline(f"{o2} 👍 0", data=f"{msg_id}:{o2}".encode())]
     ]
-    votes[s] = {'o1': o1, 'o2': o2}
-    await event.respond(message=r.text, buttons=buttons)
+    await event.respond(message=reply_msg.text, buttons=buttons)
+@ABH.on(events.CallbackQuery)
+async def callback_handler(event):
+    try:
+        data = event.data.decode()
+        msg_id_str, choice = data.split(":")
+        msg_id = int(msg_id_str)
+        user_id = event.sender_id
+        if msg_id not in votes_data:
+            return await event.answer("⛔ التصويت غير متوفر", alert=True)
+        if user_id in voters[msg_id]:
+            return await event.answer("❗ لقد صوتت مسبقًا", alert=True)
+        votes_data[msg_id][choice] += 1
+        voters[msg_id].add(user_id)
+        o1, o2 = list(votes_data[msg_id].keys())
+        c1 = votes_data[msg_id][o1]
+        c2 = votes_data[msg_id][o2]
+        buttons = [
+            [Button.inline(f"{o1} 👍 {c1}", data=f"{msg_id}:{o1}".encode()),
+             Button.inline(f"{o2} 👍 {c2}", data=f"{msg_id}:{o2}".encode())]
+        ]
+        await event.edit(buttons=buttons)
+        await event.answer("✅ تم تسجيل تصويتك")
+    except Exception as e:
+        await event.answer(f"حدث خطأ: {e}", alert=True)
 @ABH.on(events.NewMessage(pattern=r"زر\s+(.+)"))
 async def handler(event):
     if not event.is_reply:
