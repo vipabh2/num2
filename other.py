@@ -309,7 +309,7 @@ async def remove_assistant(event):
     target_id = reply.sender_id
     data = load_auth()
     target_user = await reply.get_sender()
-    rm = await mention(event, target_user)
+    rm = await "المستخدم"
     if chat_id in data and target_id in data[chat_id]:
         data[chat_id].remove(target_id)
         save_auth(data)
