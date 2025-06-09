@@ -158,3 +158,4 @@ async def handle_flag(event):
     with open("locks.json", "w", encoding="utf-8") as f:
         json.dump(data, f, ensure_ascii=False, indent=4)
     await event.reply(f"تم {value_str} ال{value} بحمده تعالى")
+print(COOKIES_FILE)
