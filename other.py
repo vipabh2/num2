@@ -332,7 +332,7 @@ async def show_assistants(event):
     msg = "📋 **قائمة المعاونين في هذه المجموعة**\n\n"
     if chat_id in data and data[chat_id]:
         for user_id in data[chat_id]:
-            mention_text = await ment(user_id)
+            mention_text = await m(user_id)
             msg += f"• {mention_text} ⇠ `{user_id}`\n"
     else:
         msg += " لا يوجد معاونين حالياً في هذه المجموعة.\n"
