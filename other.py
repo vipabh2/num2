@@ -331,11 +331,11 @@ async def show_assistants(event):
     data = load_auth()
     msg = "📋 **قائمة المعاونين في هذه المجموعة**\n\n"
     if chat_id in data and data[chat_id]:
-        for user_id in data[chat_id]:
+        for idx, user_id in enumerate(data[chat_id], start=1):
             mention_text = await m(user_id)
-            msg += f"• {mention_text} ⇠ `{user_id}`\n"
+            msg += f"{idx} - {mention_text} ↔ `{user_id}`\n"
     else:
-        msg += " لا يوجد معاونين حالياً في هذه المجموعة.\n"
+        msg += "❌ لا يوجد معاونين حالياً في هذه المجموعة.\n"
     await event.reply(msg, parse_mode="md")
 @ABH.on(events.NewMessage(pattern="^اسمي$"))
 async def myname(event):
