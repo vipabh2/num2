@@ -1,3 +1,4 @@
+from telethon.tl.types import User
 from ABH import ABH #type: ignore
 from datetime import datetime
 from telethon import events
@@ -41,7 +42,6 @@ def try_fix_json_file(file_path):
     try:
         with open(file_path, 'r', encoding='utf-8') as f:
             data = json.load(f)
-        print(f"[✔] الملف صالح: {file_path}")
         return data
     except json.JSONDecodeError as e:
         print(f"[تحذير] فشل تحميل JSON بسبب: {e}")
@@ -53,24 +53,28 @@ def try_fix_json_file(file_path):
         temp = ''.join(fixed_lines + lines[i+1:]) 
         try:
             json.loads(temp)
-            print(f"[✔] تم تصحيح الملف بحذف السطر رقم {i+1}")
             with open(file_path, 'w', encoding='utf-8') as f_out:
                 f_out.write(temp)
             return json.loads(temp)
         except json.JSONDecodeError:
             fixed_lines.append(lines[i])
-    print("[❌] لم يتمكن من تصحيح الملف تلقائيًا.")
     return {}
 file_path = "uinfo.json"
 data = try_fix_json_file(file_path)
 @ABH.on(events.NewMessage)
-async def msgs(event):
+async def msg(event):
     global uinfo, WEAK
     if event.is_group:
         now = datetime.now()
         weekday = now.weekday()
         current_date = now.strftime("%Y-%m-%d")
-        uid = event.sender.first_name if event.sender else "الاسم غير متوفر"
+    sender = await event.get_sender()
+    if isinstance(sender, User):
+        first = sender.first_name or ""
+        last = sender.last_name or ""
+        uid = (first + " " + last).strip() or "الاسم غير متوفر"
+    else:
+        uid = "الاسم غير متوفر"
         unm = str(event.sender_id)
         guid = str(event.chat_id)
         if weekday == 4 and current_date != last_reset_date():
