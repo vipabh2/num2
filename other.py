@@ -333,7 +333,7 @@ async def show_assistants(event):
     if chat_id in data and data[chat_id]:
         for idx, user_id in enumerate(data[chat_id], start=1):
             mention_text = await m(user_id)
-            msg += f"{idx:<2} - {mention_text:<30} \n `{user_id}`\n \n"
+            msg += f"{idx:<2} - {mention_text:<30} \n `{user_id}`\n"
     else:
         msg += "❌ لا يوجد معاونين حالياً في هذه المجموعة.\n"
     await event.reply(msg, parse_mode="md")
