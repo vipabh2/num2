@@ -33,6 +33,7 @@ YDL_OPTIONS = {
     'outtmpl': 'downloads/%(title)s.%(ext)s',
     'noplaylist': True,
     'quiet': True,
+    'cookiefile': COOKIES_FILE,
     'postprocessors': [{
         'key': 'FFmpegExtractAudio',
         'preferredcodec': 'mp3',
