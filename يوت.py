@@ -28,7 +28,7 @@ else:
 def save_cache():
     with open(CACHE_FILE, "w", encoding="utf-8") as f:
         json.dump(audio_cache, f, ensure_ascii=False, indent=2)
-YDL_OPTIONS={'format':'bestaudio[ext=m4a]/bestaudio/best','outtmpl':'downloads/%(title).50s.%(ext)s','noplaylist':True,'quiet':True,'cookiefile':f"{COOKIES_FILE}",'postprocessors':[{'key':'FFmpegExtractAudio','preferredcodec':'mp3','preferredquality':'128'}],'force_generic_extractor':False,'allow_unplayable_formats':True,'source_address':'0.0.0.0','geo_bypass':True,'ignoreerrors':True}
+YDL_OPTIONS={'format':'ba[ext=m4a]/bestaudio/best','outtmpl':'downloads/%(title)s.%(ext)s','noplaylist':True,'quiet':True,'cookiefile':f"{COOKIES_FILE}",'postprocessors':[{'key':'FFmpegExtractAudio','preferredcodec':'mp3','preferredquality':'128',}],'force_insecure':True}
 @ABH.on(events.NewMessage(pattern=r'^.(يوت|yt) (.+)'))
 async def download_audio(event):
  if isc(event.chat_id,"اليوتيوب"):
