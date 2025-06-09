@@ -59,7 +59,7 @@ async def download_audio(event):
     return
   ydl=YoutubeDL(YDL_OPTIONS)
   try:
-   search_result=await asyncio.to_thread(ydl.extract_info,f"ytsearch:{query}",download=False)
+   search_result=await asyncio.to_thread(ydl.extract_info,f"{query}",download=False)
   except Exception as e:
    await event.reply(f"حدث خطأ أثناء البحث: {e}")
    return
