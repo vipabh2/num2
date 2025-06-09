@@ -316,6 +316,13 @@ async def remove_assistant(event):
         await event.reply(f"تم إزالة {rm} من قائمة المعاونين لهذه المجموعة.")
     else:
         await event.reply(f"{rm} غير موجود في قائمة المعاونين لهذه المجموعة.")
+async def m(user_id):
+    try:
+        user = await ABH.get_entity(user_id)
+        name = getattr(user, 'first_name', None) or 'غير معروف'
+        return f"[{name}](tg://user?id={user.id})"
+    except:
+        return f"`{user_id}`"
 @ABH.on(events.NewMessage(pattern='^المعاونين$'))
 async def show_assistants(event):
     if not event.is_group:
