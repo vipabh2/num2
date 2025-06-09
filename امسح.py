@@ -22,7 +22,7 @@ async def store_media_messages(event):
         if msg.id not in media_messages[chat_id]:
             media_messages[chat_id].append(msg.id)
             save_media_messages()
-@ABH.on(events.NewMessage(pattern='^امسح$'))
+@ABH.on(events.NewMessage(pattern='^امسح|تنظيف$'))
 async def delete_stored_media(event):
     if not is_assistant(event.chat_id, event.sender_id):
         await event.reply('شني خالي كبينه انت مو معاون')
@@ -43,7 +43,7 @@ async def count_media_messages(event):
         count = len(media_messages[chat_id])
         await event.reply(f'عدد الرسائل الموجهه للحذف {count} 👍🏾')        
     else:
-        await event.respond("المجموعة ما بيها ميديا مخزنه للحذف")
+        await event.reply("المجموعة ما بيها ميديا مخزنه للحذف")
 @ABH.on(events.NewMessage(pattern='^ثبتها|الغاء منع من المسح|الغاء مسح$'))
 async def undel(event):
     if not is_assistant(event.chat_id, event.sender_id):
