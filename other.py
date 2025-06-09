@@ -5,7 +5,7 @@ from telethon.tl.functions.users import GetFullUserRequest
 from telethon.tl.types import Channel, ChannelParticipant
 from playwright.async_api import async_playwright
 from database import store_whisper, get_whisper
-from Resources import suras, mention
+from Resources import suras, mention, ment
 from datetime import datetime
 from telethon import events
 from telethon import Button
@@ -288,10 +288,10 @@ async def add_assistant(event):
         data[chat_id].append(target_id)
         save_auth(data)
         sender = await reply.get_sender()
-        rm = await mention(event, sender)
+        rm = await ment(sender)
         await event.reply(f"تم رفع المستخدم {rm} إلى معاون في هذه المجموعة.")
     else:
-        await event.reply(f"المستخدم {sm} موجود مسبقًا في قائمة المعاونين لهذه المجموعة.")
+        await event.reply(f"المستخدم {rm} موجود مسبقًا في قائمة المعاونين لهذه المجموعة.")
 @ABH.on(events.NewMessage(pattern=r'^تنزيل معاون$'))
 async def remove_assistant(event):
     if not event.is_group:
@@ -308,8 +308,8 @@ async def remove_assistant(event):
         return await event.reply(f"عزيزي {sm}، يجب الرد على رسالة المستخدم الذي تريد تنزيله.")
     target_id = reply.sender_id
     data = load_auth()
-    target_user = await reply.get_sender()
-    rm = await "المستخدم"
+    e = await reply.get_sender()
+    rm = await ment(e)
     if chat_id in data and target_id in data[chat_id]:
         data[chat_id].remove(target_id)
         save_auth(data)
@@ -317,24 +317,18 @@ async def remove_assistant(event):
     else:
         await event.reply(f"{rm} غير موجود في قائمة المعاونين لهذه المجموعة.")
 @ABH.on(events.NewMessage(pattern='^المعاونين$'))
-async def show_list(event):
+async def show_assistants(event):
     if not event.is_group:
         return
-    type = "المعاونين"
-    await botuse(type)
     chat_id = str(event.chat_id)
     data = load_auth()
-    msg = "**قائمة المعاونين في هذه المجموعة**\n\n"
+    msg = "📋 **قائمة المعاونين في هذه المجموعة**\n\n"
     if chat_id in data and data[chat_id]:
         for user_id in data[chat_id]:
-            try:
-                user = await ABH.get_entity(user_id)
-                user_mention = await mention(event, user)
-                msg += f"• {user_mention} ⇠ `{user.id}`\n"
-            except:
-                msg += f"• معرف غير صالح: `{user_id}`\n"
+            mention_text = await ment(event, user_id)
+            msg += f"• {mention_text} ⇠ `{user_id}`\n"
     else:
-        msg += "لا يوجد معاونين حالياً في هذه المجموعة.\n"
+        msg += " لا يوجد معاونين حالياً في هذه المجموعة.\n"
     await event.reply(msg, parse_mode="md")
 @ABH.on(events.NewMessage(pattern="^اسمي$"))
 async def myname(event):
