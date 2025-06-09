@@ -28,20 +28,18 @@ else:
 def save_cache():
     with open(CACHE_FILE, "w", encoding="utf-8") as f:
         json.dump(audio_cache, f, ensure_ascii=False, indent=2)
-YDL_OPTIONS={
-    'format':'ba[ext=m4a]/bestaudio/best',
-    'outtmpl':'downloads/%(title)s.%(ext)s',
-    'noplaylist':True,
-    'quiet':True,
-    'cookiefile':f"{COOKIES_FILE}",
-    'http_headers':{
-        'User-Agent':'com.google.android.youtube/17.10.35 (Linux; U; Android 11) gzip'
-    },
-    'postprocessors':[{
-        'key':'FFmpegExtractAudio',
-        'preferredcodec':'mp3',
-        'preferredquality':'128',
-    }]
+YDL_OPTIONS = {
+    'format': 'bestaudio[ext=m4a]/bestaudio/best',
+    'outtmpl': 'downloads/%(title)s.%(ext)s',
+    'noplaylist': True,
+    'quiet': True,
+    'cookiefile': f"{COOKIES_FILE}",
+    'default_search': 'ytsearch',  # <-- هذا السطر مهم
+    'postprocessors': [{
+        'key': 'FFmpegExtractAudio',
+        'preferredcodec': 'mp3',
+        'preferredquality': '128',
+    }],
 }
 @ABH.on(events.NewMessage(pattern=r'^.(يوت|yt) (.+)'))
 async def download_audio(event):
