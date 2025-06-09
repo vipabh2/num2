@@ -38,21 +38,24 @@ async def eventid(event):
 @ABH.on(events.NewMessage(pattern=r"زر\s+(.+)"))
 async def handler(event):
     if not event.is_reply:
-        return await event.reply(" يجب الرد على رسالة تحتوي على كابشن.")
+        return await event.reply("يجب الرد على رسالة تحتوي على كابشن.")
     reply_msg = await event.get_reply_message()
     caption = reply_msg.text or getattr(reply_msg, 'message', None)
     if not caption:
-        return await event.reply(" الرسالة التي رددت عليها لا تحتوي على كابشن نصي.")
+        return await event.reply("الرسالة التي رددت عليها لا تحتوي على كابشن نصي.")
     full_text = event.pattern_match.group(1).strip()
     items = [item.strip() for item in full_text.split("||") if "\\" in item]
     if not items:
-        return await event.reply(" تأكد من كتابة الأزرار بصيغة اسم الزر \\ الرابط")
+        return await event.reply("تأكد من كتابة الأزرار بصيغة: `اسم الزر \\ الرابط`")
     buttons, row = [], []
     for item in items:
         try:
             label, url = map(str.strip, item.split("\\", 1))
+            if not re.match(r'^https?://', url):
+                return await event.reply(f"❌ الرابط التالي غير صالح:\n`{url}`\nيجب أن يبدأ بـ http:// أو https://")
             row.append(Button.url(label, url))
-        except:
+        except Exception as e:
+            print(f"خطأ في الزر: {item}, {e}")
             continue
         if len(row) == 2:
             buttons.append(row)
