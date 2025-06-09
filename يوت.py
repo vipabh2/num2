@@ -29,7 +29,7 @@ def save_cache():
     with open(CACHE_FILE, "w", encoding="utf-8") as f:
         json.dump(audio_cache, f, ensure_ascii=False, indent=2)
 YDL_OPTIONS = {
-    'format': 'bestaudio/best',  # أفضل صيغة صوتية متاحة
+    'format': 'bestaudio',
     'outtmpl': 'downloads/%(title)s.%(ext)s',
     'noplaylist': True,
     'quiet': True,
