@@ -118,7 +118,8 @@ async def msgs(event):
     if event.is_group:
         now = datetime.now()
         current_time = now.strftime("%H:%M")
-        uid = event.sender.first_name if event.sender else "الاسم غير متوفر"
+        sender = await event.get_sender()
+        uid = getattr(sender, 'first_name', None) or getattr(sender, 'title', None) or "الاسم غير متوفر"
         unm = str(event.sender_id)
         guid = str(event.chat_id)
         if current_time == "00:00":
