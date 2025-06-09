@@ -63,7 +63,7 @@ async def download_audio(event):
   except Exception as e:
    await event.reply(f"حدث خطأ أثناء البحث: {e}")
    return
-  if 'entries' not in search_result or not search_result['entries']:
+  if 'entries' not in search_result:
    await event.reply("❌ لم يتم العثور على نتائج.")
    return
   video_info=search_result['entries'][0]
