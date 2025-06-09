@@ -44,7 +44,7 @@ async def handler(event):
     if not caption:
         return await event.reply("الرسالة التي رددت عليها لا تحتوي على كابشن نصي.")
     full_text = event.pattern_match.group(1).strip()
-    items = [item.strip() for item in full_text.split("||") if "\\" in item]
+    items = [item.strip() for item in full_text.split("|") if "\" in item]
     if not items:
         return await event.reply("تأكد من كتابة الأزرار بصيغة: `اسم الزر \\ الرابط`")
     buttons, row = [], []
