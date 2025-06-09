@@ -42,7 +42,7 @@ YDL_OPTIONS = {
 }
 @ABH.on(events.NewMessage(pattern=r'^(يوت|yt) (.+)'))
 async def download_audio(event):
-    if not isc(event.chat_id, "اليوتيوب"):
+    if isc(event.chat_id, "اليوتيوب"):
         return
     type = "يوت"
     await botuse(type)
