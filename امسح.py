@@ -1,4 +1,9 @@
-from telethon.tl.types import MessageMediaPhoto, MessageMediaDocument
+from telethon.tl.types import (
+    MessageMediaPhoto,
+    MessageMediaDocument,
+    MessageMediaWebPage,
+    DocumentAttributeAudio
+)
 from other import is_assistant
 from telethon import events
 from ABH import ABH
@@ -16,7 +21,10 @@ def save_media_messages():
 async def store_media_messages(event):
     chat_id = str(event.chat_id)
     msg = event.message
-    if msg.media and isinstance(msg.media, (MessageMediaPhoto, MessageMediaDocument)):
+    if msg.media:
+        if isinstance(msg.media, MessageMediaDocument):
+            if any(isinstance(attr, DocumentAttributeAudio) for attr in msg.media.document.attributes):
+                return
         if chat_id not in media_messages:
             media_messages[chat_id] = []
         if msg.id not in media_messages[chat_id]:
