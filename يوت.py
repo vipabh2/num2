@@ -39,6 +39,12 @@ YDL_OPTIONS = {
         'preferredcodec': 'mp3',
         'preferredquality': '128',
     }],
+    'noprogress': True,
+    'nocheckcertificate': True,
+    'compat_opts': ['no-youtube-unavailable-videos'],
+    'merge_output_format': 'mp3',
+    'ignoreerrors': True,
+    'extract_flat': False
 }
 @ABH.on(events.NewMessage(pattern=r'^(يوت|yt) (.+)'))
 async def download_audio(event):
