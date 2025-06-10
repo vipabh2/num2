@@ -1,9 +1,6 @@
 from telethon.tl.types import (
-    MessageMediaPhoto,
     MessageMediaDocument,
-    MessageMediaWebPage,
-    DocumentAttributeAudio
-)
+    DocumentAttributeAudio)
 from other import is_assistant
 from telethon import events
 from ABH import ABH
@@ -52,7 +49,7 @@ async def count_media_messages(event):
         await event.reply(f'عدد الرسائل الموجهه للحذف {count} 👍🏾')        
     else:
         await event.reply("المجموعة ما بيها ميديا مخزنه للحذف")
-@ABH.on(events.NewMessage(pattern='^ثبتها|الغاء منع من المسح|الغاء مسح$'))
+@ABH.on(events.NewMessage(pattern='^ثبتها| تخطي المسح|الغاء مسح$'))
 async def undel(event):
     if not is_assistant(event.chat_id, event.sender_id):
         await event.reply('شني خالي كبينه انت مو معاون')
