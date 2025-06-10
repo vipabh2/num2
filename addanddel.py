@@ -63,10 +63,10 @@ async def promoteADMIN(event):
     isp = await can_add_admins(chat, user_id)
     if isp:
         c = 'المستخدم مشرف ومرفوع من قبل'
-        await ABH.forward_messages(
+        await ABH.send_file(
             entity=event.chat_id,
-            from_peer='recoursec',
-            id=16,
+            file='https://t.me/recoursec/16',
+            caption=c,
             reply_to=event.id
         )
         return
