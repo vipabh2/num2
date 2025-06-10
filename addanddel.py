@@ -39,12 +39,15 @@ async def can_add_admins(event):
             user_id=user_id
         ))
         role = participant.participant
+        if isinstance(role, ChannelParticipantCreator):
+            return True
         if isinstance(role, ChannelParticipantAdmin):
             rights = role.admin_rights
             if rights and rights.add_admins:
                 return True
         return False
-    except Exception:
+    except Exception as e:
+        print(f"خطأ في can_add_admins: {e}")
         return False
 @ABH.on(events.NewMessage(pattern='^رفع مشرف$'))
 async def promoteADMIN(event):
