@@ -34,11 +34,11 @@ async def can_add_admins(event):
     try:
         chat = await event.get_chat()
         user_id = event.sender_id
-        participant = await ABH(GetParticipantRequest(
+        result = await ABH(GetParticipantRequest(
             channel=chat,
-            user_id=user_id
+            participant=user_id
         ))
-        role = participant.participant
+        role = result.participant
         if isinstance(role, ChannelParticipantCreator):
             return True
         if isinstance(role, ChannelParticipantAdmin):
