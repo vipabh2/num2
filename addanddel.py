@@ -59,7 +59,7 @@ async def promoteADMIN(event):
     if not r:
         await event.reply('لازم تسوي رد لشخص علمود ارفعه')
         return
-    user_id = r.id
+    user_id = r.sender_id
     isp = await can_add_admins(chat, user_id)
     if isp:
         c = 'المستخدم مشرف ومرفوع من قبل'
