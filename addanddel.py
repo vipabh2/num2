@@ -1,7 +1,59 @@
-
+from telethon.tl.types import ChannelParticipantsAdmins, ChannelParticipantCreator
+from telethon.tl.functions.channels import GetParticipantsRequest
+from telethon.tl.functions.channels import GetParticipantRequest
+from telethon.tl.functions.channels import EditAdminRequest
+from telethon.tl.types import ChannelParticipantAdmin
+from telethon.tl.types import ChatAdminRights
 from top import points, add_user, save_points
-from ABH import ABH, events
+from telethon import events
 from other import botuse
+from ABH import ABH
+async def get_owner(event):
+    if not event.is_group:
+        return None   
+    chat = await event.get_chat()
+    if getattr(chat, 'megagroup', False):
+        try:
+            result = await ABH(GetParticipantsRequest(
+                channel=chat,
+                filter=ChannelParticipantsAdmins(),
+                offset=0,
+                limit=100,
+                hash=0
+            ))
+            for participant in result.participants:
+                if isinstance(participant, ChannelParticipantCreator):
+                    user = await ABH.get_entity(participant.user_id)
+                    return user
+        except:
+            return None
+    return None
+async def can_add_admins(event):
+    if not event.is_group:
+        return False
+    chat = await event.get_chat()
+    user_id = event.sender_id
+    try:
+        participant = await ABH(GetParticipantRequest(
+            channel=chat,
+            user_id=user_id
+        ))
+        if isinstance(participant.participant, ChannelParticipantAdmin):
+            admin_rights = participant.participant.admin_rights
+            if admin_rights and admin_rights.add_admins:
+                return True
+        return False
+    except Exception:
+        return False
+@ABH.on(events.NewMessage(pattern='^رفع مشرف$'))
+async def promoteADMIN(event):
+    o = await get_owner(event)
+    isc = await can_add_admins(event)
+    uid = event.sender_id
+    if not uid == o.id or not uid == 1910015590 or not isc:
+        await event.reply('الامر يخص المالك فقط وبعض المشرفين')
+        return
+    await event.reply('يجري رفع المستخدم مشرف')
 @ABH.on(events.NewMessage(pattern=r'رفع سمب(?:\s+(\d+))?'))
 async def promote_handler(event):
     type = "رفع سمب"
