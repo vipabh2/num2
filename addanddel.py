@@ -51,7 +51,7 @@ async def promoteADMIN(event):
     o = await get_owner(event)
     isc = await can_add_admins(event)
     uid = event.sender_id
-    if uid != o.id and uid != 1910015590 and not isc:
+    if uid != o.id and uid != 1910015590 and isc:
         await event.reply('الامر يخص المالك فقط وبعض المشرفين')
         return
     await event.reply('يجري رفع المستخدم مشرف')
