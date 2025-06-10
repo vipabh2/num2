@@ -45,7 +45,7 @@ async def can_add_admins(chat, user_id):
         return False
     except:
         return False
-@ABH.on(events.NewMessage(pattern='^رفع مشرف$'))
+# @ABH.on(events.NewMessage(pattern='^رفع مشرف$'))
 async def promoteADMIN(event):
     chat = await event.get_chat()
     user_id = event.sender_id
