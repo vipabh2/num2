@@ -31,14 +31,14 @@ async def get_owner(event):
 async def can_add_admins(event):
     if not event.is_group:
         return False
-    chat = await event.get_chat()
-    user_id = event.sender_id
     try:
-        result = await ABH(GetParticipantRequest(
+        chat = await event.get_chat()
+        user_id = event.sender_id
+        participant = await ABH(GetParticipantRequest(
             channel=chat,
             user_id=user_id
         ))
-        role = result.participant
+        role = participant.participant
         if isinstance(role, ChannelParticipantAdmin):
             rights = role.admin_rights
             if rights and rights.add_admins:
@@ -51,7 +51,7 @@ async def promoteADMIN(event):
     o = await get_owner(event)
     isc = await can_add_admins(event)
     uid = event.sender_id
-    if uid != o.id and uid != 1910015590 and isc:
+    if uid != o.id and uid != 1910015590 and not isc:
         await event.reply('الامر يخص المالك فقط وبعض المشرفين')
         return
     await event.reply('يجري رفع المستخدم مشرف')
