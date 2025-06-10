@@ -29,58 +29,73 @@ def save_cache():
     with open(CACHE_FILE, "w", encoding="utf-8") as f:
         json.dump(audio_cache, f, ensure_ascii=False, indent=2)
 YDL_OPTIONS = {
-    'format': 'bestaudio',
+    'format': 'bestaudio[ext=m4a]/bestaudio/best',
     'outtmpl': 'downloads/%(title)s.%(ext)s',
     'noplaylist': True,
     'quiet': True,
-    'cookiefile': COOKIES_FILE,
+    'cookiefile': f"{COOKIES_FILE}",
     'postprocessors': [{
         'key': 'FFmpegExtractAudio',
         'preferredcodec': 'mp3',
         'preferredquality': '128',
     }],
-    'default_search': 'ytsearch',
 }
-
-def get_valid_audio_format(video_info):
-    if 'formats' not in video_info:
-        return None
-    for fmt in video_info['formats']:
-        if fmt.get('acodec') != 'none' and fmt.get('url'):
-            return fmt['format_id']
-    return None
-
-@ABH.on(events.NewMessage(pattern=r'^.(يوت|yt) (.+)'))
+@ABH.on(events.NewMessage(pattern=r'^(يوت|yt) (.+)'))
 async def download_audio(event):
-    if isc(event.chat_id, "اليوتيوب"):
-        return
-    query = event.pattern_match.group(2)
-    chat_id = event.chat_id
-    button = Button.url('CHANNEL', 'https://t.me/X04OU')
+    # if not isc(event.chat_id, "اليوتيوب"):
+    #     return
+    type = "يوت"
+    await botuse(type)
+    c = event.chat_id
     try:
+        query = event.pattern_match.group(2)
+        b = Button.url('CHANNEL', 'https://t.me/X04OU')
+        for val in audio_cache.values():
+            if isinstance(val, dict) and val.get("query") == query:
+                await ABH.send_file(
+                    c,
+                    file=val["file_id"],
+                    caption="[ENJOY DEAR](https://t.me/VIPABH_BOT)",
+                    attributes=[
+                        DocumentAttributeAudio(
+                            duration=val.get("duration", 0),
+                            title=val.get("title"),
+                            performer='ANYMOUS'
+                        )
+                    ],
+                    buttons=[b],
+                    reply_to=event.message.id
+                )
+                return  
         ydl = YoutubeDL(YDL_OPTIONS)
         search_result = await asyncio.to_thread(ydl.extract_info, f"ytsearch:{query}", download=False)
         if 'entries' not in search_result or not search_result['entries']:
-            await event.reply("❌ لم يتم العثور على نتائج.")
+            await event.reply("لم يتم العثور على نتائج.")
             return
-
         video_info = search_result['entries'][0]
-
-        audio_format = get_valid_audio_format(video_info)
-        if not audio_format:
-            await event.reply("⚠️ لا توجد صيغة صوتية صالحة للتحميل.")
+        video_id = video_info.get('id')
+        if video_id in audio_cache:
+            val = audio_cache[video_id]
+            await ABH.send_file(
+                c,
+                file=val["file_id"],
+                caption="[ENJOY DEAR](https://t.me/VIPABH_BOT)",
+                attributes=[
+                    DocumentAttributeAudio(
+                        duration=val.get("duration", 0),
+                        title=val.get("title"),
+                        performer='ANYMOUS'
+                    )
+                ],
+                buttons=[b],
+                reply_to=event.message.id
+            )
             return
-
-        ydl_opts = YDL_OPTIONS.copy()
-        ydl_opts['format'] = audio_format
-        ydl_download = YoutubeDL(ydl_opts)
-        download_info = await asyncio.to_thread(ydl_download.extract_info, f"ytsearch:{query}", download=True)
-
+        download_info = await asyncio.to_thread(ydl.extract_info, f"ytsearch:{query}", download=True)
         downloaded_video = download_info['entries'][0]
-        file_path = ydl_download.prepare_filename(downloaded_video).replace(".webm", ".mp3").replace(".m4a", ".mp3")
-
-        await ABH.send_file(
-            chat_id,
+        file_path = ydl.prepare_filename(downloaded_video).replace(".webm", ".mp3").replace(".m4a", ".mp3")
+        msg = await ABH.send_file(
+            c,
             file=file_path,
             caption="[ENJOY DEAR](https://t.me/VIPABH_BOT)",
             attributes=[
@@ -90,52 +105,18 @@ async def download_audio(event):
                     performer='ANYMOUS'
                 )
             ],
-            buttons=[button],
+            buttons=[b],
             reply_to=event.message.id
         )
+        audio_cache[downloaded_video.get("id")] = {
+            "file_id": msg.file.id,
+            "title": downloaded_video.get("title"),
+            "duration": downloaded_video.get("duration", 0),
+            "query": query
+        }
+        save_cache()
     except Exception as e:
-        await event.reply(f"حدث خطأ: {e}")
-    #         await ABH.send_file(
-    #             c,
-    #             file=val["file_id"],
-    #             caption="[ENJOY DEAR](https://t.me/VIPABH_BOT)",
-    #             attributes=[
-    #                 DocumentAttributeAudio(
-    #                     duration=val.get("duration", 0),
-    #                     title=val.get("title"),
-    #                     performer='ANYMOUS'
-    #                 )
-    #             ],
-    #             buttons=[b],
-    #             reply_to=event.message.id
-    #         )
-    #         return
-    #     download_info = await asyncio.to_thread(ydl.extract_info, f"ytsearch:{query}", download=True)
-    #     downloaded_video = download_info['entries'][0]
-    #     file_path = ydl.prepare_filename(downloaded_video).replace(".webm", ".mp3").replace(".m4a", ".mp3")
-    #     msg = await ABH.send_file(
-    #         c,
-    #         file=file_path,
-    #         caption="[ENJOY DEAR](https://t.me/VIPABH_BOT)",
-    #         attributes=[
-    #             DocumentAttributeAudio(
-    #                 duration=downloaded_video.get("duration", 0),
-    #                 title=downloaded_video.get("title"),
-    #                 performer='ANYMOUS'
-    #             )
-    #         ],
-    #         buttons=[b],
-    #         reply_to=event.message.id
-    #     )
-    #     audio_cache[downloaded_video.get("id")] = {
-    #         "file_id": msg.file.id,
-    #         "title": downloaded_video.get("title"),
-    #         "duration": downloaded_video.get("duration", 0),
-    #         "query": query
-    #     }
-    #     save_cache()
-    # except Exception as e:
-    #     await ABH.send_message(1910015590, f"Error: {str(e)}")
+        await ABH.send_message(1910015590, f"Error: {str(e)}")
 @ABH.on(events.NewMessage(pattern='^اضف كوكيز$', from_users=[1910015590]))
 async def add_cookie(event):
     type = "كوكيز"
@@ -177,4 +158,3 @@ async def handle_flag(event):
     with open("locks.json", "w", encoding="utf-8") as f:
         json.dump(data, f, ensure_ascii=False, indent=4)
     await event.reply(f"تم {value_str} ال{value} بحمده تعالى")
-print(COOKIES_FILE)
