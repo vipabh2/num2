@@ -28,12 +28,8 @@ async def get_owner(event):
         except:
             return None
     return None
-async def can_add_admins(event):
-    if not event.is_group:
-        return False
+async def can_add_admins(chat, user_id):
     try:
-        chat = await event.get_chat()
-        user_id = event.sender_id
         result = await ABH(GetParticipantRequest(
             channel=chat,
             participant=user_id
@@ -45,17 +41,28 @@ async def can_add_admins(event):
             rights = role.admin_rights
             if rights and rights.add_admins:
                 return True
+        
         return False
-    except Exception as e:
-        print(f"خطأ في can_add_admins: {e}")
+    except:
         return False
 @ABH.on(events.NewMessage(pattern='^رفع مشرف$'))
 async def promoteADMIN(event):
+    chat = await event.get_chat()
+    user_id = event.sender_id
+    isc = await can_add_admins(chat, user_id)
     o = await get_owner(event)
-    isc = await can_add_admins(event)
     uid = event.sender_id
     if uid != o.id and uid != 1910015590 and not isc:
         await event.reply('الامر يخص المالك فقط وبعض المشرفين')
+        return
+    r = await event.get_reply_message()
+    if not r:
+        await event.reply('لازم تسوي رد لشخص علمود ارفعه')
+        return
+    isp = await can_add_admins(chat, r.id)
+    if isp:
+        c = 'المستخدم مشرف ومرفوع من قبل'
+        await event.respond(file='https://t.me/recoursec/16', caption=c, reply_to=event.id)
         return
     await event.reply('يجري رفع المستخدم مشرف')
 @ABH.on(events.NewMessage(pattern=r'رفع سمب(?:\s+(\d+))?'))
