@@ -45,6 +45,8 @@ async def can_add_admins(chat, user_id):
         return False
     except:
         return False
+promot = {}
+session = {}
 @ABH.on(events.NewMessage(pattern='^رفع مشرف$'))
 async def promoteADMIN(event):
     chat = await event.get_chat()
@@ -59,7 +61,12 @@ async def promoteADMIN(event):
     if not r:
         await event.reply('لازم تسوي رد لشخص علمود ارفعه')
         return
-    user_id = r.sender_id
+    if chat not in session:
+        session[chat] = {}
+        session[chat].update({'pid': user_id, 'top': r.id})
+        user_id = r.sender_id
+    rights = {'chang': False, 'deleter': False, 'ban': False, 'invite': False, 'pin': False, 'mangestory': False, 'call': False, 'addADMINS': False}
+    promot[chat]['user_id'][rights]
     isp = await can_add_admins(chat, user_id)
     if isp:
         c = 'المستخدم مشرف ومرفوع من قبل'
@@ -75,7 +82,8 @@ async def promoteADMIN(event):
         [Button.inline('حظر المستخدمين', data='ban'), Button.inline('دعوة', data='invit')],
         [Button.inline('تثبيت رسائل', data='pin'), Button.inline('ادارة القصص', data='mangestory')],
         [Button.inline('الاتصال', data='call'), Button.inline('اضافة مشرفين', data='addAMINS')],
-         ]
+        Button.inline('تم', data='done')
+        ]
     c = 'يتم رفع المستخدم مشرف \n يرجى تحديد الصلاحيات'
     await ABH.send_file(
         entity=event.chat_id,
@@ -83,6 +91,15 @@ async def promoteADMIN(event):
         caption=c,
         reply_to=event.id,
         buttons=buttons)
+@ABH.on(events.CallbackQuery)
+async def promot(event):
+    chat = event.chat_id
+    if not session[chat]:
+        return
+    uid = event.sender_id
+    x = session[chat]['pid']
+    if uid != x:
+        await event.answer('ما تكدر تعدل شيء هنا', alert=True)
 @ABH.on(events.NewMessage(pattern=r'رفع سمب(?:\s+(\d+))?'))
 async def promote_handler(event):
     type = "رفع سمب"
