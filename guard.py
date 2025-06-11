@@ -76,7 +76,7 @@ async def restrict_user(event):
         ء = await r.get_sender()
         rrr = await ment(ء)
         c = f"تم تقييد {rrr} لمدة 20 دقيقة."
-        await ABH.send_file(event.chat_id, "https://t.me/recoursec/15", caption=c)
+        await ABH.send_file(event.chat_id, "https://t.me/VIPABH/592", caption=c)
         await event.delete()
     except Exception as e:
         await event.reply(f" ياريت اقيده بس ماكدر {e}")
