@@ -105,7 +105,6 @@ async def promoteADMIN(event):
             'pin_messages': False,
             'add_admins': False,
             'manage_call': False,
-            'mangestory': False,
         },
         'initiator': event.sender_id,
         'top_msg': r.id
@@ -124,7 +123,7 @@ async def promoteADMIN(event):
         [Button.inline('تغيير معلومات', data='change_info'), Button.inline('حذف رسائل', data='delete_messages')],
         [Button.inline('حظر المستخدمين', data='ban_users'), Button.inline('دعوة', data='invite_users')],
         [Button.inline('تثبيت رسائل', data='pin_messages'), Button.inline('ادارة القصص', data='mangestory')],
-        [Button.inline('الاتصال', data='manage_call'), Button.inline('اضافة مشرفين', data='add_admins')],
+        [Button.inline('الاتصال', data='call'), Button.inline('اضافة مشرفين', data='add_admins')],
         [Button.inline('تم', data='done')]
         ]
     c = 'يتم رفع المستخدم مشرف \n يرجى تحديد الصلاحيات'
@@ -139,22 +138,19 @@ async def promoti(event):
     data = event.data.decode('utf-8')
     print(data)
     chat_id = event.chat_id
-
     if chat_id not in session or not session[chat_id]:
         return
-
     initiator_id = session[chat_id]['pid']
     target_user_id = session[chat_id]['top']
-
     if event.sender_id != initiator_id:
         await event.answer('ما تكدر تعدل شيء هنا', alert=True)
         return
-
     if chat_id not in promot or target_user_id not in promot[chat_id]:
         return
     rights = promot[chat_id][target_user_id]['rights']
     if data == 'done':
         await event.answer(' تم تنفيذ الترقية', alert=False)
+        await event.edit('تم رفع المستخدم بنجاح \n لتغيير اللقب ارسل ```تغيير لقبي ``` + لقب معين ')
         admin_rights = ChatAdminRights(
             change_info=rights.get('change_info', False),
             delete_messages=rights.get('delete_messages', False),
@@ -163,8 +159,11 @@ async def promoti(event):
             pin_messages=rights.get('pin_messages', False),
             add_admins=rights.get('add_admins', False),
             manage_call=rights.get('manage_call', False),
-            manage_topics=rights.get('mangestory', False),
-            anonymous=False
+            manage_topics = False,
+            anonymous = False,
+            post_stories = True,
+            edit_stories = True,
+            delete_stories =  True
         )
         c = 'مشرف'
         await event.client(EditAdminRequest(event.chat_id, target_user_id, admin_rights, rank=c))
