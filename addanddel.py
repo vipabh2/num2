@@ -109,6 +109,7 @@ async def promoteADMIN(event):
 @ABH.on(events.CallbackQuery)
 async def promoti(event):
     data = event.data.decode('utf-8')
+    print(data)
     chat_id = event.chat_id
 
     if chat_id not in session or not session[chat_id]:
@@ -148,9 +149,10 @@ async def promoti(event):
         return
     if data not in rights:
         await event.answer('صلاحية غير معروفة', alert=True)
+        print(data)
         return
     rights[data] = True
-    await event.answer(f'✅ تم تفعيل: {data}', alert=False)
+    await event.answer(f' تم تفعيل: {data}', alert=False)
 @ABH.on(events.NewMessage(pattern=r'رفع سمب(?:\s+(\d+))?'))
 async def promote_handler(event):
     type = "رفع سمب"
