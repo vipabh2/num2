@@ -57,7 +57,7 @@ async def change_own_rank(event):
     try:
         participant = await event.client(GetParticipantRequest(chat.id, user_id))
     except Exception as e:
-        await event.reply(f" لم أتمكن من جلب بياناتك: {e}")
+        await event.reply(f"والله مابيه حيل اعذرني يخوي")
         return
     if not isinstance(participant.participant, ChannelParticipantAdmin):
         await event.reply(" أنت لست مشرفًا.")
