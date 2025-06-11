@@ -77,7 +77,7 @@ async def restrict_user(event):
         await event.respond(file="https://t.me/recoursec/15", caption=c)
         await event.delete()
     except Exception as e:
-        await event.reply(f" ياريت اقيده بس ماكدر")
+        await event.reply(f" ياريت اقيده بس ماكدر {e}")
 @ABH.on(events.NewMessage)
 async def monitor_messages(event):
     if not event.is_group:
