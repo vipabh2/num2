@@ -54,11 +54,15 @@ async def change_own_rank(event):
     if not me.is_admin or not me.add_admins:
         await event.reply("🚫 لا أمتلك صلاحية تعديل المشرفين.")
         return
-    sender_perms = await event.client.get_permissions(chat.id, user_id)
-    if not sender_perms.is_admin:
+    try:
+        participant = await event.client(GetParticipantRequest(chat.id, user_id))
+    except Exception as e:
+        await event.reply(f"⚠️ لم أتمكن من جلب بياناتك: {e}")
+        return
+    if not isinstance(participant.participant, ChannelParticipantAdmin):
         await event.reply("❌ أنت لست مشرفًا.")
         return
-    admin_rights = sender_perms.admin_rights
+    admin_rights = participant.participant.admin_rights
     try:
         await event.client(EditAdminRequest(
             channel=chat.id,
@@ -68,7 +72,7 @@ async def change_own_rank(event):
         ))
         await event.reply(f"✅ تم تغيير لقبك إلى: {new_rank}")
     except Exception as e:
-        await event.reply(f"⚠️ حدث خطأ: {str(e)}")
+        await event.reply(f"⚠️ حدث خطأ أثناء تغيير اللقب: {str(e)}")
 promot = {}
 session = {}
 @ABH.on(events.NewMessage(pattern='^ترقية$'))
