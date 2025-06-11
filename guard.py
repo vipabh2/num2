@@ -98,8 +98,10 @@ async def monitor_messages(event):
                 )
                 await event.delete()
                 await ABH(EditBannedRequest(channel=chat.id, participant=user_id, banned_rights=rights))
-                c = f" لا يمكنك إرسال الرسائل الآن. تم إعادة تقييدك لمدة ** {remaining//60} دقيقة و {remaining%60} ثانية.** "
-                await event.respond(file="https://t.me/recoursec/14", caption=c)
+                ء = await event.get_sender()
+                rrr = await mention(ء)
+                c = f"تم اعاده تقييد {rrr} لمدة ** {remaining//60} دقيقة و {remaining%60} ثانية.**"
+                await event.client.send_file(event.chat_id, "https://t.me/recoursec/15", caption=c)
                 type = "تقييد مستخدمين"
                 await botuse(type)
             except:
