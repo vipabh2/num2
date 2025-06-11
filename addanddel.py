@@ -5,7 +5,7 @@ from telethon.tl.functions.channels import EditAdminRequest
 from telethon.tl.types import ChannelParticipantAdmin
 from telethon.tl.types import ChatAdminRights
 from top import points, add_user, save_points
-from telethon import events
+from telethon import events, Button
 from other import botuse
 from ABH import ABH
 async def get_owner(event):
@@ -45,7 +45,7 @@ async def can_add_admins(chat, user_id):
         return False
     except:
         return False
-# @ABH.on(events.NewMessage(pattern='^رفع مشرف$'))
+@ABH.on(events.NewMessage(pattern='^رفع مشرف$'))
 async def promoteADMIN(event):
     chat = await event.get_chat()
     user_id = event.sender_id
@@ -70,7 +70,19 @@ async def promoteADMIN(event):
             reply_to=event.id
         )
         return
-    await event.reply('يجري رفع المستخدم مشرف')
+    b = [
+        [Button.inline('تغيير معلومات', data='chang'), Button.inline('حذف رسائل', data='deleter')],
+        [Button.inline('حظر المستخدمين', data='ban'), Button.inline('دعوة', data='invit')],
+        [Button.inline('تثبيت رسائل', data='pin'), Button.inline('ادارة القصص', data='mangestory')],
+        [Button.inline('الاتصال', data='call'), Button.inline('اضافة مشرفين', data='addAMINS')],
+         ]
+    c = 'يتم رفع المستخدم مشرف \n يرجى تحديد الصلاحيات'
+    await ABH.send_file(
+        entity=event.chat_id,
+        file='https://t.me/VIPABH/1219',
+        caption=c,
+        reply_to=event.id,
+        button=b)
 @ABH.on(events.NewMessage(pattern=r'رفع سمب(?:\s+(\d+))?'))
 async def promote_handler(event):
     type = "رفع سمب"
