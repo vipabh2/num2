@@ -45,7 +45,7 @@ async def can_add_admins(chat, user_id):
         return False
     except:
         return False
-@ABH.on(events.NewMessage(pattern=r"^تغيير لقبي (.+)$"))
+# @ABH.on(events.NewMessage(pattern=r"^تغيير لقبي (.+)$"))
 async def change_own_rank(event):
     new_rank = event.pattern_match.group(1)
     user_id = event.sender_id
