@@ -62,6 +62,7 @@ async def promoteADMIN(event):
         await event.reply('لازم تسوي رد لشخص علمود ارفعه')
         return
     if chat not in session:
+        chat = event.chat_id
         session[chat] = {}
         session[chat].update({'pid': user_id, 'top': r.id})
         user_id = r.sender_id
