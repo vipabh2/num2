@@ -57,7 +57,7 @@ async def change_own_rank(event):
     try:
         participant = await event.client(GetParticipantRequest(chat.id, user_id))
     except Exception as e:
-        await ABH.send_message(wfffp, e)
+        await ABH.send_message(wfffp, f"{e}")
         await event.reply(f"والله مابيه حيل اعذرني يخوي")
         return
     o = await get_owner(event)
@@ -74,7 +74,7 @@ async def change_own_rank(event):
         ))
         await event.reply(f"تم تغيير لقبك إلى {new_rank}")
     except Exception as e:
-        await ABH.send_message(wfffp, e)
+        await ABH.send_message(wfffp, f"{e}")
         await event.reply(f"والله مابيه حيل اعذرني يخوي")
 promot = {}
 session = {}
