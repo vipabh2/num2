@@ -61,11 +61,11 @@ async def promoteADMIN(event):
     if not r:
         await event.reply('لازم تسوي رد لشخص علمود ارفعه')
         return
-    if chat not in session:
-        chat = event.chat_id
-        session[chat] = {}
-        session[chat].update({'pid': user_id, 'top': r.id})
-        user_id = r.sender_id
+    chat_id = event.chat_id 
+    if chat_id not in session:
+        session[chat_id] = {}
+        session[chat_id].update({'pid': user_id, 'top': r.id})
+    user_id = r.sender_id
     rights = {'chang': False, 'deleter': False, 'ban': False, 'invite': False, 'pin': False, 'mangestory': False, 'call': False, 'addADMINS': False}
     promot[chat]['user_id'][rights]
     isp = await can_add_admins(chat, user_id)
