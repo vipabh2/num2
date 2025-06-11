@@ -95,7 +95,7 @@ async def promoteADMIN(event):
         [Button.inline('حظر المستخدمين', data='ban'), Button.inline('دعوة', data='invit')],
         [Button.inline('تثبيت رسائل', data='pin'), Button.inline('ادارة القصص', data='mangestory')],
         [Button.inline('الاتصال', data='call'), Button.inline('اضافة مشرفين', data='addAMINS')],
-        Button.inline('تم', data='done')
+        [Button.inline('تم', data='done')]
         ]
     c = 'يتم رفع المستخدم مشرف \n يرجى تحديد الصلاحيات'
     await ABH.send_file(
