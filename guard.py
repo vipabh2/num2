@@ -73,7 +73,8 @@ async def restrict_user(event):
     )      
     try:
         await ABH(EditBannedRequest(channel=chat.id, participant=user_id, banned_rights=rights))
-        rrr = await ment(await r.get_sender)
+        ء = await r.get_sender()
+        rrr = await ment(ء)
         c = f"تم تقييد {rrr} لمدة 20 دقيقة."
         await event.client.send_file(event.chat_id, "https://t.me/recoursec/15", caption=c)
         await event.delete()
