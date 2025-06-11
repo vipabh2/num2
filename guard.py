@@ -2,7 +2,7 @@ from telethon.tl.types import ChannelParticipantCreator, ChannelParticipantAdmin
 from telethon.tl.functions.channels import EditBannedRequest, GetParticipantRequest
 from telethon.tl.types import ChatBannedRights, MessageEntityUrl
 from other import is_assistant, botuse
-from Resources import group, mention
+from Resources import group, mention, ment
 from telethon import events, Button
 import os, asyncio, re, json, time
 from ABH import ABH
@@ -73,7 +73,8 @@ async def restrict_user(event):
     )      
     try:
         await ABH(EditBannedRequest(channel=chat.id, participant=user_id, banned_rights=rights))
-        c = "تم تقييد المستخدم لمدة 20 دقيقة."
+        rrr = await ment(await r.get_sender)
+        c = f"تم تقييد {rrr} لمدة 20 دقيقة."
         await event.client.send_file(event.chat_id, "https://t.me/recoursec/15", caption=c)
         await event.delete()
     except Exception as e:
