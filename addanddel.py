@@ -83,7 +83,7 @@ async def promoteADMIN(event):
         'top_msg': r.id
     }
     isp = await can_add_admins(chat, user_id)
-    if isp:
+    if not isp:
         c = 'المستخدم مشرف ومرفوع من قبل'
         await ABH.send_file(
             entity=event.chat_id,
