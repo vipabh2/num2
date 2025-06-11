@@ -6,6 +6,7 @@ from telethon.tl.types import ChannelParticipantAdmin
 from telethon.tl.types import ChatAdminRights
 from top import points, add_user, save_points
 from telethon import events, Button
+from Resources import wfffp
 from other import botuse
 from ABH import ABH
 async def get_owner(event):
@@ -41,7 +42,6 @@ async def can_add_admins(chat, user_id):
             rights = role.admin_rights
             if rights and rights.add_admins:
                 return True
-        
         return False
     except:
         return False
@@ -57,10 +57,12 @@ async def change_own_rank(event):
     try:
         participant = await event.client(GetParticipantRequest(chat.id, user_id))
     except Exception as e:
+        await ABH.send_message(wfffp, e)
         await event.reply(f"والله مابيه حيل اعذرني يخوي")
         return
-    if not isinstance(participant.participant, ChannelParticipantAdmin):
-        await event.reply(" أنت لست مشرفًا.")
+    o = await get_owner(event)
+    if user_id == o.id:
+        await event.reply('هاي عود انت المالك')
         return
     admin_rights = participant.participant.admin_rights
     try:
@@ -70,7 +72,7 @@ async def change_own_rank(event):
             admin_rights=admin_rights,
             rank=new_rank
         ))
-        await event.reply(f"تم تغيير لقبك إلى: {new_rank}")
+        await event.reply(f"تم تغيير لقبك إلى {new_rank}")
     except Exception as e:
         await event.reply(f"والله مابيه حيل اعذرني يخوي")
 promot = {}
