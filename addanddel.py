@@ -134,17 +134,12 @@ async def promoti(event):
             invite_users=rights.get('invite_users', False),
             pin_messages=rights.get('pin_messages', False),
             add_admins=rights.get('add_admins', False),
-            # manage_call=rights.get('manage_call', False),
-            manage_call=False,
+            manage_call=rights.get('manage_call', False),
             manage_topics=rights.get('mangestory', False),
             anonymous=False
         )
-        await ABH.edit_admin(
-            chat_id,
-            target_user_id,
-            admin_rights,
-            rank="مشرف"
-        )
+        c = 'مشرف'
+        await event.client(EditAdminRequest(event.chat_id, target_user_id, admin_rights, rank=c))
         del session[chat_id]
         del promot[chat_id][target_user_id]
         return
