@@ -93,10 +93,10 @@ async def promoteADMIN(event):
         )
         return
     buttons = [
-        [Button.inline('تغيير معلومات', data='chang'), Button.inline('حذف رسائل', data='deleter')],
-        [Button.inline('حظر المستخدمين', data='ban'), Button.inline('دعوة', data='invit')],
-        [Button.inline('تثبيت رسائل', data='pin'), Button.inline('ادارة القصص', data='mangestory')],
-        [Button.inline('الاتصال', data='call'), Button.inline('اضافة مشرفين', data='addAMINS')],
+        [Button.inline('تغيير معلومات', data='change_info'), Button.inline('حذف رسائل', data='delete_messages')],
+        [Button.inline('حظر المستخدمين', data='ban_users'), Button.inline('دعوة', data='invite_users')],
+        [Button.inline('تثبيت رسائل', data='pin_messages'), Button.inline('ادارة القصص', data='mangestory')],
+        [Button.inline('الاتصال', data='manage_call'), Button.inline('اضافة مشرفين', data='add_admins')],
         [Button.inline('تم', data='done')]
         ]
     c = 'يتم رفع المستخدم مشرف \n يرجى تحديد الصلاحيات'
@@ -149,7 +149,6 @@ async def promoti(event):
         return
     if data not in rights:
         await event.answer('صلاحية غير معروفة', alert=True)
-        print(data)
         return
     rights[data] = True
     await event.answer(f' تم تفعيل: {data}', alert=False)
