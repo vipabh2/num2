@@ -134,7 +134,8 @@ async def promoti(event):
             invite_users=rights.get('invite_users', False),
             pin_messages=rights.get('pin_messages', False),
             add_admins=rights.get('add_admins', False),
-            manage_call=rights.get('manage_call', False),
+            # manage_call=rights.get('manage_call', False),
+            manage_call=False
             manage_topics=rights.get('mangestory', False),
             anonymous=False
         )
