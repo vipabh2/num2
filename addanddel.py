@@ -122,8 +122,8 @@ async def promoteADMIN(event):
     buttons = [
         [Button.inline('تغيير معلومات', data='change_info'), Button.inline('حذف رسائل', data='delete_messages')],
         [Button.inline('حظر المستخدمين', data='ban_users'), Button.inline('دعوة', data='invite_users')],
-        [Button.inline('تثبيت رسائل', data='pin_messages'), Button.inline('ادارة القصص', data='mangestory')],
-        [Button.inline('الاتصال', data='call'), Button.inline('اضافة مشرفين', data='add_admins')],
+        [Button.inline('الاتصال', data='manage_call'), Button.inline('اضافة مشرفين', data='add_admins')],
+        [Button.inline('تثبيت رسائل', data='pin_messages'), Button.inline('زر فارغ👍🏾', data='empty')],
         [Button.inline('تم', data='done')]
         ]
     c = 'يتم رفع المستخدم مشرف \n يرجى تحديد الصلاحيات'
@@ -136,6 +136,8 @@ async def promoteADMIN(event):
 @ABH.on(events.CallbackQuery)
 async def promoti(event):
     data = event.data.decode('utf-8')
+    if data == 'empty':
+        await event.answer('الفارغ مو الزر , انت لا ضغطت', alert=True)
     chat_id = event.chat_id
     if chat_id not in session or not session[chat_id]:
         return
