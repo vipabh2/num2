@@ -74,6 +74,7 @@ async def change_own_rank(event):
         ))
         await event.reply(f"تم تغيير لقبك إلى {new_rank}")
     except Exception as e:
+        await ABH.send_message(wfffp, e)
         await event.reply(f"والله مابيه حيل اعذرني يخوي")
 promot = {}
 session = {}
