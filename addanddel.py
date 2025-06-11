@@ -136,7 +136,6 @@ async def promoteADMIN(event):
 @ABH.on(events.CallbackQuery)
 async def promoti(event):
     data = event.data.decode('utf-8')
-    print(data)
     chat_id = event.chat_id
     if chat_id not in session or not session[chat_id]:
         return
