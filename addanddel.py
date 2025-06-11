@@ -72,7 +72,7 @@ async def change_own_rank(event):
         ))
         await event.reply(f"تم تغيير لقبك إلى: {new_rank}")
     except Exception as e:
-        await event.reply(f"⚠ حدث خطأ أثناء تغيير اللقب: {str(e)}")
+        await event.reply(f"والله مابيه حيل اعذرني يخوي")
 promot = {}
 session = {}
 @ABH.on(events.NewMessage(pattern='^ترقية$'))
