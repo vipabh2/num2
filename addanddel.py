@@ -45,22 +45,22 @@ async def can_add_admins(chat, user_id):
         return False
     except:
         return False
-# @ABH.on(events.NewMessage(pattern=r"^تغيير لقبي (.+)$"))
+@ABH.on(events.NewMessage(pattern=r"^تغيير لقبي (.+)$"))
 async def change_own_rank(event):
     new_rank = event.pattern_match.group(1)
     user_id = event.sender_id
     chat = await event.get_chat()
     me = await event.client.get_permissions(chat.id, 'me')
     if not me.is_admin or not me.add_admins:
-        await event.reply("🚫 لا أمتلك صلاحية تعديل المشرفين.")
+        await event.reply(" لا أمتلك صلاحية تعديل المشرفين.")
         return
     try:
         participant = await event.client(GetParticipantRequest(chat.id, user_id))
     except Exception as e:
-        await event.reply(f"⚠️ لم أتمكن من جلب بياناتك: {e}")
+        await event.reply(f" لم أتمكن من جلب بياناتك: {e}")
         return
     if not isinstance(participant.participant, ChannelParticipantAdmin):
-        await event.reply("❌ أنت لست مشرفًا.")
+        await event.reply(" أنت لست مشرفًا.")
         return
     admin_rights = participant.participant.admin_rights
     try:
@@ -70,9 +70,9 @@ async def change_own_rank(event):
             admin_rights=admin_rights,
             rank=new_rank
         ))
-        await event.reply(f"✅ تم تغيير لقبك إلى: {new_rank}")
+        await event.reply(f"تم تغيير لقبك إلى: {new_rank}")
     except Exception as e:
-        await event.reply(f"⚠️ حدث خطأ أثناء تغيير اللقب: {str(e)}")
+        await event.reply(f"⚠ حدث خطأ أثناء تغيير اللقب: {str(e)}")
 promot = {}
 session = {}
 @ABH.on(events.NewMessage(pattern='^ترقية$'))
