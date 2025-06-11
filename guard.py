@@ -99,7 +99,7 @@ async def monitor_messages(event):
                 await event.delete()
                 await ABH(EditBannedRequest(channel=chat.id, participant=user_id, banned_rights=rights))
                 ء = await event.get_sender()
-                rrr = await mention(ء)
+                rrr = await mention(event)
                 c = f"تم اعاده تقييد {rrr} لمدة ** {remaining//60} دقيقة و {remaining%60} ثانية.**"
                 await ABH.send_file(event.chat_id, "https://t.me/recoursec/15", caption=c)
                 type = "تقييد مستخدمين"
