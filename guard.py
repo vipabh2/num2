@@ -76,7 +76,7 @@ async def restrict_user(event):
         ء = await r.get_sender()
         rrr = await ment(ء)
         c = f"تم تقييد {rrr} لمدة 20 دقيقة."
-        await event.ABH.send_file(event.chat_id, "https://t.me/recoursec/15", caption=c)
+        await ABH.send_file(event.chat_id, "https://t.me/recoursec/15", caption=c)
         await event.delete()
     except Exception as e:
         await event.reply(f" ياريت اقيده بس ماكدر {e}")
@@ -97,7 +97,7 @@ async def monitor_messages(event):
                     send_messages=True
                 )
                 c = f"تم اعاده تقييد {rrr} لمدة ** {remaining//60} دقيقة و {remaining%60} ثانية.**"
-                await event.ABH.send_file(event.chat_id, "https://t.me/recoursec/15", caption=c)
+                await ABH.send_file(event.chat_id, "https://t.me/recoursec/15", caption=c)
                 await event.delete()
                 await ABH(EditBannedRequest(channel=chat.id, participant=user_id, banned_rights=rights))
                 ء = await event.get_sender()
