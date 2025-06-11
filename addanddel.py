@@ -64,22 +64,22 @@ async def promoteADMIN(event):
     chat_id = event.chat_id
     if chat_id not in session:
         session[chat_id] = {}
-    session[chat_id].update({'pid': user_id, 'top': r.id})
+    session[chat_id].update({'pid': user_id, 'top': r.sender_id})
     target_user_id = r.sender_id
-    rights = {
-        'change_info': False,
-        'delete_messages': False,
-        'ban_users': False,
-        'invite_users': False,
-        'pin_messages': False,
-        'add_admins': False,
-        'manage_call': False,
-        'mangestory': False,
+    promot[chat_id][target_user_id] = {
+        'rights': {
+            'change_info': False,
+            'delete_messages': False,
+            'ban_users': False,
+            'invite_users': False,
+            'pin_messages': False,
+            'add_admins': False,
+            'manage_call': False,
+            'mangestory': False,
+        },
+        'initiator': event.sender_id,
+        'top_msg': r.id
     }
-    if chat_id not in promot:
-        promot[chat_id] = {}
-    promot[chat_id]['user_id'] = target_user_id
-    promot[chat_id]['rights'] = rights
     isp = await can_add_admins(chat, user_id)
     if isp:
         c = 'المستخدم مشرف ومرفوع من قبل'
@@ -108,16 +108,47 @@ async def promoteADMIN(event):
 async def promoti(event):
     data = event.data.decode('utf-8')
     chat_id = event.chat_id
-    x = promot[chat_id]['rights']
-    if data not in x:
+
+    if chat_id not in session or not session[chat_id]:
         return
-    if not session[chat_id]:
-        return
-    uid = event.sender_id
-    x = session[chat_id]['pid']
-    if uid != x:
+
+    initiator_id = session[chat_id]['pid']
+    target_user_id = session[chat_id]['top']
+
+    if event.sender_id != initiator_id:
         await event.answer('ما تكدر تعدل شيء هنا', alert=True)
         return
+
+    if chat_id not in promot or target_user_id not in promot[chat_id]:
+        return
+    rights = promot[chat_id][target_user_id]['rights']
+    if data == 'done':
+        await event.answer(' تم تنفيذ الترقية', alert=False)
+        admin_rights = ChatAdminRights(
+            change_info=rights.get('change_info', False),
+            delete_messages=rights.get('delete_messages', False),
+            ban_users=rights.get('ban_users', False),
+            invite_users=rights.get('invite_users', False),
+            pin_messages=rights.get('pin_messages', False),
+            add_admins=rights.get('add_admins', False),
+            manage_call=rights.get('manage_call', False),
+            manage_topics=rights.get('mangestory', False),
+            anonymous=False
+        )
+        await ABH.edit_admin(
+            chat_id,
+            target_user_id,
+            admin_rights,
+            rank="مشرف"
+        )
+        del session[chat_id]
+        del promot[chat_id][target_user_id]
+        return
+    if data not in rights:
+        await event.answer('صلاحية غير معروفة', alert=True)
+        return
+    rights[data] = True
+    await event.answer(f'✅ تم تفعيل: {data}', alert=False)
 @ABH.on(events.NewMessage(pattern=r'رفع سمب(?:\s+(\d+))?'))
 async def promote_handler(event):
     type = "رفع سمب"
