@@ -70,7 +70,7 @@ async def promoteADMIN(event):
             reply_to=event.id
         )
         return
-    b = [
+    buttons = [
         [Button.inline('تغيير معلومات', data='chang'), Button.inline('حذف رسائل', data='deleter')],
         [Button.inline('حظر المستخدمين', data='ban'), Button.inline('دعوة', data='invit')],
         [Button.inline('تثبيت رسائل', data='pin'), Button.inline('ادارة القصص', data='mangestory')],
@@ -82,7 +82,7 @@ async def promoteADMIN(event):
         file='https://t.me/VIPABH/1219',
         caption=c,
         reply_to=event.id,
-        button=b)
+        buttons=buttons)
 @ABH.on(events.NewMessage(pattern=r'رفع سمب(?:\s+(\d+))?'))
 async def promote_handler(event):
     type = "رفع سمب"
