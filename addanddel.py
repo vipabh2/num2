@@ -67,14 +67,14 @@ async def promoteADMIN(event):
     session[chat_id].update({'pid': user_id, 'top': r.id})
     target_user_id = r.sender_id
     rights = {
-        'chang': False,
-        'deleter': False,
-        'ban': False,
-        'invite': False,
-        'pin': False,
+        'change_info': False,
+        'delete_messages': False,
+        'ban_users': False,
+        'invite_users': False,
+        'pin_messages': False,
+        'add_admins': False,
+        'manage_call': False,
         'mangestory': False,
-        'call': False,
-        'addADMINS': False
     }
     if chat_id not in promot:
         promot[chat_id] = {}
@@ -106,6 +106,10 @@ async def promoteADMIN(event):
         buttons=buttons)
 @ABH.on(events.CallbackQuery)
 async def promoti(event):
+    data = event.data.decode('utf-8')
+    x = promot[chat]['rights']
+    if data not in x:
+        return
     chat = event.chat_id
     if not session[chat]:
         return
@@ -113,6 +117,7 @@ async def promoti(event):
     x = session[chat]['pid']
     if uid != x:
         await event.answer('ما تكدر تعدل شيء هنا', alert=True)
+        return
 @ABH.on(events.NewMessage(pattern=r'رفع سمب(?:\s+(\d+))?'))
 async def promote_handler(event):
     type = "رفع سمب"
