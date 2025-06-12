@@ -7,12 +7,13 @@ async def reply_abh(event):
     await botuse(type)
     replied_message = await event.get_reply_message()
     if replied_message and replied_message.sender_id == 1910015590:
-        await event.reply("عزيزي الغبي ... \n تريدني اعفط للمطور شكلت لربك؟")
+        await event.reply("الزيج اللك مو للمطور😡")
         return
     if replied_message:
         abh = random.choice([
             'https://t.me/VIPABH/1171',
             'https://t.me/recoursec/7',
+            'https://t.me/recoursec/17',
             'https://t.me/recoursec/8'
         ])
         await event.client.send_file(replied_message.peer_id, abh, reply_to=replied_message.id)
