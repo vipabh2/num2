@@ -83,6 +83,6 @@ async def delalmedia_message(event):
     if not is_assistant(event.chat_id, event.sender_id):
         await event.reply('شني خالي كبينه انت مو معاون')
         return
-    chat_id = event.chat_id
+    chat_id = str(event.chat_id)
     media_messages[chat_id].clear()
     await chs(event, 'تم مسح قائمة التنظيف👍🏾👍🏾')
