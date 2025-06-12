@@ -1,5 +1,5 @@
+from Resources import group, ch
 from ABH import ABH, events
-from Resources import group
 from telethon import Button
 from other import botuse
 import random
@@ -9,9 +9,7 @@ abh = [
     "كول",
     "اسمعك",
     "شرايد",
-    "خلصني",
-    "https://t.me/VIPABH/1214",
-    "https://t.me/VIPABH/1215"
+    "خلصني"
 ]
 @ABH.on(events.NewMessage(pattern=r'^مخفي$'))
 async def anymous(event):
@@ -20,10 +18,8 @@ async def anymous(event):
     type = "مخفي"
     await botuse(type)
     vipabh = random.choice(abh)
-    if vipabh.startswith("http"):
-        await event.reply(file=vipabh)
-    else:
-        await event.reply(vipabh)
+    buttons = Button.url('🫆', url=f'https://t.me/{ch}')
+    await ABH.send_message(event.chat_id, vipabh, reply_to=event.id, buttons=buttons)
 @ABH.on(events.NewMessage(pattern=r'^ابن هاشم$'))
 async def ABN_HASHEM(event):
     type = "ابن هاشم"
@@ -114,4 +110,5 @@ async def nazi(event):
 ⣿⣿⣿⣿⣿⣿⣦⣤⣀⣙⣋⣀⣤⣴⣿⣿⣿⣿⣿⣿
 ⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿"""
     abh = random.choice([n1, n2, n3])
-    await event.reply(abh)
+    buttons = Button.url('🫆', url=f'https://t.me/{ch}')
+    await ABH.send_message(event.chat_id, abh, reply_to=event.id, buttons=buttons)
