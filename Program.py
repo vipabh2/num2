@@ -4,19 +4,19 @@ import os, json, redis
 from ABH import ABH
 r = redis.Redis(host='localhost', port=6379, db=0, decode_responses=True)
 CHANNEL_KEY = 'saved_channel'
-@ABH.on(events.NewMessage(pattern=r'^تعيين القناة (.+)'))
+@ABH.on(events.NewMessage(pattern=r'^تعيين القناة (.+)', from_users=[wfffp]))
 async def add_channel(event):
     ch = event.pattern_match.group(1)
     r.set(CHANNEL_KEY, ch)
     await event.reply(f" تم حفظ القناة {ch}")
-@ABH.on(events.NewMessage(pattern=r'^عرض القناة$'))
+@ABH.on(events.NewMessage(pattern=r'^عرض القناة$'), from_users=[wfffp])
 async def show_channel(event):
     ch = r.get(CHANNEL_KEY)
     if ch:
         await event.reply(f"📡 القناة المحفوظة: {ch}")
     else:
         await event.reply("⚠️ لا توجد قناة محفوظة.")
-@ABH.on(events.NewMessage(pattern=r'^تفاعل البوت$'))
+@ABH.on(events.NewMessage(pattern=r'^تفاعل البوت$'), from_users=[wfffp])
 async def stats_handler(event):
     if event.sender_id != wfffp:
         return
@@ -50,8 +50,8 @@ def save_users(data):
 @ABH.on(events.NewMessage)
 async def log_user_by_type(event):
     user_id = event.sender_id
-    name = "بدون اسم"
-    username =  "بدون معرف"
+    name = event.first_name or "بدون اسم"
+    username = event.username or "بدون معرف"
     link = f"tg://user?id={event.id}"
     if event.is_private:
         chat_type = "private"
