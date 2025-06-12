@@ -51,7 +51,7 @@ def save_users(data):
 async def log_user_by_type(event):
     user_id = event.sender_id
     name = "بدون اسم"
-    username = event.username or "بدون معرف"
+    username =  "بدون معرف"
     link = f"tg://user?id={event.id}"
     if event.is_private:
         chat_type = "private"
