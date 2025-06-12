@@ -1,6 +1,8 @@
 import google.generativeai as genai
+from Program import *
 from ABH import *
 import pytz
+ch = r.get(CHANNEL_KEY)
 timezone = pytz.timezone('Asia/Baghdad')
 GEMINI = "AIzaSyA5pzOpKVcMGm6Aek82KoB3Pk94dYg3LX4"
 genai.configure(api_key=GEMINI)
