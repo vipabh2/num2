@@ -9,14 +9,14 @@ async def add_channel(event):
     ch = event.pattern_match.group(1)
     r.set(CHANNEL_KEY, ch)
     await event.reply(f" تم حفظ القناة {ch}")
-@ABH.on(events.NewMessage(pattern=r'^عرض القناة$'), from_users=[wfffp])
+@ABH.on(events.NewMessage(pattern=r'^عرض القناة$', from_users=[wfffp]))
 async def show_channel(event):
     ch = r.get(CHANNEL_KEY)
     if ch:
         await event.reply(f"📡 القناة المحفوظة: {ch}")
     else:
         await event.reply("⚠️ لا توجد قناة محفوظة.")
-@ABH.on(events.NewMessage(pattern=r'^تفاعل البوت$'), from_users=[wfffp])
+@ABH.on(events.NewMessage(pattern=r'^تفاعل البوت$', from_users=[wfffp]))
 async def stats_handler(event):
     if event.sender_id != wfffp:
         return
