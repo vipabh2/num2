@@ -1,8 +1,8 @@
 from telethon.tl.types import (
     MessageMediaDocument,
     DocumentAttributeAudio)
-from other import is_assistant
 from telethon import events
+from other import *
 from ABH import ABH
 import os, json
 FILE_PATH = "media_messages.json"
@@ -14,7 +14,7 @@ else:
 def save_media_messages():
     with open(FILE_PATH, "w", encoding="utf-8") as f:
         json.dump(media_messages, f, ensure_ascii=False, indent=2)
-@ABH.on(events.NewMessage())
+@ABH.on(events.NewMessage)
 async def store_media_messages(event):
     chat_id = str(event.chat_id)
     msg = event.message
@@ -29,6 +29,8 @@ async def store_media_messages(event):
             save_media_messages()
 @ABH.on(events.NewMessage(pattern='^امسح|تنظيف$'))
 async def delete_stored_media(event):
+    type = "امسح"
+    await botuse(type)
     if not is_assistant(event.chat_id, event.sender_id):
         await event.reply('شني خالي كبينه انت مو معاون')
         return
@@ -43,6 +45,8 @@ async def delete_stored_media(event):
         await event.reply(f'تم حذف {deleted_count} ب نجاح 🗑️🗑️')
 @ABH.on(events.NewMessage(pattern='^عدد|كشف ميديا|كشف الميديا$'))
 async def count_media_messages(event):
+    type = "كشف ميديا"
+    await botuse(type)
     chat_id = str(event.chat_id)
     if chat_id in media_messages and media_messages[chat_id]:
         count = len(media_messages[chat_id])
@@ -51,6 +55,8 @@ async def count_media_messages(event):
         await event.reply("المجموعة ما بيها ميديا مخزنه للحذف")
 @ABH.on(events.NewMessage(pattern='^ثبتها| تخطي المسح|الغاء مسح$'))
 async def undel(event):
+    type = "تخطي المسح"
+    await botuse(type)
     if not is_assistant(event.chat_id, event.sender_id):
         await event.reply('شني خالي كبينه انت مو معاون')
         return
