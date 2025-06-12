@@ -6,7 +6,7 @@ from telethon.tl.types import ChannelParticipantAdmin
 from telethon.tl.types import ChatAdminRights
 from top import points, add_user, save_points
 from telethon import events, Button
-from Resources import wfffp
+from Resources import wfffp, ch
 from other import botuse
 from ABH import ABH
 async def get_owner(event):
@@ -72,7 +72,8 @@ async def change_own_rank(event):
             admin_rights=admin_rights,
             rank=new_rank
         ))
-        await event.reply(f"تم تغيير لقبك إلى {new_rank}")
+        buttons = Button.url('🫆', url=f'https://t.me/{ch}')
+        await ABH.send_message(chat.id, f"تم تغيير لقبك الى {new_rank}", reply_to=event.id, )
     except Exception as e:
         await ABH.send_message(wfffp, f"{e}")
         await event.reply(f"والله مابيه حيل اعذرني يخوي")
