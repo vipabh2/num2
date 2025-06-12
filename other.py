@@ -5,10 +5,9 @@ from telethon.tl.functions.users import GetFullUserRequest
 from telethon.tl.types import Channel, ChannelParticipant
 from playwright.async_api import async_playwright
 from database import store_whisper, get_whisper
-from Resources import suras, mention, ment
+from Resources import suras, mention, ment, wfffp
+from telethon import events, Button
 from datetime import datetime
-from telethon import events
-from telethon import Button
 from ABH import ABH
 async def creat_useFILE():
     if not os.path.exists('use.json'):
@@ -30,13 +29,14 @@ async def botuse(types):
             data[t] = 1
     with open('use.json', 'w', encoding='utf-8') as f:
         json.dump(data, f, ensure_ascii=False, indent=4)
-wfffp = 1910015590
 @ABH.on(events.NewMessage(pattern='^رسائل المجموعة$'))
 async def eventid(event):
     x = event.id
     await event.reply(f"`{x}`")
 @ABH.on(events.NewMessage(pattern=r"زر\s+(.+)"))
 async def handler(event):
+    type = "زر"
+    await botuse(type)
     if not event.is_reply:
         return await event.reply("يجب الرد على رسالة تحتوي على كابشن.")
     reply_msg = await event.get_reply_message()
@@ -162,6 +162,8 @@ async def date(user_id):
 LOCAL_PHOTO_DIR = "/tmp"
 @ABH.on(events.NewMessage(pattern='^(id|اا|افتار)$'))
 async def hisid(event):
+    type = "ايدي"
+    await botuse(type)
     chat_id = event.chat_id
     if not id_status_per_chat.get(chat_id, False):
         return  
@@ -208,6 +210,8 @@ async def hisid(event):
         await event.respond(message_text, reply_to=event.message.id)
 @ABH.on(events.NewMessage(pattern=r"^(id|ايدي|افتاري|ا|\.)$"))
 async def myid(event):
+    type = "ايديه"
+    await botuse(type)
     chat_id = event.chat_id
     if not id_status_per_chat.get(chat_id, False):
         return
@@ -328,6 +332,8 @@ async def m(user_id):
         return f"`{user_id}`"
 @ABH.on(events.NewMessage(pattern='^المعاونين$'))
 async def show_assistants(event):
+    type = "المعاونين"
+    await botuse(type)
     if not event.is_group:
         return
     chat_id = str(event.chat_id)
@@ -354,9 +360,9 @@ async def hisname(event):
     if not r:
         await event.reply("يجب الرد على رسالة المستخدم")
         return
-        s = await r.get_sender()
-        name = await mention(event)
-        await event.reply(name)
+    s = await r.get_sender()
+    name = await ment(s)
+    await event.reply(name)
 @ABH.on(events.NewMessage(pattern="^رقمي$"))
 async def num(event):
  s=await event.get_sender()
@@ -408,6 +414,8 @@ async def mu(event):
  await botuse(type)
 @ABH.on(events.NewMessage(pattern="^يوزره|يوزرة|اليوزر$"))
 async def hisu(event):
+ type = "يوزره"
+ await botuse(type)
  r=await event.get_reply_message()
  if not r:
   await event.reply("يجب الرد على رسالة المستخدم")
@@ -484,8 +492,8 @@ async def ai_handler(event):
     ignore_phrases = ["مخفي اعفطلة", "مخفي اعفطله", "مخفي قيده", "مخفي قيدة", "مخفي طكة زيج"]
     if not user_q or x in ignore_phrases:
         return
-        type = "ai"
-        await botuse(type)
+    type = "ai"
+    await botuse(type)
     async with event.client.action(event.chat_id, 'typing'):
         response = await asyncio.to_thread(ask_ai, user_q)
     await event.respond(response, reply_to=event.id)
@@ -842,8 +850,6 @@ async def handle_whisper(event):
     l[sender_id] = True
 @ABH.on(events.NewMessage(pattern=r'/start (\w+)'))
 async def start_with_param(event):
-    type = "مشاهده الهمسه"
-    await botuse(type)
     whisper_id = event.pattern_match.group(1)
     data = whisper_links.get(whisper_id)
     if not data:
@@ -851,6 +857,8 @@ async def start_with_param(event):
     if event.sender_id != data['to'] and event.sender_id != data['from']:
         await event.reply("لا يمكنك مشاهدة هذه الهمسة.")
         return
+    type = "مشاهده الهمسه"
+    await botuse(type)
     sender = await event.get_sender()
     if 'original_msg_id' in data and 'from_user_chat_id' in data:
         original = await ABH.get_messages(data['from_user_chat_id'], ids=data['original_msg_id'])
@@ -980,8 +988,6 @@ async def how_to_whisper(event):
     parm = event.pattern_match.group(1)
     if not parm:
         return
-    type = "شرح الهمسه"
-    await botuse(type)
     if parm == x:
         url = 'https://files.catbox.moe/7lnpz4.jpg'
         c = '**اوامر الهمسة** \n همسة نص , ايدي او يوزر \n همسة ميديا او نص بالرد فقط'
