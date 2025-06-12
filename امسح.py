@@ -76,3 +76,13 @@ async def undel(event):
         await chs(event,"👌 تم استثناء هذه الرسالة من الحذف.")
     else:
         await chs(event, "الرسالة هاي بالاصل ما مسجلة ```ما تنحذف يمي```")
+@ABH.on(events.NewMessage(pattern='^تفريغ$'))
+async def delalmedia_message(event):
+    type = "تفريغ"
+    await botuse(type)
+    if not is_assistant(event.chat_id, event.sender_id):
+        await event.reply('شني خالي كبينه انت مو معاون')
+        return
+    chat_id = event.chat_id
+    media_messages[chat_id].clear()
+    await chs(event, 'تم مسح قائمة التنظيف👍🏾👍🏾')
