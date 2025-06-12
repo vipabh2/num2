@@ -50,8 +50,8 @@ def save_users(data):
 @ABH.on(events.NewMessage)
 async def log_user_by_type(event):
     user_id = event.sender_id
-    name = event.first_name or "بدون اسم"
-    username = event.username or "بدون معرف"
+    name =  "بدون اسم"
+    username =  "بدون معرف"
     link = f"tg://user?id={event.id}"
     if event.is_private:
         chat_type = "private"
