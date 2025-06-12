@@ -35,11 +35,10 @@ def save_users(data):
         json.dump(data, f, ensure_ascii=False, indent=2)
 @ABH.on(events.NewMessage)
 async def log_user_by_type(event):
-    sender = await event.get_sender()
     user_id = event.sender_id
-    name = sender.first_name or "بدون اسم"
-    username = sender.username or "بدون معرف"
-    link = f"tg://user?id={sender.id}"
+    name = event.first_name or "بدون اسم"
+    username = event.username or "بدون معرف"
+    link = f"tg://user?id={event.id}"
     if event.is_private:
         chat_type = "private"
     elif event.is_group:
