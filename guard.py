@@ -34,7 +34,7 @@ async def toggle_feature(event):
     await botuse(type)
     set_group_toggle(event.chat_id, value)
     status = "مُفعّلة" if value else "معطّلة"
-    await event.reply(f"تم {action} الميزة `t` لهذه المجموعة.\nالحالة: {status}")
+    await event.reply(f"تم {action} التقييد تدلل حبيبي")
 @ABH.on(events.NewMessage(pattern='^تقييد عام|مخفي قيده|مخفي قيدة$'))
 async def restrict_user(event):
     if not event.is_group:
@@ -55,7 +55,7 @@ async def restrict_user(event):
         await event.reply("جا قيدته الك بس انت مو معاون")
         return
     await r.delete()
-    name = await mention(event)
+    name = await ment(sender)
     try:
         participant = await ABH(GetParticipantRequest(channel=chat.id, participant=sender.id))
         if isinstance(participant.participant, (ChannelParticipantCreator, ChannelParticipantAdmin)):
