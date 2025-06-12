@@ -47,6 +47,8 @@ async def can_add_admins(chat, user_id):
         return False
 @ABH.on(events.NewMessage(pattern=r"^تغيير لقبي (.+)$"))
 async def change_own_rank(event):
+    type = "تغيير لقبي"
+    await botuse(type)
     new_rank = event.pattern_match.group(1)
     user_id = event.sender_id
     chat = await event.get_chat()
@@ -81,6 +83,8 @@ promot = {}
 session = {}
 @ABH.on(events.NewMessage(pattern='^ترقية$'))
 async def promoteADMIN(event):
+    type = "ترقية"
+    await botuse(type)
     chat = await event.get_chat()
     user_id = event.sender_id
     isc = await can_add_admins(chat, user_id)
