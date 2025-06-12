@@ -1,7 +1,21 @@
 from telethon import events
 from other import botuse, wfffp
+import os, json, redis
 from ABH import ABH
-import os, json
+r = redis.Redis(host='localhost', port=6379, db=0, decode_responses=True)
+CHANNEL_KEY = 'saved_channel'
+@ABH.on(events.NewMessage(pattern=r'^تعيين القناة (.+)'))
+async def add_channel(event):
+    ch = event.pattern_match.group(1)
+    r.set(CHANNEL_KEY, ch)
+    await event.reply(f" تم حفظ القناة {ch}")
+@ABH.on(events.NewMessage(pattern=r'^عرض القناة$'))
+async def show_channel(event):
+    ch = r.get(CHANNEL_KEY)
+    if ch:
+        await event.reply(f"📡 القناة المحفوظة: {ch}")
+    else:
+        await event.reply("⚠️ لا توجد قناة محفوظة.")
 @ABH.on(events.NewMessage(pattern=r'^تفاعل البوت$'))
 async def stats_handler(event):
     if event.sender_id != wfffp:
