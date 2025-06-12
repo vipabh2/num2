@@ -1,7 +1,8 @@
 import google.generativeai as genai
-from Program import *
 from ABH import *
-import pytz
+import pytz, redis
+r = redis.Redis(host='localhost', port=6379, db=0, decode_responses=True)
+CHANNEL_KEY = 'saved_channel'
 ch = r.get(CHANNEL_KEY)
 timezone = pytz.timezone('Asia/Baghdad')
 GEMINI = "AIzaSyA5pzOpKVcMGm6Aek82KoB3Pk94dYg3LX4"
