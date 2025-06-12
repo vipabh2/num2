@@ -1,8 +1,9 @@
+from other import botuse, is_assistant
 from telethon.tl.types import (
     MessageMediaDocument,
     DocumentAttributeAudio)
 from telethon import events
-from other import *
+from Resources import chs
 from ABH import ABH
 import os, json
 FILE_PATH = "media_messages.json"
@@ -50,7 +51,7 @@ async def count_media_messages(event):
     chat_id = str(event.chat_id)
     if chat_id in media_messages and media_messages[chat_id]:
         count = len(media_messages[chat_id])
-        await event.reply(f'عدد الرسائل الموجهه للحذف {count} 👍🏾')        
+        await chs(event, f'عدد الرسائل الموجهه للحذف {count} 👍🏾')        
     else:
         await event.reply("المجموعة ما بيها ميديا مخزنه للحذف")
 @ABH.on(events.NewMessage(pattern='^ثبتها| تخطي المسح|الغاء مسح$'))
@@ -62,16 +63,16 @@ async def undel(event):
         return
     r = await event.get_reply_message()
     if not r:
-        await event.reply('يجب الرد على رسالة وسائط.')
+        await chs(event, 'يجب الرد على رسالة وسائط.')
         return
     if not r.media:
-        await event.reply('يا لوتي لازم ترد على رساله بيها ميديا')
+        await chs(event, 'يا لوتي لازم ترد على رساله بيها ميديا')
         return
     chat_id = str(event.chat_id)
     msg_id = r.id
     if chat_id in media_messages and msg_id in media_messages[chat_id]:
         media_messages[chat_id].remove(msg_id)
         save_media_messages()
-        await event.reply("👌 تم استثناء هذه الرسالة من الحذف.")
+        await chs(event,"👌 تم استثناء هذه الرسالة من الحذف.")
     else:
-        await event.reply("الرسالة هاي بالاصل ما مسجلة ```ما تنحذف يمي```")
+        await chs(event, "الرسالة هاي بالاصل ما مسجلة ```ما تنحذف يمي```")
