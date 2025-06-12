@@ -1,5 +1,6 @@
 import google.generativeai as genai
-from ABH import *
+from telethon import Button
+from ABH import ABH
 import pytz, redis
 r = redis.Redis(host='localhost', port=6379, db=0, decode_responses=True)
 CHANNEL_KEY = 'saved_channel'
@@ -12,6 +13,9 @@ group = -1001784332159
 hint_gid = -1002168230471
 bot = "Anymous"
 wfffp = 1910015590
+async def chs(event, c):
+    buttons = Button.url('🫆', url=f'https://t.me/{ch}')
+    await ABH.send_message(event.chat_id, c, reply_to=event.id, buttons=buttons)
 async def mention(event):
     name = getattr(event.sender, 'first_name', None) or 'غير معروف'
     user_id = event.sender_id
