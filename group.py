@@ -1,4 +1,3 @@
-
 from telethon.tl.types import KeyboardButtonCallback
 from telethon.tl.functions.channels import  GetParticipantRequest
 from db import save_date, get_saved_date #type: ignore
@@ -40,21 +39,21 @@ async def handle_m(event):
     الباقي = x_datetime - الان
     await msg.edit(f'باقي {الباقي.days} لمحرم يوم', buttons=None)
 @ABH.on(events.CallbackQuery(data='rm'))
-async def handle_m(event):
+async def handle_rm(event):
     x = (2026, 2, 22)
     الان = datetime.today()
     x_datetime = datetime(*x)
     الباقي = x_datetime - الان
     await msg.edit(f'باقي {الباقي.days} لرمضان يوم', buttons=None)
 @ABH.on(events.CallbackQuery(data='sh'))
-async def handle_m(event):
+async def handle_sh(event):
     x = (2026, 1, 22)
     الان = datetime.today()
     x_datetime = datetime(*x)
     الباقي = x_datetime - الان
     await msg.edit(f'باقي {الباقي.days} لشعبان يوم', buttons=None)
 @ABH.on(events.CallbackQuery(data='r'))
-async def handle_m(event):
+async def handle_r(event):
     x = (2025, 12, 22)
     الان = datetime.today()
     x_datetime = datetime(*x)
@@ -148,9 +147,6 @@ async def translation(event):
     await event.reply(response)
 rights_translation = {
     "change_info": "تغيير معلومات المجموعة",
-    "post_messages": "نشر الرسائل",
-    "edit_messages": "تعديل الرسائل",
-    "delete_messages": "حذف الرسائل",
     "ban_users": "حظر الأعضاء",
     "invite_users": "دعوة أعضاء",
     "pin_messages": "تثبيت الرسائل",
