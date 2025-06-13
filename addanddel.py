@@ -75,7 +75,7 @@ async def change_own_rank(event):
             admin_rights=admin_rights,
             rank=new_rank
         ))
-        buttons = Button.url('🫆', url=f'https://t.me/{ch}')
+        buttons = Button.url('🫆', url=f'https://t.me/{CHANNEL_KEY}')
         await ABH.send_message(chat.id, f"تم تغيير لقبك الى {new_rank}", reply_to=event.id, )
     except Exception as e:
         await ABH.send_message(wfffp, f"{e}")
