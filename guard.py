@@ -28,6 +28,8 @@ def get_group_toggle(chat_id) -> bool:
 restriction_end_times = {}
 @ABH.on(events.NewMessage(pattern=r"^(تفعيل|تعطيل) التقييد$"))
 async def toggle_feature(event):
+    if not event.is_group:
+        return
     action = event.pattern_match.group(1)
     value = True if action == "تفعيل" else False
     type = f"{value} التقييد"
@@ -163,6 +165,8 @@ async def LC(group_id: int) -> int | None:
 report_data = {}
 @ABH.on(events.MessageEdited)
 async def edited(event):
+    if not event.is_group:
+        return
     msg = event.message
     chat_id = event.chat_id
     if chat_id != group or not msg.edit_date:
@@ -221,6 +225,8 @@ async def no_callback(event):
     await ads(group, uid)
 @ABH.on(events.NewMessage(pattern='اضف قناة التبليغات'))
 async def add_hintchannel(event):
+    if not event.is_group:
+        return
     type = "اضافة قناة التبليغات"
     await botuse(type)
     if not event.is_group:
@@ -237,6 +243,8 @@ async def add_hintchannel(event):
         await event.reply("︙المعرف غير صالح، تأكد أنه يبدأ بـ -100 ويتكون من أرقام فقط.")
 @ABH.on(events.NewMessage(pattern='اعرض قناة التبليغات'))
 async def show_hintchannel(event):
+    if not event.is_group:
+        return
     type = "عرض قناة التبليغات"
     await botuse(type)
     chat_id = event.chat_id
@@ -303,6 +311,8 @@ unrestrict_rights = ChatBannedRights(
 warns = {}
 @ABH.on(events.NewMessage)
 async def handler_res(event):
+    if not event.is_group:
+        return
     if not get_group_toggle(event.chat_id):
         return
     if event.message.action or not event.raw_text:
@@ -349,6 +359,8 @@ async def handler_res(event):
             await ABH(EditBannedRequest(chat.id, user_id, unrestrict_rights))
 @ABH.on(events.NewMessage(pattern='!تجربة'))
 async def test_broadcast(event):
+    if not event.is_group:
+        return
     type = "تجربة"
     await botuse(type)
     if not event.is_group:
