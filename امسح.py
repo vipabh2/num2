@@ -3,7 +3,7 @@ from telethon.tl.types import (
     MessageMediaDocument,
     DocumentAttributeAudio)
 from telethon import events
-from Resources import chs
+from Program import chs
 from ABH import ABH
 import os, json
 FILE_PATH = "media_messages.json"
