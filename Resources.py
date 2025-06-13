@@ -1,10 +1,7 @@
 import google.generativeai as genai
 from telethon import Button
 from ABH import ABH
-import pytz, redis
-r = redis.Redis(host='localhost', port=6379, db=0, decode_responses=True)
-CHANNEL_KEY = 'saved_channel'
-ch = r.get(CHANNEL_KEY)
+import pytz
 timezone = pytz.timezone('Asia/Baghdad')
 GEMINI = "AIzaSyA5pzOpKVcMGm6Aek82KoB3Pk94dYg3LX4"
 genai.configure(api_key=GEMINI)
