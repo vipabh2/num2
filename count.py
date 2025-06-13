@@ -136,6 +136,8 @@ async def msgs(event):
         save_data(uinfo)
 @ABH.on(events.NewMessage(pattern="^توب اليومي|المتفاعلين$"))
 async def اليومي(event):
+    if not event.is_group:
+        return
     type = "المتفاعلين"
     await botuse(type)
     guid = str(event.chat_id)
@@ -159,6 +161,8 @@ async def اليومي(event):
         await event.reply("لا توجد بيانات لعرضها.")
 @ABH.on(events.NewMessage(pattern="^توب الاسبوعي|تفاعل$"))
 async def الاسبوعي(event):
+    if not event.is_group:
+        return
     type = "تفاعل"
     await botuse(type)
     guid = str(event.chat_id)
@@ -187,7 +191,6 @@ async def show_my_res(event):
     uid1 = event.sender.first_name
     unm1 = str(event.sender_id)
     guid1 = str(event.chat_id)
-
     if unm1 in uinfo and guid1 in uinfo[unm1]:
         msg_count = uinfo[unm1][guid1]["msg"]
         await event.reply(f"المستخدم [{uid1}](tg://user?id={unm1}) أرسلت {msg_count} رسالة في هذه المجموعة.")
@@ -207,6 +210,8 @@ async def his_res(event):
         await event.reply(f"المستخدم [{uid1}](tg://user?id={unm1}) أرسل {msg_count} رسالة في هذه المجموعة.")
 @ABH.on(events.NewMessage(pattern='^اوامر التوب$'))
 async def title(event):
+    if not event.is_group:
+        return
     type = "اوامر التوب"
     await botuse(type)
     await event.reply('اهلا صديقي , اوامر الرسائل \n ارسل `المتفاعلين` | `توب اليومي` ل اضهار توب 15 تفاعل \n ارسل `تفاعل` | `توب الاسبوعي` ل اظهار تفاعل المجموعه في اسبوع \n ارسل `رسائلي` ل اضهار رسائلك في اخر يوم \n ارسل `رسائله` ل اضهار رساله الشخص بالرد \n استمتع')
