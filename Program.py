@@ -4,6 +4,9 @@ import os, json, redis
 from ABH import ABH
 r = redis.Redis(host='localhost', port=6379, db=0, decode_responses=True)
 CHANNEL_KEY = 'saved_channel'
+async def chs(event, c):
+    buttons = Button.url('🫆', url=f'https://t.me/{CHANNEL_KEY}')
+    await ABH.send_message(event.chat_id, c, reply_to=event.id, buttons=buttons)
 @ABH.on(events.NewMessage(pattern=r'^تعيين القناة (.+)', from_users=[wfffp]))
 async def add_channel(event):
     ch = event.pattern_match.group(1)
