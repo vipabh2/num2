@@ -242,10 +242,10 @@ def save_user_data(data):
         json.dump(data, file, ensure_ascii=False, indent=4)
 @ABH.on(events.NewMessage(pattern=r'.*'))
 async def telegramgames(event):
-    type = "المقدار المميز"
-    await botuse(type)
     if not event.message.dice:
         return    
+    type = "المقدار المميز"
+    await botuse(type)
     user_id = event.sender_id
     dice = event.message.dice
     emoji = dice.emoticon
