@@ -7,7 +7,7 @@ from telethon.tl.types import ChatAdminRights
 from top import points, add_user, save_points
 from telethon import events, Button
 from Resources import wfffp
-from Program import ch
+from Program import CHANNEL_KEY 
 from other import botuse
 from ABH import ABH
 async def get_owner(event):
