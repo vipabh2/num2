@@ -31,10 +31,14 @@ async def botuse(types):
         json.dump(data, f, ensure_ascii=False, indent=4)
 @ABH.on(events.NewMessage(pattern='^رسائل المجموعة$'))
 async def eventid(event):
+    if not event.is_group:
+        return
     x = event.id
     await event.reply(f"`{x}`")
 @ABH.on(events.NewMessage(pattern=r"زر\s+(.+)"))
 async def handler(event):
+    if not event.is_group:
+        return
     type = "زر"
     await botuse(type)
     if not event.is_reply:
@@ -65,6 +69,8 @@ async def handler(event):
     await event.respond(message=caption, buttons=buttons)
 @ABH.on(events.NewMessage(pattern="^كشف همسة|كشف همسه$"))
 async def whisper_scanmeme(event):
+    if not event.is_group:
+        return
     type = "كشف همسة"
     await botuse(type)
     r = await event.get_reply_message()
@@ -91,6 +97,8 @@ async def whisper_scanmeme(event):
 id_status_per_chat = {}
 @ABH.on(events.NewMessage(pattern='الايدي تفعيل'))
 async def turn_on(event):
+    if not event.is_group:
+        return
     type = "الايدي تفعيل"
     await botuse(type)
     uid = event.sender_id
@@ -102,6 +110,8 @@ async def turn_on(event):
         return
 @ABH.on(events.NewMessage(pattern='الايدي تعطيل'))
 async def turn_off(event):
+    if not event.is_group:
+        return
     type = "الايدي تعطيل"
     await botuse(type)
     uid = event.sender_id
@@ -162,6 +172,8 @@ async def date(user_id):
 LOCAL_PHOTO_DIR = "/tmp"
 @ABH.on(events.NewMessage(pattern='^(id|اا|افتار)$'))
 async def hisid(event):
+    if not event.is_group:
+        return
     type = "ايدي"
     await botuse(type)
     chat_id = event.chat_id
@@ -210,6 +222,8 @@ async def hisid(event):
         await event.respond(message_text, reply_to=event.message.id)
 @ABH.on(events.NewMessage(pattern=r"^(id|ايدي|افتاري|ا|\.)$"))
 async def myid(event):
+    if not event.is_group:
+        return
     type = "ايديه"
     await botuse(type)
     chat_id = event.chat_id
@@ -275,6 +289,8 @@ async def is_owner(chat_id, user_id):
         return False
 @ABH.on(events.NewMessage(pattern=r'^رفع معاون$'))
 async def add_assistant(event):
+    if not event.is_group:
+        return
     if not event.is_group:
         return
     type = "رفع معاون"
