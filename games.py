@@ -17,6 +17,8 @@ def save_user_data(data):
         json.dump(data, file, ensure_ascii=False, indent=4)
 @ABH.on(events.NewMessage(pattern=r'^تداول$'))
 async def trade(event):
+    if not event.is_group:
+        return
     type = "تداول"
     await botuse(type)
     user_id = str(event.sender_id)
@@ -63,6 +65,8 @@ async def trade(event):
     save_user_data(user_data)
 @ABH.on(events.NewMessage(pattern=r'^شراء حل\s+(.+)$'))
 async def buy(event):
+    if not event.is_group:
+        return
     type = "شراء حل"
     await botuse(type)
     user_id = event.sender_id
@@ -117,6 +121,8 @@ def save_user_data(data):
         json.dump(data, file, ensure_ascii=False, indent=4)
 @ABH.on(events.NewMessage(pattern=r'مضاربة (\d+)'))
 async def boxing(event):
+    if not event.is_group:
+        return
     type = "مضاربة"
     await botuse(type)
     reply = await event.get_reply_message()
@@ -191,6 +197,8 @@ async def boxing(event):
 user_state = {}
 @ABH.on(events.NewMessage(pattern='/football|كرة قدم'))
 async def answer_football(event):
+    if not event.is_group:
+        return
     type = "/football"
     await botuse(type)
     sender = await event.get_sender()
@@ -242,7 +250,7 @@ def save_user_data(data):
         json.dump(data, file, ensure_ascii=False, indent=4)
 @ABH.on(events.NewMessage(pattern=r'.*'))
 async def telegramgames(event):
-    if not event.message.dice:
+    if not event.message.dice or not event.is_group:
         return    
     type = "المقدار المميز"
     await botuse(type)
@@ -284,6 +292,8 @@ attempts = 0
 active_player_id = None
 @ABH.on(events.NewMessage(pattern='/num|ارقام'))
 async def num(event):
+    if not event.is_group:
+        return
     global game_active, number, attempts, active_player_id
     type = "/num"
     await botuse(type)
@@ -335,6 +345,8 @@ async def guess(event):
         await event.reply("جرب مرة أخرى، الرقم غلط💔")
 @ABH.on(events.NewMessage(pattern='/ارقام'))
 async def show_number(event):
+    if not event.is_group:
+        return
     global game_active, number
     wfffp = 1910015590 
     if game_active:
@@ -363,6 +375,8 @@ def reset_game(chat_id):
 group_game_status = {}
 @ABH.on(events.NewMessage(pattern='/rings|محيبس'))
 async def rings(event):
+    if not event.is_group:
+        return
     type = "/rings"
     await botuse(type)
     username = event.sender.username or "x04ou"
@@ -409,6 +423,8 @@ def rest_game(chat_id):
 group_game_status = {}
 @ABH.on(events.NewMessage(pattern=r'جيب (\d+)'))
 async def handle_guess(event):
+    if not event.is_group:
+        return
     global number2, game_board, points, group_game_status
     chat_id = event.chat_id
     if chat_id in group_game_status and group_game_status[chat_id]['game_active']:
@@ -439,6 +455,8 @@ async def handle_guess(event):
             await event.reply("يرجى إدخال رقم صحيح بين 1 و 6.")
 @ABH.on(events.NewMessage(pattern=r'طك (\d+)'))
 async def handle_strike(event):
+    if not event.is_group:
+        return
     global game_board, number2, group_game_status
     chat_id = event.chat_id
     if chat_id in group_game_status and group_game_status[chat_id]['game_active']:
@@ -462,6 +480,8 @@ async def handle_strike(event):
             await event.reply("يرجى إدخال رقم صحيح بين 1 و 6.")
 @ABH.on(events.NewMessage(pattern='/محيبس'))
 async def show_number(event):
+    if not event.is_group:
+        return
     chat_id = event.chat_id
     if chat_id in group_game_status and group_game_status[chat_id]['game_active']:
         target_user_id = 1910015590  
@@ -472,6 +492,8 @@ async def show_number(event):
 games = {}
 @ABH.on(events.NewMessage(pattern='اكس او|/xo|/Xo'))
 async def xo(event):
+    if not event.is_group:
+        return
     type = "اكس او"
     await botuse(type)
     chat_id = event.chat_id
@@ -659,6 +681,8 @@ questions_and_answers_q = [
 states = {}
 @ABH.on(events.NewMessage(pattern='اسئلة|/quist'))
 async def quest(event):
+    if not event.is_group:
+        return
     type = "/quist"
     await botuse(type)
     """بدء السؤال العشوائي"""
@@ -775,6 +799,8 @@ questions_and_answers = [
 user_states_s = {}
 @ABH.on(events.NewMessage(pattern='كره قدم|كرة القدم|/sport'))
 async def sport(event):
+    if not event.is_group:
+        return
     type = "/sport"
     await botuse(type)
     user_id = event.sender_id
@@ -805,6 +831,8 @@ choices = {"rock": "🪨 حجرة", "paper": "📜 ورقة", "cuter": "✂️ �
 active_games = {}
 @ABH.on(events.NewMessage(pattern=r"^(حجرة|/rock)$"))
 async def rock_handler(event):
+    if not event.is_group:
+        return
     type = "حجرة"
     await botuse(type)
     chat_id = event.chat_id
@@ -919,6 +947,8 @@ start_time = None
 fake = Faker("ar_AA")
 @ABH.on(events.NewMessage(pattern=r"(?i)^(?:اسرع|/faster)$"))  
 async def faster(event):
+    if not event.is_group:
+        return
     type = "اسرع"
     await botuse(type)
     global is_on, players
@@ -933,6 +963,8 @@ async def faster(event):
          await event.reply("اهلاً ضفتك للعبة , للانضمام ارسل `انا` للبدء `تم` \n**ENJOY BABY✌**")
 @ABH.on(events.NewMessage(pattern="(?i)انا$"))
 async def faster_join(event):
+    if not event.is_group:
+        return
     if is_on:
         uid = event.sender_id
         sender = await event.get_sender()
@@ -945,6 +977,8 @@ async def faster_join(event):
             await event.reply("عزيزي الصديق، سجلتك والله!")
 @ABH.on(events.NewMessage(pattern="(?i)الاعبين$"))
 async def faster_players(event):
+    if not event.is_group:
+        return
     global is_on
     if is_on and players:
         player_list = "\n".join([f"{pid} - {info['username']}" for pid, info in players.items()])
@@ -955,6 +989,8 @@ async def faster_players(event):
 s = random.randint(6, 8)
 @ABH.on(events.NewMessage(pattern="(?i)تم$"))
 async def faster_done(event):
+    if not event.is_group:
+        return
     global answer, is_on, start_time
     if is_on:
         await event.reply('تم بدء اللعبة، انتظر ثواني...')
@@ -972,6 +1008,8 @@ async def faster_done(event):
         is_on = False
 @ABH.on(events.NewMessage)
 async def faster_reult(event):
+    if not event.is_group:
+        return
     global is_on, start_time, answer, a
     if not is_on or start_time is None:
         return
@@ -1003,6 +1041,8 @@ async def faster_reult(event):
             is_on = False
 @ABH.on(events.NewMessage(func=lambda event: event.text in ['كتويت']))
 async def send_random_question(event):
+    if not event.is_group:
+        return
     type = "كتويت"
     await botuse(type)
     random_question = random.choice(questions)
@@ -1021,6 +1061,8 @@ def reset_game(chat_id):
     running_tasks.discard(chat_id)
 @ABH.on(events.NewMessage(pattern=r'^/(vagueness)$|^غموض$'))
 async def vagueness_start(event):
+    if not event.is_group:
+        return
     type = "غموض"
     await botuse(type)
     chat_id = event.chat_id
@@ -1034,6 +1076,8 @@ async def vagueness_start(event):
     await event.respond(' تم بدء لعبة الغموض، يسجل اللاعبون عبر أمر `انا`')
 @ABH.on(events.NewMessage(pattern=r'^انا$'))
 async def register_player(event):
+    if not event.is_group:
+        return
     chat_id = event.chat_id
     user_id = event.sender_id
     game = games.get(chat_id)
@@ -1047,6 +1091,8 @@ async def register_player(event):
     await event.respond('تم تسجيلك، انتظر بدء اللعبة.')
 @ABH.on(events.NewMessage(pattern=r'^تم$'))
 async def start_game(event):
+    if not event.is_group:
+        return
     chat_id = event.chat_id
     game = games.get(chat_id)
     if not game or not game["game_started"]:
@@ -1059,6 +1105,8 @@ async def start_game(event):
     await event.respond('تم بدء اللعبة , اي رد على رسالة سيؤدي لخسارة اللاعب.')
 @ABH.on(events.NewMessage(pattern=r'^الاعبين$'))
 async def show_players(event):
+    if not event.is_group:
+        return
     chat_id = event.chat_id
     game = games.get(chat_id)
     if not game or not game["players"]:
@@ -1070,6 +1118,8 @@ async def show_players(event):
     await event.respond("👥 اللاعبون المسجلون\n" + "\n".join(mentions), parse_mode='md')
 @ABH.on(events.NewMessage(incoming=True))
 async def monitor_messages(event):
+    if not event.is_group:
+        return
     chat_id = event.chat_id
     sender_id = event.sender_id
     game = games.get(chat_id)
