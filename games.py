@@ -1073,7 +1073,7 @@ async def monitor_messages(event):
     chat_id = event.chat_id
     sender_id = event.sender_id
     game = games.get(chat_id)
-    if not game or not game["game_started"] or game["join_enabled"]:
+    if not game:
         return
     if sender_id in game["players"]:
         if chat_id not in active_players:
