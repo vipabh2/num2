@@ -12,6 +12,8 @@ from other import botuse
 import pytz
 @ABH.on(events.NewMessage(pattern='^/dates|مواعيد$'))
 async def show_dates(event):
+    if not event.is_group:
+        return
     global uid, msg
     type = "مواعيد"
     await botuse(type)
@@ -71,6 +73,8 @@ async def set_user_date(event):
         await event.reply("التاريخ المدخل غير صالح، يرجى إدخاله بصيغة YYYY-MM-DD.")
 @ABH.on(events.NewMessage(pattern='^كم باقي$'))
 async def check_remaining_days(event):
+    if not event.is_group:
+        return
     type = "كم باقي"
     await botuse(type)
     user_id = event.sender_id
@@ -85,6 +89,8 @@ async def check_remaining_days(event):
         await event.reply("لم تحدد تاريخًا بعد، يرجى تحديد تاريخ أولاً.")
 @ABH.on(events.NewMessage(pattern='^تاريخ$'))
 async def today(event):
+    if not event.is_group:
+        return
     type = "تاريخ"
     await botuse(type)
     t = datetime.datetime.now().date()
@@ -93,6 +99,8 @@ async def today(event):
     await event.reply(f" الهجري: \n {hd_str} \n الميلادي: \n {t}")
 @ABH.on(events.NewMessage(pattern=r'كشف ايدي (\d+)'))
 async def link(event):
+    if not event.is_group:
+        return
     type = "كشف ايدي"
     await botuse(type)
     global user, uid
@@ -123,6 +131,8 @@ genai.configure(api_key=GEMINI)
 model = genai.GenerativeModel("gemini-1.5-flash")
 @ABH.on(events.NewMessage(pattern=r'(ترجمة|ترجمه)'))
 async def translation(event):
+    if not event.is_group:
+        return
     type = "ترجمة"
     await botuse(type)
     translator = Translator()
@@ -164,6 +174,8 @@ def translate_rights_lines(rights_obj):
     return "\n".join(lines) if lines else "لا يوجد صلاحيات"
 @ABH.on(events.NewMessage(pattern=r'^صلاحياته(?: (.+))?$'))
 async def his_rights(event):
+    if not event.is_group:
+        return
     type = "صلاحياته"
     await botuse(type)
     try:
@@ -184,6 +196,8 @@ async def his_rights(event):
         await event.reply("لا يمكن عرض الصلاحيات.")
 @ABH.on(events.NewMessage(pattern=r'^لقبه(?: (.+))?$'))
 async def nickname_r(event):
+    if not event.is_group:
+        return
     type = "لقبه"
     await botuse(type)
     try:
