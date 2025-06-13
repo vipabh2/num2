@@ -1,5 +1,5 @@
-from Resources import group
 from Program import CHANNEL_KEY 
+from Resources import group
 from ABH import ABH, events
 from telethon import Button
 from other import botuse
@@ -19,7 +19,7 @@ async def anymous(event):
     type = "مخفي"
     await botuse(type)
     vipabh = random.choice(abh)
-    buttons = Button.url('🫆', url=f'https://t.me/{ch}')
+    buttons = Button.url('🫆', url=f'https://t.me/{CHANNEL_KEY}')
     await ABH.send_message(event.chat_id, vipabh, reply_to=event.id, buttons=buttons)
 @ABH.on(events.NewMessage(pattern=r'^ابن هاشم$'))
 async def ABN_HASHEM(event):
