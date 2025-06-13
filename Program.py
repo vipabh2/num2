@@ -7,6 +7,9 @@ CHANNEL_KEY = 'saved_channel'
 @ABH.on(events.NewMessage(pattern=r'^تعيين القناة (.+)', from_users=[wfffp]))
 async def add_channel(event):
     ch = event.pattern_match.group(1)
+    x = r.exists(CHANNEL_KEY)
+    if x:
+        r.delete(CHANNEL_KEY)
     r.set(CHANNEL_KEY, ch)
     await event.reply(f" تم حفظ القناة {ch}")
 @ABH.on(events.NewMessage(pattern=r'^عرض القناة$', from_users=[wfffp]))
