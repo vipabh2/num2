@@ -33,7 +33,6 @@ async def time_run(event):
         await event.reply(الرسالة)
 print(f'anymous is working at {hour} ✓')
 def main():
-    print("config is starting...")
     ABH.start(bot_token=bot_token)
     ABH.run_until_disconnected()
 if __name__ == "__main__":
