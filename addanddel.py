@@ -48,6 +48,8 @@ async def can_add_admins(chat, user_id):
         return False
 @ABH.on(events.NewMessage(pattern=r"^تغيير لقبي (.+)$"))
 async def change_own_rank(event):
+    if not event.is_group:
+        return
     type = "تغيير لقبي"
     await botuse(type)
     new_rank = event.pattern_match.group(1)
@@ -84,6 +86,8 @@ promot = {}
 session = {}
 @ABH.on(events.NewMessage(pattern='^ترقية$'))
 async def promoteADMIN(event):
+    if not event.is_group:
+        return
     type = "ترقية"
     await botuse(type)
     chat = await event.get_chat()
@@ -187,6 +191,8 @@ async def promoti(event):
     await event.answer(f' تم تفعيل: {data}', alert=False)
 @ABH.on(events.NewMessage(pattern=r'رفع سمب(?:\s+(\d+))?'))
 async def promote_handler(event):
+    if not event.is_group:
+        return
     type = "رفع سمب"
     await botuse(type)
     message = await event.get_reply_message()
@@ -225,6 +231,8 @@ async def promote_handler(event):
     await event.reply(f" تم رفع {receiver_name} مقابل {amount} فلوس")
 @ABH.on(events.NewMessage(pattern='تنزيل سمب'))
 async def demote_handler(event):
+    if not event.is_group:
+        return
     type = "تنزيل سمب"
     await botuse(type)
     message = await event.get_reply_message()
@@ -256,6 +264,8 @@ async def demote_handler(event):
     await event.reply(f"تم تنزيل {r.sender.first_name}  من السمبية")
 @ABH.on(events.NewMessage(pattern='السمبات'))
 async def show_handler(event):
+    if not event.is_group:
+        return
     type = "السمبات"
     await botuse(type)
     chat_id = str(event.chat_id)
@@ -278,6 +288,8 @@ async def show_handler(event):
     await event.reply(response if response.strip() != "قائمة السمبات👇" else "ماكو وردات مرفوعين بالمجموعة", parse_mode="Markdown")
 @ABH.on(events.NewMessage(pattern='اوامر الرفع'))
 async def promot_list(event):
+    if not event.is_group:
+        return
     type = "اوامر الرفع"
     await botuse(type)
     await event.reply('**اوامر الرفع كالاتي** \n `رفع سمب` + عدد فلوس \n لرفع الشخص في قائمة `السمبات` \n `تنزيل سمب` \n حتى ترفع لازم يكون رصيدك 1000 والتنزيل يُضرب المبلغ *1.5 \n * `اوامر الالعاب`')
