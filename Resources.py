@@ -1,4 +1,5 @@
 import google.generativeai as genai
+from Program import CHANNEL_KEY 
 from telethon import Button
 from ABH import ABH
 import pytz
@@ -11,7 +12,7 @@ hint_gid = -1002168230471
 bot = "Anymous"
 wfffp = 1910015590
 async def chs(event, c):
-    buttons = Button.url('🫆', url=f'https://t.me/{ch}')
+    buttons = Button.url('🫆', url=f'https://t.me/{CHANNEL_KEY}')
     await ABH.send_message(event.chat_id, c, reply_to=event.id, buttons=buttons)
 async def mention(event):
     name = getattr(event.sender, 'first_name', None) or 'غير معروف'
