@@ -1,4 +1,5 @@
-from Resources import group, ch
+from Resources import group
+from Program import CHANNEL_KEY 
 from ABH import ABH, events
 from telethon import Button
 from other import botuse
