@@ -62,78 +62,43 @@ def try_fix_json_file(file_path):
 # file_path = "uinfo.json"
 # data = try_fix_json_file(file_path)
 @ABH.on(events.NewMessage)
-async def msg(event):
+async def unified_handler(event):
     global uinfo, WEAK
-    if event.is_group:
-        now = datetime.now()
-        weekday = now.weekday()
-        current_date = now.strftime("%Y-%m-%d")
+    if not event.is_group:
+        return
+    now = datetime.now()
+    current_time = now.strftime("%H:%M")
+    current_date = now.strftime("%Y-%m-%d")
+    weekday = now.weekday()
     sender = await event.get_sender()
-    if isinstance(sender, User):
-        first = sender.first_name or ""
-        last = sender.last_name or ""
-        uid = (first + " " + last).strip() or "الاسم غير متوفر"
-    else:
-        uid = "الاسم غير متوفر"
-        unm = str(event.sender_id)
-        guid = str(event.chat_id)
-        if weekday == 4 and current_date != last_reset_date():
-            WEAK = {}
-            save_json(DATA_FILE_WEAK, WEAK)
-            update_reset_date(current_date)
-        if unm not in uinfo:
-            uinfo[unm] = {}
-        if guid not in uinfo[unm]:
-            uinfo[unm][guid] = {"msg": 0, "guid": guid, "unm": unm, "fname": uid}
-        uinfo[unm][guid]["msg"] += 1
-        uinfo[unm][guid]["fname"] = uid
-        save_json(DATA_FILE, uinfo)
-        if unm not in WEAK:
-            WEAK[unm] = {}
-        if guid not in WEAK[unm]:
-            WEAK[unm][guid] = {"msg": 0, "guid": guid, "unm": unm, "fname": uid}
-        WEAK[unm][guid]["msg"] += 1
-        WEAK[unm][guid]["fname"] = uid
+    fname = getattr(sender, 'first_name', None) or getattr(sender, 'title', None) or "الاسم غير متوفر"
+    if isinstance(sender, User) and sender.last_name:
+        fname = f"{sender.first_name} {sender.last_name}".strip()
+    unm = str(event.sender_id)
+    guid = str(event.chat_id)
+    if weekday == 4 and current_date != last_reset_date():
+        WEAK = {}
         save_json(DATA_FILE_WEAK, WEAK)
-def clean_json_file(file_path):
-    with open(file_path, 'r', encoding='utf-8') as f:
-        lines = f.readlines()
-    for i in range(len(lines)):
-        try:
-            data = json.loads("".join(lines))
-            return data
-        except json.JSONDecodeError as e:
-            error_line = e.lineno - 1
-            print(f"🛠 حذف السطر المعطوب رقم {e.lineno}: {lines[error_line].strip()}")
-            lines.pop(error_line)
-    print(" لم نتمكن من إصلاح الملف.")
-    return {}
-fixed_data = clean_json_file("uinfo.json")
-if fixed_data:
-    with open("uinfo.json", "w", encoding="utf-8") as f:
-        json.dump(fixed_data, f, ensure_ascii=False, indent=2)
-@ABH.on(events.NewMessage)
-async def msgs(event):
-    global uinfo
-    if event.is_group:
-        now = datetime.now()
-        current_time = now.strftime("%H:%M")
-        sender = await event.get_sender()
-        uid = getattr(sender, 'first_name', None) or getattr(sender, 'title', None) or "الاسم غير متوفر"
-        unm = str(event.sender_id)
-        guid = str(event.chat_id)
-        if current_time == "00:00":
-            for user_id in uinfo:
-                for group_id in uinfo[user_id]:
-                    uinfo[user_id][group_id]["msg"] = 0
-            save_data(uinfo)
-        if unm not in uinfo:
-            uinfo[unm] = {}
-        if guid not in uinfo[unm]:
-            uinfo[unm][guid] = {"msg": 0, "guid": guid, "unm": unm, "fname": uid}
-        uinfo[unm][guid]["msg"] += 1
-        uinfo[unm][guid]["fname"] = uid
+        update_reset_date(current_date)
+    if current_time == "00:00":
+        for uid in uinfo:
+            for gid in uinfo[uid]:
+                uinfo[uid][gid]["msg"] = 0
         save_data(uinfo)
+    if unm not in uinfo:
+        uinfo[unm] = {}
+    if guid not in uinfo[unm]:
+        uinfo[unm][guid] = {"msg": 0, "guid": guid, "unm": unm, "fname": fname}
+    uinfo[unm][guid]["msg"] += 1
+    uinfo[unm][guid]["fname"] = fname
+    save_json(DATA_FILE, uinfo)
+    if unm not in WEAK:
+        WEAK[unm] = {}
+    if guid not in WEAK[unm]:
+        WEAK[unm][guid] = {"msg": 0, "guid": guid, "unm": unm, "fname": fname}
+    WEAK[unm][guid]["msg"] += 1
+    WEAK[unm][guid]["fname"] = fname
+    save_json(DATA_FILE_WEAK, WEAK)
 @ABH.on(events.NewMessage(pattern="^توب اليومي|المتفاعلين$"))
 async def اليومي(event):
     if not event.is_group:
