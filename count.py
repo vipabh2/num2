@@ -59,8 +59,8 @@ def try_fix_json_file(file_path):
         except json.JSONDecodeError:
             fixed_lines.append(lines[i])
     return {}
-file_path = "uinfo.json"
-data = try_fix_json_file(file_path)
+# file_path = "uinfo.json"
+# data = try_fix_json_file(file_path)
 @ABH.on(events.NewMessage)
 async def msg(event):
     global uinfo, WEAK
