@@ -1,5 +1,5 @@
 from telethon import events, Button
-from other import botuse, wfffp
+from other import wfffp
 import os, json, redis
 from ABH import ABH
 r = redis.Redis(host='localhost', port=6379, db=0, decode_responses=True)
@@ -14,6 +14,7 @@ async def add_channel(event):
     if x:
         r.delete(CHANNEL_KEY)
     r.set(CHANNEL_KEY, ch)
+    CHANNEL_KEY = ch
     await event.reply(f" تم حفظ القناة {ch}")
 @ABH.on(events.NewMessage(pattern=r'^عرض القناة$', from_users=[wfffp]))
 async def show_channel(event):
