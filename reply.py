@@ -1,4 +1,4 @@
-from Program import CHANNEL_KEY 
+from Program import chs
 from Resources import group
 from ABH import ABH, events
 from telethon import Button
@@ -14,13 +14,12 @@ abh = [
 ]
 @ABH.on(events.NewMessage(pattern=r'^مخفي$'))
 async def anymous(event):
-    if event.is_reply:
+    if event.is_reply or event.is_group:
         return
     type = "مخفي"
     await botuse(type)
     vipabh = random.choice(abh)
-    buttons = Button.url('🫆', url=f'https://t.me/{CHANNEL_KEY}')
-    await ABH.send_message(event.chat_id, vipabh, reply_to=event.id, buttons=buttons)
+    await chs(event, vipabh)
 @ABH.on(events.NewMessage(pattern=r'^ابن هاشم$'))
 async def ABN_HASHEM(event):
     type = "ابن هاشم"
@@ -31,6 +30,8 @@ async def ABN_HASHEM(event):
     await event.client.send_file(event.chat_id, pic, caption=caption, reply_to=event.message.id, buttons=button)
 @ABH.on(events.NewMessage)
 async def replys(event):
+    if not event.is_group:
+        return
     text = event.text
     x = "ادونيس"
     a = 'ابو ذيبه'
@@ -45,7 +46,7 @@ async def replys(event):
         await botuse(type)
 @ABH.on(events.NewMessage(pattern='امير'))
 async def reply_amer(event):
-    if event.chat_id == group:
+    if event.chat_id == group or not event.is_group:
         type = "امير"
         await botuse(type)
         ur = ["https://files.catbox.moe/k44qq6.mp4",
@@ -59,6 +60,8 @@ async def reply_amer(event):
         return
 @ABH.on(events.NewMessage(pattern='مقتد'))
 async def reply_moqtada(event):
+    if not event.is_group:
+        return
     if event.chat_id == group:
         type = "مقتدى"
         await botuse(type)
@@ -73,6 +76,8 @@ auto = [
         ]
 @ABH.on(events.NewMessage(pattern=r'^(سلام عليكم|السلام عليكم)$'))
 async def reply_hi(event):
+    if not event.is_group:
+        return
     type = "السلام عليكم"
     await botuse(type)
     abh = random.choice(auto)
@@ -111,5 +116,4 @@ async def nazi(event):
 ⣿⣿⣿⣿⣿⣿⣦⣤⣀⣙⣋⣀⣤⣴⣿⣿⣿⣿⣿⣿
 ⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿"""
     abh = random.choice([n1, n2, n3])
-    buttons = Button.url('🫆', url=f'https://t.me/{ch}')
-    await ABH.send_message(event.chat_id, abh, reply_to=event.id, buttons=buttons)
+    await chs(event, abh)
