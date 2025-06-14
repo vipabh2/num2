@@ -1,3 +1,4 @@
+
 from Resources import football, questions, mention, ment #type: ignore
 from top import points, add_points #type: ignore
 from datetime import datetime, timedelta
@@ -1047,15 +1048,15 @@ async def send_random_question(event):
     await botuse(type)
     random_question = random.choice(questions)
     await event.reply(random_question)
-games = {}
+g = {}
 active_players = {}
 running_tasks = set()
 def format_duration(duration: timedelta) -> str:
     minutes, seconds = divmod(int(duration.total_seconds()), 60)
     return f"{minutes} دقيقة و {seconds} ثانية"
 def reset_game(chat_id):
-    if chat_id in games:
-        del games[chat_id]
+    if chat_id in g:
+        del g[chat_id]
     if chat_id in active_players:
         del active_players[chat_id]
     running_tasks.discard(chat_id)
@@ -1066,7 +1067,7 @@ async def vagueness_start(event):
     type = "غموض"
     await botuse(type)
     chat_id = event.chat_id
-    games[chat_id] = {
+    g[chat_id] = {
         "players": set(),
         "player_times": {},
         "game_started": True,
@@ -1080,22 +1081,22 @@ async def register_player(event):
         return
     chat_id = event.chat_id
     user_id = event.sender_id
-    game = games.get(chat_id)
+    game = g.get(chat_id)
     if not game or not game["game_started"] or not game["join_enabled"]:
         return
     if user_id in game["players"]:
         await event.respond('اسمك موجود بالفعل في اللعبة.')
         return
-    game["players"].add(user_id)
-    game["player_times"][user_id] = {"start": datetime.utcnow()}
+    g["players"].add(user_id)
+    g["player_times"][user_id] = {"start": datetime.utcnow()}
     await event.respond('تم تسجيلك، انتظر بدء اللعبة.')
 @ABH.on(events.NewMessage(pattern=r'^تم$'))
 async def start_game(event):
     if not event.is_group:
         return
     chat_id = event.chat_id
-    game = games.get(chat_id)
-    if not game or not game["game_started"]:
+    game = g.get(chat_id)
+    if not g or not g["game_started"]:
         return
     if len(game["players"]) < 2:
         await event.respond('عدد اللاعبين غير كافٍ لبدء اللعبة.')
@@ -1108,7 +1109,7 @@ async def show_players(event):
     if not event.is_group:
         return
     chat_id = event.chat_id
-    game = games.get(chat_id)
+    game = g.get(chat_id)
     if not game or not game["players"]:
         return
     mentions = []
@@ -1122,7 +1123,7 @@ async def monitor_messages(event):
         return
     chat_id = event.chat_id
     sender_id = event.sender_id
-    game = games.get(chat_id)
+    game = g.get(chat_id)
     if not game:
         return
     if sender_id in game["players"]:
@@ -1149,9 +1150,9 @@ async def monitor_messages(event):
         if len(game["players"]) == 1:
             await announce_winner(chat_id)
 async def track_inactive_players(chat_id):
-    while chat_id in games and games[chat_id]["game_started"]:
+    while chat_id in g and g[chat_id]["game_started"]:
         await asyncio.sleep(600)
-        game = games.get(chat_id)
+        game = g.get(chat_id)
         if not game:
             break
         current_players = game["players"].copy()
@@ -1172,7 +1173,7 @@ async def track_inactive_players(chat_id):
             break
     running_tasks.discard(chat_id)
 async def announce_winner(chat_id):
-    game = games.get(chat_id)
+    game = g.get(chat_id)
     if not game or len(game["players"]) != 1:
         return
     winner_id = next(iter(game["players"]))
