@@ -3,4 +3,7 @@ redis==4.5.5
 googletrans==4.0.0-rc1
 beautifulsoup4==4.13.4
 soupsieve==2.7
-typing-extensions==4.14.0
+pytz
+google-api-python-client
+googletrans==4.0.0-rc1
+google-generative-ai
