@@ -2,20 +2,6 @@ from telethon import events, Button
 from other import wfffp
 import os, json, redis
 from ABH import ABH
-@ABH.on(events.NewMessage(pattern="^/start$"))
-async def start(event):
-    if event.is_private:
-        buttons = [
-            Button.url(
-            "لرفعي مشرف",
-                url="https://t.me/vipabh_bot?startgroup=Commands&admin=ban_users+delete_messages+restrict_members+invite_users+pin_messages+change_info+add_admins+promote_members+manage_call+manage_chat+manage_video_chats+post_stories+edit_stories+delete_stories"
-    ),
-            Button.url(
-                "تحديثات البوت",
-                url=f"https://t.me/{CHANNEL_KEY}"
-    )
-]
-        await ABH.send_message(event.chat_id, "اهلا حياك الله \n مخفي لحماية المجموعة واوامر خدميه واللعاب جديدة \n علمود اشتغل بسلاسه لازم ترفعني مشرف عبر الزر الموجود 👇", buttons=buttons, reply_to=event.id)
 CHANNEL_KEY = 'ANYMOUSupdate'
 r = redis.Redis(host='localhost', port=6379, db=0, decode_responses=True)
 async def chs(event, c):
@@ -60,3 +46,17 @@ async def stats_handler(event):
     else:
         await ABH.send_message(wfffp, msg)
         await event.reply('تم الارسال في الخاص')
+@ABH.on(events.NewMessage(pattern="^/start$"))
+async def start(event):
+    if event.is_private:
+        buttons = [
+            Button.url(
+            "لرفعي مشرف",
+                url="https://t.me/vipabh_bot?startgroup=Commands&admin=ban_users+delete_messages+restrict_members+invite_users+pin_messages+change_info+add_admins+promote_members+manage_call+manage_chat+manage_video_chats+post_stories+edit_stories+delete_stories"
+    ),
+            Button.url(
+                "تحديثات البوت",
+                url=f"https://t.me/{CHANNEL_KEY}"
+    )
+]
+        await ABH.send_message(event.chat_id, "اهلا حياك الله \n مخفي لحماية المجموعة واوامر خدميه واللعاب جديدة \n علمود اشتغل بسلاسه لازم ترفعني مشرف عبر الزر الموجود 👇", buttons=buttons, reply_to=event.id)
