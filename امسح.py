@@ -48,7 +48,7 @@ async def delete_stored_media(event):
         media_messages[chat_id] = []
         save_media_messages()
         await event.reply(f'تم حذف {deleted_count} ب نجاح 🗑️🗑️')
-@ABH.on(events.NewMessage(pattern='^عدد|كشف ميديا|كشف الميديا$'))
+@ABH.on(events.NewMessage(pattern='^عدد|كشف ميديا|كشف الميديا$', incoming=True))
 async def count_media_messages(event):
     if not event.is_group:
         return
@@ -60,7 +60,7 @@ async def count_media_messages(event):
         await chs(event, f'عدد الرسائل الموجهه للحذف {count} 👍🏾')        
     else:
         await event.reply("المجموعة ما بيها ميديا مخزنه للحذف")
-@ABH.on(events.NewMessage(pattern='^ثبتها| تخطي المسح|الغاء مسح$'))
+@ABH.on(events.NewMessage(pattern='^ثبتها|تخطي المسح|الغاء مسح$', incoming=True))
 async def undel(event):
     if not event.is_group:
         return
