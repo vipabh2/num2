@@ -327,6 +327,7 @@ async def handler_res(event):
         warns[chat.id][user_id] += 1
         s = await mention(event)
         hint_channel = await LC(chat.id)
+        print(hint_channel)
         await ABH.send_message(
             int(hint_channel),
             f'المستخدم ( {s} ) ارسل كلمة غير مرغوب بها ( {x} ) \n   ايديه ( `{user_id}` ) تم تحذيره ومسحها \n تحذيراته ( 3\{warns[chat.id][user_id]} ) '
