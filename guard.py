@@ -345,7 +345,7 @@ async def handler_res(event):
             if hint_channel:
                 await ABH.send_message(
                     int(hint_channel),
-                    f'تم تقييد المستخدم {name} \n ارسل كلمه ممنوعه ( ~{x}~ )',
+                    f'تم تقييد المستخدم {name} \n ارسل كلمه ممنوعه ( ```{x}``` )',
                     parse_mode="markdown"
                 )
                 await asyncio.sleep(1200)
