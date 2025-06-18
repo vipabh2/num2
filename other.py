@@ -172,8 +172,6 @@ LOCAL_PHOTO_DIR = "/tmp"
 async def hisid(event):
     if not event.is_group:
         return
-    type = "ايدي"
-    await botuse(type)
     chat_id = event.chat_id
     if not id_status_per_chat.get(chat_id, False):
         return  
@@ -222,8 +220,6 @@ async def hisid(event):
 async def myid(event):
     if not event.is_group:
         return
-    type = "ايديه"
-    await botuse(type)
     chat_id = event.chat_id
     if not id_status_per_chat.get(chat_id, False):
         return
@@ -289,8 +285,6 @@ async def is_owner(chat_id, user_id):
 async def add_assistant(event):
     if not event.is_group:
         return
-    if not event.is_group:
-        return
     type = "رفع معاون"
     await botuse(type)
     sm = await mention(event)
@@ -352,13 +346,14 @@ async def show_assistants(event):
         return
     chat_id = str(event.chat_id)
     data = load_auth()
-    msg = "📋 **قائمة المعاونين في هذه المجموعة**\n\n"
+    # msg = ''
     if chat_id in data and data[chat_id]:
+        msg = "📋 **قائمة المعاونين في هذه المجموعة**\n\n"
         for idx, user_id in enumerate(data[chat_id], start=1):
             mention_text = await m(user_id)
             msg += f"{idx:<2} - {mention_text:<30} \n `{user_id}`\n"
     else:
-        msg += "❌ لا يوجد معاونين حالياً في هذه المجموعة.\n"
+        msg += " لا يوجد معاونين حالياً في هذه المجموعة.\n"
     await event.reply(msg, parse_mode="md")
 @ABH.on(events.NewMessage(pattern="^اسمي$"))
 async def myname(event):
