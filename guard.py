@@ -42,8 +42,8 @@ async def restrict_user(event):
     if not event.is_group:
         return
     # if not islock(event.chat_id):
-    ء = r.hget(str(event.chat_id), 't')
-    if not ء:
+    ءء = r.hget(str(event.chat_id), 't')
+    if not ءء:
         await event.reply("هذه الميزة غير مفعلة في هذه المجموعة.")
         return
     chat = await event.get_chat()
