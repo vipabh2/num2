@@ -280,7 +280,10 @@ async def is_admin(chat, user_id):
 def contains_banned_word(message):
     message = normalize_arabic(message)
     words = message.split()
-    return any(word in normalized_banned_words for word in words)
+    for word in words:
+        if word in normalized_banned_words:
+            return word
+    return None
 restrict_rights = ChatBannedRights(
     until_date=None,
     send_messages=True,
