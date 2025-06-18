@@ -10,10 +10,10 @@ from ABH import ABH
 restriction_end_times = {}
 @ABH.on(events.NewMessage(pattern=r"^التقييد (تفعيل|تعطيل)$"))
 async def toggle_feature(event):
-    if not is_assistant(event.chat_id, event.sender_id):
-        await chs(event, 'شني خالي كبينه انت مو معاون')
-        return
     if not event.is_group:
+        return
+    if is_assistant(event.chat_id, event.sender_id):
+        await chs(event, 'شني خالي كبينه انت مو معاون')
         return
     action = event.pattern_match.group(1)
     value = True if action == "تفعيل" else False
@@ -306,8 +306,6 @@ warns = {}
 async def handler_res(event):
     if not event.is_group:
         return
-    # if not islock(event.chat_id):
-    #     return
     ء = redas.hget(str(event.chat_id), 't')
     if not ء or not event.is_group:
         return
@@ -316,40 +314,36 @@ async def handler_res(event):
     message_text = event.raw_text.strip()
     x = contains_banned_word(message_text)
     if x:
-        try:
-            user_id = event.sender_id
-            chat = await event.get_chat()
-            if await is_admin(chat, user_id):
-                await event.delete()
-                return
+        user_id = event.sender_id
+        chat = await event.get_chat()
+        if await is_admin(chat, user_id):
             await event.delete()
-            if user_id not in warns:
-                warns[user_id] = {}
-            if chat.id not in warns[user_id]:
-                warns[user_id][chat.id] = 0
-            warns[user_id][chat.id] += 1
-            s = await mention(event)
-            chat_id = event.chat_id
-            hint_channel = await LC(chat_id)
-            await ABH.send_message(
-                int(hint_channel),
-                f'المستخدم ( {s} ) ارسل كلمة غير مرغوب بها ( {x} ) \n   ايديه ( `{user_id}` ) تم تحذيره ومسحها \n تحذيراته ( 3\{warns[user_id][chat_id]} ) '
-                )
-            type = "تقييد بسبب الفشار"
-            await botuse(type)
-
-        except:
             return
-        if warns[user_id][chat.id] >= 2:
+        await event.delete()
+        if user_id not in warns:
+            warns[user_id] = {}
+        if chat.id not in warns[user_id]:
+            warns[user_id][chat.id] = 0
+        warns[user_id][chat.id] += 1
+        s = await mention(event)
+        chat_id = event.chat_id
+        hint_channel = await LC(chat_id)
+        await ABH.send_message(
+            int(hint_channel),
+            f'المستخدم ( {s} ) ارسل كلمة غير مرغوب بها ( {x} ) \n   ايديه ( `{user_id}` ) تم تحذيره ومسحها \n تحذيراته ( 3\{warns[user_id][chat_id]} ) '
+            )
+        type = "تقييد بسبب الفشار"
+        await botuse(type)
+        if warns[user_id][chat.id] >= 3:
             await ABH(EditBannedRequest(chat.id, user_id, restrict_rights))
             name = await mention(event)
             warns[user_id][chat.id] = 0
             hint_channel = await LC(chat.id)
             if hint_channel:
-                try:
-                    await ABH.send_message(int(hint_channel), f'تم تقييد المستخدم {name}')
-                except:
-                    pass
+                await ABH.send_message(
+                    int(hint_channel),
+                    f'تم تقييد المستخدم {name} \n ارسل كلمه ممنوعه ( {x} )'
+                        )
             await asyncio.sleep(1200)
             await ABH(EditBannedRequest(chat.id, user_id, unrestrict_rights))
 @ABH.on(events.NewMessage(pattern='!تجربة'))
@@ -369,22 +363,3 @@ async def test_broadcast(event):
         await event.reply("✔︙تم إرسال رسالة التجربة إلى قناة التبليغات بنجاح.")
     except Exception as e:
         await event.reply(f"︙حدث خطأ أثناء إرسال الرسالة: {e}")
-# SETTINGS_FILE = "settings.json"
-# def load_settings():
-#     if not os.path.exists(SETTINGS_FILE):
-#         return {}
-#     with open(SETTINGS_FILE, "r", encoding="utf-8") as f:
-#         return json.load(f)
-# def save_settings(settings):
-#     with open(SETTINGS_FILE, "w", encoding="utf-8") as f:
-#         json.dump(settings, f, ensure_ascii=False, indent=2)
-# def set_group_toggle(chat_id, value: bool):
-#     settings = load_settings()
-#     chat_key = str(chat_id)
-#     if chat_key not in settings:
-#         settings[chat_key] = {}
-#     settings[chat_key]["t"] = value
-#     save_settings(settings)
-# def islock(chat_id) -> bool:
-#     settings = load_settings()
-#     return settings.get(str(chat_id), {}).get("t", False)
