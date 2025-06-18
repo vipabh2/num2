@@ -1,7 +1,7 @@
 from telethon.tl.types import ChannelParticipantCreator, ChannelParticipantAdmin, ChatBannedRights
 from telethon.tl.functions.channels import EditBannedRequest, GetParticipantRequest
 from telethon.tl.types import ChatBannedRights, MessageEntityUrl
-from other import is_assistant, botuse
+from other import is_assistant, botuse, is_owner
 from Resources import group, mention, ment
 from telethon import events, Button
 import os, asyncio, re, json, time
@@ -12,7 +12,7 @@ restriction_end_times = {}
 async def toggle_feature(event):
     if not event.is_group:
         return
-    if not is_assistant(event.chat_id, event.sender_id):
+    if is_assistant(event.chat_id, event.sender_id):
         await chs(event, 'شني خالي كبينه انت مو معاون')
         return
     action = event.pattern_match.group(1)
@@ -25,7 +25,6 @@ async def toggle_feature(event):
 async def restrict_user(event):
     if not event.is_group:
         return
-    # if not islock(event.chat_id):
     status = redas.hget(str(event.chat_id), 't')
     if status != "True":
         await event.reply("هذه الميزة غير مفعلة في هذه المجموعة.")
@@ -211,8 +210,11 @@ async def no_callback(event):
     await ads(group, uid)
 @ABH.on(events.NewMessage(pattern='اضف قناة التبليغات'))
 async def add_hintchannel(event):
-    if not event.is_group:
+    chat_id = event.chat_id
+    user_id = event.sender_id
+    if not (await is_owner(chat_id, user_id) or user_id == 1910015590 or not event.is_group) or await is_assistant(chat_id, user_id):
         return
+    s = await event.get_sender()
     type = "اضافة قناة التبليغات"
     await botuse(type)
     if not event.is_group:
@@ -222,14 +224,18 @@ async def add_hintchannel(event):
         return await event.reply("↯︙يجب الرد على رسالة تحتوي على معرف القناة مثل -100xxxxxxxxxx")
     cid_text = r.raw_text.strip()
     if cid_text.startswith("-100") and cid_text[4:].isdigit():
-        chat_id = event.chat_id
         await configc(chat_id, cid_text)
         await event.reply(f"︙تم حفظ قناة التبليغات لهذه المجموعة")
+        n = await ment(s)
+
+        await chs(event, f'تم تعيين المحادثة الحاليه سجل ل بوت مخفي بواسطة ( {n} ) \n ايديه `{user_id}`')
     else:
         await event.reply("︙المعرف غير صالح، تأكد أنه يبدأ بـ -100 ويتكون من أرقام فقط.")
 @ABH.on(events.NewMessage(pattern='اعرض قناة التبليغات'))
 async def show_hintchannel(event):
-    if not event.is_group:
+    chat_id = event.chat_id
+    user_id = event.sender_id
+    if not (await is_owner(chat_id, user_id) or user_id == 1910015590 or not event.is_group) or await is_assistant(chat_id, user_id):
         return
     type = "عرض قناة التبليغات"
     await botuse(type)
@@ -280,10 +286,7 @@ async def is_admin(chat, user_id):
 def contains_banned_word(message):
     message = normalize_arabic(message)
     words = message.split()
-    for word in words:
-        if word in normalized_banned_words:
-            return word
-    return None
+    return any(word in normalized_banned_words for word in words)
 restrict_rights = ChatBannedRights(
     until_date=None,
     send_messages=True,
@@ -317,38 +320,42 @@ async def handler_res(event):
     message_text = event.raw_text.strip()
     x = contains_banned_word(message_text)
     if x:
-        user_id = event.sender_id
-        chat = await event.get_chat()
-        if await is_admin(chat, user_id):
+        try:
+            user_id = event.sender_id
+            chat = await event.get_chat()
+            if await is_admin(chat, user_id):
+                await event.delete()
+                return
             await event.delete()
+            if user_id not in warns:
+                warns[user_id] = {}
+            if chat.id not in warns[user_id]:
+                warns[user_id][chat.id] = 0
+            warns[user_id][chat.id] += 1
+            s = await mention(event)
+            chat_id = event.chat_id
+            hint_channel = await LC(chat_id)
+            await ABH.send_message(
+                int(hint_channel),
+                f'المستخدم ( {s} ) ارسل كلمة غير مرغوب بها ( {x} ) \n   ايديه ( `{user_id}` ) تم تحذيره ومسحها \n تحذيراته ( 3\{warns[user_id][chat_id]} ) '
+                )
+            type = "تقييد بسبب الفشار"
+            await botuse(type)
+
+        except:
             return
-        await event.delete()
-        if chat.id not in warns:
-            warns[chat.id] = {}
-        if user_id not in warns[chat.id]:
-            warns[chat.id][user_id] = 0
-        warns[chat.id][user_id] += 1
-        s = await mention(event)
-        hint_channel = await LC(event.chat_id)
-        await ABH.send_message(
-            int(hint_channel),
-                f'المستخدم ( {s} ) \n  ارسل كلمة غير مرغوب بها ( {x} ) \n   ايديه ( `{user_id}` ) تم تحذيره ومسحها \n تحذيراته ( 3\{warns[chat.id][user_id]} ) '
-            )
-        type = "تقييد بسبب الفشار"
-        await botuse(type)
-        if warns[chat.id][user_id] >= 3:
+        if warns[user_id][chat.id] >= 2:
             await ABH(EditBannedRequest(chat.id, user_id, restrict_rights))
             name = await mention(event)
-            warns[chat.id][user_id] = 0
-            hint_channel = await LC(event.chat_id)
+            warns[user_id][chat.id] = 0
+            hint_channel = await LC(chat.id)
             if hint_channel:
-                await ABH.send_message(
-                    int(hint_channel),
-                    f'تم تقييد المستخدم {name} \n ارسل كلمه ممنوعه ( ```{x}``` )',
-                    parse_mode="markdown"
-                )
-                await asyncio.sleep(1200)
-                await ABH(EditBannedRequest(chat.id, user_id, unrestrict_rights))
+                try:
+                    await ABH.send_message(int(hint_channel), f'تم تقييد المستخدم {name}')
+                except:
+                    pass
+            await asyncio.sleep(1200)
+            await ABH(EditBannedRequest(chat.id, user_id, unrestrict_rights))
 @ABH.on(events.NewMessage(pattern='!تجربة'))
 async def test_broadcast(event):
     chat_id = event.chat_id
