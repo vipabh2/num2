@@ -5,11 +5,13 @@ from other import is_assistant, botuse
 from Resources import group, mention, ment
 from telethon import events, Button
 import os, asyncio, re, json, time
-from Program import r as redas
+from Program import r as redas, chs
 from ABH import ABH
 restriction_end_times = {}
 @ABH.on(events.NewMessage(pattern=r"^التقييد (تفعيل|تعطيل)$"))
 async def toggle_feature(event):
+    if is_assistant(event.chat_id, event.sender_id):
+        await chs(event, 'شني خالي كبينه انت مو معاون')
     if not event.is_group:
         return
     action = event.pattern_match.group(1)
