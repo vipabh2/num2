@@ -346,7 +346,7 @@ async def handler_res(event):
                 await ABH.send_message(
                     int(hint_channel),
                     f'تم تقييد المستخدم {name} \n ارسل كلمه ممنوعه ( ~{x}~ )',
-                    parse_mode="MarkdownV2"
+                    parse_mode="markdown"
                 )
                 await asyncio.sleep(1200)
                 await ABH(EditBannedRequest(chat.id, user_id, unrestrict_rights))
