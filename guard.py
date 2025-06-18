@@ -10,10 +10,10 @@ from ABH import ABH
 restriction_end_times = {}
 @ABH.on(events.NewMessage(pattern=r"^التقييد (تفعيل|تعطيل)$"))
 async def toggle_feature(event):
-    if not event.is_group:
-        return
     if is_assistant(event.chat_id, event.sender_id):
         await chs(event, 'شني خالي كبينه انت مو معاون')
+        return
+    if not event.is_group:
         return
     action = event.pattern_match.group(1)
     value = True if action == "تفعيل" else False
