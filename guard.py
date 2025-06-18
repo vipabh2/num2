@@ -336,20 +336,20 @@ async def handler_res(event):
             )
         type = "تقييد بسبب الفشار"
         await botuse(type)
-    if warns[chat.id][user_id] >= 3:
-        await ABH(EditBannedRequest(chat.id, user_id, restrict_rights))
-        name = await mention(event)
-        warns[chat.id][user_id] = 0
-        hint_channel = await LC(event.chat_id)
-        print(hint_channel)
-        if hint_channel:
-            await ABH.send_message(
-                int(hint_channel),
-                f'تم تقييد المستخدم {name} \n ارسل كلمه ممنوعه ( ~{x}~ )',
-                parse_mode="MarkdownV2"
-            )
-            await asyncio.sleep(1200)
-            await ABH(EditBannedRequest(chat.id, user_id, unrestrict_rights))
+        if warns[chat.id][user_id] >= 3:
+            await ABH(EditBannedRequest(chat.id, user_id, restrict_rights))
+            name = await mention(event)
+            warns[chat.id][user_id] = 0
+            hint_channel = await LC(event.chat_id)
+            print(hint_channel)
+            if hint_channel:
+                await ABH.send_message(
+                    int(hint_channel),
+                    f'تم تقييد المستخدم {name} \n ارسل كلمه ممنوعه ( ~{x}~ )',
+                    parse_mode="MarkdownV2"
+                )
+                await asyncio.sleep(1200)
+                await ABH(EditBannedRequest(chat.id, user_id, unrestrict_rights))
 @ABH.on(events.NewMessage(pattern='!تجربة'))
 async def test_broadcast(event):
     chat_id = event.chat_id
