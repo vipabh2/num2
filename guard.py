@@ -23,7 +23,7 @@ async def restrict_user(event):
     if not event.is_group:
         return
     # if not islock(event.chat_id):
-    status = r.hget(str(event.chat_id), 't')
+    status = redas.hget(str(event.chat_id), 't')
     if status != "True":
         await event.reply("هذه الميزة غير مفعلة في هذه المجموعة.")
         return
