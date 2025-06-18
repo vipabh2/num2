@@ -4,8 +4,8 @@ from telethon.tl.functions.channels import GetParticipantRequest
 from telethon.tl.functions.users import GetFullUserRequest
 from telethon.tl.types import Channel, ChannelParticipant
 from playwright.async_api import async_playwright
-from database import store_whisper, get_whisper
 from Resources import suras, mention, ment, wfffp
+from database import store_whisper, get_whisper
 from telethon import events, Button
 from datetime import datetime
 from ABH import ABH
@@ -55,11 +55,9 @@ async def handler(event):
     for item in items:
         try:
             label, url = map(str.strip, item.split("\\", 1))
-            if not re.match(r'^https?://', url):
-                return await event.reply(f"❌ الرابط التالي غير صالح:\n`{url}`\nيجب أن يبدأ بـ http:// أو https://")
             row.append(Button.url(label, url))
         except Exception as e:
-            print(f"خطأ في الزر: {item}, {e}")
+            await ABH.send_message(wfffp, f'حدث خطأ في الازرار {e}')
             continue
         if len(row) == 2:
             buttons.append(row)
