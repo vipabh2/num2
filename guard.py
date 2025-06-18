@@ -7,25 +7,6 @@ from telethon import events, Button
 import os, asyncio, re, json, time
 from Program import r
 from ABH import ABH
-# SETTINGS_FILE = "settings.json"
-# def load_settings():
-#     if not os.path.exists(SETTINGS_FILE):
-#         return {}
-#     with open(SETTINGS_FILE, "r", encoding="utf-8") as f:
-#         return json.load(f)
-# def save_settings(settings):
-#     with open(SETTINGS_FILE, "w", encoding="utf-8") as f:
-#         json.dump(settings, f, ensure_ascii=False, indent=2)
-# def set_group_toggle(chat_id, value: bool):
-#     settings = load_settings()
-#     chat_key = str(chat_id)
-#     if chat_key not in settings:
-#         settings[chat_key] = {}
-#     settings[chat_key]["t"] = value
-#     save_settings(settings)
-# def islock(chat_id) -> bool:
-#     settings = load_settings()
-#     return settings.get(str(chat_id), {}).get("t", False)
 restriction_end_times = {}
 @ABH.on(events.NewMessage(pattern=r"^التقييد (تفعيل|تعطيل)$"))
 async def toggle_feature(event):
@@ -42,8 +23,8 @@ async def restrict_user(event):
     if not event.is_group:
         return
     # if not islock(event.chat_id):
-    ءء = r.hget(str(event.chat_id), 't')
-    if not ءء:
+    status = r.hget(str(event.chat_id), 't')
+    if status != "True":
         await event.reply("هذه الميزة غير مفعلة في هذه المجموعة.")
         return
     chat = await event.get_chat()
@@ -385,3 +366,22 @@ async def test_broadcast(event):
         await event.reply("✔︙تم إرسال رسالة التجربة إلى قناة التبليغات بنجاح.")
     except Exception as e:
         await event.reply(f"︙حدث خطأ أثناء إرسال الرسالة: {e}")
+# SETTINGS_FILE = "settings.json"
+# def load_settings():
+#     if not os.path.exists(SETTINGS_FILE):
+#         return {}
+#     with open(SETTINGS_FILE, "r", encoding="utf-8") as f:
+#         return json.load(f)
+# def save_settings(settings):
+#     with open(SETTINGS_FILE, "w", encoding="utf-8") as f:
+#         json.dump(settings, f, ensure_ascii=False, indent=2)
+# def set_group_toggle(chat_id, value: bool):
+#     settings = load_settings()
+#     chat_key = str(chat_id)
+#     if chat_key not in settings:
+#         settings[chat_key] = {}
+#     settings[chat_key]["t"] = value
+#     save_settings(settings)
+# def islock(chat_id) -> bool:
+#     settings = load_settings()
+#     return settings.get(str(chat_id), {}).get("t", False)
