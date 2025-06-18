@@ -333,7 +333,7 @@ async def handler_res(event):
         print(hint_channel)
         await ABH.send_message(
             int(hint_channel),
-            f'المستخدم ( {s} ) ارسل كلمة غير مرغوب بها ( {x} ) \n   ايديه ( `{user_id}` ) تم تحذيره ومسحها \n تحذيراته ( 3\{warns[chat.id][user_id]} ) '
+                rf'المستخدم ( {s} ) ارسل كلمة غير مرغوب بها ( {x} ) \n   ايديه ( `{user_id}` ) تم تحذيره ومسحها \n تحذيراته ( 3\{warns[chat.id][user_id]} ) '
             )
         type = "تقييد بسبب الفشار"
         await botuse(type)
@@ -345,8 +345,9 @@ async def handler_res(event):
             if hint_channel:
                 await ABH.send_message(
                     int(hint_channel),
-                    f'تم تقييد المستخدم {name} \n ارسل كلمه ممنوعه ( {x} )'
-                        )
+                    f'تم تقييد المستخدم {name} \n ارسل كلمه ممنوعه ( ~{x}~ )',
+                    parse_mode="MarkdownV2"
+                )
             await asyncio.sleep(1200)
             await ABH(EditBannedRequest(chat.id, user_id, unrestrict_rights))
 @ABH.on(events.NewMessage(pattern='!تجربة'))
