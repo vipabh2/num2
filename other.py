@@ -346,7 +346,7 @@ async def show_assistants(event):
         return
     chat_id = str(event.chat_id)
     data = load_auth()
-    # msg = ''
+    msg = ''
     if chat_id in data and data[chat_id]:
         msg = "📋 **قائمة المعاونين في هذه المجموعة**\n\n"
         for idx, user_id in enumerate(data[chat_id], start=1):
