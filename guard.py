@@ -5,28 +5,29 @@ from other import is_assistant, botuse
 from Resources import group, mention, ment
 from telethon import events, Button
 import os, asyncio, re, json, time
+from Program import r
 from ABH import ABH
-SETTINGS_FILE = "settings.json"
-def load_settings():
-    if not os.path.exists(SETTINGS_FILE):
-        return {}
-    with open(SETTINGS_FILE, "r", encoding="utf-8") as f:
-        return json.load(f)
-def save_settings(settings):
-    with open(SETTINGS_FILE, "w", encoding="utf-8") as f:
-        json.dump(settings, f, ensure_ascii=False, indent=2)
-def set_group_toggle(chat_id, value: bool):
-    settings = load_settings()
-    chat_key = str(chat_id)
-    if chat_key not in settings:
-        settings[chat_key] = {}
-    settings[chat_key]["t"] = value
-    save_settings(settings)
-def get_group_toggle(chat_id) -> bool:
-    settings = load_settings()
-    return settings.get(str(chat_id), {}).get("t", False)
+# SETTINGS_FILE = "settings.json"
+# def load_settings():
+#     if not os.path.exists(SETTINGS_FILE):
+#         return {}
+#     with open(SETTINGS_FILE, "r", encoding="utf-8") as f:
+#         return json.load(f)
+# def save_settings(settings):
+#     with open(SETTINGS_FILE, "w", encoding="utf-8") as f:
+#         json.dump(settings, f, ensure_ascii=False, indent=2)
+# def set_group_toggle(chat_id, value: bool):
+#     settings = load_settings()
+#     chat_key = str(chat_id)
+#     if chat_key not in settings:
+#         settings[chat_key] = {}
+#     settings[chat_key]["t"] = value
+#     save_settings(settings)
+# def islock(chat_id) -> bool:
+#     settings = load_settings()
+#     return settings.get(str(chat_id), {}).get("t", False)
 restriction_end_times = {}
-@ABH.on(events.NewMessage(pattern=r"^(تفعيل|تعطيل) التقييد$"))
+@ABH.on(events.NewMessage(pattern=r"^التقييد (تفعيل|تعطيل)$"))
 async def toggle_feature(event):
     if not event.is_group:
         return
@@ -34,16 +35,15 @@ async def toggle_feature(event):
     value = True if action == "تفعيل" else False
     type = f"{value} التقييد"
     await botuse(type)
-    set_group_toggle(event.chat_id, value)
-    status = "مُفعّلة" if value else "معطّلة"
+    r.hset(str(event.chat_id), 't', str(value))
     await event.reply(f"تم {action} التقييد تدلل حبيبي")
 @ABH.on(events.NewMessage(pattern='^تقييد عام|مخفي قيده|مخفي قيدة$'))
 async def restrict_user(event):
     if not event.is_group:
         return
-    type = "تقييد عام"
-    await botuse(type)
-    if not get_group_toggle(event.chat_id):
+    # if not islock(event.chat_id):
+    ء = r.hget(str(event.chat_id), 't')
+    if not ء:
         await event.reply("هذه الميزة غير مفعلة في هذه المجموعة.")
         return
     chat = await event.get_chat()
@@ -75,6 +75,8 @@ async def restrict_user(event):
     )      
     try:
         await ABH(EditBannedRequest(channel=chat.id, participant=user_id, banned_rights=rights))
+        type = "تقييد عام"
+        await botuse(type)
         ء = await r.get_sender()
         rrr = await ment(ء)
         c = f"تم تقييد {rrr} لمدة 20 دقيقة."
@@ -320,14 +322,16 @@ warns = {}
 async def handler_res(event):
     if not event.is_group:
         return
-    if not get_group_toggle(event.chat_id):
+    # if not islock(event.chat_id):
+    #     return
+    ء = r.hget(str(event.chat_id), 't')
+    if not ء or not event.is_group:
         return
     if event.message.action or not event.raw_text:
         return 
-    if not event.is_group:
-        return
     message_text = event.raw_text.strip()
-    if contains_banned_word(message_text):
+    x = contains_banned_word(message_text)
+    if x:
         try:
             user_id = event.sender_id
             chat = await event.get_chat()
@@ -345,7 +349,7 @@ async def handler_res(event):
             hint_channel = await LC(chat_id)
             await ABH.send_message(
                 int(hint_channel),
-                f'المستخدم ( {s} ) ارسل كلمة غير مرغوب بها ( {message_text} ) \n   ايديه ( `{user_id}` ) تم تحذيره ومسحها \n تحذيراته ( 3\{warns[user_id][chat_id]} ) '
+                f'المستخدم ( {s} ) ارسل كلمة غير مرغوب بها ( {x} ) \n   ايديه ( `{user_id}` ) تم تحذيره ومسحها \n تحذيراته ( 3\{warns[user_id][chat_id]} ) '
                 )
             type = "تقييد بسبب الفشار"
             await botuse(type)
@@ -366,13 +370,12 @@ async def handler_res(event):
             await ABH(EditBannedRequest(chat.id, user_id, unrestrict_rights))
 @ABH.on(events.NewMessage(pattern='!تجربة'))
 async def test_broadcast(event):
-    if not event.is_group:
+    chat_id = event.chat_id
+    user_id = event.sender_id
+    if not is_assistant(chat_id, user_id) or not event.is_group:
         return
     type = "تجربة"
     await botuse(type)
-    if not event.is_group:
-        return await event.reply("↯︙هذا الأمر يعمل فقط داخل المجموعات.")
-    chat_id = event.chat_id
     hint_channel = await LC(chat_id)
     if not hint_channel:
         return await event.reply("↯︙لم يتم تعيين قناة تبليغات لهذه المجموعة بعد. استخدم الأمر 'اضف قناة التبليغات' أولاً.")
