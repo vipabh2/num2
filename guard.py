@@ -326,7 +326,7 @@ async def handler_res(event):
             warns[chat.id][user_id] = 0
         warns[chat.id][user_id] += 1
         s = await mention(event)
-        hint_channel = await LC(chat.id)
+        hint_channel = await LC(event.chat_id)
         print(hint_channel)
         await ABH.send_message(
             int(hint_channel),
