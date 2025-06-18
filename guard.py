@@ -212,7 +212,7 @@ async def no_callback(event):
 async def add_hintchannel(event):
     chat_id = event.chat_id
     user_id = event.sender_id
-    if not (await is_owner(chat_id, user_id) or user_id == 1910015590 or not event.is_group) or is_assistant(chat_id, user_id):
+    if not (await is_owner(chat_id, user_id) or user_id == 1910015590 or not event.is_group or is_assistant(chat_id, user_id)):
         return
     s = await event.get_sender()
     type = "اضافة قناة التبليغات"
@@ -235,7 +235,7 @@ async def add_hintchannel(event):
 async def show_hintchannel(event):
     chat_id = event.chat_id
     user_id = event.sender_id
-    if not (await is_owner(chat_id, user_id) or user_id == 1910015590 or not event.is_group) or is_assistant(chat_id, user_id):
+    if not (await is_owner(chat_id, user_id) or user_id == 1910015590 or not event.is_group or is_assistant(chat_id, user_id)):
         return
     type = "عرض قناة التبليغات"
     await botuse(type)
