@@ -227,8 +227,7 @@ async def add_hintchannel(event):
         await configc(chat_id, cid_text)
         await event.reply(f"︙تم حفظ قناة التبليغات لهذه المجموعة")
         n = await ment(s)
-
-        await chs(event, f'تم تعيين المحادثة الحاليه سجل ل بوت مخفي بواسطة ( {n} ) \n ايديه `{user_id}`')
+        await ABH.send_message(cid_text, f'تم تعيين المحادثة الحاليه سجل ل بوت مخفي بواسطة ( {n} ) \n ايديه `{user_id}`')
     else:
         await event.reply("︙المعرف غير صالح، تأكد أنه يبدأ بـ -100 ويتكون من أرقام فقط.")
 @ABH.on(events.NewMessage(pattern='اعرض قناة التبليغات'))
