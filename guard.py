@@ -320,24 +320,23 @@ async def handler_res(event):
             await event.delete()
             return
         await event.delete()
-        if user_id not in warns:
-            warns[user_id] = {}
-        if chat.id not in warns[user_id]:
-            warns[user_id][chat.id] = 0
-        warns[user_id][chat.id] += 1
+        if chat.id not in warns:
+            warns[chat.id] = {}
+        if user_id not in warns[chat.id]:
+            warns[chat.id][user_id] = 0
+        warns[chat.id][user_id] += 1
         s = await mention(event)
-        chat_id = event.chat_id
-        hint_channel = await LC(chat_id)
+        hint_channel = await LC(chat.id)
         await ABH.send_message(
             int(hint_channel),
-            f'المستخدم ( {s} ) ارسل كلمة غير مرغوب بها ( {x} ) \n   ايديه ( `{user_id}` ) تم تحذيره ومسحها \n تحذيراته ( 3\{warns[user_id][chat_id]} ) '
+            f'المستخدم ( {s} ) ارسل كلمة غير مرغوب بها ( {x} ) \n   ايديه ( `{user_id}` ) تم تحذيره ومسحها \n تحذيراته ( 3\{warns[chat.id][user_id]} ) '
             )
         type = "تقييد بسبب الفشار"
         await botuse(type)
-        if warns[user_id][chat.id] >= 3:
+        if warns[chat.id][user_id] >= 3:
             await ABH(EditBannedRequest(chat.id, user_id, restrict_rights))
             name = await mention(event)
-            warns[user_id][chat.id] = 0
+            warns[chat.id][user_id] = 0
             hint_channel = await LC(chat.id)
             if hint_channel:
                 await ABH.send_message(
