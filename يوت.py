@@ -6,16 +6,6 @@ from other import botuse, is_assistant
 from ABH import ABH
 import os
 import json
-def isc(chat_id: int, key: str) -> bool:
-    data = {}
-    if os.path.exists("locks.json"):
-        with open("locks.json", "r", encoding="utf-8") as f:
-            try:
-                data = json.load(f)
-            except json.JSONDecodeError:
-                return False
-    chat_id_str = str(chat_id)
-    return data.get(chat_id_str, {}).get(key, False)
 COOKIES_FILE = 'c.txt'
 if not os.path.exists("downloads"):
     os.makedirs("downloads")
@@ -42,17 +32,14 @@ YDL_OPTIONS = {
 }
 @ABH.on(events.NewMessage(pattern=r'^(يوت|yt) (.+)'))
 async def download_audio(event):
-    if not isc(event.chat_id, "يوتيوب"):
-        return
     query = event.pattern_match.group(2)
-    await event.reply(f'يجري البحث عن {query}')
     type = "يوت"
     await botuse(type)
     c = event.chat_id
     try:
         b = Button.url('CHANNEL', 'https://t.me/X04OU')
         for val in audio_cache.values():
-            if isinstance(val, dict) and val.get("query") == query:
+            if isinstance(val, dict) and query in val.get("queries", []):
                 await ABH.send_file(
                     c,
                     file=val["file_id"],
@@ -67,7 +54,8 @@ async def download_audio(event):
                     buttons=[b],
                     reply_to=event.message.id
                 )
-                return  
+                return
+        await event.reply(f'جاري البحث عن {query}')
         ydl = YoutubeDL(YDL_OPTIONS)
         search_result = await asyncio.to_thread(ydl.extract_info, f"ytsearch:{query}", download=False)
         if 'entries' not in search_result or not search_result['entries']:
@@ -75,8 +63,17 @@ async def download_audio(event):
             return
         video_info = search_result['entries'][0]
         video_id = video_info.get('id')
+        duration = video_info.get("duration", 0)
+        if duration > 2700:
+            await event.reply("❌ لا يمكن تحميل مقاطع أطول من 45 دقيقة.")
+            return
         if video_id in audio_cache:
             val = audio_cache[video_id]
+            if "queries" not in val:
+                val["queries"] = []
+            if query not in val["queries"]:
+                val["queries"].append(query)
+                save_cache()
             await ABH.send_file(
                 c,
                 file=val["file_id"],
@@ -92,9 +89,11 @@ async def download_audio(event):
                 reply_to=event.message.id
             )
             return
+        await event.reply(f'جاري تنزيل {query}')
         download_info = await asyncio.to_thread(ydl.extract_info, f"ytsearch:{query}", download=True)
         downloaded_video = download_info['entries'][0]
         file_path = ydl.prepare_filename(downloaded_video).replace(".webm", ".mp3").replace(".m4a", ".mp3")
+
         msg = await ABH.send_file(
             c,
             file=file_path,
@@ -113,7 +112,7 @@ async def download_audio(event):
             "file_id": msg.file.id,
             "title": downloaded_video.get("title"),
             "duration": downloaded_video.get("duration", 0),
-            "query": query
+            "queries": [query]
         }
         save_cache()
     except Exception as e:
@@ -158,4 +157,4 @@ async def handle_flag(event):
     data[event.chat_id][key] = value
     with open("locks.json", "w", encoding="utf-8") as f:
         json.dump(data, f, ensure_ascii=False, indent=4)
-    await event.reply(f"تم {value_str} ال{value} بحمده تعالى")
+    await event.reply(f"تم {value_str} ال{key} بحمده تعالى")
