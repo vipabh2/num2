@@ -42,13 +42,14 @@ YDL_OPTIONS = {
 }
 @ABH.on(events.NewMessage(pattern=r'^(يوت|yt) (.+)'))
 async def download_audio(event):
-    # if not isc(event.chat_id, "اليوتيوب"):
-    #     return
+    if not isc(event.chat_id, "اليوتيوب"):
+        return
+    query = event.pattern_match.group(2)
+    await event.reply(f'يجري البحث عن {query}')
     type = "يوت"
     await botuse(type)
     c = event.chat_id
     try:
-        query = event.pattern_match.group(2)
         b = Button.url('CHANNEL', 'https://t.me/X04OU')
         for val in audio_cache.values():
             if isinstance(val, dict) and val.get("query") == query:
