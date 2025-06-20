@@ -86,4 +86,4 @@ async def list_chats(event):
         name = info.get(b'name', b'Unknown').decode()
         typ = info.get(b'type', b'Unknown').decode()
         result += f"• {name} - `{cid}`\nالنوع: `{typ}`\n\n"
-    await ABH.send_message(wfffp, result)
+    await ABH.send_message(int(wfffp), result)
