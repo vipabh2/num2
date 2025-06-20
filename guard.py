@@ -12,7 +12,7 @@ restriction_end_times = {}
 async def toggle_feature(event):
     if not event.is_group:
         return
-    if is_assistant(event.chat_id, event.sender_id):
+    if not is_assistant(event.chat_id, event.sender_id):
         await chs(event, 'شني خالي كبينه انت مو معاون')
         return
     action = event.pattern_match.group(1)
