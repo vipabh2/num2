@@ -11,7 +11,7 @@ from ABH import ABH
 async def restrict_user(event):
     if not event.is_group:
         return
-    lock_key = f"lock:{event.chat_id}:اليوتيوب"
+    lock_key = f"lock:{event.chat_id}:التقييد"
     is_locked = r.get(lock_key)
     if is_locked == "1":
         await chs(event, 'التقييد غير مفعل في هذه المجموعه🙄')
