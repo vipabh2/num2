@@ -70,7 +70,7 @@ async def handle_flag(event):
     if key not in keys:
         return
     value_str = event.pattern_match.group(2)
-    value = "1" if value_str == "تفعيل" else "0"
+    value = "True" if value_str == "تفعيل" else "False"
     redis_key = f"lock:{event.chat_id}:{key}"
     r.set(redis_key, value)
-    await event.reply(f"تم {value_str} ال{key} بحمده تعالى ")
+    await event.reply(f"تم {value_str} ال{key} بحمده تعالى")
