@@ -5,9 +5,9 @@ from telethon.tl.functions.channels import EditAdminRequest
 from telethon.tl.types import ChannelParticipantAdmin
 from telethon.tl.types import ChatAdminRights
 from top import points, add_user, save_points
+from Program import CHANNEL_KEY, chs
 from telethon import events, Button
 from Resources import wfffp
-from Program import CHANNEL_KEY 
 from other import botuse
 from ABH import ABH
 async def get_owner(event):
@@ -53,14 +53,17 @@ async def change_own_rank(event):
     type = "تغيير لقبي"
     await botuse(type)
     new_rank = event.pattern_match.group(1)
+    if not new_rank:
+        await chs(event, "اكتب اللقب وي الامر ك `تغيير لقبي ` + لقب.")
+        return
     user_id = event.sender_id
     chat = await event.get_chat()
     me = await event.client.get_permissions(chat.id, 'me')
     if not me.is_admin or not me.add_admins:
-        await event.reply(" لا أمتلك صلاحية تعديل المشرفين.")
+        await chs(event, " لا أمتلك صلاحية تعديل المشرفين.")
         return
     try:
-        participant = await event.client(GetParticipantRequest(chat.id, user_id))
+        pp = await event.client(GetParticipantRequest(chat.id, user_id))
     except Exception as e:
         await ABH.send_message(wfffp, f"{e}")
         await event.reply(f"والله مابيه حيل اعذرني يخوي")
@@ -69,19 +72,18 @@ async def change_own_rank(event):
     if user_id == o.id:
         await event.reply('هاي عود انت المالك')
         return
-    admin_rights = participant.participant.admin_rights
+    admin_right = pp.participant.admin_rights
     try:
         await event.client(EditAdminRequest(
             channel=chat.id,
             user_id=user_id,
-            admin_rights=admin_rights,
+            admin_rights=admin_right,
             rank=new_rank
         ))
-        buttons = Button.url('🫆', url=f'https://t.me/{CHANNEL_KEY}')
-        await ABH.send_message(chat.id, f"تم تغيير لقبك الى {new_rank}", reply_to=event.id, )
+        await chs(chat.id, f"تم تغيير لقبك الى `{new_rank}`", )
     except Exception as e:
         await ABH.send_message(wfffp, f"{e}")
-        await event.reply(f"والله مابيه حيل اعذرني يخوي")
+        await chs(event, f"والله مابيه حيل اعذرني يخوي")
 promot = {}
 session = {}
 @ABH.on(events.NewMessage(pattern='^ترقية$'))
@@ -96,11 +98,11 @@ async def promoteADMIN(event):
     o = await get_owner(event)
     uid = event.sender_id
     if uid != o.id and uid != 1910015590 and not isc:
-        await event.reply('الامر يخص المالك فقط وبعض المشرفين')
+        await chs(event, 'الامر يخص المالك فقط وبعض المشرفين')
         return
     r = await event.get_reply_message()
     if not r:
-        await event.reply('لازم تسوي رد لشخص علمود ارفعه')
+        await chs(event, 'لازم تسوي رد لشخص علمود ارفعه')
         return
     chat_id = event.chat_id
     if chat_id not in promot:
