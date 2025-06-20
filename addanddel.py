@@ -86,7 +86,7 @@ async def change_own_rank(event):
             admin_rights=admin_right,
             rank=new_rank
         ))
-        await chs(chat.id, f"تم تغيير لقبك الى `{new_rank}`")
+        await chs(event, f"تم تغيير لقبك الى `{new_rank}`")
     except Exception as e:
         await ABH.send_message(wfffp, f"خطأ عند تعديل اللقب: {e}")
         await chs(event, "والله مابيه حيل اعذرني يخوي")
