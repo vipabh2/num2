@@ -80,9 +80,8 @@ async def list_chats(event):
         try:
             chat = await event.client.get_entity(int(cid))
             name = chat.first_name if hasattr(chat, 'first_name') else chat.title
-            typ = "private" if event.is_private else "group" if event.is_group else "unknown"
         except Exception:
             name = "غير معروف"
             typ = "غير معروف"
-        result += f"• {name} - `{cid}`\nالنوع: `{typ}`\n\n"
+        result += f"• {name} - `{cid}`\n\n"
     await event.reply(result)
