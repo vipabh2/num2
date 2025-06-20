@@ -12,7 +12,7 @@ restriction_end_times = {}
 async def restrict_user(event):
     if not event.is_group:
         return
-    lock_key = f"lock:{event.chat_id}:اليوتيوب"
+    lock_key = f"lock:{event.chat_id}:تقييد"
     print(f"Lock key: {lock_key}")
     x = redas.get(lock_key) == "True"
     print(f"Is restriction active: {x}")
