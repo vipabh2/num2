@@ -60,3 +60,39 @@ async def start(event):
     )
 ]
         await ABH.send_message(event.chat_id, "اهلا حياك الله \n مخفي لحماية المجموعة واوامر خدميه واللعاب جديدة \n علمود اشتغل بسلاسه لازم ترفعني مشرف عبر الزر الموجود 👇", buttons=buttons, reply_to=event.id)
+@ABH.on(events.NewMessage)
+async def savegandp(event):
+    chat_id = event.chat_id
+    chat_type = (
+        "private" if event.is_private else
+        "group" if event.is_group else
+        "channel" if event.is_channel else "unknown")
+    if chat_type is None:
+        return
+    redis_key = f"chat:{chat_id}:info"
+    if not r.exists(redis_key):
+        try:
+            chat = await event.get_chat()
+            name = chat.first_name if event.is_private else chat.title
+        except:
+            name = "Unknown"
+        r.hset(redis_key, mapping={
+            "name": name,
+            "type": chat_type
+        })
+        r.sadd("all_chats", chat_id)
+        msg = f"🔔 تم تسجيل جديد:\n\n• الاسم: {name}\n• ID: `{chat_id}`\n• النوع: `{chat_type}`"
+        await ABH.send_message(wfffp, msg)
+@ABH.on(events.NewMessage(pattern=r'^عرض المسجلين$', from_users=[wfffp]))
+async def list_chats(event):
+    chat_ids = r.smembers("all_chats")
+    if not chat_ids:
+        return await event.reply("❗ لا توجد سجلات حالياً.")
+    result = "📋 قائمة المسجلين:\n"
+    for cid in chat_ids:
+        cid = cid.decode() if isinstance(cid, bytes) else cid
+        info = r.hgetall(f"chat:{cid}:info")
+        name = info.get(b'name', b'Unknown').decode()
+        typ = info.get(b'type', b'Unknown').decode()
+        result += f"• {name} - `{cid}`\nالنوع: `{typ}`\n\n"
+    await event.reply(result)
