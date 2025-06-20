@@ -51,6 +51,9 @@ async def change_own_rank(event):
     if not event.is_group:
         return
     await botuse("تغيير لقبي")
+    user_id = event.sender_id
+    chat = await event.get_chat()
+    me = await event.client.get_permissions(chat.id, 'me')
     if not me.is_admin or not me.add_admins:
         await chs(event, " لا أمتلك صلاحية تعديل المشرفين.")
         return
@@ -65,9 +68,6 @@ async def change_own_rank(event):
     if len(new_rank) > 14:
         await chs(event, "اللقب لازم يكون اقل من 14 حرف.")
         return
-    user_id = event.sender_id
-    chat = await event.get_chat()
-    me = await event.client.get_permissions(chat.id, 'me')
     try:
         pp = await event.client(GetParticipantRequest(chat.id, user_id))
         participant = pp.participant
