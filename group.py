@@ -99,6 +99,7 @@ async def today(event):
     await event.reply(f" الهجري: \n {hd_str} \n الميلادي: \n {t}")
 @ABH.on(events.NewMessage(pattern=r'كشف ايدي (\d+)'))
 async def link(event):
+    global user, uid
     type = "كشف ايدي"
     await botuse(type)
     if not event.is_group:
