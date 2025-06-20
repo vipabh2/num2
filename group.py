@@ -113,7 +113,7 @@ async def link(event):
         user = await event.client.get_entity(int(user_id))
     except Exception as e:
         return await event.reply(f"لا يوجد حساب بهذا الآيدي...")
-    tag = user.first_name.replace("\u2060", "") if user.first_name else user.username
+    tag = user.first_name if user.first_name else '....'
     button = KeyboardButtonCallback("تغيير الئ رابط", b"recgange")
     await event.reply(f"⌔︙[{tag}](tg://user?id={user.id})", buttons=[button])
 @ABH.on(events.CallbackQuery(data=b"recgange"))
