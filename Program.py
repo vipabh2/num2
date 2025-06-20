@@ -65,7 +65,7 @@ async def handle_flag(event):
     if not is_assistant(event.chat_id, event.sender_id):
         await chs(event, 'شني كبينه حبيبي؟ انت مو معاون😏')
         return
-    keys = ['التقييد', 'اليوتيوب']
+    keys = ['تقييد', 'يوتيوب']
     key = event.pattern_match.group(1)
     if key not in keys:
         return
