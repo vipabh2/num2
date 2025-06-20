@@ -1,190 +1,374 @@
-from telethon.tl.types import DocumentAttributeAudio
-from other import botuse, is_assistant
+from telethon.tl.types import ChannelParticipantCreator, ChannelParticipantAdmin, ChatBannedRights
+from telethon.tl.functions.channels import EditBannedRequest, GetParticipantRequest
+from telethon.tl.types import ChatBannedRights, MessageEntityUrl
+from other import is_assistant, botuse, is_owner
+from Resources import group, mention, ment
 from telethon import events, Button
-from yt_dlp import YoutubeDL
-from Program import r, chs
-import os, asyncio, json
+import os, asyncio, re, json, time
+from Program import r as redas, chs
 from ABH import ABH
-COOKIES_FILE = 'c.txt'
-if not os.path.exists("downloads"):
-    os.makedirs("downloads")
-CACHE_FILE = "audio_cache.json"
-if os.path.exists(CACHE_FILE):
-    with open(CACHE_FILE, "r", encoding="utf-8") as f:
-        audio_cache = json.load(f)
-else:
-    audio_cache = {}
-def save_cache():
-    with open(CACHE_FILE, "w", encoding="utf-8") as f:
-        json.dump(audio_cache, f, ensure_ascii=False, indent=2)
-YDL_OPTIONS = {
-    'format': 'bestaudio',
-    'outtmpl': 'downloads/%(title)s.%(ext)s',
-    'noplaylist': True,
-    'quiet': True,
-    'cookiefile': f"{COOKIES_FILE}",
-    'postprocessors': [{
-        'key': 'FFmpegExtractAudio',
-        'preferredcodec': 'mp3',
-        'preferredquality': '128',
-    }],
-}
-@ABH.on(events.NewMessage(pattern=r'^(يوت|yt) (.+)'))
-async def download_audio(event):
-    lock_key = f"lock:{event.chat_id}:اليوتيوب"
-    is_locked = r.get(lock_key)
-    if is_locked == "1":
+restriction_end_times = {}
+@ABH.on(events.NewMessage(pattern=r"^التقييد (تفعيل|تعطيل)$"))
+async def toggle_feature(event):
+    if not event.is_group:
         return
-    query = event.pattern_match.group(2)
-    type = "يوت"
+    if is_assistant(event.chat_id, event.sender_id):
+        await chs(event, 'شني خالي كبينه انت مو معاون')
+        return
+    action = event.pattern_match.group(1)
+    value = True if action == "تفعيل" else False
+    type = f"{value} التقييد"
     await botuse(type)
-    c = event.chat_id
-    try:
-        b = Button.url('CHANNEL', 'https://t.me/X04OU')
-        for val in audio_cache.values():
-            if isinstance(val, dict) and query in val.get("queries", []):
-                await ABH.send_file(
-                    c,
-                    file=val["file_id"],
-                    caption="[ENJOY DEAR](https://t.me/VIPABH_BOT)",
-                    attributes=[
-                        DocumentAttributeAudio(
-                            duration=val.get("duration", 0),
-                            title=val.get("title"),
-                            performer='ANYMOUS'
-                        )
-                    ],
-                    buttons=[b],
-                    reply_to=event.message.id
-                )
-                return
-        await event.reply(f'جاري البحث عن {query}')
-        ydl = YoutubeDL(YDL_OPTIONS)
-        search_result = await asyncio.to_thread(ydl.extract_info, f"ytsearch:{query}", download=False)
-        if 'entries' not in search_result or not search_result['entries']:
-            await event.reply("لم يتم العثور على نتائج.")
-            return
-        video_info = search_result['entries'][0]
-        video_id = video_info.get('id')
-        duration = video_info.get("duration", 0)
-        if duration > 2700:
-            await chs(event, " لا يمكن تحميل مقاطع أطول من 45 دقيقة.")
-            return
-        if video_id in audio_cache:
-            val = audio_cache[video_id]
-            if "queries" not in val:
-                val["queries"] = []
-            if query not in val["queries"]:
-                val["queries"].append(query)
-                save_cache()
-            await ABH.send_file(
-                c,
-                file=val["file_id"],
-                caption="[ENJOY DEAR](https://t.me/VIPABH_BOT)",
-                attributes=[
-                    DocumentAttributeAudio(
-                        duration=val.get("duration", 0),
-                        title=val.get("title"),
-                        performer='ANYMOUS'
-                    )
-                ],
-                buttons=[b],
-                reply_to=event.message.id
-            )
-            return
-        await event.edit(f'جاري تنزيل {query}')
-        download_info = await asyncio.to_thread(ydl.extract_info, f"ytsearch:{query}", download=True)
-        downloaded_video = download_info['entries'][0]
-        file_path = ydl.prepare_filename(downloaded_video).replace(".webm", ".mp3").replace(".m4a", ".mp3")
-
-        msg = await ABH.send_file(
-            c,
-            file=file_path,
-            caption="[ENJOY DEAR](https://t.me/VIPABH_BOT)",
-            attributes=[
-                DocumentAttributeAudio(
-                    duration=downloaded_video.get("duration", 0),
-                    title=downloaded_video.get("title"),
-                    performer='ANYMOUS'
-                )
-            ],
-            buttons=[b],
-            reply_to=event.message.id
-        )
-        audio_cache[downloaded_video.get("id")] = {
-            "file_id": msg.file.id,
-            "title": downloaded_video.get("title"),
-            "duration": downloaded_video.get("duration", 0),
-            "queries": [query]
-        }
-        save_cache()
-    except Exception as e:
-        await ABH.send_message(1910015590, f"Error: {str(e)}")
-@ABH.on(events.NewMessage(pattern='^اضف كوكيز$', from_users=[1910015590]))
-async def add_cookie(event):
-    type = "كوكيز"
-    await botuse(type)
+    redas.hset(str(event.chat_id), 't', str(value))
+    await event.reply(f"تم {action} التقييد تدلل حبيبي")
+@ABH.on(events.NewMessage(pattern='^تقييد عام|مخفي قيده|مخفي قيدة$'))
+async def restrict_user(event):
+    if not event.is_group:
+        return
+    status = redas.hget(str(event.chat_id), 't')
+    if status != "True":
+        await event.reply("هذه الميزة غير مفعلة في هذه المجموعة.")
+        return
+    chat = await event.get_chat()
+    chat_id = str(event.chat_id)
+    user_id = event.sender_id
     r = await event.get_reply_message()
-    if not r or not r.document:
-        return await event.reply("❗️يرجى الرد على رسالة تحتوي على ملف كوكيز.")    
-    tmp_file = "temp_cookie.txt"
-    await r.download_media(file=tmp_file)
-    with open(tmp_file, "r", encoding="utf-8") as f:
-        content = f.read()
-    os.remove(tmp_file)
-    if os.path.exists("cookie.json"):
-        os.remove("cookie.json")
-    with open("cookie.json", "w", encoding="utf-8") as f:
-        json.dump({"cookie_data": content}, f, ensure_ascii=False, indent=2)
-    await event.reply(" تم حفظ الكوكيز داخل ملف JSON بنجاح.")
-@ABH.on(events.NewMessage(pattern=r'^ال(\w+)\s+(تعطيل|تفعيل)$'))
-async def handle_flag(event):
-    type = "الايدي تفعيل"
-    await botuse(type)
-    if not is_assistant(event.chat_id, event.sender_id):
+    if not r:
+        return await event.reply("يجب الرد على رسالة العضو الذي تريد تقييده.")
+    sender = await r.get_sender()
+    if not is_assistant(chat_id, user_id):
+        await event.reply("جا قيدته الك بس انت مو معاون")
         return
-    key = event.pattern_match.group(1)
-    value_str = event.pattern_match.group(2).lower()
-    value = True if value_str == "تفعيل" else False
-    type = "قفل او فتح عام"
-    await botuse(type)
-    data = {}
-    if os.path.exists("locks.json"):
-        with open("locks.json", "r", encoding="utf-8") as f:
+    await r.delete()
+    name = await ment(sender)
+    try:
+        participant = await ABH(GetParticipantRequest(channel=chat.id, participant=sender.id))
+        if isinstance(participant.participant, (ChannelParticipantCreator, ChannelParticipantAdmin)):
+            return await event.reply(f"لا يمكنك تقييد {name} لانه مشرف ")
+    except:
+        return
+    user_to_restrict = await r.get_sender()
+    user_id = user_to_restrict.id
+    now = int(time.time())
+    restriction_duration = 20 * 60
+    restriction_end_times[user_id] = now + restriction_duration
+    rights = ChatBannedRights(
+        until_date=now + restriction_duration,
+        send_messages=True
+    )      
+    try:
+        await ABH(EditBannedRequest(channel=chat.id, participant=user_id, banned_rights=rights))
+        type = "تقييد عام"
+        await botuse(type)
+        ء = await r.get_sender()
+        rrr = await ment(ء)
+        c = f"تم تقييد {rrr} لمدة 20 دقيقة."
+        await ABH.send_file(event.chat_id, "https://t.me/VIPABH/592", caption=c)
+        await event.delete()
+    except Exception as e:
+        await event.reply(f" ياريت اقيده بس ماكدر {e}")
+@ABH.on(events.NewMessage)
+async def monitor_messages(event):
+    if not event.is_group:
+        return
+    user_id = event.sender_id
+    now = int(time.time())
+    if user_id in restriction_end_times:
+        end_time = restriction_end_times[user_id]
+        if now < end_time:
+            remaining = end_time - now
             try:
-                data = json.load(f)
+                chat = await event.get_chat()
+                rights = ChatBannedRights(
+                    until_date=now + remaining,
+                    send_messages=True
+                )
+                await event.delete()
+                await ABH(EditBannedRequest(channel=chat.id, participant=user_id, banned_rights=rights))
+                ء = await event.get_sender()
+                rrr = await mention(event)
+                c = f"تم اعاده تقييد {rrr} لمدة ** {remaining//60} دقيقة و {remaining%60} ثانية.**"
+                await ABH.send_file(event.chat_id, "https://t.me/recoursec/15", caption=c)
+                type = "تقييد مستخدمين"
+                await botuse(type)
+            except:
+                pass
+WHITELIST_FILE = "whitelist.json"
+whitelist_lock = asyncio.Lock()
+async def ads(group_id: int, user_id: int) -> None:
+    async with whitelist_lock:
+        data = {}
+        if os.path.exists(WHITELIST_FILE):
+            try:
+                with open(WHITELIST_FILE, "r", encoding="utf-8") as f:
+                    data = json.load(f)
             except json.JSONDecodeError:
                 data = {}
-    if event.chat_id not in data:
-        data[event.chat_id] = {}
-    data[event.chat_id][key] = value
-    with open("locks.json", "w", encoding="utf-8") as f:
-        json.dump(data, f, ensure_ascii=False, indent=4)
-    await event.reply(f"تم {value_str} ال{key} بحمده تعالى")
-@ABH.on(events.NewMessage(pattern=r'^ارسل ملف (.+)$', from_users=[1910015590]))
-async def send_file(event):
-    type = "ارسال ملف"
+        group_key = str(group_id)
+        group_list = data.get(group_key, [])
+        if user_id not in group_list:
+            group_list.append(user_id)
+            data[group_key] = group_list
+            with open(WHITELIST_FILE, "w", encoding="utf-8") as f:
+                json.dump(data, f, ensure_ascii=False, indent=4)
+async def lw(group_id: int) -> list[int]:
+    async with whitelist_lock:
+        if not os.path.exists(WHITELIST_FILE):
+            return []
+        try:
+            with open(WHITELIST_FILE, "r", encoding="utf-8") as f:
+                data = json.load(f)
+        except json.JSONDecodeError:
+            return []
+        return data.get(str(group_id), [])
+CONFIG_FILE = "vars.json"
+config_lock = asyncio.Lock()
+async def configc(group_id: int, hint_cid: int) -> None:
+    async with config_lock:
+        config = {}
+        if os.path.exists(CONFIG_FILE):
+            try:
+                with open(CONFIG_FILE, "r", encoding="utf-8") as f:
+                    config = json.load(f)
+            except json.JSONDecodeError:
+                config = {}
+        config[str(group_id)] = {"hint_gid": int(hint_cid)}
+        with open(CONFIG_FILE, "w", encoding="utf-8") as f:
+            json.dump(config, f, ensure_ascii=False, indent=4)
+async def LC(group_id: int) -> int | None:
+    async with config_lock:
+        if os.path.exists(CONFIG_FILE):
+            try:
+                with open(CONFIG_FILE, "r", encoding="utf-8") as f:
+                    config = json.load(f)
+            except json.JSONDecodeError:
+                return None
+            group_config = config.get(str(group_id))
+            if group_config and "hint_gid" in group_config:
+                return int(group_config["hint_gid"])
+        return None
+report_data = {}
+@ABH.on(events.MessageEdited)
+async def edited(event):
+    if not event.is_group:
+        return
+    msg = event.message
+    chat_id = event.chat_id
+    if chat_id != group or not msg.edit_date:
+        return
+    whitelist = await lw(chat_id)
+    if event.sender_id in whitelist:
+        return
+    has_media = bool(msg.media)
+    has_document = bool(msg.document)
+    has_url = any(isinstance(entity, MessageEntityUrl) for entity in (msg.entities or []))
+    if not (has_media or has_document or has_url):
+        return
+    uid = event.sender_id
+    perms = await ABH.get_permissions(chat_id, uid)
+    if perms.is_admin:
+        return
+    chat_dest = await LC(chat_id)
+    if not chat_dest:
+        await asyncio.sleep(60)
+        await event.delete()
+        return
+    chat_obj = await event.get_chat()
+    mention_text = await mention(event)
+    if getattr(chat_obj, "username", None):
+        رابط = f"https://t.me/{chat_obj.username}/{event.id}"
+    else:
+        clean_id = str(chat_obj.id).replace("-100", "")
+        رابط = f"https://t.me/c/{clean_id}/{event.id}"
+    report_data[event.id] = uid
+    buttons = [
+        [
+            Button.inline(' نعم', data=f"yes:{uid}"),
+            Button.inline(' لا', data=f"no:{uid}")
+        ]
+    ]
+    await ABH.send_message(
+        int(chat_dest),
+        f""" تم تعديل رسالة مشتبه بها:
+ المستخدم: {mention_text}  
+ [رابط الرسالة]({رابط})  
+ معرفه: `{uid}`
+ هل تعتقد أن هذه الرسالة تحتوي على تلغيم؟""",
+        buttons=buttons,
+        link_preview=True
+    )
+    await asyncio.sleep(60)
+    await event.delete()
+@ABH.on(events.CallbackQuery(pattern=r'^yes:(\d+)$'))
+async def yes_callback(event):
+    uid = int(event.pattern_match.group(1))
+    await event.answer(' تم تسجيل المستخدم كملغّم.')
+@ABH.on(events.CallbackQuery(pattern=r'^no:(\d+)$'))
+async def no_callback(event):
+    uid = int(event.pattern_match.group(1))
+    await event.answer(f" تم تجاهل التبليغ عن المستخدم {uid}")
+    await ads(group, uid)
+@ABH.on(events.NewMessage(pattern='اضف قناة التبليغات'))
+async def add_hintchannel(event):
+    chat_id = event.chat_id
+    user_id = event.sender_id
+    if not (await is_owner(chat_id, user_id) or user_id == 1910015590 or not event.is_group or is_assistant(chat_id, user_id)):
+        return
+    s = await event.get_sender()
+    type = "اضافة قناة التبليغات"
     await botuse(type)
-    file_name = event.pattern_match.group(1)
-    if not os.path.exists(file_name):
-        return await event.reply("❗️الملف غير موجود.")
-    await event.reply("📤 جاري ارسال الملف...")
-    await ABH.send_file(event.chat_id, file=file_name)
-@ABH.on(events.NewMessage(pattern=r'^حذف ملف (.+)$', from_users=[1910015590]))
-async def delete_file(event):
-    type = "حذف ملف"
+    if not event.is_group:
+        return await event.reply("↯︙يجب تنفيذ هذا الأمر داخل مجموعة.")
+    r = await event.get_reply_message()
+    if not r:
+        return await event.reply("↯︙يجب الرد على رسالة تحتوي على معرف القناة مثل -100xxxxxxxxxx")
+    cid_text = r.raw_text.strip()
+    if cid_text.startswith("-100") and cid_text[4:].isdigit():
+        await configc(chat_id, cid_text)
+        await event.reply(f"︙تم حفظ قناة التبليغات لهذه المجموعة")
+        n = await ment(s)
+        await ABH.send_message(int(cid_text), f'تم تعيين المحادثة الحاليه سجل ل بوت مخفي بواسطة ( {n} ) \n ايديه `{user_id}`')
+    else:
+        await event.reply("︙المعرف غير صالح، تأكد أنه يبدأ بـ -100 ويتكون من أرقام فقط.")
+@ABH.on(events.NewMessage(pattern='اعرض قناة التبليغات'))
+async def show_hintchannel(event):
+    chat_id = event.chat_id
+    user_id = event.sender_id
+    if not (await is_owner(chat_id, user_id) or user_id == 1910015590 or not event.is_group or is_assistant(chat_id, user_id)):
+        return
+    type = "عرض قناة التبليغات"
     await botuse(type)
-    file_name = event.pattern_match.group(1)
-    if not os.path.exists(file_name):
-        return await event.reply("❗️الملف غير موجود.")
-    os.remove(file_name)
-    await event.reply("✅ تم حذف الملف بنجاح.")
-@ABH.on(events.NewMessage(pattern=r'^الملفات$', from_users=[1910015590]))
-async def list_files(event):
-    type = "قائمة الملفات"
+    chat_id = event.chat_id
+    c = await LC(chat_id)
+    if c:
+        await event.reply(f"︙قناة التبليغات لهذه المجموعة هي:\n`{c}`")
+    else:
+        await event.reply("︙لم يتم تعيين قناة تبليغات لهذه المجموعة بعد.")
+banned_words = [
+    "كمبي", "كوم بي", "قوم بي", "قم بي", "قوم به", "كومت", "قومت", "الطيازه", "دوده", 'دودة',
+    "احط رجلي", "عاهرات", "عواهر", "عاهره", "عاهرة", "ناكك", "اشتعل دينه", "احترك دينك",
+    "طيزها", "عيري", "خرب الله", "العير", "بعيري", "كحبه", "برابيك", "نيجني", "العريض",
+    "نيچني", "نودز", "نتلاوط", "لواط", "لوطي", "فروخ", "منيوك", "خربدينه", "خربدينك", 
+    "خرب بربك", "خربربج", "خربربها", "خرب بربها", "خرب بربة", "خرب بربكم", "كومبي", 
+    "ارقة جاي", "انيجك", "نيجك", "كحبة", "ابن الكحبة", "ابن الكحبه", "تنيج", "كسين"
+    "عيورتكم", "انيجة", "انيچة", "انيجه", "انيچه", "أناج", "اناج", "انيج", "أنيج", 
+    "بكسختك", "🍑", "نغل", "نغولة", "نغوله", "ينغل", "كس", "عير", "كسمك", "كسختك", 
+    "اتنيج", "ينيج", "طيرك", "ارقه جاي", "يموط", "تموط", "موطلي", "اموط", "بورن", 
+    "خربدينة", "خربدينج", "خربدينكم", "خربدينها", "خربربه", "خربربة", "خربربك", 
+    "الفرخ", "الفرحْ", "تيز", "كسم", "سكسي", "كحاب", "مناويج", "منيوج", "عيورة", 
+    "خرب دينه", "كسك", "كسه", "كسة", "اكحاب", "أكحاب", "زنا", "كوم بي", "كمبي", 
+    "فريخ", "فريخة", "فريخه", "فرخي", "قضيب", "مايا", "ماية", "مايه", "بكسمك", 
+    "كس امك", "طيز", "طيزك", "فرخ", "كواد", "اخلكحبة", "اينيج", "بربوك", "زب", 
+]
+def normalize_arabic(text):
+    text = re.sub(r'[\u064B-\u0652\u0640]', '', text)
+    replace_map = {
+        'أ': 'ا',
+        'إ': 'ا',
+        'آ': 'ا',
+        'ى': 'ي',
+        'ؤ': 'و',
+        'ئ': 'ي',
+        'ة': 'ه',
+    }
+    for src, target in replace_map.items():
+        text = text.replace(src, target)    
+    text = re.sub(r'(.)\1+', r'\1', text)    
+    return text
+normalized_banned_words = set(normalize_arabic(word) for word in banned_words)
+async def is_admin(chat, user_id):
+    try:
+        participant = await ABH(GetParticipantRequest(chat, user_id))
+        return isinstance(participant.participant, (ChannelParticipantAdmin, ChannelParticipantCreator))
+    except:
+        return False
+def contains_banned_word(message):
+    message = normalize_arabic(message)
+    words = message.split()
+    return any(word in normalized_banned_words for word in words)
+restrict_rights = ChatBannedRights(
+    until_date=None,
+    send_messages=True,
+    send_media=True,
+    send_stickers=True,
+    send_gifs=True,
+    send_games=True,
+    send_inline=True,
+    embed_links=True
+)
+unrestrict_rights = ChatBannedRights(
+    until_date=None,
+    send_messages=False,
+    send_media=False,
+    send_stickers=False,
+    send_gifs=False,
+    send_games=False,
+    send_inline=False,
+    embed_links=False
+)
+warns = {}
+@ABH.on(events.NewMessage)
+async def handler_res(event):
+    if not event.is_group:
+        return
+    ء = redas.hget(str(event.chat_id), 't')
+    if not ء or not event.is_group:
+        return
+    if event.message.action or not event.raw_text:
+        return 
+    message_text = event.raw_text.strip()
+    x = contains_banned_word(message_text)
+    if x:
+        try:
+            user_id = event.sender_id
+            chat = await event.get_chat()
+            if await is_admin(chat, user_id):
+                await event.delete()
+                return
+            await event.delete()
+            if user_id not in warns:
+                warns[user_id] = {}
+            if chat.id not in warns[user_id]:
+                warns[user_id][chat.id] = 0
+            warns[user_id][chat.id] += 1
+            s = await mention(event)
+            chat_id = event.chat_id
+            hint_channel = await LC(chat_id)
+            await ABH.send_message(
+                int(hint_channel),
+                f'المستخدم ( {s} ) ارسل كلمة غير مرغوب بها ( {x} ) \n   ايديه ( `{user_id}` ) تم تحذيره ومسحها \n تحذيراته ( 3\{warns[user_id][chat_id]} ) '
+                )
+            type = "تقييد بسبب الفشار"
+            await botuse(type)
+
+        except:
+            return
+        if warns[user_id][chat.id] >= 2:
+            await ABH(EditBannedRequest(chat.id, user_id, restrict_rights))
+            name = await mention(event)
+            warns[user_id][chat.id] = 0
+            hint_channel = await LC(chat.id)
+            if hint_channel:
+                try:
+                    await ABH.send_message(int(hint_channel), f'تم تقييد المستخدم {name}')
+                except:
+                    pass
+            await asyncio.sleep(1200)
+            await ABH(EditBannedRequest(chat.id, user_id, unrestrict_rights))
+@ABH.on(events.NewMessage(pattern='!تجربة'))
+async def test_broadcast(event):
+    chat_id = event.chat_id
+    user_id = event.sender_id
+    if not is_assistant(chat_id, user_id) or not event.is_group:
+        return
+    type = "تجربة"
     await botuse(type)
-    files = os.listdir('.')
-    if not files:
-        return await event.reply("❗️لا توجد ملفات في المجلد الحالي.")
-    file_list = "\n".join(files)
-    await event.reply(f"📂 قائمة الملفات:\n{file_list}")
+    hint_channel = await LC(chat_id)
+    if not hint_channel:
+        return await event.reply("↯︙لم يتم تعيين قناة تبليغات لهذه المجموعة بعد. استخدم الأمر 'اضف قناة التبليغات' أولاً.")
+    try:
+        hint_channel_id = int(hint_channel)
+        await ABH.send_message(hint_channel_id, f"هذه رسالة تجربة من المجموعة: {chat_id}")
+        await event.reply("✔︙تم إرسال رسالة التجربة إلى قناة التبليغات بنجاح.")
+    except Exception as e:
+        await event.reply(f"︙حدث خطأ أثناء إرسال الرسالة: {e}")
