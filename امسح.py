@@ -27,13 +27,9 @@ async def delete_media(chat_id, event=None):
             if event:
                 await chs(event, f'تم حذف {deleted_count} ب نجاح 🗑️')
             else:
-                await ABH.send_message(int(chat_id), f'تم حذف {deleted_count} من الوسائط تلقائيًا 🧹 (وصلنا 150)')
-        except Exception as e:
-            print(f"Error deleting messages: {e}")
+                await ABH.send_message(int(chat_id), f'تم حذف {deleted_count} من الوسائط تلقائيًا 🧹')
+        except:
             return
-    else:
-        if event:
-            await event.reply("لا توجد وسائط لحذفها.")        
 @ABH.on(events.NewMessage)
 async def store_media_messages(event):
     if not event.is_group:
@@ -49,11 +45,12 @@ async def store_media_messages(event):
         if msg.id not in media_messages[chat_id]:
             media_messages[chat_id].append(msg.id)
             save_media_messages()
-            if len(media_messages[chat_id]) >= 15:
+            if len(media_messages[chat_id]) >= 150:
                 await delete_media(chat_id)
-                await ABH.send_message(int(chat_id), "تم حذف الوسائط تلقائيًا بعد وصول الحد الأقصى للرسائل.")
 @ABH.on(events.NewMessage(pattern='^امسح|تنظيف$'))
 async def delete_stored_media(event):
+    if not event.is_group:
+        return
     if not is_assistant(event.chat_id, event.sender_id):
         await event.reply('شني خالي كبينه انت مو معاون')
         return
@@ -71,6 +68,7 @@ async def count_media_messages(event):
         await chs(event, f'عدد الرسائل الموجهه للحذف {count} 👍🏾')        
     else:
         await event.reply("المجموعة ما بيها ميديا مخزنه للحذف")
+@ABH.on(events.NewMessage(pattern='^ثبتها|تخطي المسح|الغاء مسح$', incoming=True))
 async def undel(event):
     if not event.is_group:
         return
