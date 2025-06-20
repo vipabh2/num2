@@ -7,27 +7,14 @@ from telethon import events, Button
 import os, asyncio, re, json, time
 from Program import r as redas, chs
 from ABH import ABH
-restriction_end_times = {}
-@ABH.on(events.NewMessage(pattern=r"^التقييد (تفعيل|تعطيل)$"))
-async def toggle_feature(event):
-    if not event.is_group:
-        return
-    if is_assistant(event.chat_id, event.sender_id):
-        await chs(event, 'شني خالي كبينه انت مو معاون')
-        return
-    action = event.pattern_match.group(1)
-    value = True if action == "تفعيل" else False
-    type = f"{value} التقييد"
-    await botuse(type)
-    redas.hset(str(event.chat_id), 't', str(value))
-    await event.reply(f"تم {action} التقييد تدلل حبيبي")
 @ABH.on(events.NewMessage(pattern='^تقييد عام|مخفي قيده|مخفي قيدة$'))
 async def restrict_user(event):
     if not event.is_group:
         return
-    status = redas.hget(str(event.chat_id), 't')
-    if status != "True":
-        await event.reply("هذه الميزة غير مفعلة في هذه المجموعة.")
+    lock_key = f"lock:{event.chat_id}:اليوتيوب"
+    is_locked = r.get(lock_key)
+    if is_locked == "1":
+        await chs(event, 'التقييد غير مفعل في هذه المجموعه🙄')
         return
     chat = await event.get_chat()
     chat_id = str(event.chat_id)
