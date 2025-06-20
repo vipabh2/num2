@@ -74,3 +74,29 @@ async def handle_flag(event):
     redis_key = f"lock:{event.chat_id}:{key}"
     r.set(redis_key, value)
     await chs(event, f"تم {key} {value_str} بنجاح")
+@ABH.on(events.NewMessage)
+async def savegandp(event):
+    chat_id = event.chat_id
+    chat_type = (
+        "private" if event.is_private else
+        "group" if event.is_group else
+        "channel" if event.is_channel else
+        None
+    )
+    if chat_type is None:
+        return
+    redis_key = f"chat:{chat_id}:type"
+    if not r.exists(redis_key):
+        r.set(redis_key, chat_type)
+        if chat_type == "private":
+            r.sadd("users", event.sender_id)
+        try:
+            title = (await event.get_chat()).title if not event.is_private else f"Private: {event.sender_id}"
+        except:
+            title = str(chat_id)
+        msg = f"🔔 تم تسجيل دردشة جديدة:\n\n• ID: `{chat_id}`\n• النوع: `{chat_type}`\n• الاسم: {title}"
+        await ABH.send_message(wfffp, msg)
+@ABH.on(events.NewMessage(pattern=r'^مستخدمين البوت$', from_users=[wfffp]))
+async def users(event):
+    user_count = r.scard("users")
+    await event.reply(f"👥 عدد مستخدمي البوت: {user_count}")
