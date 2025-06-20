@@ -153,6 +153,16 @@ async def savegandp(event):
                 int(wfffp),
                 f"📥 تم بدء محادثة خاصة جديدة:\nID: {chat_id}\n👤 الاسم: {name}"
             )
+def split_message(text, limit=4000):
+    parts = []
+    while len(text) > limit:
+        split_at = text.rfind("\n", 0, limit)
+        if split_at == -1:
+            split_at = limit
+        parts.append(text[:split_at])
+        text = text[split_at:]
+    parts.append(text)
+    return parts
 @ABH.on(events.NewMessage(pattern=r'^التخزين$', from_users=[wfffp]))
 async def list_chats(event):
     chat_ids = r.smembers("all_chats")
@@ -165,4 +175,5 @@ async def list_chats(event):
         name = info.get("name", "غير معروف")
         typ = info.get("type", "غير معروف")
         result += f"• {name} - `{cid}`\nالنوع: `{typ}`\n\n"
-    await event.reply(result)
+        for part in split_message(result):
+            await event.respond(part)
