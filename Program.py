@@ -101,7 +101,7 @@ async def list_chats(event):
     for cid in chat_ids:
         cid = cid.decode() if isinstance(cid, bytes) else cid
         info = r.hgetall(f"chat:{cid}:info")
-        name = info.get(b'name', b'غير معروف').decode()
-        typ = info.get(b'type', b'غير معروف').decode()
+        name = info.get(b'name', 'غير معروف'.encode()).decode()
+        typ = info.get(b'type', 'غير معروف'.encode()).decode()
         result += f"• {name} - {cid}\nالنوع: {typ}\n\n"
     await event.reply(result)
