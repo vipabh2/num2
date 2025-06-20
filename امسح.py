@@ -49,8 +49,6 @@ async def store_media_messages(event):
                 await delete_media(chat_id)
 @ABH.on(events.NewMessage(pattern='^امسح|تنظيف$'))
 async def delete_stored_media(event):
-    if not event.is_group:
-        return
     if not is_assistant(event.chat_id, event.sender_id):
         await event.reply('شني خالي كبينه انت مو معاون')
         return
