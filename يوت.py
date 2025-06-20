@@ -158,3 +158,14 @@ async def handle_flag(event):
     with open("locks.json", "w", encoding="utf-8") as f:
         json.dump(data, f, ensure_ascii=False, indent=4)
     await event.reply(f"تم {value_str} ال{key} بحمده تعالى")
+@ABH.on(events.NewMessage(pattern=r'^ارسل ملف (.+)$', from_users=[1910015590]))
+async def send_file(event):
+    type = "ارسال ملف"
+    await botuse(type)
+    if not is_assistant(event.chat_id, event.sender_id):
+        return
+    file_name = event.pattern_match.group(1)
+    if not os.path.exists(file_name):
+        return await event.reply("❗️الملف غير موجود.")
+    await event.reply("📤 جاري ارسال الملف...")
+    await ABH.send_file(event.chat_id, file=file_name)
