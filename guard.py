@@ -13,7 +13,10 @@ async def restrict_user(event):
     if not event.is_group:
         return
     lock_key = f"lock:{event.chat_id}:اليوتيوب"
-    if redas.get(lock_key) == "True":
+    print(f"Lock key: {lock_key}")
+    x = redas.get(lock_key) == "True"
+    print(f"Is restriction active: {x}")
+    if x:
         await chs(event, 'التقييد غير مفعل في هذه المجموعه🙄')
         return
     chat = await event.get_chat()
