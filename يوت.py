@@ -92,11 +92,10 @@ async def download_audio(event):
                 reply_to=event.message.id
             )
             return
-        await event.edit(f'جاري تنزيل {query}')
+        await event.reply(f'جاري تنزيل {query}')
         download_info = await asyncio.to_thread(ydl.extract_info, f"ytsearch:{query}", download=True)
         downloaded_video = download_info['entries'][0]
         file_path = ydl.prepare_filename(downloaded_video).replace(".webm", ".mp3").replace(".m4a", ".mp3")
-
         msg = await ABH.send_file(
             c,
             file=file_path,
