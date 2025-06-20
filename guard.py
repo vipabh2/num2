@@ -7,6 +7,7 @@ from telethon import events, Button
 import os, asyncio, re, json, time
 from Program import r as redas, chs
 from ABH import ABH
+restriction_end_times = {}
 @ABH.on(events.NewMessage(pattern='^تقييد عام|مخفي قيده|مخفي قيدة$'))
 async def restrict_user(event):
     if not event.is_group:
