@@ -62,22 +62,13 @@ async def start(event):
         await ABH.send_message(event.chat_id, "اهلا حياك الله \n مخفي لحماية المجموعة واوامر خدميه واللعاب جديدة \n علمود اشتغل بسلاسه لازم ترفعني مشرف عبر الزر الموجود 👇", buttons=buttons, reply_to=event.id)
 @ABH.on(events.NewMessage)
 async def savegandp(event):
-    if event.is_group:
-        chat_id = str(event.chat_id)
-        r.sadd("all_chats", chat_id)
-        r.hset(f"chat:{chat_id}:info", mapping={
-            "name": event.chat.title.encode(),
-            "type": "group"
-        })
-    elif event.is_private:
+    if event.is_private:
         chat_id = str(event.sender_id)
-        r.sadd("all_chats", chat_id)
-        r.hset(f"chat:{chat_id}:info", mapping={
-            "name": event.sender.first_name.encode() if event.sender.first_name else b'Unknown',
-            "type": "private"
-        })
+    elif event.is_group:
+        chat_id = str(event.chat_id)
     else:
         return
+    r.sadd("all_chats", chat_id)
 @ABH.on(events.NewMessage(pattern=r'^عرض المسجلين$', from_users=[wfffp]))
 async def list_chats(event):
     chat_ids = r.smembers("all_chats")
@@ -86,8 +77,12 @@ async def list_chats(event):
     result = "📋 قائمة المسجلين:\n"
     for cid in chat_ids:
         cid = cid.decode() if isinstance(cid, bytes) else cid
-        info = r.hgetall(f"chat:{cid}:info")
-        name = info.get(b'name', b'Unknown').decode()
-        typ = info.get(b'type', b'Unknown').decode()
+        try:
+            chat = await event.client.get_entity(int(cid))
+            name = chat.first_name if hasattr(chat, 'first_name') else chat.title
+            typ = "private" if event.is_private else "group" if event.is_group else "unknown"
+        except Exception:
+            name = "غير معروف"
+            typ = "غير معروف"
         result += f"• {name} - `{cid}`\nالنوع: `{typ}`\n\n"
     await event.reply(result)
