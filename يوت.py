@@ -32,7 +32,7 @@ YDL_OPTIONS = {
 @ABH.on(events.NewMessage(pattern=r'^(يوت|yt) (.+)'))
 async def download_audio(event):
     lock_key = f"lock:{event.chat_id}:يوتيوب"
-    x = redas.get(lock_key) == "True"
+    x = r.get(lock_key) == "True"
     if not x:
         return
     query = event.pattern_match.group(2)
