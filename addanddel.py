@@ -50,8 +50,14 @@ async def can_add_admins(chat, user_id):
 async def change_own_rank(event):
     if not event.is_group:
         return
-    type = "تغيير لقبي"
-    await botuse(type)
+    await botuse("تغيير لقبي")
+    if not me.is_admin or not me.add_admins:
+        await chs(event, " لا أمتلك صلاحية تعديل المشرفين.")
+        return
+    o = await get_owner(event)
+    if user_id == o.id:
+        await event.reply('هاي عود انت المالك')
+        return
     new_rank = event.pattern_match.group(1)
     if not new_rank:
         await chs(event, "اكتب اللقب وي الامر ك `تغيير لقبي ` + لقب.")
@@ -62,20 +68,17 @@ async def change_own_rank(event):
     user_id = event.sender_id
     chat = await event.get_chat()
     me = await event.client.get_permissions(chat.id, 'me')
-    if not me.is_admin or not me.add_admins:
-        await chs(event, " لا أمتلك صلاحية تعديل المشرفين.")
-        return
     try:
         pp = await event.client(GetParticipantRequest(chat.id, user_id))
+        participant = pp.participant
     except Exception as e:
-        await ABH.send_message(wfffp, f"{e}")
+        await ABH.send_message(wfffp, f"خطأ في جلب بيانات المستخدم: {e}")
         await event.reply(f"والله مابيه حيل اعذرني يخوي")
         return
-    o = await get_owner(event)
-    if user_id == o.id:
-        await event.reply('هاي عود انت المالك')
+    if not isinstance(participant, (ChannelParticipantAdmin, ChannelParticipantCreator)):
+        await chs(event, "يالفقير لازم تكون مشرف بالاول علمود اغيرلك لقب🙄🙄.")
         return
-    admin_right = pp.participant.admin_rights
+    admin_right = participant.admin_rights
     try:
         await event.client(EditAdminRequest(
             channel=chat.id,
@@ -83,10 +86,10 @@ async def change_own_rank(event):
             admin_rights=admin_right,
             rank=new_rank
         ))
-        await chs(chat.id, f"تم تغيير لقبك الى `{new_rank}`", )
+        await chs(chat.id, f"تم تغيير لقبك الى `{new_rank}`")
     except Exception as e:
-        await ABH.send_message(wfffp, f"{e}")
-        await chs(event, f"والله مابيه حيل اعذرني يخوي")
+        await ABH.send_message(wfffp, f"خطأ عند تعديل اللقب: {e}")
+        await chs(event, "والله مابيه حيل اعذرني يخوي")
 promot = {}
 session = {}
 @ABH.on(events.NewMessage(pattern='^ترقية$'))
