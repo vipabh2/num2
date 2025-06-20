@@ -15,6 +15,21 @@ else:
 def save_media_messages():
     with open(FILE_PATH, "w", encoding="utf-8") as f:
         json.dump(media_messages, f, ensure_ascii=False, indent=2)
+async def delete_media(chat_id, event=None):
+    deleted_count = 0
+    if chat_id in media_messages and media_messages[chat_id]:
+        try:
+            for msg_id in media_messages[chat_id]:
+                await ABH.delete_messages(int(chat_id), msg_id)
+                deleted_count += 1
+            media_messages[chat_id] = []
+            save_media_messages()
+            if event:
+                await chs(event, f'تم حذف {deleted_count} ب نجاح 🗑️')
+            else:
+                await ABH.send_message(int(chat_id), f'تم حذف {deleted_count} من الوسائط تلقائيًا 🧹 (وصلنا 150)')
+        except:
+            return
 @ABH.on(events.NewMessage)
 async def store_media_messages(event):
     if not event.is_group:
@@ -30,27 +45,17 @@ async def store_media_messages(event):
         if msg.id not in media_messages[chat_id]:
             media_messages[chat_id].append(msg.id)
             save_media_messages()
+            if len(media_messages[chat_id]) >= 15:
+                await delete_media(chat_id)
 @ABH.on(events.NewMessage(pattern='^امسح|تنظيف$'))
 async def delete_stored_media(event):
     if not event.is_group:
         return
-    type = "امسح"
-    await botuse(type)
     if not is_assistant(event.chat_id, event.sender_id):
         await event.reply('شني خالي كبينه انت مو معاون')
         return
     chat_id = str(event.chat_id)
-    deleted_count = 0
-    if chat_id in media_messages and media_messages[chat_id]:
-        try:
-            for msg_id in media_messages[chat_id]:
-                await ABH.delete_messages(int(chat_id), msg_id)
-                deleted_count += 1
-            media_messages[chat_id] = []
-            save_media_messages()
-            await event.reply(f'تم حذف {deleted_count} ب نجاح 🗑️🗑️')
-        except:
-            return
+    await delete_media(chat_id, event)
 @ABH.on(events.NewMessage(pattern='^عدد|كشف ميديا|كشف الميديا$', incoming=True))
 async def count_media_messages(event):
     if not event.is_group:
