@@ -45,7 +45,7 @@ async def store_media_messages(event):
         if msg.id not in media_messages[chat_id]:
             media_messages[chat_id].append(msg.id)
             save_media_messages()
-            if len(media_messages[chat_id]) >= 15:
+            if len(media_messages[chat_id]) >= 150:
                 await delete_media(chat_id)
 @ABH.on(events.NewMessage(pattern='^امسح|تنظيف$'))
 async def delete_stored_media(event):
