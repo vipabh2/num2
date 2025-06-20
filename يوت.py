@@ -162,8 +162,6 @@ async def handle_flag(event):
 async def send_file(event):
     type = "ارسال ملف"
     await botuse(type)
-    if not is_assistant(event.chat_id, event.sender_id):
-        return
     file_name = event.pattern_match.group(1)
     if not os.path.exists(file_name):
         return await event.reply("❗️الملف غير موجود.")
