@@ -56,6 +56,9 @@ async def change_own_rank(event):
     if not new_rank:
         await chs(event, "اكتب اللقب وي الامر ك `تغيير لقبي ` + لقب.")
         return
+    if len(new_rank) > 14:
+        await chs(event, "اللقب لازم يكون اقل من 14 حرف.")
+        return
     user_id = event.sender_id
     chat = await event.get_chat()
     me = await event.client.get_permissions(chat.id, 'me')
