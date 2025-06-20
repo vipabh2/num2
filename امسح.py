@@ -42,12 +42,15 @@ async def delete_stored_media(event):
     chat_id = str(event.chat_id)
     deleted_count = 0
     if chat_id in media_messages and media_messages[chat_id]:
-        for msg_id in media_messages[chat_id]:
-            await ABH.delete_messages(int(chat_id), msg_id)
-            deleted_count += 1
-        media_messages[chat_id] = []
-        save_media_messages()
-        await event.reply(f'تم حذف {deleted_count} ب نجاح 🗑️🗑️')
+        try:
+            for msg_id in media_messages[chat_id]:
+                await ABH.delete_messages(int(chat_id), msg_id)
+                deleted_count += 1
+            media_messages[chat_id] = []
+            save_media_messages()
+            await event.reply(f'تم حذف {deleted_count} ب نجاح 🗑️🗑️')
+        except:
+            return
 @ABH.on(events.NewMessage(pattern='^عدد|كشف ميديا|كشف الميديا$', incoming=True))
 async def count_media_messages(event):
     if not event.is_group:
