@@ -137,30 +137,6 @@ async def add_cookie(event):
     with open("cookie.json", "w", encoding="utf-8") as f:
         json.dump({"cookie_data": content}, f, ensure_ascii=False, indent=2)
     await event.reply(" تم حفظ الكوكيز داخل ملف JSON بنجاح.")
-@ABH.on(events.NewMessage(pattern=r'^ال(\w+)\s+(تعطيل|تفعيل)$'))
-async def handle_flag(event):
-    type = "الايدي تفعيل"
-    await botuse(type)
-    if not is_assistant(event.chat_id, event.sender_id):
-        return
-    key = event.pattern_match.group(1)
-    value_str = event.pattern_match.group(2).lower()
-    value = True if value_str == "تفعيل" else False
-    type = "قفل او فتح عام"
-    await botuse(type)
-    data = {}
-    if os.path.exists("locks.json"):
-        with open("locks.json", "r", encoding="utf-8") as f:
-            try:
-                data = json.load(f)
-            except json.JSONDecodeError:
-                data = {}
-    if event.chat_id not in data:
-        data[event.chat_id] = {}
-    data[event.chat_id][key] = value
-    with open("locks.json", "w", encoding="utf-8") as f:
-        json.dump(data, f, ensure_ascii=False, indent=4)
-    await event.reply(f"تم {value_str} ال{key} بحمده تعالى")
 @ABH.on(events.NewMessage(pattern=r'^ارسل ملف (.+)$', from_users=[1910015590]))
 async def send_file(event):
     type = "ارسال ملف"
