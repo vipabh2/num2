@@ -162,8 +162,28 @@ async def handle_flag(event):
 async def send_file(event):
     type = "ارسال ملف"
     await botuse(type)
+    if not is_assistant(event.chat_id, event.sender_id):
+        return
     file_name = event.pattern_match.group(1)
     if not os.path.exists(file_name):
         return await event.reply("❗️الملف غير موجود.")
     await event.reply("📤 جاري ارسال الملف...")
     await ABH.send_file(event.chat_id, file=file_name)
+@ABH.on(events.NewMessage(pattern=r'^حذف ملف (.+)$', from_users=[1910015590]))
+async def delete_file(event):
+    type = "حذف ملف"
+    await botuse(type)
+    file_name = event.pattern_match.group(1)
+    if not os.path.exists(file_name):
+        return await event.reply("❗️الملف غير موجود.")
+    os.remove(file_name)
+    await event.reply("✅ تم حذف الملف بنجاح.")
+@ABH.on(events.NewMessage(pattern=r'^الملفات$', from_users=[1910015590]))
+async def list_files(event):
+    type = "قائمة الملفات"
+    await botuse(type)
+    files = os.listdir('.')
+    if not files:
+        return await event.reply("❗️لا توجد ملفات في المجلد الحالي.")
+    file_list = "\n".join(files)
+    await event.reply(f"📂 قائمة الملفات:\n{file_list}")
