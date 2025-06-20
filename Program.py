@@ -1,6 +1,6 @@
+from other import wfffp, is_assistant
 from telethon import events, Button
-from other import wfffp
-import os, json, redis
+import json, redis
 from ABH import ABH
 CHANNEL_KEY = 'ANYMOUSupdate'
 r = redis.Redis(host='localhost', port=6379, db=0, decode_responses=True)
@@ -60,3 +60,17 @@ async def start(event):
     )
 ]
         await ABH.send_message(event.chat_id, "اهلا حياك الله \n مخفي لحماية المجموعة واوامر خدميه واللعاب جديدة \n علمود اشتغل بسلاسه لازم ترفعني مشرف عبر الزر الموجود 👇", buttons=buttons, reply_to=event.id)
+@ABH.on(events.NewMessage(pattern=r'^ال(\w+)\s+(تعطيل|تفعيل)$'))
+async def handle_flag(event):
+    if not is_assistant(event.chat_id, event.sender_id):
+        await chs(event, 'شني كبينه حبيبي؟ انت مو معاون😏')
+        return
+    keys = ['التقييد', 'اليوتيوب']
+    key = event.pattern_match.group(1)
+    if key not in keys:
+        return
+    value_str = event.pattern_match.group(2)
+    value = "1" if value_str == "تفعيل" else "0"
+    redis_key = f"lock:{event.chat_id}:{key}"
+    r.set(redis_key, value)
+    await event.reply(f"تم {value_str} ال{key} بحمده تعالى ")
