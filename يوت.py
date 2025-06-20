@@ -1,11 +1,10 @@
 from telethon.tl.types import DocumentAttributeAudio
+from other import botuse, is_assistant
 from telethon import events, Button
 from yt_dlp import YoutubeDL
+from Program import r, chs
 import os, asyncio, json
-from other import botuse, is_assistant
 from ABH import ABH
-import os
-import json
 COOKIES_FILE = 'c.txt'
 if not os.path.exists("downloads"):
     os.makedirs("downloads")
@@ -32,6 +31,10 @@ YDL_OPTIONS = {
 }
 @ABH.on(events.NewMessage(pattern=r'^(يوت|yt) (.+)'))
 async def download_audio(event):
+    lock_key = f"lock:{event.chat_id}:اليوتيوب"
+    is_locked = r.get(lock_key)
+    if is_locked == "1":
+        return
     query = event.pattern_match.group(2)
     type = "يوت"
     await botuse(type)
@@ -65,7 +68,7 @@ async def download_audio(event):
         video_id = video_info.get('id')
         duration = video_info.get("duration", 0)
         if duration > 2700:
-            await event.reply("❌ لا يمكن تحميل مقاطع أطول من 45 دقيقة.")
+            await chs(event, " لا يمكن تحميل مقاطع أطول من 45 دقيقة.")
             return
         if video_id in audio_cache:
             val = audio_cache[video_id]
