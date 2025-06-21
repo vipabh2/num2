@@ -887,7 +887,7 @@ async def handle_choice(event, user_choice_key):
         user_choice = choices[user_choice_key]
         if user_choice_key == bot_choice_key:
             result = "🤝 تعادل"
-            points = random.randint(10, 50)
+            points = 500
         elif (
             (user_choice_key == "rock" and bot_choice_key == "cuter") or
             (user_choice_key == "paper" and bot_choice_key == "rock") or
@@ -899,7 +899,7 @@ async def handle_choice(event, user_choice_key):
             result = "😢 خسرت"
             points = 0
         if points > 0:
-            add_points(event.sender_id, chat_id, points, amount=points)
+            add_points(event.sender_id, chat_id, points, amount=1500)
         msg = (
             f"{game['name1']} {user_choice}\n"
             f"{game['name2']} {bot_choice}\n\n"
