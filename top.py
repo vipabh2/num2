@@ -829,7 +829,7 @@ async def check_sport(event):
             pass
 choices = {"rock": "🪨 حجرة", "paper": "📜 ورقة", "cuter": "✂️ مقص"}
 active_games = {}
-@ABH.on(events.NewMessage(pattern=r"^(حجرة|/rock)"))
+@ABH.on(events.NewMessage(pattern=r"^(حجرة|/rock)$"))
 async def rock_handler(event):
     if not event.is_group:
         return
@@ -885,30 +885,28 @@ async def handle_choice(event, user_choice_key):
         bot_choice_key = random.choice(list(choices.keys()))
         bot_choice = choices[bot_choice_key]
         user_choice = choices[user_choice_key]
-
         if user_choice_key == bot_choice_key:
             result = "🤝 تعادل"
-            p = random.randint(10, 50)
+            points = random.randint(10, 50)
         elif (
             (user_choice_key == "rock" and bot_choice_key == "cuter") or
             (user_choice_key == "paper" and bot_choice_key == "rock") or
             (user_choice_key == "cuter" and bot_choice_key == "paper")
         ):
             result = "🎉 فزت"
-            p = random.randint(500, 1500)
+            points = random.randint(500, 1500)
         else:
             result = "😢 خسرت"
-            p = 0
-
-        if p > 0:
-            add_points(event.sender_id, chat_id, points_dict, amount=p)
+            points = 0
+        if points > 0:
+            add_points(event.sender_id, chat_id, points, amount=points)
         msg = (
             f"{game['name1']} {user_choice}\n"
             f"{game['name2']} {bot_choice}\n\n"
             f"{result}"
         )
-        if p > 0:
-            msg += f"\n🏅 تم إضافة `{p}` نقطة"
+        if points > 0:
+            msg += f"\n🏅 تم إضافة `{points}` نقطة"
         await event.edit(msg)
     elif game["type"] == "pvp":
         if user_id not in [game["player1"], game["player2"]]:
