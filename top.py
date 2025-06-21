@@ -12,6 +12,7 @@ def save_points(data, filename="points.json"):
         json.dump(data, file, indent=4)
 points = load_points()
 def add_points(uid, gid, points, amount=0):
+    uid, gid = str(uid), str(gid)
     if uid not in points:
         points[uid] = {}
     if gid not in points[uid]:
@@ -19,6 +20,7 @@ def add_points(uid, gid, points, amount=0):
     points[uid][gid]["points"] += amount
     save_points(points)
 def add_user(uid, gid, name, rose, amount):
+    uid, gid = str(uid), str(gid)
     if gid not in rose:
         rose[gid] = {}
     if uid not in rose[gid]:
