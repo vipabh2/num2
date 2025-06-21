@@ -2,9 +2,12 @@ from telethon import events, Button
 from other import wfffp
 from ABH import ABH
 import json, redis
+actions = ['يوتيوب', 'تقييد']
 @ABH.on(events.NewMessage(pattern=r'^ال(\w+)\s+(تفعيل|تعطيل)$'))
 async def toggle_feature(event):
     feature, action = event.pattern_match.groups()
+    if feature not in actions:
+        return
     lock_key = f"lock:{event.chat_id}:{feature}"    
     if action == "تفعيل":
         r.set(lock_key, "True")
