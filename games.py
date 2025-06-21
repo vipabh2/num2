@@ -295,11 +295,11 @@ async def num(event):
         uid = event.sender_id
         await conv.send_message(f'اهلا {name} تم بدء اللعبه , حاول تخمين الرقم من 10 الئ 1', file='https://t.me/VIPABH/1204', reply_to=event.message.id)
         for attempt in range(1, max_attempts + 1):
+            if uid != event.sender_id:
+                return
             try:
                 response = await conv.get_response()
                 get = response.text.strip()
-                if uid != event.sender_id:
-                    return
                 try:
                     guess = int(get)
                 except ValueError:
