@@ -1,5 +1,4 @@
 from Resources import football, questions, mention, ment #type: ignore
-# from top import points, add_points #type: ignore
 from datetime import datetime, timedelta
 import random, asyncio, time, os, json
 from telethon import Button, events
