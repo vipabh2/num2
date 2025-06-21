@@ -288,6 +288,7 @@ async def telegramgames(event):
 async def num(event):
     if not event.is_group:
         return
+    await botuse("/num")
     num = random.randint(1, 10)
     max_attempts = 3
     async with ABH.conversation(event.chat_id, timeout=6) as conv:
@@ -303,7 +304,6 @@ async def num(event):
                 try:
                     guess = int(get)
                 except ValueError:
-                    await conv.send_message("يابو صماخ اكتب رقم من 1 الئ 10")
                     continue
                 if guess == num:
                     msg = await conv.send_message("🎉")
