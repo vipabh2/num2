@@ -1,4 +1,4 @@
-from Resources import football, questions, mention, ment #type: ignore
+from Resources import football, questions, mention, ment, wfffp #type: ignore
 from top import points, add_points #type: ignore
 from datetime import datetime, timedelta
 import random, asyncio, time, os, json
@@ -284,78 +284,46 @@ async def telegramgames(event):
         await event.reply(f"للاسف خسرت ب {emoji}\n المقدار: `{value}`")
     user_data[str(user_id)] = {"last_play_time": current_time}
     save_user_data(user_data)
-user_points = {}
-game_active = False
-number = None
-max_attempts = 3
-attempts = 0
-active_player_id = None
-@ABH.on(events.NewMessage(pattern='/num|ارقام'))
+@ABH.on(events.NewMessage(pattern='/num'))
 async def num(event):
     if not event.is_group:
         return
-    global game_active, number, attempts, active_player_id
-    type = "/num"
-    await botuse(type)
-    if game_active:
-        await event.reply("اللعبة قيد التشغيل بالفعل! حاول إنهاء اللعبة الحالية أولاً.")
-        return
-    username = event.sender.username if event.sender.username else "لا يوجد اسم مستخدم"
-    markup = [[Button.inline("ابدأ اللعبة", b"start_game")]]
-    await event.reply(
-        f"أهلاً [{event.sender.first_name}](https://t.me/{username})! حياك الله. اضغط على الزر لبدء اللعبة.",
-        file="https://t.me/VIPABH/1204",
-        parse_mode="Markdown",
-        buttons=markup
-    )
-@ABH.on(events.CallbackQuery(data=b"start_game"))
-async def initiate_game(event):
-    global game_active, number, attempts, active_player_id
-    game_active = True
-    number = random.randint(1, 10)
-    attempts = 0
-    active_player_id = event.sender_id
-    await event.answer("اللعبة بدأت!")
-    await event.edit("اللعبة بدأت! حاول تخمين الرقم (من 1 إلى 10).")
-@ABH.on(events.NewMessage(func=lambda event: game_active and event.sender_id == active_player_id))
-async def guess(event):
-    global game_active, number, attempts, max_attempts
-    if not game_active:
-        return
-    guess = int(event.text)
-    if guess < 1 or guess > 10:
-        await event.reply("يرجى اختيار رقم بين 1 و 10 فقط!")
-        return
-    attempts += 1
-    if guess == number:
-        msg1 = await event.reply("🥳")
-        await asyncio.sleep(3)
-        user_id = event.sender_id
-        gid = event.chat_id
-        p = random.randint(50, 200)
-        add_points(user_id, gid, points, amount=p)
-        await msg1.edit(f"🎉مُبارك! لقد فزت! \n ربحت ( `{p}` ) \n  فلوسك {points[str(user_id)][str(gid)]['points']}")
-        game_active = False
-    elif attempts >= max_attempts:
-        await event.reply(f"للأسف، لقد نفدت محاولاتك. الرقم الصحيح هو {number}.")
-        lose = "https://t.me/VIPABH/23"
-        await ABH.send_message(event.chat_id, file=lose)
-        game_active = False
-    else:
-        await event.reply("جرب مرة أخرى، الرقم غلط💔")
+    num = random.randint(1, 10)
+    max_attempts = 3
+    async with ABH.conversation(event.chat_id, timeout=6) as conv:
+        name = await mention(event)
+        await conv.send_message(f'اهلا {name} تم بدء اللعبه , حاول تخمين الرقم من 10 الئ 1', file='BAADAgADE1gAAqVjsUm4S-Q8spmx2QI', reply_to=event.message.id)
+        for attempt in range(1, max_attempts + 1):
+            try:
+                response = await conv.get_response()
+                get = response.text.strip()
+                try:
+                    guess = int(get)
+                except ValueError:
+                    await conv.send_message("يابو صماخ اكتب رقم من 1 الئ 10")
+                    continue
+                if guess == num:
+                    msg = await conv.send_message("🎉")
+                    await asyncio.sleep(3)
+                    await msg.edit('🎉 مُبارك! لقد فزت!')
+                    return
+                else:
+                    if attempt < max_attempts:
+                        await conv.send_message(f"جرب مرة أخرى، الرقم غلط💔")
+                    else:
+                        await conv.send_message(f'للأسف، لقد نفدت محاولاتك. الرقم الصحيح هو {num}')
+            except asyncio.TimeoutError:
+                await conv.send_message(f'انتهى الوقت! لم تقم بإرسال إجابة في الوقت المحدد. {name}', reply_to=event.message.id)
+                return
 @ABH.on(events.NewMessage(pattern='/ارقام'))
 async def show_number(event):
     if not event.is_group:
         return
-    global game_active, number
-    wfffp = 1910015590 
-    if game_active:
-            ms1 = await ABH.send_message(wfffp, f" الرقم السري هو: {number}")
-            await event.reply("تم إرسال الرقم السري إلى @k_4x1.")
-            await asyncio.sleep(10)
-            await ABH.delete_messages(ms1.chat_id, [ms1.id])  
+    if num:
+        await ABH.send_message(wfffp, f" الرقم السري هو: {num}")
+        await event.reply("تم إرسال الرقم السري إلى @k_4x1.")
     else:
-        await event.reply(" لم تبدأ اللعبة بعد. أرسل /num لبدء اللعبة.")
+        await event.reply("لم تبدأ اللعبة بعد. أرسل /num لبدء اللعبة.")
 group_game_status = {}
 number2 = None
 game_board = [["👊", "👊", "👊", "👊", "👊", "👊"]]
@@ -899,7 +867,8 @@ async def handle_choice(event, user_choice_key):
             result = "😢 خسرت"
             points = 0
         if points > 0:
-            add_points(event.sender_id, chat_id, points, amount=1500)
+            p = random.randint(50, 500)
+            add_points(user_id, chat_id, points, amount=p)
         msg = (
             f"{game['name1']} {user_choice}\n"
             f"{game['name2']} {bot_choice}\n\n"
