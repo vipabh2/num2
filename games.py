@@ -292,7 +292,7 @@ async def num(event):
     max_attempts = 3
     async with ABH.conversation(event.chat_id, timeout=6) as conv:
         name = await mention(event)
-        await conv.send_message(f'اهلا {name} تم بدء اللعبه , حاول تخمين الرقم من 10 الئ 1', file='BAADAgADE1gAAqVjsUm4S-Q8spmx2QI', reply_to=event.message.id)
+        await conv.send_file(event.chat_id, 'BAADAgADE1gAAqVjsUm4S-Q8spmx2QI', caption=f'اهلا {name} تم بدء اللعبه , حاول تخمين الرقم من 10 الئ 1', reply_to=event.message.id)
         for attempt in range(1, max_attempts + 1):
             try:
                 response = await conv.get_response()
