@@ -291,7 +291,7 @@ async def num(event):
     await botuse("/num")
     num = random.randint(1, 10)
     max_attempts = 3
-    async with ABH.conversation(event.chat_id, timeout=6) as conv:
+    async with ABH.conversation(event.chat_id, timeout=60) as conv:
         name = await mention(event)
         uid = event.sender_id
         if uid != event.sender_id:
