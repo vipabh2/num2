@@ -4,7 +4,7 @@ from telethon.tl.functions.channels import GetParticipantRequest
 from telethon.tl.functions.channels import EditAdminRequest
 from telethon.tl.types import ChannelParticipantAdmin
 from telethon.tl.types import ChatAdminRights
-from top import points, add_user, save_points
+from top import add_user, save_points
 from Program import CHANNEL_KEY, chs
 from telethon import events, Button
 from Resources import wfffp
