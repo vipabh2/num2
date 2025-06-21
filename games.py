@@ -800,7 +800,7 @@ async def check_sport(event):
             pass
 choices = {"rock": "🪨 حجرة", "paper": "📜 ورقة", "cuter": "✂️ مقص"}
 active_games = {}
-@ABH.on(events.NewMessage(pattern=r"^(حجرة|/rock)$"))
+@ABH.on(events.NewMessage(pattern=r"^(حجرة|/rock)"))
 async def rock_handler(event):
     if not event.is_group:
         return
