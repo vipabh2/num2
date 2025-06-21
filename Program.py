@@ -1,8 +1,17 @@
-from telethon.tl.types import User, Chat, Channel
 from telethon import events, Button
 from other import wfffp
 from ABH import ABH
 import json, redis
+@ABH.on(events.NewMessage(pattern=r'^ال(\w+)\s+(تفعيل|تعطيل)$'))
+async def toggle_feature(event):
+    feature, action = event.pattern_match.groups()
+    lock_key = f"lock:{event.chat_id}:{feature}"    
+    if action == "تفعيل":
+        r.set(lock_key, "True")
+        await chs(event, f'تم تفعيل الميزة {feature} تدلل حبيبي')
+    else:
+        r.set(lock_key, "False")
+        await chs(event, f'تم تعطيل الميزة {feature} تدلل حبيبي')
 CHANNEL_KEY = 'ANYMOUSupdate'
 r = redis.Redis(host='localhost', port=6379, db=0, decode_responses=True)
 async def chs(event, c):
