@@ -30,13 +30,13 @@ async def notAssistantres(event):
         return await event.reply("يجب الرد على رسالة العضو الذي تريد تقييده.")
     rid = await r.get_sender()
     name = await ment(rid)
-
     try:
         participant = await ABH(GetParticipantRequest(channel=chat_id, participant=rid.id))
         if isinstance(participant.participant, (ChannelParticipantCreator, ChannelParticipantAdmin)):
             return await event.reply(f"لا يمكنك تقييد {name} لانه مشرف ")
-    except:
-        return
+    except Exception as e:
+        await event.reply(" ياريت اقيده بس ماكدر ")
+        await hint(e)
     user_id = rid.id
     now = int(time.time())
     restriction_duration = 10
