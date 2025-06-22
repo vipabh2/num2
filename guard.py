@@ -33,7 +33,8 @@ async def notAssistantres(event):
             return await event.reply(f"لا يمكنك تقييد {target_name} لأنه مشرف.")
     except Exception as e:
         return await hint(e)
-    user_id = rs.id
+    user_to_restrict = await r.get_sender()
+    user_id = user_to_restrict.id
     now = int(time.time())
     restriction_duration = 10
     restriction_end_times[user_id] = now + restriction_duration
