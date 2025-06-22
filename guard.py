@@ -23,6 +23,7 @@ async def notAssistantres(event):
     #     return
     r = await event.get_reply_message()
     rs = await event.get_sender()
+    chat = await event.get_chat()
     money = points[str(user_id)][chat_id]["points"]
     if 10000 > money:
         await event.reply('عزيزي الفقير , لازم ثروتك اكثر من عشر الاف.')
@@ -32,7 +33,7 @@ async def notAssistantres(event):
     rid = await r.get_sender()
     name = await ment(rid)
     try:
-        participant = await ABH(GetParticipantRequest(channel=chat_id, participant=rs.id))
+        participant = await ABH(GetParticipantRequest(channel=chat.id, participant=rs.id))
         if isinstance(participant.participant, (ChannelParticipantCreator, ChannelParticipantAdmin)):
             return await event.reply(f"لا يمكنك تقييد {name} لانه مشرف ")
     except Exception as e:
