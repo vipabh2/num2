@@ -12,51 +12,41 @@ async def notAssistantres(event):
     if not event.is_group:
         return
     lock_key = f"lock:{event.chat_id}:تقييد"
-    x = redas.get(lock_key) == "True"
-    if not x:
+    if redas.get(lock_key) != "True":
         await chs(event, 'التقييد غير مفعل في هذه المجموعه🙄')
         return
-    chat_id = str(event.chat_id)
+    chat_id = event.chat_id
     user_id = event.sender_id
     sender = await event.get_sender()
-    # if is_assistant(chat_id, user_id):
-    #     return
     r = await event.get_reply_message()
-    rs = await r.get_sender()
-    chat = await event.get_chat()
-    money = points[str(user_id)][chat_id]["points"]
-    if 10000 > money:
-        await event.reply('عزيزي الفقير , لازم ثروتك اكثر من عشر الاف.')
-        return
     if not r:
-        return await event.reply("يجب الرد على رسالة العضو الذي تريد تقييده.")
-    rid = await r.get_sender()
-    name = await ment(rid)
+        return await event.reply("يجب الرد على رسالة العضو الذي تريد تقييده.")    
+    rs = await r.get_sender()
+    target_name = await ment(rs)
+    user_points = points.get(str(user_id), {}).get(str(chat_id), {}).get("points", 0)
+    if user_points < 10000:
+        return await event.reply("عزيزي الفقير , لازم ثروتك اكثر من عشر الاف.")
     try:
-        participant = await ABH(GetParticipantRequest(channel=chat.id, participant=rs.id))
+        participant = await ABH(GetParticipantRequest(channel=chat_id, participant=rs.id))
         if isinstance(participant.participant, (ChannelParticipantCreator, ChannelParticipantAdmin)):
-            return await event.reply(f"لا يمكنك تقييد {name} لانه مشرف ")
+            return await event.reply(f"لا يمكنك تقييد {target_name} لأنه مشرف.")
     except Exception as e:
-        await hint(e)
-    user_id = rid.id
+        return await hint(e)
     now = int(time.time())
     restriction_duration = 10
-    restriction_end_times[user_id] = now + restriction_duration
+    restriction_end_times[rs.id] = now + restriction_duration
     rights = ChatBannedRights(
         until_date=now + restriction_duration,
         send_messages=True
-    )      
+    )
     try:
         await ABH(EditBannedRequest(channel=chat_id, participant=rs.id, banned_rights=rights))
-        type = "تقييد ميم"
-        await botuse(type)
-        ء = await r.get_sender()
-        rrr = await ment(ء)
-        a = await ment(sender)
-        c = f"تم تقييد {rrr} لمدة 10 ثواني. \n بطلب من {a}"
-        await ABH.send_file(event.chat_id, "https://t.me/VIPABH/592", caption=c)
+        await botuse("تقييد ميم")
+        sender_name = await ment(sender)
+        caption = f"تم تقييد {target_name} لمدة 10 ثواني. \n بطلب من {sender_name}"
+        await ABH.send_file(chat_id, "https://t.me/VIPABH/592", caption=caption)
     except Exception as e:
-        await event.reply(" ياريت اقيده بس ماكدر ")
+        await event.reply("ياريت اقيده بس ماكدر 🥲")
         await hint(e)
 restriction_end_times = {}
 @ABH.on(events.NewMessage(pattern='^تقييد عام|مخفي قيده|مخفي قيدة$'))
