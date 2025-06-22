@@ -10,6 +10,8 @@ group = -1001784332159
 hint_gid = -1002168230471
 bot = "Anymous"
 wfffp = 1910015590
+async def hint(e):
+    ABH.send_message(wfffp, e)
 async def mention(event):
     name = getattr(event.sender, 'first_name', None) or 'غير معروف'
     user_id = event.sender_id
