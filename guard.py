@@ -45,7 +45,8 @@ async def notAssistantres(event):
         await ABH(EditBannedRequest(channel=chat.id, participant=user_id, banned_rights=rights))
         await botuse("تقييد ميم")
         sender_name = await ment(sender)
-        caption = f"تم تقييد {target_name} لمدة 10 ثواني. \n بطلب من {sender_name}"
+        points[str(user_id)][str(chat_id)]["points"] -= 10000
+        caption = f"تم تقييد {target_name} لمدة 30 ثانية. \n بطلب من {sender_name} \n\n **ملاحظة:** تم خصم 10000 نقطة من ثروتك."
         await ABH.send_file(chat_id, "https://t.me/VIPABH/592", caption=caption)
     except Exception as e:
         await event.reply("ياريت اقيده بس ماكدر 🥲")
