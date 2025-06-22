@@ -19,8 +19,8 @@ async def notAssistantres(event):
     chat_id = str(event.chat_id)
     user_id = event.sender_id
     sender = await event.get_sender()
-    if is_assistant(chat_id, user_id):
-        return
+    # if is_assistant(chat_id, user_id):
+    #     return
     r = await event.get_reply_message()
     money = points[str(user_id)][chat_id]["points"]
     if 10000 > money:
