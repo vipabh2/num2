@@ -36,9 +36,9 @@ async def notAssistantres(event):
     user_to_restrict = await r.get_sender()
     user_id = user_to_restrict.id
     now = int(time.time())
-    restriction_duration = 10
+    restriction_duration = 30
     rights = ChatBannedRights(
-        until_date= restriction_duration,
+        until_date=now + restriction_duration,
         send_messages=True
     )      
     try:
