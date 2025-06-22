@@ -18,6 +18,7 @@ async def notAssistantres(event):
     chat_id = event.chat_id
     user_id = event.sender_id
     sender = await event.get_sender()
+    chat = await event.get_chat()
     r = await event.get_reply_message()
     if not r:
         return await event.reply("يجب الرد على رسالة العضو الذي تريد تقييده.")    
@@ -32,15 +33,16 @@ async def notAssistantres(event):
             return await event.reply(f"لا يمكنك تقييد {target_name} لأنه مشرف.")
     except Exception as e:
         return await hint(e)
+    user_id = rs.id
     now = int(time.time())
     restriction_duration = 10
-    restriction_end_times[rs.id] = now + restriction_duration
+    restriction_end_times[user_id] = now + restriction_duration
     rights = ChatBannedRights(
         until_date=now + restriction_duration,
         send_messages=True
-    )
+    )      
     try:
-        await ABH(EditBannedRequest(channel=chat_id, participant=rs.id, banned_rights=rights))
+        await ABH(EditBannedRequest(channel=chat.id, participant=user_id, banned_rights=rights))
         await botuse("تقييد ميم")
         sender_name = await ment(sender)
         caption = f"تم تقييد {target_name} لمدة 10 ثواني. \n بطلب من {sender_name}"
