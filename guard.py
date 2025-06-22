@@ -8,49 +8,49 @@ from Program import r as redas, chs
 import os, asyncio, re, json, time
 from top import points 
 from ABH import ABH
-async def notAssistantres(event):
-    if not event.is_group:
-        return
-    lock_key = f"lock:{event.chat_id}:تقييد"
-    if redas.get(lock_key) != "True":
-        await chs(event, 'التقييد غير مفعل في هذه المجموعه🙄')
-        return
-    chat_id = event.chat_id
-    user_id = event.sender_id
-    sender = await event.get_sender()
-    chat = await event.get_chat()
-    r = await event.get_reply_message()
-    if not r:
-        return await event.reply("يجب الرد على رسالة العضو الذي تريد تقييده.")    
-    rs = await r.get_sender()
-    target_name = await ment(rs)
-    user_points = points.get(str(user_id), {}).get(str(chat_id), {}).get("points", 0)
-    if user_points < 10000:
-        return await event.reply("عزيزي الفقير , لازم ثروتك اكثر من عشر الاف.")
-    try:
-        participant = await ABH(GetParticipantRequest(channel=chat_id, participant=rs.id))
-        if isinstance(participant.participant, (ChannelParticipantCreator, ChannelParticipantAdmin)):
-            return await event.reply(f"لا يمكنك تقييد {target_name} لأنه مشرف.")
-    except Exception as e:
-        return await hint(e)
-    user_to_restrict = await r.get_sender()
-    user_id = user_to_restrict.id
-    now = int(time.time())
-    restriction_duration = 30
-    rights = ChatBannedRights(
-        until_date=now + restriction_duration,
-        send_messages=True
-    )      
-    try:
-        await ABH(EditBannedRequest(channel=chat.id, participant=user_id, banned_rights=rights))
-        await botuse("تقييد ميم")
-        sender_name = await ment(sender)
-        points[str(user_id)][str(chat_id)]["points"] -= 10000
-        caption = f"تم تقييد {target_name} لمدة 30 ثانية. \n بطلب من {sender_name} \n\n **ملاحظة:** تم خصم 10000 نقطة من ثروتك."
-        await ABH.send_file(chat_id, "https://t.me/VIPABH/592", caption=caption)
-    except Exception as e:
-        await event.reply("ياريت اقيده بس ماكدر 🥲")
-        await hint(e)
+# async def notAssistantres(event):
+#     if not event.is_group:
+#         return
+#     lock_key = f"lock:{event.chat_id}:تقييد"
+#     if redas.get(lock_key) != "True":
+#         await chs(event, 'التقييد غير مفعل في هذه المجموعه🙄')
+#         return
+#     chat_id = event.chat_id
+#     user_id = event.sender_id
+#     sender = await event.get_sender()
+#     chat = await event.get_chat()
+#     r = await event.get_reply_message()
+#     if not r:
+#         return await event.reply("يجب الرد على رسالة العضو الذي تريد تقييده.")    
+#     rs = await r.get_sender()
+#     target_name = await ment(rs)
+#     user_points = points.get(str(user_id), {}).get(str(chat_id), {}).get("points", 0)
+#     if user_points < 10000:
+#         return await event.reply("عزيزي الفقير , لازم ثروتك اكثر من عشر الاف.")
+#     try:
+#         participant = await ABH(GetParticipantRequest(channel=chat_id, participant=rs.id))
+#         if isinstance(participant.participant, (ChannelParticipantCreator, ChannelParticipantAdmin)):
+#             return await event.reply(f"لا يمكنك تقييد {target_name} لأنه مشرف.")
+#     except Exception as e:
+#         return await hint(e)
+#     user_to_restrict = await r.get_sender()
+#     user_id = user_to_restrict.id
+#     now = int(time.time())
+#     restriction_duration = 30
+#     rights = ChatBannedRights(
+#         until_date=now + restriction_duration,
+#         send_messages=True
+#     )      
+#     try:
+#         await ABH(EditBannedRequest(channel=chat.id, participant=user_id, banned_rights=rights))
+#         await botuse("تقييد ميم")
+#         sender_name = await ment(sender)
+#         points[str(user_id)][str(chat_id)]["points"] -= 10000
+#         caption = f"تم تقييد {target_name} لمدة 30 ثانية. \n بطلب من {sender_name} \n\n **ملاحظة:** تم خصم 10000 نقطة من ثروتك."
+#         await ABH.send_file(chat_id, "https://t.me/VIPABH/592", caption=caption)
+#     except Exception as e:
+#         await event.reply("ياريت اقيده بس ماكدر 🥲")
+#         await hint(e)
 restriction_end_times = {}
 @ABH.on(events.NewMessage(pattern='^تقييد عام|مخفي قيده|مخفي قيدة$'))
 async def restrict_user(event):
@@ -69,7 +69,8 @@ async def restrict_user(event):
         return await event.reply("يجب الرد على رسالة العضو الذي تريد تقييده.")
     sender = await r.get_sender()
     if not is_assistant(chat_id, user_id):
-        await notAssistantres(event)
+        # await notAssistantres(event)
+        await chs(event, 'شني خالي كبينه انت مو معاون')
         return
     name = await ment(sender)
     try:
