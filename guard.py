@@ -54,7 +54,6 @@ async def notAssistantres(event):
         a = await ment(sender)
         c = f"تم تقييد {rrr} لمدة 10 ثواني. \n بطلب من {a}"
         await ABH.send_file(event.chat_id, "https://t.me/VIPABH/592", caption=c)
-        await event.delete()
     except Exception as e:
         await event.reply(" ياريت اقيده بس ماكدر ")
         await hint(e)
@@ -76,9 +75,8 @@ async def restrict_user(event):
         return await event.reply("يجب الرد على رسالة العضو الذي تريد تقييده.")
     sender = await r.get_sender()
     if not is_assistant(chat_id, user_id):
-        await event.reply("جا قيدته الك بس انت مو معاون")
+        await notAssistantres(event)
         return
-    await r.delete()
     name = await ment(sender)
     try:
         participant = await ABH(GetParticipantRequest(channel=chat.id, participant=sender.id))
@@ -103,6 +101,7 @@ async def restrict_user(event):
         rrr = await ment(ء)
         c = f"تم تقييد {rrr} لمدة 20 دقيقة."
         await ABH.send_file(event.chat_id, "https://t.me/VIPABH/592", caption=c)
+        await r.delete()
         await event.delete()
     except Exception as e:
         await event.reply(f" ياريت اقيده بس ماكدر {e}")
