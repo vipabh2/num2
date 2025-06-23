@@ -6,7 +6,7 @@ from other import is_assistant, botuse, is_owner
 from telethon import events, Button
 from Program import r as redas, chs
 import os, asyncio, re, json, time
-from top import points 
+from top import points, delpoints
 from ABH import ABH
 async def notAssistantres(event):
     if not event.is_group:
@@ -48,7 +48,7 @@ async def notAssistantres(event):
         await hint(e)
     await botuse("تقييد ميم")
     sender_name = await ment(sender)
-    points[event.sender_id][chat_id]["points"] -= 10000
+    delpoints(event.sender_id, chat_id, points, 10000)
     caption = f"تم تقييد {target_name} لمدة 30 ثانية. \n بطلب من {sender_name} \n\n **ملاحظة:** تم خصم 10000 نقطة من ثروتك."
     await ABH.send_file(chat_id, "https://t.me/VIPABH/592", caption=caption)
 restriction_end_times = {}
