@@ -48,7 +48,7 @@ async def notAssistantres(event):
         await hint(e)
     await botuse("تقييد ميم")
     sender_name = await ment(sender)
-    points[str(user_id)][str(chat_id)]["points"] -= 10000
+    points[user_id][chat_id]["points"] -= 10000
     caption = f"تم تقييد {target_name} لمدة 30 ثانية. \n بطلب من {sender_name} \n\n **ملاحظة:** تم خصم 10000 نقطة من ثروتك."
     await ABH.send_file(chat_id, "https://t.me/VIPABH/592", caption=caption)
 restriction_end_times = {}
