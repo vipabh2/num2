@@ -31,6 +31,14 @@ def add_user(uid, gid, name, rose, amount):
             "m": amount,
             "promote_value": 0
         }
+def delpoints(uid, gid, points, amount):
+    uid, gid = str(uid), str(gid)
+    if uid not in points:
+        points[uid] = {}
+    if gid not in points[uid]:
+        points[uid][gid] = {"points": 0}
+    points[uid][gid]["points"] = max(0, points[uid][gid]["points"] - amount)
+    save_points(points)
 @ABH.on(events.NewMessage(pattern=r'^الاغنياء$'))
 async def show_top_10_rich(event):
     if not event.is_group:
