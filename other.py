@@ -7,7 +7,7 @@ from playwright.async_api import async_playwright
 from Resources import suras, mention, ment, wfffp
 from database import store_whisper, get_whisper
 from telethon import events, Button
-from datetime import datetime
+from Program import CHANNEL_KEY 
 from ABH import ABH
 async def creat_useFILE():
     if not os.path.exists('use.json'):
@@ -270,8 +270,8 @@ async def quran(event):
     text = event.raw_text.strip()
     me = await event.client.get_me()
     username = me.username
-    c = f'**[Enjoy dear]**(https://t.me/{username})'
-    button = [Button.url("CHANNEL", "https://t.me/x04ou")]
+    c = f'**[Enjoy dear]**(https://t.me/{CHANNEL_KEY })'
+    button = [Button.url("🫀", "https://t.me/x04ou")]
     if text.lower() in ['قرآن', 'قران']:
         sura_number = random.randint(1, 114)
         message = await ABH.get_messages('theholyqouran', ids=sura_number + 1)
@@ -362,14 +362,12 @@ banned_url = [
 ]
 latmiyat_range = range(50, 315)
 async def send_random_latmia(event):
-    try:
-        chosen = random.choice(list(latmiyat_range))
-        if chosen in banned_url:
-            return await send_random_latmia(event)
-        latmia_url = f"https://t.me/x04ou/{chosen}"
-        await event.reply(file=latmia_url)
-    except Exception as e:
-        await event.reply(f"اعد المحاولة مره اخرى")
+    chosen = random.choice(list(latmiyat_range))
+    if chosen in banned_url:
+        return await send_random_latmia(event)
+    latmia_url = f"https://t.me/x04ou/{chosen}"
+    Buttons = [Button.url("🫀", "https://t.me/x04ou")]
+    await ABH.send_file(event.chat_id, file=latmia_url, buttons=Buttons, reply_to=event.id,)
 @ABH.on(events.NewMessage(pattern=r"^(لطمية|لطميه)$"))
 async def handle_latmia_command(event):
     type = "لطمية"
