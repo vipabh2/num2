@@ -53,7 +53,7 @@ async def change_own_rank(event):
     await botuse("تغيير لقبي")
     user_id = event.sender_id
     chat = await event.get_chat()
-    me = await event.client.get_permissions(chat.id, 'me')
+    me = await event.ABH.get_permissions(chat.id, 'me')
     if not me.is_admin or not me.add_admins:
         await chs(event, " لا أمتلك صلاحية تعديل المشرفين.")
         return
@@ -69,7 +69,7 @@ async def change_own_rank(event):
         await chs(event, "اللقب لازم يكون اقل من 14 حرف.")
         return
     try:
-        pp = await event.client(GetParticipantRequest(chat.id, user_id))
+        pp = await event.ABH(GetParticipantRequest(chat.id, user_id))
         participant = pp.participant
     except Exception as e:
         await ABH.send_message(wfffp, f"خطأ في جلب بيانات المستخدم: {e}")
@@ -80,7 +80,7 @@ async def change_own_rank(event):
         return
     admin_right = participant.admin_rights
     try:
-        await event.client(EditAdminRequest(
+        await event.ABH(EditAdminRequest(
             channel=chat.id,
             user_id=user_id,
             admin_rights=admin_right,
@@ -97,6 +97,10 @@ async def promoteADMIN(event):
     if not event.is_group:
         return
     type = "ترقية"
+    me = await event.ABH.get_permissions(chat.id, 'me')
+    if not me.is_admin or not me.add_admins:
+        await chs(event, " لا أمتلك صلاحية تعديل المشرفين.")
+        return
     await botuse(type)
     chat = await event.get_chat()
     user_id = event.sender_id
@@ -188,12 +192,11 @@ async def promoti(event):
             delete_stories =  True
         )
         c = 'مشرف'
-        await event.client(EditAdminRequest(event.chat_id, target_user_id, admin_rights, rank=c))
+        await event.ABH(EditAdminRequest(event.chat_id, target_user_id, admin_rights, rank=c))
         del session[chat_id]
         del promot[chat_id][target_user_id]
         return
     if data not in rights:
-        await event.answer('صلاحية غير معروفة', alert=True)
         return
     rights[data] = True
     await event.answer(f' تم تفعيل: {data}', alert=False)
