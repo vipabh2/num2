@@ -1,3 +1,4 @@
+
 from Resources import football, questions, mention, ment, wfffp #type: ignore
 from top import points, add_points #type: ignore
 from datetime import datetime, timedelta
@@ -1058,8 +1059,8 @@ async def register_player(event):
     if user_id in game["players"]:
         await event.respond('اسمك موجود بالفعل في اللعبة.')
         return
-    g["players"].add(user_id)
-    g["player_times"][user_id] = {"start": datetime.utcnow()}
+    game["players"].add(user_id)
+    game["player_times"][user_id] = {"start": datetime.utcnow()}
     await event.respond('تم تسجيلك، انتظر بدء اللعبة.')
 @ABH.on(events.NewMessage(pattern=r'^تم$'))
 async def start_game(event):
