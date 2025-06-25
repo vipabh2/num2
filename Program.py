@@ -1,24 +1,8 @@
-from other import wfffp, is_assistant
 from telethon import events, Button
 from Program import chs
+from other import wfffp
 from ABH import ABH
 import json, redis
-actions = ['يوتيوب', 'تقييد']
-@ABH.on(events.NewMessage(pattern=r'^ال(\w+)\s+(تفعيل|تعطيل)$'))
-async def toggle_feature(event):
-    if not is_assistant(event.chat_id, event.sender_id):
-        await chs(event, 'شني خالي كبينه انت مو معاون')
-        return
-    feature, action = event.pattern_match.groups()
-    if feature not in actions:
-        return
-    lock_key = f"lock:{event.chat_id}:{feature}"    
-    if action == "تفعيل":
-        r.set(lock_key, "True")
-        await chs(event, f'تم تفعيل الميزة {feature} تدلل حبيبي')
-    else:
-        r.set(lock_key, "False")
-        await chs(event, f'تم تعطيل الميزة {feature} تدلل حبيبي')
 CHANNEL_KEY = 'ANYMOUSupdate'
 r = redis.Redis(host='localhost', port=6379, db=0, decode_responses=True)
 async def chs(event, c):
