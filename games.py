@@ -953,7 +953,7 @@ async def faster_players(event):
         return
     global is_on
     game = g.get(event.chat_id)
-    if game and not game["join_enabled"]:
+    if game and not game["players"]:
         return
     if is_on and players:
         player_list = "\n".join([f"{pid} - {info['username']}" for pid, info in players.items()])
