@@ -125,10 +125,6 @@ async def chang(event):
         return
     if uid is not None and sender_id == uid:
         await event.edit(f"⌔︙رابط المستخدم: tg://user?id={user.id}")
-timezone = pytz.timezone('Asia/Baghdad')
-GEMINI = "AIzaSyA5pzOpKVcMGm6Aek82KoB3Pk94dYg3LX4"
-genai.configure(api_key=GEMINI)
-model = genai.GenerativeModel("gemini-1.5-flash")
 @ABH.on(events.NewMessage(pattern=r'(ترجمة|ترجمه)'))
 async def translation(event):
     if not event.is_group:
@@ -144,8 +140,9 @@ async def translation(event):
         original_text = command_parts[1] if len(command_parts) > 1 else None
     if not original_text:
         await event.reply("يرجى الرد على رسالة تحتوي على النص المراد ترجمته أو كتابة النص بجانب الأمر.")
+        
         return
-    detected_language = translator.detect(original_text)
+    detected_language = await translator.detect(original_text)
     if detected_language.lang == "ar": 
         translated = translator.translate(original_text, dest="en")
     else: 
