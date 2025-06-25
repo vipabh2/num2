@@ -3,6 +3,7 @@ from other import botuse, is_assistant
 from telethon import events, Button
 from yt_dlp import YoutubeDL
 from Program import r, chs
+from Resources import hint
 import os, asyncio, json
 from ABH import ABH
 COOKIES_FILE = 'c.txt'
@@ -29,11 +30,12 @@ YDL_OPTIONS = {
         'preferredquality': '128',
     }],
 }
+x = {}
 @ABH.on(events.NewMessage(pattern=r'^(يوت|yt) (.+)'))
 async def download_audio(event):
     lock_key = f"lock:{event.chat_id}:يوتيوب"
-    x = r.get(lock_key) == "True"
-    if not x:
+    z = r.get(lock_key) == "True"
+    if not z:
         return
     query = event.pattern_match.group(2)
     type = "يوت"
@@ -58,10 +60,11 @@ async def download_audio(event):
                     reply_to=event.message.id
                 )
                 return
-        await event.reply(f'جاري البحث عن {query}')
+        msg = await event.reply(f'جاري البحث عن {query}')
+        x.setdefault(event.chat_id, {}).setdefault(event.sender_id, set()).add(msg.id)
         ydl = YoutubeDL(YDL_OPTIONS)
         search_result = await asyncio.to_thread(ydl.extract_info, f"ytsearch:{query}", download=False)
-        if 'entries' not in search_result or not search_result['entries']:
+        if 'entries' not in search_result or not search_result['entries']:    
             await event.reply("لم يتم العثور على نتائج.")
             return
         video_info = search_result['entries'][0]
@@ -92,7 +95,17 @@ async def download_audio(event):
                 reply_to=event.message.id
             )
             return
-        await event.reply(f'جاري تنزيل {query}')
+        msg_ids = x.get(event.chat_id, {}).get(event.sender_id)
+        if msg_ids:
+            for m_id in msg_ids:
+                try:
+                    await event.client.edit_message(event.chat_id, m_id, f'جاري تنزيل {query}')
+                except Exception as e:
+                    await hint(event, f"خطأ في تحديث الرسالة: {str(e)}")
+                    pass
+                
+        else:
+            await event.reply(f'جاري تنزيل {query}')
         download_info = await asyncio.to_thread(ydl.extract_info, f"ytsearch:{query}", download=True)
         downloaded_video = download_info['entries'][0]
         file_path = ydl.prepare_filename(downloaded_video).replace(".webm", ".mp3").replace(".m4a", ".mp3")
