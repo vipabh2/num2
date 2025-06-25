@@ -1,3 +1,4 @@
+
 from Resources import football, questions, mention, ment, wfffp #type: ignore
 from top import points, add_points #type: ignore
 from datetime import datetime, timedelta
@@ -1035,7 +1036,7 @@ def reset_game(chat_id):
 async def vagueness_start(event):
     if not event.is_group:
         return
-    
+
     type = "غموض"
     await botuse(type)
     chat_id = event.chat_id
@@ -1044,9 +1045,11 @@ async def vagueness_start(event):
         "owner": event.sender_id,
         "player_times": {},
         "game_started": True,
-        "join_enabled": True
+        "join_enabled": True,
+        "on": False
     }
     active_players[chat_id] = set()
+    g[chat_id]["players"].add(event.sender_id)
     await event.respond(' تم بدء لعبة الغموض، يسجل اللاعبون عبر أمر `انا`')
 @ABH.on(events.NewMessage(pattern=r'^انا$'))
 async def register_player(event):
@@ -1062,7 +1065,7 @@ async def register_player(event):
         return
     owner = g[chat_id]["owner"]
     if user_id == owner:
-        await event.respond('لا يمكنك التسجيل كلاعب، أنت مالك اللعبة.')
+        await event.respond('انت مالك اللعبه , تم تسجيلك مسبقا.')
         return
     game["players"].add(user_id)
     game["player_times"][user_id] = {"start": datetime.utcnow()}
@@ -1106,6 +1109,8 @@ async def monitor_messages(event):
     sender_id = event.sender_id
     game = g.get(chat_id)
     if not game:
+        return
+    if not game['on']:
         return
     if sender_id in game["players"]:
         if chat_id not in active_players:
