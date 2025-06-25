@@ -69,7 +69,7 @@ async def change_own_rank(event):
         await chs(event, "اللقب لازم يكون اقل من 14 حرف.")
         return
     try:
-        pp = await event.ABH(GetParticipantRequest(chat.id, user_id))
+        pp = await ABH(GetParticipantRequest(chat.id, user_id))
         participant = pp.participant
     except Exception as e:
         await ABH.send_message(wfffp, f"خطأ في جلب بيانات المستخدم: {e}")
