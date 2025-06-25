@@ -193,7 +193,7 @@ async def promoti(event):
             delete_stories =  True
         )
         c = 'مشرف'
-        await event.ABH(EditAdminRequest(event.chat_id, target_user_id, admin_rights, rank=c))
+        await ABH(EditAdminRequest(event.chat_id, target_user_id, admin_rights, rank=c))
         del session[chat_id]
         del promot[chat_id][target_user_id]
         return
