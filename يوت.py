@@ -6,6 +6,22 @@ from Program import r, chs
 from Resources import hint
 import os, asyncio, json
 from ABH import ABH
+actions = ['يوتيوب', 'تقييد']
+@ABH.on(events.NewMessage(pattern=r'^ال(\w+)\s+(تفعيل|تعطيل)$'))
+async def toggle_feature(event):
+    if not is_assistant(event.chat_id, event.sender_id):
+        await chs(event, 'شني خالي كبينه انت مو معاون')
+        return
+    feature, action = event.pattern_match.groups()
+    if feature not in actions:
+        return
+    lock_key = f"lock:{event.chat_id}:{feature}"    
+    if action == "تفعيل":
+        r.set(lock_key, "True")
+        await chs(event, f'تم تفعيل الميزة {feature} تدلل حبيبي')
+    else:
+        r.set(lock_key, "False")
+        await chs(event, f'تم تعطيل الميزة {feature} تدلل حبيبي')
 COOKIES_FILE = 'c.txt'
 if not os.path.exists("downloads"):
     os.makedirs("downloads")
