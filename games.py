@@ -1,4 +1,3 @@
-
 from Resources import football, questions, mention, ment, wfffp #type: ignore
 from top import points, add_points #type: ignore
 from datetime import datetime, timedelta
@@ -953,10 +952,12 @@ async def faster_players(event):
     if not event.is_group:
         return
     global is_on
+    game = g.get(event.chat_id)
+    if game and not game["join_enabled"]:
+        return
     if is_on and players:
         player_list = "\n".join([f"{pid} - {info['username']}" for pid, info in players.items()])
         await event.reply(f"📜 قائمة اللاعبين:\n{player_list}")
-        is_on = True
     else:
         await event.reply('ماكو لاعبين 🙃')
 s = random.randint(6, 8)
@@ -1060,12 +1061,12 @@ async def register_player(event):
     game = g.get(chat_id)
     if not game or not game["game_started"] or not game["join_enabled"]:
         return
-    if user_id in game["players"]:
-        await event.respond('اسمك موجود بالفعل في اللعبة.')
-        return
     owner = g[chat_id]["owner"]
     if user_id == owner:
         await event.respond('انت مالك اللعبه , تم تسجيلك مسبقا.')
+        return
+    if user_id in game["players"]:
+        await event.respond('اسمك موجود بالفعل في اللعبة.')
         return
     game["players"].add(user_id)
     game["player_times"][user_id] = {"start": datetime.utcnow()}
@@ -1083,8 +1084,8 @@ async def start_game(event):
     if not game or not game.get("game_started"):
         return
     if len(game["players"]) < 2:
-        await event.respond('عدد اللاعبين غير كافٍ لبدء اللعبة.')
         reset_game(chat_id)
+        await event.respond('تم الغاء اللعبة بسبب عدم وجود لاعبين كافيين.')
         return
     game["join_enabled"] = False
     await event.respond('تم بدء اللعبة , اي رد على رسالة سيؤدي لخسارة اللاعب.')
