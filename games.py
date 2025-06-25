@@ -1,4 +1,3 @@
-
 from Resources import football, questions, mention, ment, wfffp #type: ignore
 from top import points, add_points #type: ignore
 from datetime import datetime, timedelta
@@ -1077,8 +1076,8 @@ async def start_game(event):
         await event.respond('فقط مالك اللعبة يمكنه بدء اللعبة.')
         return
     chat_id = event.chat_id
-    game = g.get(chat_id)
-    if not g or not g["game_started"]:
+    game = g.get(chat_id)    
+    if not game or not game.get("game_started"):
         return
     if len(game["players"]) < 2:
         await event.respond('عدد اللاعبين غير كافٍ لبدء اللعبة.')
