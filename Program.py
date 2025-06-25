@@ -1,10 +1,14 @@
+from other import wfffp, is_assistant
 from telethon import events, Button
-from other import wfffp
+from Program import chs
 from ABH import ABH
 import json, redis
 actions = ['يوتيوب', 'تقييد']
 @ABH.on(events.NewMessage(pattern=r'^ال(\w+)\s+(تفعيل|تعطيل)$'))
 async def toggle_feature(event):
+    if not is_assistant(event.chat_id, event.sender_id):
+        await chs(event, 'شني خالي كبينه انت مو معاون')
+        return
     feature, action = event.pattern_match.groups()
     if feature not in actions:
         return
