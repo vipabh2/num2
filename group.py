@@ -144,9 +144,9 @@ async def translation(event):
         return
     detected_language = await translator.detect(original_text)
     if detected_language.lang == "ar": 
-        translated = translator.translate(original_text, dest="en")
+        translated = await translator.translate(original_text, dest="en")
     else: 
-        translated = translator.translate(original_text, dest="ar")
+        translated = await translator.translate(original_text, dest="ar")
     response = (
         f"اللغة المكتشفة: {detected_language.lang}\n"
         f"النص المترجم: `{translated.text}`"
