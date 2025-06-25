@@ -53,7 +53,7 @@ async def change_own_rank(event):
     await botuse("تغيير لقبي")
     user_id = event.sender_id
     chat = await event.get_chat()
-    me = await event.ABH.get_permissions(chat.id, 'me')
+    me = await ABH.get_permissions(chat.id, 'me')
     if not me.is_admin or not me.add_admins:
         await chs(event, " لا أمتلك صلاحية تعديل المشرفين.")
         return
@@ -80,7 +80,7 @@ async def change_own_rank(event):
         return
     admin_right = participant.admin_rights
     try:
-        await event.ABH(EditAdminRequest(
+        await ABH(EditAdminRequest(
             channel=chat.id,
             user_id=user_id,
             admin_rights=admin_right,
@@ -97,7 +97,7 @@ async def promoteADMIN(event):
     if not event.is_group:
         return
     type = "ترقية"
-    me = await event.ABH.get_permissions(chat.id, 'me')
+    me = await ABH.get_permissions(chat.id, 'me')
     if not me.is_admin or not me.add_admins:
         await chs(event, " لا أمتلك صلاحية تعديل المشرفين.")
         return
