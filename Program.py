@@ -1,5 +1,4 @@
 from telethon import events, Button
-from Program import chs
 from other import wfffp
 from ABH import ABH
 import json, redis
