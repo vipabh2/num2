@@ -1036,11 +1036,13 @@ def reset_game(chat_id):
 async def vagueness_start(event):
     if not event.is_group:
         return
+    
     type = "غموض"
     await botuse(type)
     chat_id = event.chat_id
     g[chat_id] = {
         "players": set(),
+        "owner": event.sender_id,
         "player_times": {},
         "game_started": True,
         "join_enabled": True
@@ -1059,12 +1061,20 @@ async def register_player(event):
     if user_id in game["players"]:
         await event.respond('اسمك موجود بالفعل في اللعبة.')
         return
+    owner = g[chat_id]["owner"]
+    if user_id == owner:
+        await event.respond('لا يمكنك التسجيل كلاعب، أنت مالك اللعبة.')
+        return
     game["players"].add(user_id)
     game["player_times"][user_id] = {"start": datetime.utcnow()}
     await event.respond('تم تسجيلك، انتظر بدء اللعبة.')
 @ABH.on(events.NewMessage(pattern=r'^تم$'))
 async def start_game(event):
     if not event.is_group:
+        return
+    owner = g.get(event.chat_id, {}).get("owner")
+    if not owner or event.sender_id != owner:
+        await event.respond('فقط مالك اللعبة يمكنه بدء اللعبة.')
         return
     chat_id = event.chat_id
     game = g.get(chat_id)
