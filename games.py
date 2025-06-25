@@ -1072,7 +1072,7 @@ async def start_game(event):
     if not event.is_group:
         return
     owner = g.get(event.chat_id, {}).get("owner")
-    if not owner or event.sender_id != owner:
+    if event.sender_id != owner:
         await event.respond('فقط مالك اللعبة يمكنه بدء اللعبة.')
         return
     chat_id = event.chat_id
