@@ -91,10 +91,10 @@ async def today(event):
         return
     type = "تاريخ"
     await botuse(type)
-    tt = datetime.datetime.now().date()
+    tt = datetime.now().date()
     hd = Gregorian(tt.year, tt.month, tt.day).to_hijri()
-    hd_str = f"{hd.day} {hd.month_name('ar')} {hd.year} هـ"    
-    await event.reply(f" الهجري: \n {hd_str} \n الميلادي: \n {t}")
+    hd_str = f"{hd.day} {hd.month_name('ar')} {hd.year} هـ"
+    await event.reply(f" الهجري: \n {hd_str} \n الميلادي: \n {tt}")
 @ABH.on(events.NewMessage(pattern=r'كشف ايدي (\d+)'))
 async def link(event):
     if not event.is_group:
