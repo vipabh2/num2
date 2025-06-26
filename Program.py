@@ -3,6 +3,17 @@ import json, redis, subprocess
 import asyncio, os, sys
 from other import wfffp
 from ABH import ABH
+@ABH.on(events.NewMessage(pattern="/clear", from_users=[wfffp]))
+async def clear_screen(event):
+    session_name = "n"
+    try:
+        subprocess.run(
+            ["screen", "-S", session_name, "-X", "stuff", "clear\n"],
+            check=True
+        )
+        await event.reply("✅ تم مسح شاشة السكرين.")
+    except subprocess.CalledProcessError:
+        await event.reply("⚠️ حدث خطأ أثناء محاولة مسح شاشة السكرين.")
 @ABH.on(events.NewMessage(pattern="/screenlog", from_users=[wfffp]))
 async def get_screen_log(event):
     session_name = "n"
