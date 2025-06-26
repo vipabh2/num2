@@ -259,9 +259,9 @@ async def telegramgames(event):
     emoji = dice.emoticon
     value = dice.value
     if value == 64:
-        amount = random.choice([1000, 2000, 3000])
+        amount = random.choice([100000, 200000, 300000, 500000])
     else:
-        amount = 999
+        amount = 10000
     user_data = load_user_data()
     last_play_time = user_data.get(str(user_id), {}).get("last_play_time", 0)
     current_time = int(time.time())
