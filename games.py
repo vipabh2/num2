@@ -952,8 +952,9 @@ async def faster_players(event):
     if not event.is_group:
         return
     global is_on
-    game = g.get(event.chat_id)
-    if game and not game["players"]:
+    chat_id = event.chat_id
+    game = g.get(chat_id)
+    if game and game["players"]:
         return
     if is_on and players:
         player_list = "\n".join([f"{pid} - {info['username']}" for pid, info in players.items()])
@@ -1129,7 +1130,7 @@ async def monitor_messages(event):
         game["player_times"].pop(sender_id, None)
         x = random.randint(500, 1000)
         await event.reply(
-            f' اللاعب {mention} رد على رسالة وخسر!\n مدة اللعب {format_duration(duration)} اضفت اله {x}',
+            f' اللاعب {mention} رد على رسالة وخسر!\n مدة اللعب {format_duration(duration)} اضفت اله ( `{x}` )',
             parse_mode='md'
         )
         add_points(sender_id, chat_id, points, amount=x)
@@ -1168,7 +1169,7 @@ async def announce_winner(chat_id):
     x = random.randint(1000, 10000)
     await ABH.send_message(
         chat_id,
-        f'🎉 انتهت اللعبة.\n🏆 الفائز هو: [{winner.first_name}](tg://user?id={winner_id})\n⏱️ مدة اللعب: {format_duration(win_time)} اضف له {x}',
+        f'🎉 انتهت اللعبة.\n🏆 الفائز هو: [{winner.first_name}](tg://user?id={winner_id})\n⏱️ مدة اللعب: {format_duration(win_time)} اضف له (` {x} `)',
         parse_mode='md'
     )
     add_points(winner_id, chat_id, points, amount=x)
