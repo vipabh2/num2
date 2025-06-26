@@ -1108,8 +1108,8 @@ async def monitor_messages(event):
     chat_id = event.chat_id
     sender_id = event.sender_id
     game = g.get(chat_id)
-    # if not game or not game['on']:
-    #     return
+    if not game or not game['on']:
+        return
     if sender_id in game["players"]:
         if chat_id not in active_players:
             active_players[chat_id] = set()
@@ -1171,3 +1171,4 @@ async def announce_winner(chat_id):
     )
     add_points(winner_id, chat_id, points, amount=x)
     reset_game(chat_id)
+    
