@@ -6,7 +6,7 @@ from ABH import ABH
 @ABH.on(events.NewMessage(pattern="/screenlog", from_users=[wfffp]))
 async def get_screen_log(event):
     session_name = "n"
-    temp_log_file = "/tmp/screen_log.txt"
+    temp_log_file = "/tmp/log.txt"
     try:
         subprocess.run(
             ["screen", "-S", session_name, "-X", "hardcopy", "-h", temp_log_file],
