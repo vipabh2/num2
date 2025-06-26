@@ -4,10 +4,10 @@ from db import save_date, get_saved_date #type: ignore
 from ABH import ABH, events #type: ignore
 from hijri_converter import Gregorian
 from googletrans import Translator
+from datetime import datetime
 from telethon import Button
 from ABH import ABH, events
 from other import botuse
-import datetime
 @ABH.on(events.NewMessage(pattern='^/dates|مواعيد$'))
 async def show_dates(event):
     if not event.is_group:
@@ -91,8 +91,8 @@ async def today(event):
         return
     type = "تاريخ"
     await botuse(type)
-    t = datetime.datetime.now().date()
-    hd = Gregorian(t.year, t.month, t.day).to_hijri()
+    tt = datetime.datetime.now().date()
+    hd = Gregorian(tt.year, tt.month, tt.day).to_hijri()
     hd_str = f"{hd.day} {hd.month_name('ar')} {hd.year} هـ"    
     await event.reply(f" الهجري: \n {hd_str} \n الميلادي: \n {t}")
 @ABH.on(events.NewMessage(pattern=r'كشف ايدي (\d+)'))
