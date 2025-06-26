@@ -2,9 +2,9 @@ from telethon.tl.functions.channels import  GetParticipantRequest
 from telethon.tl.types import KeyboardButtonCallback
 from db import save_date, get_saved_date #type: ignore
 from ABH import ABH, events #type: ignore
+from datetime import datetime, timedelta
 from hijri_converter import Gregorian
 from googletrans import Translator
-from datetime import datetime
 from telethon import Button
 from ABH import ABH, events
 from other import botuse
@@ -92,9 +92,10 @@ async def today(event):
     type = "تاريخ"
     await botuse(type)
     tt = datetime.now().date()
-    hd = Gregorian(tt.year, tt.month, tt.day).to_hijri()
+    tt_minus_one = tt - timedelta(days=1)
+    hd = Gregorian(tt_minus_one.year, tt_minus_one.month, tt_minus_one.day).to_hijri()
     hd_str = f"{hd.day} {hd.month_name('ar')} {hd.year} هـ"
-    await event.reply(f" الهجري: \n {hd_str} \n الميلادي: \n {tt}")
+    await event.reply(f"الهجري: \n{hd_str} \nالميلادي: \n{tt_minus_one}")
 @ABH.on(events.NewMessage(pattern=r'كشف ايدي (\d+)'))
 async def link(event):
     if not event.is_group:
