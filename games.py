@@ -1050,6 +1050,7 @@ async def vagueness_start(event):
     }
     active_players[chat_id] = set()
     g[chat_id]["players"].add(event.sender_id)
+    g[chat_id]["player_times"][event.sender_id] = {"start": datetime.utcnow()}
     await event.respond(' تم بدء لعبة الغموض، يسجل اللاعبون عبر أمر `انا`')
 @ABH.on(events.NewMessage(pattern=r'^انا$'))
 async def register_player(event):
