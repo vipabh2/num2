@@ -14,7 +14,8 @@ from mem import *
 from top import * 
 from امسح import * 
 from يوت import * 
-now = datetime.now()
+baghdad_tz = pytz.timezone('Asia/Baghdad')
+now = datetime.now(baghdad_tz)
 hour = now.strftime("%y\\%m\\%d--%I:%M%p")
 اسم_الملف = "التشغيل.json"
 if not os.path.exists(اسم_الملف):
