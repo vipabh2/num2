@@ -1,15 +1,13 @@
-from telethon.tl.types import KeyboardButtonCallback
 from telethon.tl.functions.channels import  GetParticipantRequest
+from telethon.tl.types import KeyboardButtonCallback
 from db import save_date, get_saved_date #type: ignore
 from ABH import ABH, events #type: ignore
 from hijri_converter import Gregorian
 from googletrans import Translator
-import google.generativeai as genai
-from datetime import datetime
 from telethon import Button
 from ABH import ABH, events
 from other import botuse
-import pytz
+import datetime
 @ABH.on(events.NewMessage(pattern='^/dates|مواعيد$'))
 async def show_dates(event):
     if not event.is_group:
