@@ -1087,6 +1087,7 @@ async def start_game(event):
         await event.respond('تم الغاء اللعبة بسبب عدم وجود لاعبين كافيين.')
         return
     game["join_enabled"] = False
+    game["on"] = True
     await event.respond('تم بدء اللعبة , اي رد على رسالة سيؤدي لخسارة اللاعب.')
 @ABH.on(events.NewMessage(pattern=r'^الاعبين$'))
 async def show_players(event):
@@ -1171,4 +1172,3 @@ async def announce_winner(chat_id):
     )
     add_points(winner_id, chat_id, points, amount=x)
     reset_game(chat_id)
-    
