@@ -1037,7 +1037,6 @@ def reset_game(chat_id):
 async def vagueness_start(event):
     if not event.is_group:
         return
-
     type = "غموض"
     await botuse(type)
     chat_id = event.chat_id
@@ -1109,10 +1108,8 @@ async def monitor_messages(event):
     chat_id = event.chat_id
     sender_id = event.sender_id
     game = g.get(chat_id)
-    if not game:
-        return
-    if not game['on']:
-        return
+    # if not game or not game['on']:
+    #     return
     if sender_id in game["players"]:
         if chat_id not in active_players:
             active_players[chat_id] = set()
