@@ -1,8 +1,24 @@
 from telethon import events, Button
+import json, redis, subprocess
 import asyncio, os, sys
 from other import wfffp
 from ABH import ABH
-import json, redis
+@ABH.on(events.NewMessage(pattern="/screenlog", from_users=[wfffp]))
+async def get_screen_log(event):
+    session_name = "n"
+    temp_log_file = "/tmp/screen_log.txt"
+    try:
+        subprocess.run(
+            ["screen", "-S", session_name, "-X", "hardcopy", "-h", temp_log_file],
+            check=True
+        )
+        await ABH.send_file(
+            wfffp,
+            temp_log_file,
+            caption="📄 آخر 500 سطر من شاشة البوت (screen)"
+        )
+    except subprocess.CalledProcessError:
+        await event.respond("⚠️ حدث خطأ أثناء قراءة سجل screen.\nتحقق من اسم الجلسة أو صلاحيات الوصول.")
 CHANNEL_KEY = 'ANYMOUSupdate'
 r = redis.Redis(host='localhost', port=6379, db=0, decode_responses=True)
 async def chs(event, c):
@@ -16,7 +32,7 @@ async def run_cmd(command: str):
     )
     stdout, stderr = await process.communicate()
     return stdout.decode().strip(), stderr.decode().strip(), process.returncode
-@ABH.on(events.NewMessage(pattern="^تحديث$", from_users=[wfffp]))
+@ABH.on(events.NewMessage(pattern="^حدث$", from_users=[wfffp]))
 async def update_repo(event):
     await event.respond(" جاري جلب آخر التحديثات من الريبو عبر...")
     stdout, stderr, code = await run_cmd("git pull")
