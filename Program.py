@@ -1,4 +1,5 @@
 from telethon import events, Button
+import asyncio, os, sys
 from other import wfffp
 from ABH import ABH
 import json, redis
@@ -7,6 +8,23 @@ r = redis.Redis(host='localhost', port=6379, db=0, decode_responses=True)
 async def chs(event, c):
     buttons = Button.url('🫆', url=f'https://t.me/{CHANNEL_KEY}')
     await ABH.send_message(event.chat_id, c, reply_to=event.id, buttons=buttons)
+async def run_cmd(command: str):
+    process = await asyncio.create_subprocess_shell(
+        command,
+        stdout=asyncio.subprocess.PIPE,
+        stderr=asyncio.subprocess.PIPE
+    )
+    stdout, stderr = await process.communicate()
+    return stdout.decode().strip(), stderr.decode().strip(), process.returncode
+@ABH.on(events.NewMessage(pattern="^حدث$", from_users=[wfffp]))
+async def update_repo(event):
+    await event.respond(" جاري جلب آخر التحديثات من الريبو عبر...")
+    stdout, stderr, code = await run_cmd("git pull")
+    if code == 0:
+        await event.reply(f" تحديث السورس بنجاح")
+        os.execv(sys.executable, [sys.executable, "config.py"])
+    else:
+        await event.reply(f" حدث خطأ أثناء التحديث:\n\n{stderr}")
 @ABH.on(events.NewMessage(pattern=r'^تعيين القناة (.+)', from_users=[wfffp]))
 async def add_channel(event):
     global CHANNEL_KEY
