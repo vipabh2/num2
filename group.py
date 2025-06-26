@@ -95,7 +95,7 @@ async def today(event):
     tt_minus_one = tt - timedelta(days=1)
     hd = Gregorian(tt_minus_one.year, tt_minus_one.month, tt_minus_one.day).to_hijri()
     hd_str = f"{hd.day} {hd.month_name('ar')} {hd.year} هـ"
-    await event.reply(f"الهجري: \n{hd_str} \nالميلادي: \n{tt_minus_one}")
+    await event.reply(f"الهجري: \n{hd_str}")
 @ABH.on(events.NewMessage(pattern=r'كشف ايدي (\d+)'))
 async def link(event):
     if not event.is_group:
