@@ -3,7 +3,7 @@ from ABH import ABH #type: ignore
 from datetime import datetime
 from telethon import events
 from other import botuse
-import asyncio, os, json
+import asyncio, os, json, pytz
 DATA_FILE = "uinfo.json"
 DATA_FILE_WEAK = "uinfoWEAK.json"
 RESET_FILE = "last_reset.txt"
@@ -66,7 +66,8 @@ async def unified_handler(event):
     global uinfo, WEAK
     if not event.is_group:
         return
-    now = datetime.now()
+    baghdad_tz = pytz.timezone('Asia/Baghdad')
+    now = datetime.now(baghdad_tz)
     current_time = now.strftime("%H:%M")
     current_date = now.strftime("%Y-%m-%d")
     weekday = now.weekday()
