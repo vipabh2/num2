@@ -956,7 +956,6 @@ async def faster_players(event):
     game = g.get(chat_id)
     if game and game["players"]:
         return
-    print(game['players'])
     if is_on and players:
         player_list = "\n".join([f"{pid} - {info['username']}" for pid, info in players.items()])
         await event.reply(f"📜 قائمة اللاعبين:\n{player_list}")
