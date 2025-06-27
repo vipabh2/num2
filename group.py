@@ -33,7 +33,7 @@ async def set_date(event):
     await event.edit("من فضلك أدخل التاريخ بصيغة YYYY-MM-DD مثال: 2025-06-15", buttons=None)
 @ABH.on(events.CallbackQuery(data='m'))
 async def handle_m(event):
-    x = (2025, 6, 27)
+    x = (2026, 6, 17)
     الان = datetime.today()
     x_datetime = datetime(*x)
     الباقي = x_datetime - الان
