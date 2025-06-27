@@ -865,12 +865,12 @@ async def handle_choice(event, user_choice_key):
             (user_choice_key == "cuter" and bot_choice_key == "paper")
         ):
             result = "🎉 فزت"
-            x = random.randint(500, 1500)
+            x = random.randint(5000, 1500)
         else:
             result = "😢 خسرت"
             x = 0
         if x > 0:
-            p = random.randint(50, 500)
+            p = random.randint(500, 1000)
             add_points(event.sender_id, chat_id, points, amount=p)
         msg = (
             f"{game['name1']} {user_choice}\n"
@@ -947,7 +947,7 @@ async def faster_join(event):
             await event.reply('سجلتك باللعبة، لا ترسل مجددًا!')
         else:
             await event.reply("عزيزي الصديق، سجلتك والله!")
-@ABH.on(events.NewMessage(pattern="(?i)الاعبين$"))
+@ABH.on(events.NewMessage(pattern="(?i)اللاعبين$"))
 async def faster_players(event):
     if not event.is_group:
         return
@@ -956,6 +956,7 @@ async def faster_players(event):
     game = g.get(chat_id)
     if game and game["players"]:
         return
+    print(game['players'])
     if is_on and players:
         player_list = "\n".join([f"{pid} - {info['username']}" for pid, info in players.items()])
         await event.reply(f"📜 قائمة اللاعبين:\n{player_list}")
@@ -1091,7 +1092,7 @@ async def start_game(event):
     game["join_enabled"] = False
     game["on"] = True
     await event.respond('تم بدء اللعبة , اي رد على رسالة سيؤدي لخسارة اللاعب.')
-@ABH.on(events.NewMessage(pattern=r'^الاعبين$'))
+@ABH.on(events.NewMessage(pattern=r'^اللاعبين$'))
 async def show_players(event):
     if not event.is_group:
         return
