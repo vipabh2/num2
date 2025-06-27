@@ -33,7 +33,7 @@ async def set_my_reply(event):
     await botuse(type)
     chat_id = event.chat_id
     user_id = event.sender_id
-    reply_name = event.pattern_match.group(1).strip()
+    reply_name = event.pattern_match.group(1)
     if not reply_name:
         await event.reply('عذراً، يجب كتابة اسم الرد مع الأمر.')
         return
