@@ -162,7 +162,7 @@ async def delete_reply(event):
     type = "حذف رد"
     await botuse(type)
     chat_id = event.chat_id
-    reply_name = event.pattern_match.group(1).strip()
+    reply_name = event.pattern_match.group(1)
     if not reply_name:
         await event.reply('عذرا لازم تكتب اسم الرد وي الامر')
         return
