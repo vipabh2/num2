@@ -110,15 +110,20 @@ async def link(event):
         return
     try:
         user = await event.client.get_entity(int(user_id))
-    except Exception as e:
+    except:
+        button = [Button.inline("تحويل علئ اي حال", b"changANYway")]
         return await event.reply(f"لا يوجد حساب بهذا الآيدي...")
-    tag = user.first_name if user.first_name else '....'
+    tag = await ment(user)
     button = [Button.inline("تغيير إلى رابط", b"recgange")]
     await event.reply(f"⌔︙[{tag}](tg://user?id={user.id})", buttons=[button])
 @ABH.on(events.CallbackQuery(data=b"recgange"))
 async def chang(event):
     await asyncio.sleep(3)
     await event.edit(f"⌔︙رابط المستخدم: tg://user?id={user.id}")
+@ABH.on(events.CallbackQuery(data=b"changANYway"))
+async def chang(event):
+    await asyncio.sleep(3)
+    await event.edit(f"⌔︙رابط المستخدم: tg://user?id={user.id} \n {await ment(user)}")
 @ABH.on(events.NewMessage(pattern=r'(ترجمة|ترجمه)'))
 async def translation(event):
     if not event.is_group:
