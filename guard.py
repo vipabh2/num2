@@ -192,8 +192,8 @@ async def edited(event):
     whitelist = await lw(chat_id)
     if event.sender_id in whitelist:
         return
-    has_media = bool(msg.media)
-    has_document = bool(msg.document)
+    has_media = msg.media
+    has_document = msg.document
     has_url = any(isinstance(entity, MessageEntityUrl) for entity in (msg.entities or []))
     if not (has_media or has_document or has_url):
         return
@@ -234,7 +234,6 @@ async def edited(event):
     await event.delete()
 @ABH.on(events.CallbackQuery(pattern=r'^yes:(\d+)$'))
 async def yes_callback(event):
-    uid = int(event.pattern_match.group(1))
     await event.answer(' تم تسجيل المستخدم كملغّم.')
 @ABH.on(events.CallbackQuery(pattern=r'^no:(\d+)$'))
 async def no_callback(event):
