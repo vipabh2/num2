@@ -48,7 +48,9 @@ async def store_media_messages(event):
             x = len(media_messages[chat_id]) >= 10
             lock_key = f"lock:{event.chat_id}:تنظيف"
             z = r.get(lock_key) == "True"
-            if x and not z:
+            if x:
+                return
+            if not z:
                 return
             await delete_media(chat_id)
 @ABH.on(events.NewMessage(pattern='^امسح|تنظيف$'))
