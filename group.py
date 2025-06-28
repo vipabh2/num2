@@ -105,8 +105,10 @@ async def link(event):
     type = "كشف ايدي"
     await botuse(type)
     id = event.sender_id
-    users[event.chat_id][event.id] = {id}
-    user_id = event.pattern_match.group(1)
+    chat_id = event.chat_id
+    if chat_id not in users:
+        users[chat_id][event.id] = {id}
+        user_id = event.pattern_match.group(1)
     if not user_id:
         await event.reply("استخدم الأمر كـ `كشف ايدي 1910015590`")
         return
@@ -116,7 +118,6 @@ async def link(event):
         button = KeyboardButtonCallback("اغيره رابط؟", b"changANYway")
         await hint(event, e)
         return await event.reply(f"لا يوجد حساب بهذا الآيدي...", buttons=[button])
-    tag = user.first_name if user.first_name else '....'
     button = KeyboardButtonCallback("تغيير الئ رابط", b"recgange")
     x = await ment(user)
     await event.reply(x, buttons=[button])
