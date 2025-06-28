@@ -124,7 +124,6 @@ async def link(event):
     await event.reply(mention, buttons=[button])
 @ABH.on(events.CallbackQuery(data=b"recgange"))
 async def chang(event):
-    sender_id = event.sender_id
     msg = await event.get_message()
     msg_id = msg.id
     chat_id = event.chat_id
@@ -135,7 +134,7 @@ async def chang(event):
         await event.answer("❗️لا توجد معلومات محفوظة لهذه الرسالة.", alert=True)
     await asyncio.sleep(3)
     user_id = next(iter(original_sender))
-    if sender_id != user_id:
+    if event.sender_id != user_id:
         return await event.answer(
             "شلون وي الحشريين احنة؟\nعزيزي، هذا الأمر خاص بصاحب الرسالة فقط 😏",
             alert=True
