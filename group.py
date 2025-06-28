@@ -125,7 +125,7 @@ async def link(event):
 async def chang(event):
     sender_id = event.sender_id
     chat_id = event.chat_id
-    msg_id = event.message.id
+    msg_id = event.id
     try:
         user_id = next(iter(users[chat_id][msg_id]))
     except (KeyError, StopIteration):
