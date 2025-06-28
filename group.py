@@ -104,11 +104,10 @@ async def link(event):
         return
     await botuse("كشف ايدي")
     sender_id = event.sender_id
-    chat_id = event.chat_id
-    msg_id = event.id
-    if chat_id not in users:
-        users[chat_id] = {}
-    users[chat_id][msg_id] = sender_id
+    id = event.id
+    if id not in users:
+        users[id] = {}
+    users[id] = sender_id
     user_id = event.pattern_match.group(1)
     if not user_id:
         await event.reply("استخدم الأمر بهذا الشكل \n`كشف ايدي 1910015590`")
@@ -117,7 +116,7 @@ async def link(event):
         user = await event.client.get_entity(int(user_id))
     except Exception as e:
         button = Button.inline("اغيره رابط؟", b"changANYway")
-        await hint(event, str(e))
+        await hint(e)
         return await event.reply("لا يوجد حساب بهذا الآيدي...", buttons=[button])
     mention = await ment(user)
     button = Button.inline("تغيير الئ رابط", b"recgange")
@@ -125,14 +124,14 @@ async def link(event):
 @ABH.on(events.CallbackQuery(data=b"recgange"))
 async def chang(event):
     sender_id = event.sender_id
-    chat_id = event.chat_id
     msg = await event.get_message()
-    msg_id = msg.id
-    if chat_id in users and msg_id in users[chat_id]:
-        user_set = users[chat_id][msg_id]
+    id = msg.id
+    if id in users:
+        user_set = users[id]
         print(f"معرّف المرسل هو: `{user_set}`")
     else:
         print("❗️لا توجد معلومات مخزنة لهذه الرسالة.")
+        print(user_set)
     await asyncio.sleep(3)
     user_id = next(iter(user_set))
     if sender_id != user_id:
