@@ -5,6 +5,7 @@ from ABH import ABH, events #type: ignore
 from datetime import datetime, timedelta
 from hijri_converter import Gregorian
 from googletrans import Translator
+from Resources import hint, ment
 from telethon import Button
 from ABH import ABH, events
 from other import botuse
@@ -96,14 +97,15 @@ async def today(event):
     hd = Gregorian(tt_minus_one.year, tt_minus_one.month, tt_minus_one.day).to_hijri()
     hd_str = f"{hd.day} {hd.month_name('ar')} {hd.year} هـ"
     await event.reply(f"الهجري: \n{hd_str} \nالميلادي: \n{tt}")
+users = {}
 @ABH.on(events.NewMessage(pattern=r'كشف ايدي (\d+)'))
 async def link(event):
     if not event.is_group:
         return
     type = "كشف ايدي"
     await botuse(type)
-    global user
-    uid = event.sender_id
+    id = event.sender_id
+    users[event.chat_id][event.id] = {id}
     user_id = event.pattern_match.group(1)
     if not user_id:
         await event.reply("استخدم الأمر كـ `كشف ايدي 1910015590`")
@@ -111,15 +113,19 @@ async def link(event):
     try:
         user = await event.client.get_entity(int(user_id))
     except Exception as e:
-        return await event.reply(f"لا يوجد حساب بهذا الآيدي...")
+        button = KeyboardButtonCallback("اغيره رابط؟", b"changANYway")
+        await hint(event, e)
+        return await event.reply(f"لا يوجد حساب بهذا الآيدي...", buttons=[button])
     tag = user.first_name if user.first_name else '....'
     button = KeyboardButtonCallback("تغيير الئ رابط", b"recgange")
-    await event.reply(f"⌔︙[{tag}](tg://user?id={user.id})", buttons=[button])
+    x = await ment(user)
+    await event.reply(x, buttons=[button])
 @ABH.on(events.CallbackQuery(data=b"recgange"))
 async def chang(event):
-    global user
     sender_id = event.sender_id 
-    if sender_id != user.id:
+    chat_id = event.chat_id
+    user_id = next(iter(users[chat_id][event.id]))
+    if sender_id != user_id:
         await event.answer("شلون وي الحشريين احنة \n عزيزي الامر خاص بالمرسل هوه يكدر يغير فقط😏", alert=True)
         return
     if uid is not None and sender_id == uid:
