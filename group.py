@@ -1,4 +1,3 @@
-
 from telethon.tl.functions.channels import  GetParticipantRequest
 from db import save_date, get_saved_date #type: ignore
 from ABH import ABH, events #type: ignore
@@ -129,7 +128,11 @@ async def chang(event):
     chat_id = event.chat_id
     msg = await event.get_message()
     msg_id = msg.id
-    user_set = users[chat_id][msg_id]
+    if chat_id in users and msg_id in users[chat_id]:
+        user_set = users[chat_id][msg_id]
+        print(f"معرّف المرسل هو: `{user_set}`")
+    else:
+        print("❗️لا توجد معلومات مخزنة لهذه الرسالة.")
     await asyncio.sleep(3)
     user_id = next(iter(user_set))
     if sender_id != user_id:
