@@ -4,6 +4,7 @@ from db import save_date, get_saved_date #type: ignore
 from ABH import ABH, events #type: ignore
 from datetime import datetime, timedelta
 from hijri_converter import Gregorian
+from collections import defaultdict
 from googletrans import Translator
 from Resources import hint, ment
 from telethon import Button
@@ -106,9 +107,9 @@ async def link(event):
     await botuse(type)
     id = event.sender_id
     chat_id = event.chat_id
-    if chat_id not in users:
-        users[chat_id][event.id] = {id}
-        user_id = event.pattern_match.group(1)
+    users = defaultdict(dict)
+    users[chat_id][event.id] = {id}
+    user_id = event.pattern_match.group(1)
     if not user_id:
         await event.reply("استخدم الأمر كـ `كشف ايدي 1910015590`")
         return
