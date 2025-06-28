@@ -98,17 +98,16 @@ async def today(event):
     hd = Gregorian(tt_minus_one.year, tt_minus_one.month, tt_minus_one.day).to_hijri()
     hd_str = f"{hd.day} {hd.month_name('ar')} {hd.year} هـ"
     await event.reply(f"الهجري: \n{hd_str} \nالميلادي: \n{tt}")
-users = {}
+users = defaultdict(dict)
 @ABH.on(events.NewMessage(pattern=r'كشف ايدي (\d+)'))
 async def link(event):
     if not event.is_group:
         return
-    type = "كشف ايدي"
-    await botuse(type)
-    id = event.sender_id
+    await botuse("كشف ايدي")
+    sender_id = event.sender_id
     chat_id = event.chat_id
-    users = defaultdict(dict)
-    users[chat_id][event.id] = {id}
+    msg_id = event.id
+    users[chat_id][msg_id] = {sender_id}
     user_id = event.pattern_match.group(1)
     if not user_id:
         await event.reply("استخدم الأمر كـ `كشف ايدي 1910015590`")
@@ -116,22 +115,27 @@ async def link(event):
     try:
         user = await event.client.get_entity(int(user_id))
     except Exception as e:
-        button = KeyboardButtonCallback("اغيره رابط؟", b"changANYway")
-        await hint(event, e)
-        return await event.reply(f"لا يوجد حساب بهذا الآيدي...", buttons=[button])
-    button = KeyboardButtonCallback("تغيير الئ رابط", b"recgange")
-    x = await ment(user)
-    await event.reply(x, buttons=[button])
+        button = Button.inline("اغيره رابط؟", b"changANYway")
+        await hint(event, str(e))
+        return await event.reply("لا يوجد حساب بهذا الآيدي...", buttons=[button])
+    mention = await ment(user)
+    button = Button.inline("تغيير الئ رابط", b"recgange")
+    await event.reply(mention, buttons=[button])
 @ABH.on(events.CallbackQuery(data=b"recgange"))
 async def chang(event):
-    sender_id = event.sender_id 
+    sender_id = event.sender_id
     chat_id = event.chat_id
-    user_id = next(iter(users[chat_id][event.id]))
+    msg_id = event.message.id
+    try:
+        user_id = next(iter(users[chat_id][msg_id]))
+    except (KeyError, StopIteration):
+        return await event.answer("لا يمكن تحديد المرسل الأصلي لهذه الرسالة.", alert=True)
     if sender_id != user_id:
-        await event.answer("شلون وي الحشريين احنة \n عزيزي الامر خاص بالمرسل هوه يكدر يغير فقط😏", alert=True)
-        return
-    if uid is not None and sender_id == uid:
-        await event.edit(f"⌔︙رابط المستخدم: tg://user?id={user.id}")
+        return await event.answer(
+            "شلون وي الحشريين احنة؟\nعزيزي، هذا الأمر خاص بصاحب الرسالة فقط 😏",
+            alert=True
+        )
+    await event.edit(f"⌔︙رابط المستخدم: tg://user?id={user_id}")
 @ABH.on(events.NewMessage(pattern=r'(ترجمة|ترجمه)'))
 async def translation(event):
     if not event.is_group:
