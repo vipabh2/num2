@@ -1,15 +1,14 @@
 from telethon.tl.functions.channels import  GetParticipantRequest
-from telethon.tl.types import KeyboardButtonCallback
 from db import save_date, get_saved_date #type: ignore
 from ABH import ABH, events #type: ignore
 from datetime import datetime, timedelta
 from hijri_converter import Gregorian
-from collections import defaultdict
 from googletrans import Translator
 from Resources import hint, ment
 from telethon import Button
 from ABH import ABH, events
 from other import botuse
+import asyncio
 @ABH.on(events.NewMessage(pattern='^/dates|مواعيد$'))
 async def show_dates(event):
     if not event.is_group:
@@ -129,15 +128,14 @@ async def chang(event):
     chat_id = event.chat_id
     msg = await event.get_message()
     msg_id = msg.id
-    if chat_id not in users or msg_id not in users[chat_id]:
-        return await event.answer("⚠️ بيانات الرسالة غير موجودة.", alert=True)
     user_set = users[chat_id][msg_id]
+    await asyncio.sleep(3)
     user_id = next(iter(user_set))
-    if sender_id != user_id:
-        return await event.answer(
-            "شلون وي الحشريين احنة؟\nعزيزي، هذا الأمر خاص بصاحب الرسالة فقط 😏",
-            alert=True
-        )
+    # if sender_id != user_id:
+    #     return await event.answer(
+    #         "شلون وي الحشريين احنة؟\nعزيزي، هذا الأمر خاص بصاحب الرسالة فقط 😏",
+    #         alert=True
+    #     )
     await event.edit(f"⌔︙رابط المستخدم: tg://user?id={user_id}")
 @ABH.on(events.NewMessage(pattern=r'(ترجمة|ترجمه)'))
 async def translation(event):
