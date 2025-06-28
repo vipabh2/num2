@@ -116,7 +116,7 @@ async def link(event):
         user = await event.client.get_entity(int(user_id))
     except Exception as e:
         button = Button.inline("اغيره رابط؟", b"changANYway")
-        await hint(event, str(e))
+        await hint(str(e))
         return await event.reply("لا يوجد حساب بهذا الآيدي...", buttons=[button])
     mention = await ment(user)
     button = Button.inline("تغيير الئ رابط", b"recgange")
@@ -129,7 +129,7 @@ async def chang(event):
     try:
         user_id = next(iter(users[chat_id][msg_id]))
     except (KeyError, StopIteration) as e:
-        await hint(event, e)
+        await hint(e)
         return await event.answer("لا يمكن تحديد المرسل الأصلي لهذه الرسالة.", alert=True)
     if sender_id != user_id:
         return await event.answer(
