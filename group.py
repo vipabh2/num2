@@ -1,3 +1,4 @@
+
 from telethon.tl.functions.channels import  GetParticipantRequest
 from db import save_date, get_saved_date #type: ignore
 from ABH import ABH, events #type: ignore
@@ -106,7 +107,7 @@ async def link(event):
     sender_id = event.sender_id
     chat_id = event.chat_id
     msg_id = event.id
-    if chat_id not in users:
+    if chat_id not in users or msg_id not in users[chat_id]:
         users[chat_id] = {}
     users[chat_id][msg_id] = {sender_id}
     user_id = event.pattern_match.group(1)
@@ -131,11 +132,11 @@ async def chang(event):
     user_set = users[chat_id][msg_id]
     await asyncio.sleep(3)
     user_id = next(iter(user_set))
-    # if sender_id != user_id:
-    #     return await event.answer(
-    #         "شلون وي الحشريين احنة؟\nعزيزي، هذا الأمر خاص بصاحب الرسالة فقط 😏",
-    #         alert=True
-    #     )
+    if sender_id != user_id:
+        return await event.answer(
+            "شلون وي الحشريين احنة؟\nعزيزي، هذا الأمر خاص بصاحب الرسالة فقط 😏",
+            alert=True
+        )
     await event.edit(f"⌔︙رابط المستخدم: tg://user?id={user_id}")
 @ABH.on(events.NewMessage(pattern=r'(ترجمة|ترجمه)'))
 async def translation(event):
