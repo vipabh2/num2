@@ -121,7 +121,7 @@ async def chang(event):
     await asyncio.sleep(3)
     await event.edit(f"⌔︙رابط المستخدم: tg://user?id={user.id}")
 @ABH.on(events.CallbackQuery(data=b"changANYway"))
-async def chang(event):
+async def changANYway(event):
     await asyncio.sleep(3)
     await event.edit(f"⌔︙رابط المستخدم: tg://user?id={user.id} \n {await ment(user)}")
 @ABH.on(events.NewMessage(pattern=r'(ترجمة|ترجمه)'))
