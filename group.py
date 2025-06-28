@@ -130,6 +130,10 @@ async def chang(event):
     msg_id = msg.id
     try:
         user_id = next(iter(users[chat_id][msg_id]))
+        if chat_id not in users:
+            await event.reply('المجموعه')
+        if msg_id not in users[chat_id]:
+            await event.reply('ايدي الحدث') 
         print(user_id)
     except (KeyError, StopIteration):
         return await event.answer("⚠️ لم أتمكن من العثور على المرسل الأصلي. ربما تم إعادة تشغيل البوت.", alert=True)
@@ -228,4 +232,3 @@ async def nickname_r(event):
         await event.reply(f"لقبه ↞ {nickname}")
     except Exception:
         await event.reply("المستخدم ليس مشرفًا أو لا يمكن العثور عليه.")
-    
