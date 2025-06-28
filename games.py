@@ -865,7 +865,7 @@ async def handle_choice(event, user_choice_key):
             (user_choice_key == "cuter" and bot_choice_key == "paper")
         ):
             result = "🎉 فزت"
-            x = random.randint(5000, 1500)
+            x = random.randint(1500, 5000)
         else:
             result = "😢 خسرت"
             x = 0
