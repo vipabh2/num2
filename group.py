@@ -128,10 +128,11 @@ async def chang(event):
     msg_id = msg.id
     chat_id = event.chat_id
     if chat_id in users and msg_id in users[chat_id]:
+        print(users[chat_id][msg_id])
         original_sender = users[chat_id][msg_id]
         await event.answer(f"معرّف مرسل الأمر الأصلي هو: {original_sender}", alert=True)
     else:
-        await event.answer("❗️لا توجد معلومات محفوظة لهذه الرسالة.", alert=True)
+        await event.answer("لا توجد معلومات محفوظة لهذه الرسالة.", alert=True)
     await asyncio.sleep(3)
     user_id = next(iter(original_sender))
     if event.sender_id != user_id:
