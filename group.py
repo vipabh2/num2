@@ -108,6 +108,7 @@ async def link(event):
     chat_id = event.chat_id
     msg_id = event.id
     users[chat_id][msg_id] = {sender_id}
+    print(users)
     user_id = event.pattern_match.group(1)
     if not user_id:
         await event.reply("استخدم الأمر كـ `كشف ايدي 1910015590`")
@@ -129,6 +130,7 @@ async def chang(event):
     msg_id = msg.id
     try:
         user_id = next(iter(users[chat_id][msg_id]))
+        print(user_id)
     except (KeyError, StopIteration):
         return await event.answer("⚠️ لم أتمكن من العثور على المرسل الأصلي. ربما تم إعادة تشغيل البوت.", alert=True)
     if sender_id != user_id:
@@ -226,3 +228,4 @@ async def nickname_r(event):
         await event.reply(f"لقبه ↞ {nickname}")
     except Exception:
         await event.reply("المستخدم ليس مشرفًا أو لا يمكن العثور عليه.")
+    
