@@ -97,33 +97,50 @@ async def today(event):
     hd = Gregorian(tt_minus_one.year, tt_minus_one.month, tt_minus_one.day).to_hijri()
     hd_str = f"{hd.day} {hd.month_name('ar')} {hd.year} هـ"
     await event.reply(f"الهجري: \n{hd_str} \nالميلادي: \n{tt}")
+users = {}
 @ABH.on(events.NewMessage(pattern=r'كشف ايدي (\d+)'))
 async def link(event):
     if not event.is_group:
         return
-    type = "كشف ايدي"
-    await botuse(type)
-    global user
+    await botuse("كشف ايدي")
+    sender_id = event.sender_id
+    chat_id = event.chat_id
+    msg_id = event.id
     user_id = event.pattern_match.group(1)
     if not user_id:
-        await event.reply("استخدم الأمر كـ `كشف ايدي 1910015590`")
+        await event.reply("❗️استخدم الأمر بهذا الشكل:\n`كشف ايدي 1910015590`")
         return
     try:
         user = await event.client.get_entity(int(user_id))
     except:
-        b = [Button.inline("تحويل علئ اي حال", b"changANYway")]
-        return await event.reply(f"لا يوجد حساب بهذا الآيدي...", buttons=[b])
+        b = [Button.inline("تحويل على أي حال", b"changANYway")]
+        return await event.reply("❌ لا يوجد حساب بهذا الآيدي...", buttons=b)
     tag = await ment(user)
+    if chat_id not in users:
+        users[chat_id] = {}
+    users[chat_id][msg_id] = user.id
     button = [Button.inline("تغيير إلى رابط", b"recgange")]
-    await event.reply(f"⌔︙{tag}", buttons=[button])
+    await event.reply(f"⌔︙{tag}", buttons=button)
 @ABH.on(events.CallbackQuery(data=b"recgange"))
 async def chang(event):
+    msg = await event.get_message()
+    chat_id = event.chat_id
+    msg_id = msg.id
+    if chat_id not in users or msg_id not in users[chat_id]:
+        return await event.answer("⚠️ لا توجد معلومات محفوظة لهذه الرسالة.", alert=True)
+    user_id = users[chat_id][msg_id]
     await asyncio.sleep(3)
-    await event.edit(f"⌔︙رابط المستخدم: tg://user?id={user.id}")
+    await event.edit(f"⌔︙رابط المستخدم: tg://user?id={user_id}")
 @ABH.on(events.CallbackQuery(data=b"changANYway"))
 async def changANYway(event):
+    msg = await event.get_message()
+    chat_id = event.chat_id
+    msg_id = msg.id
+    if chat_id not in users or msg_id not in users[chat_id]:
+        return await event.answer("⚠️ لا توجد معلومات محفوظة لهذه الرسالة.", alert=True)
+    user_id = users[chat_id][msg_id]
     await asyncio.sleep(3)
-    await event.edit(f"⌔︙رابط المستخدم: tg://user?id={user.id}")
+    await event.edit(f"⌔︙رابط المستخدم: tg://user?id={user_id}")
 @ABH.on(events.NewMessage(pattern=r'(ترجمة|ترجمه)'))
 async def translation(event):
     if not event.is_group:
