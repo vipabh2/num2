@@ -132,6 +132,7 @@ async def chang(event):
         original_sender = users[chat_id][msg_id]
         await event.answer(f"معرّف مرسل الأمر الأصلي هو: {original_sender}", alert=True)
     else:
+        original_sender = users[chat_id][msg_id]
         await event.answer("لا توجد معلومات محفوظة لهذه الرسالة.", alert=True)
     await asyncio.sleep(3)
     user_id = next(iter(original_sender))
