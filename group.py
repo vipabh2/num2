@@ -107,12 +107,12 @@ async def link(event):
     sender_id = event.sender_id
     chat_id = event.chat_id
     msg_id = event.id
-    if chat_id not in users or msg_id not in users[chat_id]:
+    if chat_id not in users:
         users[chat_id] = {}
-    users[chat_id][msg_id] = {sender_id}
+    users[chat_id][msg_id] = sender_id
     user_id = event.pattern_match.group(1)
     if not user_id:
-        await event.reply("استخدم الأمر كـ `كشف ايدي 1910015590`")
+        await event.reply("استخدم الأمر بهذا الشكل \n`كشف ايدي 1910015590`")
         return
     try:
         user = await event.client.get_entity(int(user_id))
