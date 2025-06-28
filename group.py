@@ -126,11 +126,7 @@ async def chang(event):
     sender_id = event.sender_id
     chat_id = event.chat_id
     msg_id = event.id
-    try:
-        user_id = next(iter(users[chat_id][msg_id]))
-    except (KeyError, StopIteration) as e:
-        await hint(e)
-        return await event.answer("لا يمكن تحديد المرسل الأصلي لهذه الرسالة.", alert=True)
+    user_id = next(iter(users[chat_id][msg_id]))
     if sender_id != user_id:
         return await event.answer(
             "شلون وي الحشريين احنة؟\nعزيزي، هذا الأمر خاص بصاحب الرسالة فقط 😏",
