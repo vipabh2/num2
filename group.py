@@ -123,7 +123,7 @@ async def chang(event):
 @ABH.on(events.CallbackQuery(data=b"changANYway"))
 async def changANYway(event):
     await asyncio.sleep(3)
-    await event.edit(f"⌔︙رابط المستخدم: tg://user?id={user.id} \n {await ment(user)}")
+    await event.edit(f"⌔︙رابط المستخدم: tg://user?id={user.id}")
 @ABH.on(events.NewMessage(pattern=r'(ترجمة|ترجمه)'))
 async def translation(event):
     if not event.is_group:
