@@ -1,4 +1,4 @@
-from telethon.tl.functions.channels import  GetParticipantRequest
+from telethon.tl.functions.channels import GetParticipantRequest
 from db import save_date, get_saved_date #type: ignore
 from ABH import ABH, events #type: ignore
 from datetime import datetime, timedelta
@@ -8,7 +8,6 @@ from Resources import hint, ment
 from telethon import Button
 from ABH import ABH, events
 from other import botuse
-import asyncio
 @ABH.on(events.NewMessage(pattern='^/dates|مواعيد$'))
 async def show_dates(event):
     if not event.is_group:
@@ -97,46 +96,34 @@ async def today(event):
     hd = Gregorian(tt_minus_one.year, tt_minus_one.month, tt_minus_one.day).to_hijri()
     hd_str = f"{hd.day} {hd.month_name('ar')} {hd.year} هـ"
     await event.reply(f"الهجري: \n{hd_str} \nالميلادي: \n{tt}")
-users = {}
 @ABH.on(events.NewMessage(pattern=r'كشف ايدي (\d+)'))
 async def link(event):
     if not event.is_group:
         return
-    await botuse("كشف ايدي")
-    sender_id = event.sender_id
-    msg_id = event.id
-    chat_id = event.chat_id
-    if chat_id not in users:
-        users[chat_id] = {}
-    users[chat_id][msg_id] = sender_id
+    type = "كشف ايدي"
+    await botuse(type)
+    global user
+    uid = event.sender_id
     user_id = event.pattern_match.group(1)
     if not user_id:
-        await event.reply("❗️استخدم الأمر بهذا الشكل:\n`كشف ايدي 1910015590`")
+        await event.reply("استخدم الأمر كـ `كشف ايدي 1910015590`")
         return
     try:
         user = await event.client.get_entity(int(user_id))
     except Exception as e:
-        button = Button.inline("اغيره رابط؟", b"changANYway")
-        await hint(e)
-        return await event.reply("❌ لا يوجد حساب بهذا الآيدي...", buttons=[button])
-    mention = await ment(user)
-    button = Button.inline("تغيير إلى رابط", b"recgange")
-    await event.reply(mention, buttons=[button])
+        return await event.reply(f"لا يوجد حساب بهذا الآيدي...")
+    tag = user.first_name if user.first_name else '....'
+    button = Button.inline[("تغيير الئ رابط", b"recgange")]
+    await event.reply(f"⌔︙[{tag}](tg://user?id={user.id})", buttons=[button])
 @ABH.on(events.CallbackQuery(data=b"recgange"))
 async def chang(event):
-    msg = await event.get_message()
-    msg_id = msg.id
-    chat_id = event.chat_id
-    sender_id = event.sender_id
-    if chat_id not in users or msg_id not in users[chat_id]:
-        return await event.answer("لا توجد معلومات محفوظة لهذه الرسالة.", alert=True)
-    original_sender = users[chat_id][msg_id]
-    if sender_id != original_sender:
-        return await event.answer(
-            "شلون وي الحشريين احنة؟\nعزيزي، هذا الأمر خاص بصاحب الرسالة فقط 😏",
-            alert=True
-        )
-    await event.edit(f"⌔︙رابط المستخدم: tg://user?id={original_sender}")
+    global user
+    sender_id = event.sender_id 
+    if sender_id != user.id:
+        await event.answer("شلون وي الحشريين احنة \n عزيزي الامر خاص بالمرسل هوه يكدر يغير فقط😏", alert=True)
+        return
+    if uid is not None and sender_id == uid:
+        await event.edit(f"⌔︙رابط المستخدم: tg://user?id={user.id}")
 @ABH.on(events.NewMessage(pattern=r'(ترجمة|ترجمه)'))
 async def translation(event):
     if not event.is_group:
