@@ -98,7 +98,7 @@ async def today(event):
     hd = Gregorian(tt_minus_one.year, tt_minus_one.month, tt_minus_one.day).to_hijri()
     hd_str = f"{hd.day} {hd.month_name('ar')} {hd.year} هـ"
     await event.reply(f"الهجري: \n{hd_str} \nالميلادي: \n{tt}")
-users = defaultdict(dict)
+users = {}
 @ABH.on(events.NewMessage(pattern=r'كشف ايدي (\d+)'))
 async def link(event):
     if not event.is_group:
@@ -107,8 +107,9 @@ async def link(event):
     sender_id = event.sender_id
     chat_id = event.chat_id
     msg_id = event.id
+    if chat_id not in users:
+        users[chat_id] = {}
     users[chat_id][msg_id] = {sender_id}
-    print(users)
     user_id = event.pattern_match.group(1)
     if not user_id:
         await event.reply("استخدم الأمر كـ `كشف ايدي 1910015590`")
@@ -128,15 +129,10 @@ async def chang(event):
     chat_id = event.chat_id
     msg = await event.get_message()
     msg_id = msg.id
-    try:
-        user_id = next(iter(users[chat_id][msg_id]))
-        if chat_id not in users:
-            await event.reply('المجموعه')
-        if msg_id not in users[chat_id]:
-            await event.reply('ايدي الحدث') 
-        print(user_id)
-    except (KeyError, StopIteration):
-        return await event.answer("⚠️ لم أتمكن من العثور على المرسل الأصلي. ربما تم إعادة تشغيل البوت.", alert=True)
+    if chat_id not in users or msg_id not in users[chat_id]:
+        return await event.answer("⚠️ بيانات الرسالة غير موجودة.", alert=True)
+    user_set = users[chat_id][msg_id]
+    user_id = next(iter(user_set))
     if sender_id != user_id:
         return await event.answer(
             "شلون وي الحشريين احنة؟\nعزيزي، هذا الأمر خاص بصاحب الرسالة فقط 😏",
