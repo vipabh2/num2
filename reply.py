@@ -14,7 +14,7 @@ async def set_reply(event):
     if not z:
         await chs(event, 'عذرا بس امر الردود معطل 😑')
         return
-    if not is_assistant(event.sender_chat_id, event.sender_id):
+    if not is_assistant(event.chat_id, event.sender_id):
         await chs(event, 'عذرا الامر خاص بالمعاونين فقط🤭')
         return
     type = "وضع رد"
@@ -29,7 +29,7 @@ async def set_special_reply(event):
     if not z:
         await chs(event, 'عذرا بس امر الردود معطل 😑')
         return
-    if not is_assistant(event.sender_chat_id, event.sender_id):
+    if not is_assistant(event.chat_id, event.sender_id):
         await chs(event, 'عذرا الامر خاص بالمعاونين فقط🤭')
         return
     type = "وضع رد مميز"
@@ -160,7 +160,7 @@ async def execute_reply(event):
             break
 @ABH.on(events.NewMessage(pattern='^عرض الردود$'))
 async def show_replies(event):
-    if not is_assistant(event.sender_chat_id, event.sender_id):
+    if not is_assistant(event.chat_id, event.sender_id):
         await chs(event, 'عذرا الامر خاص بالمعاونين فقط🤭')
         return
     type = "عرض الردود"
@@ -180,7 +180,7 @@ async def delete_reply(event):
     if not z:
         await chs(event, 'عذرا بس امر الردود معطل 😑')
         return
-    if not is_assistant(event.sender_chat_id, event.sender_id):
+    if not is_assistant(event.chat_id, event.sender_id):
         await chs(event, 'عذرا الامر خاص بالمعاونين فقط🤭')
         return
     type = "حذف رد"
@@ -203,7 +203,7 @@ async def delete_all_replies(event):
     if not z:
         await chs(event, 'عذرا بس امر الردود معطل 😑')
         return
-    if not is_assistant(event.sender_chat_id, event.sender_id):
+    if not is_assistant(event.chat_id, event.sender_id):
         await chs(event, 'عذرا الامر خاص بالمعاونين فقط🤭')
         return
     type = "حذف الردود"
