@@ -8,6 +8,7 @@ from Resources import hint, ment
 from telethon import Button
 from ABH import ABH, events
 from other import botuse
+import asyncio
 @ABH.on(events.NewMessage(pattern='^/dates|مواعيد$'))
 async def show_dates(event):
     if not event.is_group:
@@ -103,7 +104,6 @@ async def link(event):
     type = "كشف ايدي"
     await botuse(type)
     global user
-    uid = event.sender_id
     user_id = event.pattern_match.group(1)
     if not user_id:
         await event.reply("استخدم الأمر كـ `كشف ايدي 1910015590`")
@@ -117,13 +117,8 @@ async def link(event):
     await event.reply(f"⌔︙[{tag}](tg://user?id={user.id})", buttons=[button])
 @ABH.on(events.CallbackQuery(data=b"recgange"))
 async def chang(event):
-    global user
-    sender_id = event.sender_id 
-    if sender_id != user.id:
-        await event.answer("شلون وي الحشريين احنة \n عزيزي الامر خاص بالمرسل هوه يكدر يغير فقط😏", alert=True)
-        return
-    if uid is not None and sender_id == uid:
-        await event.edit(f"⌔︙رابط المستخدم: tg://user?id={user.id}")
+    await asyncio.sleep(3)
+    await event.edit(f"⌔︙رابط المستخدم: tg://user?id={user.id}")
 @ABH.on(events.NewMessage(pattern=r'(ترجمة|ترجمه)'))
 async def translation(event):
     if not event.is_group:
