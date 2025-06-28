@@ -111,11 +111,11 @@ async def link(event):
     try:
         user = await event.client.get_entity(int(user_id))
     except:
-        button = [Button.inline("تحويل علئ اي حال", b"changANYway")]
-        return await event.reply(f"لا يوجد حساب بهذا الآيدي...")
+        b = [Button.inline("تحويل علئ اي حال", b"changANYway")]
+        return await event.reply(f"لا يوجد حساب بهذا الآيدي...", buttons=[b])
     tag = await ment(user)
     button = [Button.inline("تغيير إلى رابط", b"recgange")]
-    await event.reply(f"⌔︙[{tag}](tg://user?id={user.id})", buttons=[button])
+    await event.reply(f"⌔︙{tag}", buttons=[button])
 @ABH.on(events.CallbackQuery(data=b"recgange"))
 async def chang(event):
     await asyncio.sleep(3)
