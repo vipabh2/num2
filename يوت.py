@@ -6,7 +6,7 @@ from Program import r, chs
 from Resources import hint
 import os, asyncio, json
 from ABH import ABH
-actions = ['يوتيوب', 'تقييد', 'ردود']
+actions = ['يوتيوب', 'تقييد', 'ردود', 'التنظيف']
 @ABH.on(events.NewMessage(pattern=r'^ال(\w+)\s+(تفعيل|تعطيل)$'))
 async def toggle_feature(event):
     if not is_assistant(event.chat_id, event.sender_id):
