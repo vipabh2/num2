@@ -45,14 +45,13 @@ async def store_media_messages(event):
         if msg.id not in media_messages[chat_id]:
             media_messages[chat_id].append(msg.id)
             save_media_messages()
-            x = len(media_messages[chat_id]) >= 10
             lock_key = f"lock:{event.chat_id}:تنظيف"
             z = r.get(lock_key) == "True"
-            if x:
-                return
             if not z:
                 return
-            await delete_media(chat_id)
+            if len(media_messages[chat_id]) >= 10:
+                await delete_media(chat_id)
+                return
 @ABH.on(events.NewMessage(pattern='^امسح|تنظيف$'))
 async def delete_stored_media(event):
     if not event.is_group:
