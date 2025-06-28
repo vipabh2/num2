@@ -127,21 +127,16 @@ async def chang(event):
     msg = await event.get_message()
     msg_id = msg.id
     chat_id = event.chat_id
-    if chat_id in users and msg_id in users[chat_id]:
-        print(users[chat_id][msg_id])
-        original_sender = users[chat_id][msg_id]
-        await event.answer(f"معرّف مرسل الأمر الأصلي هو: {original_sender}", alert=True)
-    else:
-        original_sender = users[chat_id][msg_id]
-        await event.answer("لا توجد معلومات محفوظة لهذه الرسالة.", alert=True)
-    await asyncio.sleep(3)
-    user_id = next(iter(original_sender))
-    if event.sender_id != user_id:
+    sender_id = event.sender_id
+    if chat_id not in users or msg_id not in users[chat_id]:
+        return await event.answer("لا توجد معلومات محفوظة لهذه الرسالة.", alert=True)
+    original_sender = users[chat_id][msg_id]
+    if sender_id != original_sender:
         return await event.answer(
             "شلون وي الحشريين احنة؟\nعزيزي، هذا الأمر خاص بصاحب الرسالة فقط 😏",
             alert=True
         )
-    await event.edit(f"⌔︙رابط المستخدم: tg://user?id={user_id}")
+    await event.edit(f"⌔︙رابط المستخدم: tg://user?id={original_sender}")
 @ABH.on(events.NewMessage(pattern=r'(ترجمة|ترجمه)'))
 async def translation(event):
     if not event.is_group:
