@@ -837,8 +837,8 @@ async def how_to_whisper(event):
             reply_to=event.id
     )
     elif parm == "whisper_id":
-        url = 'https://t.me/recoursec/10'
-        c = '**اوامر الهمسة** \n همسة نص , ايدي او يوزر \n همسة ميديا او نص بالرد فقط'
+        url = 'https://t.me/recoursec/11'
+        c = '😏'
         await ABH.send_file(
             event.chat_id,
             file=url,
@@ -847,7 +847,7 @@ async def how_to_whisper(event):
         )
     elif parm == "whisper_media":
         url = 'https://t.me/recoursec/12'
-        c = '**اوامر الهمسة** \n همسة نص , ايدي او يوزر \n همسة ميديا او نص بالرد فقط'
+        c = '😏'
         await ABH.send_file(
             event.chat_id,
             file=url,
