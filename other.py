@@ -575,6 +575,7 @@ async def alert(message):
         return
 @ABH.on(events.NewMessage)
 async def add_toalert(event):
+    uid = None
     try:
         if event.is_group:
             uid = event.chat_id
