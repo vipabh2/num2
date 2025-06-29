@@ -1,10 +1,8 @@
-from telethon.tl.types import ChannelParticipantAdmin, ChannelParticipantCreator
-import asyncio, os, json, random, uuid, operator, requests, aiohttp, re
+from telethon.tl.types import ChannelParticipantCreator
+import asyncio, os, json, random, uuid, operator, requests, re
 from telethon.tl.functions.channels import GetParticipantRequest
-from telethon.tl.functions.users import GetFullUserRequest
-from telethon.tl.types import Channel, ChannelParticipant
+from Resources import suras, mention, ment, wfffp, hint
 from playwright.async_api import async_playwright
-from Resources import suras, mention, ment, wfffp
 from database import store_whisper, get_whisper
 from telethon import events, Button
 from Program import CHANNEL_KEY 
@@ -577,16 +575,16 @@ async def alert(message):
         return
 @ABH.on(events.NewMessage)
 async def add_toalert(event):
-    global alert_ids
-    chat = await event.get_chat()
-    if chat.id not in alert_ids:
-        try:
-            alert_ids.add(chat.id)
-            save_alerts()
-            chat_name = chat.title if hasattr(chat, 'title') else chat.first_name
-            return
-        except Exception as e:
-            await alert(f"فشل إضافة المحادثة: {chat_name} \n {chat.id} - {e} ")
+    if event.is_group:
+        uid = event.chat_id
+        return
+    elif event.is_privte:
+        uid = event.sender_id
+        return
+    if uid not in alert_ids:
+        alert_ids.add(uid)
+        save_alerts()
+        await hint(f'تم تسجيل محادثه جديده {uid}')
 @ABH.on(events.NewMessage(pattern="/alert"))
 async def send_alert(event):
     if event.sender_id != K_4X1:
