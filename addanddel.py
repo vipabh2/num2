@@ -46,7 +46,7 @@ async def can_add_admins(chat, user_id):
         return False
     except:
         return False
-@ABH.on(events.NewMessage(pattern=r"^تغيير لقبي (.+)$"))
+@ABH.on(events.NewMessage(pattern=r"^تغيير لقبي\s*(.*)$"))
 async def change_own_rank(event):
     if not event.is_group:
         return
