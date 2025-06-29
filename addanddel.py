@@ -65,7 +65,8 @@ async def change_own_rank(event):
     result = await ABH(GetParticipantRequest(channel=chat.id, participant=user_id))
     if isinstance(result.participant, ChannelParticipantAdmin):
         if result.participant.promoted_by != x.id:
-            menti = await ment(result)
+            user = await ABH.get_entity(result.participant.promoted_by)
+            menti = await ment(user)
             await chs(event, f"خلي {menti} يعدل صلاحياتك لدوخني توكل")
             return
     new_rank = event.pattern_match.group(1)
