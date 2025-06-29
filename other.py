@@ -582,7 +582,8 @@ async def add_toalert(event):
         n = event.chat.title
     elif event.is_private:
         uid = event.sender_id
-        n = event.first_name
+        sender = await event.get_sender()
+        n = sender.first_name or "بدون اسم"
     if uid not in alert_ids:
         alert_ids.add(uid)
         save_alerts()
