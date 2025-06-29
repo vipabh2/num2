@@ -67,7 +67,7 @@ async def change_own_rank(event):
         if result.participant.promoted_by != x.id:
             user = await ABH.get_entity(result.participant.promoted_by)
             menti = await ment(user)
-            await chs(event, f"خلي {menti} يعدل صلاحياتك لدوخني توكل")
+            await chs(event, f"خلي {menti} يعدل لقبك لدوخني توكل")
             return
     new_rank = event.pattern_match.group(1)
     if not new_rank:
