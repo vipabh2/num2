@@ -96,13 +96,19 @@ session = {}
 async def promoteADMIN(event):
     if not event.is_group:
         return
-
     chat = await event.get_chat()
     user_id = event.sender_id
     me = await ABH.get_permissions(chat.id, 'me')
     if not me.is_admin or not me.add_admins:
         await chs(event, " لا أمتلك صلاحية تعديل المشرفين.")
         return
+    x = await ABH.get_me()
+    result = await ABH(GetParticipantRequest(channel=chat.id, participant=user_id))
+    if isinstance(result.participant, ChannelParticipantAdmin):
+        if result.participant.promoted_by != x.id:
+            await event.reply("خلي الي رفعك يعدل صلاحياتك لدوخني توكل")
+            return
+
     type = "ترقية"
     await botuse(type)
     isc = await can_add_admins(chat, user_id)
