@@ -709,6 +709,7 @@ async def start_with_param(event):
                 event.sender_id,
                 message=original.text
             )
+            await event.edit('تم رؤية الهمسة , هل تريد الحذف؟')
         elif original.media:
             await ABH.send_file(
                 event.sender_id,
