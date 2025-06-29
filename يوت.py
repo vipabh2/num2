@@ -56,7 +56,6 @@ async def download_audio(event):
     command = parts[0]
     z = parts[1] if len(parts) > 1 else ""
     if not z and command in ['يوت', 'yt']:
-        await event.reply("يرجى تحديد راب
         return
     query = event.pattern_match.group(2)
     type = "يوت"
