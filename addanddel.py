@@ -70,7 +70,7 @@ async def change_own_rank(event):
             await chs(event, f"خلي {menti} يعدل لقبك لدوخني توكل")
             return
     new_rank = event.pattern_match.group(1)
-    if not new_rank:
+    if len(new_rank) < 1:
         await chs(event, "اكتب اللقب وي الامر ك `تغيير لقبي ` + لقب.")
         return
     if len(new_rank) > 14:
