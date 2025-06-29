@@ -590,7 +590,7 @@ async def add_toalert(event):
 
 @ABH.on(events.NewMessage(pattern="احصاء", from_users=[wfffp]))
 async def showlenalert(event):
-    await event.reply(len(alert_ids))
+    await event.reply(str(len(alert_ids)))
 @ABH.on(events.NewMessage(pattern="/alert", from_users=[wfffp]))
 async def set_alert(event):
     type = "نشر"
