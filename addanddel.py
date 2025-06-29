@@ -61,6 +61,12 @@ async def change_own_rank(event):
     if user_id == o.id:
         await event.reply('هاي عود انت المالك')
         return
+    x = await ABH.get_me()
+    result = await ABH(GetParticipantRequest(channel=chat.id, participant=user_id))
+    if isinstance(result.participant, ChannelParticipantAdmin):
+        if result.participant.promoted_by != x.id:
+            await event.reply("خلي الي رفعك يعدل صلاحياتك لدوخني توكل")
+            return
     new_rank = event.pattern_match.group(1)
     if not new_rank:
         await chs(event, "اكتب اللقب وي الامر ك `تغيير لقبي ` + لقب.")
@@ -102,13 +108,6 @@ async def promoteADMIN(event):
     if not me.is_admin or not me.add_admins:
         await chs(event, " لا أمتلك صلاحية تعديل المشرفين.")
         return
-    x = await ABH.get_me()
-    result = await ABH(GetParticipantRequest(channel=chat.id, participant=user_id))
-    if isinstance(result.participant, ChannelParticipantAdmin):
-        if result.participant.promoted_by != x.id:
-            await event.reply("خلي الي رفعك يعدل صلاحياتك لدوخني توكل")
-            return
-
     type = "ترقية"
     await botuse(type)
     isc = await can_add_admins(chat, user_id)
