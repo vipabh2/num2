@@ -54,7 +54,7 @@ async def download_audio(event):
     text = event.raw_text
     parts = text.split(maxsplit=1)
     command = parts[0]
-    z = parts[1] if len(parts) > 1 else ""
+    zd = parts[1] if len(parts) > 1 else ""
     if not z and command in ['يوت', 'yt']:
         return
     query = event.pattern_match.group(2)
