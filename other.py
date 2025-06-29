@@ -716,7 +716,9 @@ async def start_with_param(event):
                 file=original.media,
                 caption=original.text if original.text else None
             )
+            await event.edit('تم رؤية الهمسة , هل تريد الحذف؟')
     elif 'text' in data:
+        await event.edit('تم رؤية الهمسة , هل تريد الحذف؟')
         await event.reply(data['text'])
     else:
         await event.reply(f"أهلاً {sender.first_name}، ارسل نص الهمسة أو ميديا.")
