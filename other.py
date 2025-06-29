@@ -752,7 +752,6 @@ async def forward_whisper(event):
     elif msg.text:
         whisper_links[whisper_id]['text'] = msg.text
     save_whispers()
-    print(reply)
     if msg.media:
         await event.reply("تم إرسال همسة ميديا بنجاح.")
     else:
