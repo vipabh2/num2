@@ -744,7 +744,7 @@ async def forward_whisper(event):
     await m1.delete()
     m2 = await ABH.send_message(
         data['chat_id'],
-        f'همسة مرسلة من ( [{from_name}](tg://user?id={uid}) ) إلى ( [{to_name}](tg://user?id={rid}) {reply} )',
+        f'همسة مرسلة من ( [{from_name}](tg://user?id={uid}) ) إلى ( [{to_name}](tg://user?id={rid}) )',
         buttons=[b], reply_to=reply)
     if msg.media:
         whisper_links[whisper_id]['original_msg_id'] = msg.id
@@ -752,6 +752,7 @@ async def forward_whisper(event):
     elif msg.text:
         whisper_links[whisper_id]['text'] = msg.text
     save_whispers()
+    print(reply)
     if msg.media:
         await event.reply("تم إرسال همسة ميديا بنجاح.")
     else:
