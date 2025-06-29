@@ -576,18 +576,18 @@ async def alert(message):
 @ABH.on(events.NewMessage)
 async def add_toalert(event):
     uid = None
-    try:
-        if event.is_group:
-            uid = event.chat_id
-        elif event.is_private:
-            uid = event.sender_id
-        if uid not in alert_ids:
-            alert_ids.add(uid)
-            save_alerts()
-            await hint(f'تم تسجيل محادثه جديده {uid}')
-    except Exception as e:
-        print(e)
+    n = None
+    if event.is_group:
+        uid = event.chat_id
+        n = event.chat.title
+    elif event.is_private:
+        uid = event.sender_id
+        n = event.first_name
+    if uid not in alert_ids:
+        alert_ids.add(uid)
+        save_alerts()
 
+        await hint(f'تم تسجيل محادثه جديده `{uid}` ↽ {n}')
 @ABH.on(events.NewMessage(pattern="احصاء", from_users=[wfffp]))
 async def showlenalert(event):
     await event.reply(str(len(alert_ids)))
