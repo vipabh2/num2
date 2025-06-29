@@ -677,6 +677,7 @@ async def handle_whisper(event):
     whisper_id = str(uuid.uuid4())[:6]
     whisper_links[whisper_id] = {
         "from": sender_id,
+        "r": reply,
         "to": reply.sender_id,
         "chat_id": event.chat_id,
         "from_name": from_user.first_name,
@@ -734,10 +735,10 @@ async def forward_whisper(event):
     if not data:
         return
     msg = event.message
-    reply = await event.get_reply_message()
     b = Button.url("فتح الهمسة", url=f"https://t.me/{(await ABH.get_me()).username}?start={whisper_id}")
     uid = data.get("from", "x04ou")
     rid = data.get("to", "x04ou")
+    reply = data.get("r", "None")
     from_name = data.get("from_name", "مجهول")
     to_name = data.get("to_name", "مجهول")
     await m1.delete()
