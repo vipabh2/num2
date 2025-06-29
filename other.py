@@ -578,10 +578,8 @@ async def add_toalert(event):
     try:
         if event.is_group:
             uid = event.chat_id
-            return
         elif event.is_private:
             uid = event.sender_id
-            return
         if uid not in alert_ids:
             alert_ids.add(uid)
             save_alerts()
