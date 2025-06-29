@@ -47,7 +47,7 @@ YDL_OPTIONS = {
     }],
 }
 x = {}
-@ABH.on(events.NewMessage(pattern=r'^(يوت|yt) (.+)'))
+@ABH.on(events.NewMessage(pattern=r'^(يوت|yt|حمل) (.+)'))
 async def download_audio(event):
     lock_key = f"lock:{event.chat_id}:يوتيوب"
     z = r.get(lock_key) == "True"
