@@ -7,7 +7,7 @@ from telethon.tl.types import ChatAdminRights
 from top import points, add_user, save_points
 from Program import CHANNEL_KEY, chs
 from telethon import events, Button
-from Resources import wfffp
+from Resources import wfffp, ment
 from other import botuse
 from ABH import ABH
 async def get_owner(event):
@@ -65,7 +65,8 @@ async def change_own_rank(event):
     result = await ABH(GetParticipantRequest(channel=chat.id, participant=user_id))
     if isinstance(result.participant, ChannelParticipantAdmin):
         if result.participant.promoted_by != x.id:
-            await event.reply("خلي الي رفعك يعدل صلاحياتك لدوخني توكل")
+            menti = await ment(result)
+            await chs(event, f"خلي {menti} يعدل صلاحياتك لدوخني توكل")
             return
     new_rank = event.pattern_match.group(1)
     if not new_rank:
