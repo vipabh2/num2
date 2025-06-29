@@ -677,7 +677,7 @@ async def handle_whisper(event):
     whisper_id = str(uuid.uuid4())[:6]
     whisper_links[whisper_id] = {
         "from": sender_id,
-        "r": reply,
+        "r": reply.id,
         "to": reply.sender_id,
         "chat_id": event.chat_id,
         "from_name": from_user.first_name,
