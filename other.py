@@ -587,10 +587,12 @@ async def add_toalert(event):
             await hint(f'تم تسجيل محادثه جديده {uid}')
     except Exception as e:
         print(e)
-@ABH.on(events.NewMessage(pattern="/alert"))
-async def send_alert(event):
-    if event.sender_id != K_4X1:
-        return
+
+@ABH.on(events.NewMessage(pattern="احصاء", from_users=[wfffp]))
+async def showlenalert(event):
+    await event.reply(len(alert_ids))
+@ABH.on(events.NewMessage(pattern="/alert", from_users=[wfffp]))
+async def set_alert(event):
     type = "نشر"
     await botuse(type)
     message_text = None
