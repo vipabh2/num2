@@ -50,6 +50,10 @@ async def can_add_admins(chat, user_id):
 async def change_own_rank(event):
     if not event.is_group:
         return
+    new_rank = event.pattern_match.group(1)
+    if not new_rank:
+        await chs(event, "اكتب اللقب وي الامر ك `تغيير لقبي ` + لقب.")
+        return
     await botuse("تغيير لقبي")
     user_id = event.sender_id
     chat = await event.get_chat()
@@ -69,10 +73,6 @@ async def change_own_rank(event):
             menti = await ment(user)
             await chs(event, f"خلي {menti} يعدل لقبك لدوخني توكل")
             return
-    new_rank = event.pattern_match.group(1)
-    if len(new_rank) < 2:
-        await chs(event, "اكتب اللقب وي الامر ك `تغيير لقبي ` + لقب.")
-        return
     if len(new_rank) > 14:
         await chs(event, "اللقب لازم يكون اقل من 14 حرف.")
         return
