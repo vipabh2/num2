@@ -54,7 +54,6 @@ async def download_audio(event):
     text = event.raw_text
     parts = text.split(maxsplit=1)
     command = parts[0]
-    zd = parts[1] if len(parts) > 1 else ""
     if not z and command in ['يوت', 'yt']:
         return
     query = event.pattern_match.group(2)
@@ -123,7 +122,6 @@ async def download_audio(event):
                 except Exception as e:
                     await hint(event, f"خطأ في تحديث الرسالة: {str(e)}")
                     pass
-                
         else:
             await event.reply(f'جاري تنزيل {query}')
         download_info = await asyncio.to_thread(ydl.extract_info, f"ytsearch:{query}", download=True)
@@ -184,7 +182,7 @@ async def delete_file(event):
     await botuse(type)
     file_name = event.pattern_match.group(1)
     if not os.path.exists(file_name):
-        return await event.reply("❗️الملف غير موجود.")
+        return await event.reply("الملف غير موجود.")
     os.remove(file_name)
     await event.reply("✅ تم حذف الملف بنجاح.")
 @ABH.on(events.NewMessage(pattern=r'^الملفات$', from_users=[1910015590]))
