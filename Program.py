@@ -17,6 +17,7 @@ async def get_screen_log(event):
             temp_log_file,
             caption="📄 آخر 500 سطر من شاشة البوت (screen)"
         )
+        await chs(event, 'تم الارسال في الخاص')
     except subprocess.CalledProcessError:
         await event.respond("⚠️ حدث خطأ أثناء قراءة سجل screen.\nتحقق من اسم الجلسة أو صلاحيات الوصول.")
 CHANNEL_KEY = 'ANYMOUSupdate'
