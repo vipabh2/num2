@@ -581,7 +581,7 @@ alert_ids = load_alert()
 async def alert(message):
     try:
         await ABH.send_message(K_4X1, message)
-    except Exception as e:
+    except:
         return
 @ABH.on(events.NewMessage)
 async def add_toalert(event):
@@ -589,7 +589,7 @@ async def add_toalert(event):
     n = None
     if event.is_group:
         uid = event.chat_id
-        n = event.chat.title
+        n = event.chat.title or 'بدون اسم'
     elif event.is_private:
         uid = event.sender_id
         sender = await event.get_sender()
@@ -597,7 +597,6 @@ async def add_toalert(event):
     if uid not in alert_ids:
         alert_ids.add(uid)
         save_alerts()
-
         await hint(f'تم تسجيل محادثه جديده `{uid}` ↽ {n}')
 @ABH.on(events.NewMessage(pattern="احصاء", from_users=[wfffp]))
 async def showlenalert(event):
