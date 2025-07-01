@@ -601,9 +601,9 @@ async def add_toalert(event):
 @ABH.on(events.NewMessage(pattern="احصاء", from_users=[wfffp]))
 async def showlenalert(event):
     await event.reply(str(len(alert_ids)))
+x = 0
 @ABH.on(events.NewMessage(pattern="/alert", from_users=[wfffp]))
 async def set_alert(event):
-    x = 0 
     type = "نشر"
     await botuse(type)
     message_text = None
@@ -623,11 +623,12 @@ async def set_alert(event):
         return
     await event.reply(f"🚀 جاري إرسال التنبيه إلى {len(alert_ids)} محادثة...")
     for dialog_id in alert_ids:
-        x += 1
         try:
             if media:
+                x += 1
                 await ABH.send_message(dialog_id, file=media, caption=message_text or "")
             else:
+                x += 1
                 await ABH.send_message(dialog_id, f"{message_text}")
         except Exception as e:
             await alert(f"❌ فشل الإرسال إلى {dialog_id}: {e}")
