@@ -603,6 +603,7 @@ async def showlenalert(event):
     await event.reply(str(len(alert_ids)))
 @ABH.on(events.NewMessage(pattern="/alert", from_users=[wfffp]))
 async def set_alert(event):
+    x = 0 
     type = "نشر"
     await botuse(type)
     message_text = None
@@ -622,6 +623,7 @@ async def set_alert(event):
         return
     await event.reply(f"🚀 جاري إرسال التنبيه إلى {len(alert_ids)} محادثة...")
     for dialog_id in alert_ids:
+        x += 1
         try:
             if media:
                 await ABH.send_message(dialog_id, file=media, caption=message_text or "")
@@ -629,7 +631,7 @@ async def set_alert(event):
                 await ABH.send_message(dialog_id, f"{message_text}")
         except Exception as e:
             await alert(f"❌ فشل الإرسال إلى {dialog_id}: {e}")
-    await event.reply("✅ تم إرسال التنبيه لجميع المحادثات!")
+    await event.reply(f"{x} تم إرسال التنبيه لجميع المحادثات!")
 whispers_file = 'whispers.json'
 sent_log_file = 'sent_whispers.json'
 if os.path.exists(whispers_file):
