@@ -1,6 +1,5 @@
-from other import wfffp, is_assistant
+from other import wfffp, is_assistant, get_owner
 from telethon import events, Button
-from addanddel import get_owner
 import asyncio, os, sys, random
 import json, redis, subprocess
 from ABH import ABH
