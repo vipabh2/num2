@@ -7,45 +7,9 @@ from telethon.tl.types import ChatAdminRights
 from top import points, add_user, save_points
 from Program import CHANNEL_KEY, chs
 from telethon import events, Button
-from Resources import wfffp, ment
+from Resources import *
 from other import botuse
 from ABH import ABH
-async def get_owner(event):
-    if not event.is_group:
-        return None   
-    chat = await event.get_chat()
-    if getattr(chat, 'megagroup', False):
-        try:
-            result = await ABH(GetParticipantsRequest(
-                channel=chat,
-                filter=ChannelParticipantsAdmins(),
-                offset=0,
-                limit=100,
-                hash=0
-            ))
-            for participant in result.participants:
-                if isinstance(participant, ChannelParticipantCreator):
-                    user = await ABH.get_entity(participant.user_id)
-                    return user
-        except:
-            return None
-    return None
-async def can_add_admins(chat, user_id):
-    try:
-        result = await ABH(GetParticipantRequest(
-            channel=chat,
-            participant=user_id
-        ))
-        role = result.participant
-        if isinstance(role, ChannelParticipantCreator):
-            return True
-        if isinstance(role, ChannelParticipantAdmin):
-            rights = role.admin_rights
-            if rights and rights.add_admins:
-                return True
-        return False
-    except:
-        return False
 @ABH.on(events.NewMessage(pattern=r"^تغيير لقبي\s*(.*)$"))
 async def change_own_rank(event):
     if not event.is_group:
