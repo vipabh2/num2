@@ -1,7 +1,7 @@
-from Resources import wfffp, is_assistant, get_owner
 from telethon import events, Button
 import asyncio, os, sys, random
 import json, redis, subprocess
+from Resources import *
 from ABH import ABH
 @ABH.on(events.NewMessage(pattern='مخفي اطلع'))
 async def memkikme(event):
