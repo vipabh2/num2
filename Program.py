@@ -1,4 +1,4 @@
-from other import wfffp, is_assistant, get_owner
+from Resources import wfffp, is_assistant, get_owner
 from telethon import events, Button
 import asyncio, os, sys, random
 import json, redis, subprocess
