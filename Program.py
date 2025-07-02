@@ -12,8 +12,8 @@ async def memkikme(event):
         await event.reply('هاي عود انت المالك')
         return
     elif id == wfffp:
-        await event.reply('ها ابن هاشم سالمين')
-        return
+        ء = random.choice(['مطور جيس حب انت', ' ها ابن هاشم سالمين'])
+        await event.reply(ء)        return
     elif is_assistant(event.chat_id, event.sender_id):
         await event.reply('ديله عيني تره انزلك من المعاونين!!!')
         return
