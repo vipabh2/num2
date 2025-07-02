@@ -568,7 +568,6 @@ async def screen_shot(event):
     else:
         await event.reply("فشل التقاط لقطة الشاشة، تأكد من صحة الرابط أو جرب مجددًا.")
 FILE = "dialogs.json"
-K_4X1 = 1910015590
 def remove_user(user_id: int):
     if user_id in alert_ids:
         alert_ids.remove(user_id)
@@ -587,7 +586,7 @@ def save_alerts():
 alert_ids = load_alert()
 async def alert(message):
     try:
-        await ABH.send_message(K_4X1, message)
+        await ABH.send_message(wfffp, message)
     except:
         return
 @ABH.on(events.NewMessage)
@@ -608,11 +607,8 @@ async def add_toalert(event):
 @ABH.on(events.NewMessage(pattern="احصاء", from_users=[wfffp]))
 async def showlenalert(event):
     await event.reply(str(len(alert_ids)))
-x = 0
 @ABH.on(events.NewMessage(pattern="/alert", from_users=[wfffp]))
 async def set_alert(event):
-    type = "نشر"
-    await botuse(type)
     message_text = None
     media = None
     if event.reply_to_msg_id:
@@ -629,19 +625,15 @@ async def set_alert(event):
         await event.reply("يرجى الرد على رسالة تحتوي على ملف أو كتابة نص مع مرفق بعد `/alert`.")
         return
     await event.reply(f"🚀 جاري إرسال التنبيه إلى {len(alert_ids)} محادثة...")
-    for dialog_id in alert_ids:
+    for dialog_id in list(alert_ids):
         try:
             if media:
-                x += 1
-                ء = await ABH.send_message(dialog_id, file=media, caption=message_text or "")
-                await ء.delete()
+                await ABH.send_message(dialog_id, file=media, caption=message_text or "")
             else:
-                x += 1
                 await ABH.send_message(dialog_id, f"{message_text}")
         except Exception as e:
-            await alert(f"❌ فشل الإرسال إلى {dialog_id}: {e}")
+            await alert(f"❌ فشل الإرسال إلى {dialog_id}")
             remove_user(dialog_id)
-    await event.reply(f"{x} تم إرسال التنبيه لجميع المحادثات!")
 whispers_file = 'whispers.json'
 sent_log_file = 'sent_whispers.json'
 if os.path.exists(whispers_file):
