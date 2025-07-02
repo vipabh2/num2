@@ -3,6 +3,7 @@ import asyncio, os, sys, random
 import json, redis, subprocess
 from Resources import *
 from ABH import ABH
+from other import *
 @ABH.on(events.NewMessage(pattern='مخفي اطلع'))
 async def memkikme(event):
     o = await get_owner(event)
