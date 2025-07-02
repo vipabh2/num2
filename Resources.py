@@ -3,8 +3,8 @@ from telethon.tl.functions.channels import GetParticipantsRequest
 from telethon.tl.functions.channels import GetParticipantRequest
 from telethon.tl.types import ChannelParticipantAdmin
 import google.generativeai as genai
+import pytz, os, json
 from ABH import ABH
-import pytz
 def is_assistant(chat_id, user_id):
     data = load_auth()
     assistants = data.get(str(chat_id), [])
