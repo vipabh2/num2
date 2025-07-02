@@ -633,8 +633,8 @@ async def set_alert(event):
         try:
             if media:
                 x += 1
-                x = await ABH.send_message(dialog_id, file=media, caption=message_text or "")
-                await x.delete()
+                ء = await ABH.send_message(dialog_id, file=media, caption=message_text or "")
+                await ء.delete()
             else:
                 x += 1
                 await ABH.send_message(dialog_id, f"{message_text}")
