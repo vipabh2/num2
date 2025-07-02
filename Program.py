@@ -6,6 +6,9 @@ from other import *
 from ABH import ABH
 @ABH.on(events.NewMessage(pattern='مخفي اطلع'))
 async def memkikme(event):
+    if not event.is_group:
+        return
+    await botuse("مخفي اطلع")
     o = await get_owner(event)
     id = event.sender_id
     if id == o.id:
