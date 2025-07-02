@@ -5,6 +5,11 @@ from telethon.tl.types import ChannelParticipantAdmin
 import google.generativeai as genai
 from ABH import ABH
 import pytz
+def is_assistant(chat_id, user_id):
+    data = load_auth()
+    assistants = data.get(str(chat_id), [])
+    return user_id in assistants
+
 async def can_add_admins(chat, user_id):
     try:
         result = await ABH(GetParticipantRequest(
