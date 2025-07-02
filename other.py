@@ -5,7 +5,6 @@ from Resources import suras, mention, ment, wfffp, hint
 from playwright.async_api import async_playwright
 from database import store_whisper, get_whisper
 from telethon import events, Button
-from Program import CHANNEL_KEY 
 from ABH import ABH
 def is_assistant(chat_id, user_id):
     data = load_auth()
@@ -276,7 +275,7 @@ async def quran(event):
     text = event.raw_text.strip()
     me = await event.client.get_me()
     username = me.username
-    c = f'**[Enjoy dear]**(https://t.me/{CHANNEL_KEY })'
+    c = f'**[Enjoy dear]**(https://t.me/{username })'
     button = [Button.url("🫀", "https://t.me/x04ou")]
     if text.lower() in ['قرآن', 'قران']:
         sura_number = random.randint(1, 114)
