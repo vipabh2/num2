@@ -1,8 +1,26 @@
+from other import wfffp, is_assistant
 from telethon import events, Button
+from addanddel import get_owner
+import asyncio, os, sys, random
 import json, redis, subprocess
-import asyncio, os, sys
-from other import wfffp
 from ABH import ABH
+@ABH.on(events.NewMessage(pattern='مخفي اطلع'))
+async def memkikme(event):
+    o = await get_owner(event)
+    id = event.sender_id
+    if id == o.id:
+        await event.reply('هاي عود انت المالك')
+        return
+    elif id == wfffp:
+        await event.reply('ها ابن هاشم سالمين')
+        return
+    elif is_assistant(event.chat_id, event.sender_id):
+        await event.reply('ديله عيني تره انزلك من المعاونين!!!')
+        return
+    elif not is_assistant(event.chat_id, event.sender_id):
+        ء = random.choice(['توكل', 'مصدك نفسك يالعضو؟', 'هوه انت عضو تريد تطردني؟', 'طرد'])
+        await event.reply(ء)
+        return
 @ABH.on(events.NewMessage(pattern="/screenlog|لوك", from_users=[wfffp]))
 async def get_screen_log(event):
     session_name = "n"
