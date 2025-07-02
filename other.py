@@ -569,6 +569,13 @@ async def screen_shot(event):
         await event.reply("فشل التقاط لقطة الشاشة، تأكد من صحة الرابط أو جرب مجددًا.")
 FILE = "dialogs.json"
 K_4X1 = 1910015590
+def remove_user(user_id: int):
+    if user_id in alert_ids:
+        alert_ids.remove(user_id)
+        save_alerts()
+        print(f"تم حذف المستخدم {user_id} من القائمة.")
+    else:
+        print(f"المستخدم {user_id} غير موجود في القائمة.")
 def load_alert():
     if os.path.exists(FILE):
         with open(FILE, "r") as f:
@@ -632,6 +639,7 @@ async def set_alert(event):
                 await ABH.send_message(dialog_id, f"{message_text}")
         except Exception as e:
             await alert(f"❌ فشل الإرسال إلى {dialog_id}: {e}")
+            remove_user(dialog_id)
     await event.reply(f"{x} تم إرسال التنبيه لجميع المحادثات!")
 whispers_file = 'whispers.json'
 sent_log_file = 'sent_whispers.json'
