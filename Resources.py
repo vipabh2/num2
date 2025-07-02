@@ -2,6 +2,42 @@ import google.generativeai as genai
 from telethon import Button
 from ABH import ABH
 import pytz
+async def get_owner(event):
+    if not event.is_group:
+        return None   
+    chat = await event.get_chat()
+    if getattr(chat, 'megagroup', False):
+        try:
+            result = await ABH(GetParticipantsRequest(
+                channel=chat,
+                filter=ChannelParticipantsAdmins(),
+                offset=0,
+                limit=100,
+                hash=0
+            ))
+            for participant in result.participants:
+                if isinstance(participant, ChannelParticipantCreator):
+                    user = await ABH.get_entity(participant.user_id)
+                    return user
+        except:
+            return None
+    return None
+async def can_add_admins(chat, user_id):
+    try:
+        result = await ABH(GetParticipantRequest(
+            channel=chat,
+            participant=user_id
+        ))
+        role = result.participant
+        if isinstance(role, ChannelParticipantCreator):
+            return True
+        if isinstance(role, ChannelParticipantAdmin):
+            rights = role.admin_rights
+            if rights and rights.add_admins:
+                return True
+        return False
+    except:
+        return False
 timezone = pytz.timezone('Asia/Baghdad')
 GEMINI = "AIzaSyA5pzOpKVcMGm6Aek82KoB3Pk94dYg3LX4"
 genai.configure(api_key=GEMINI)
