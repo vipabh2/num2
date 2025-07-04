@@ -128,6 +128,7 @@ async def handle_reply(event):
                     access_hash=doc.access_hash,
                     file_reference=doc.file_reference
                 )
+                print(file_id)
                 if not file_id:
                     await event.reply("لا يمكن قراءة الوسائط.")
                     del session[user_id]
@@ -154,6 +155,7 @@ async def execute_reply(event):
     for key in r.scan_iter(match=pattern):
         reply_name = key.split(":", 2)[-1]
         data = r.hgetall(key)
+        print(data.get('file_id'))
         match_type = data.get('match')
         if (match_type == 'exact' and text == reply_name) or \
            (match_type == 'startswith' and text.startswith(reply_name)) or \
@@ -161,6 +163,7 @@ async def execute_reply(event):
             if data.get('type') == 'text':
                 await event.reply(data.get('content', ''))
             elif data.get('type') == 'media':
+                print(data.get('file_id'))
                 await ABH.send_file(event.chat_id, file=data.get('file_id'), reply_to=event.id)
             break
 @ABH.on(events.NewMessage(pattern='^عرض الردود$'))
