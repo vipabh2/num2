@@ -169,7 +169,7 @@ async def execute_reply(event):
            (match_type == 'startswith' and text.startswith(reply_name)) or \
            (match_type == 'contains' and reply_name in text):
             if data.get('type') == 'text':
-                await event.reply(data.get('content', ''))
+                await event.reply(data.get('content', '.'))
             elif data.get('type') == 'media' and data.get('file_id'):
                 await ABH.send_file(event.chat_id, file=data.get('file_id'))
                 # await ABH.send_file(event.chat_id, file=data.get('file_id'), reply_to=event.id)
