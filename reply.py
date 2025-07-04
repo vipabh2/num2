@@ -146,6 +146,7 @@ async def handle_reply(event):
                         'match': 'startswith' if reply_type == 'special' else 'exact'
                     })
                 await event.reply(f" تم حفظ الرد باسم **{reply_name}**")
+                print(file_id)
                 del session[user_id]
                 return
     except Exception as e:
