@@ -135,6 +135,7 @@ async def handle_reply(event):
                     await event.reply("لا يمكن قراءة الوسائط.")
                     del session[user_id]
                     return
+                print(file_id)
                 r.hset(redis_key, mapping={
                     'type': 'media',
                     'file_id': file_id,
@@ -165,6 +166,7 @@ async def execute_reply(event):
                 await event.reply(data.get('content', ''))
             elif data.get('type') == 'media':
                 await ABH.send_file(event.chat_id, file=data.get('file_id'), reply_to=event.id)
+                print(data.get('file_id'))
             break
 @ABH.on(events.NewMessage(pattern='^عرض الردود$'))
 async def show_replies(event):
