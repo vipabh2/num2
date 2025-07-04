@@ -157,7 +157,6 @@ async def execute_reply(event):
     for key in r.scan_iter(match=pattern):
         reply_name = key.split(":", 2)[-1]
         data = r.hgetall(key)
-        print(data.get('file_id'))
         match_type = data.get('match')
         if (match_type == 'exact' and text == reply_name) or \
            (match_type == 'startswith' and text.startswith(reply_name)) or \
