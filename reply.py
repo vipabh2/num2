@@ -1,3 +1,4 @@
+from telethon.tl.types import InputDocument
 from other import botuse, is_assistant
 from telethon import Button, events
 from Resources import mention
@@ -121,16 +122,12 @@ async def handle_reply(event):
                     'content': content,
                     'match': 'exact'
                 })
-            elif msg.media:
-                file_id = None
-                if msg.photo:
-                    file_id = msg.photo.id
-                elif msg.document:
-                    file_id = msg.document.id
-                elif msg.video:
-                    file_id = msg.video.id
-                else:
-                    file_id = None
+                doc = event.message.media.document
+                file_id = InputDocument(
+                    id=doc.id,
+                    access_hash=doc.access_hash,
+                    file_reference=doc.file_reference
+                )
                 if not file_id:
                     send_and_download(file_id, event.chat_id)
                     await event.reply("لا يمكن قراءة الوسائط.")
@@ -166,8 +163,7 @@ async def execute_reply(event):
                 await event.reply(data.get('content', ''))
             elif data.get('type') == 'media':
                 send_and_download(data.get('file_id'), event.chat_id)
-                ء = await ABH.download_file(data.get('file_id'))
-                await ABH.send_file(event.chat_id, file=ء, reply_to=event.id)
+                await ABH.send_file(event.chat_id, file=data.get('file_id'), reply_to=event.id)
             break
 async def send_and_download(file_id, chat_id):
     msg = await ABH.send_file(chat_id, file=file_id)
