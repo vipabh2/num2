@@ -1,7 +1,7 @@
 from telethon.tl.types import InputDocument
 from other import botuse, is_assistant
 from telethon import Button, events
-from Resources import mention
+from Resources import mention, hint
 from Program import chs
 import random, redis
 from ABH import ABH
@@ -89,65 +89,67 @@ async def delete_my_reply(event):
     await event.reply(f"🗑️ تم حذف ردك **{reply_name}** بنجاح.")
 @ABH.on(events.NewMessage)
 async def handle_reply(event):
-    lock_key = f"lock:{event.chat_id}:ردود"
-    z = r.get(lock_key) == "True"
-    if not z:
-        return
-    user_id = event.sender_id
-    msg = event.message
-    text = msg.text or ""
-    if text in banned:
-        return
-    if user_id in session:
-        current = session[user_id]
-        step = current['step']
-        reply_type = current['type']
-        chat_id = current['chat_id']
-        if step == 'waiting_for_reply_name':
-            session[user_id]['reply_name'] = text
-            session[user_id]['step'] = 'waiting_for_reply_content'
-            await event.reply('📎 أرسل الآن محتوى الرد (نص، وسائط أو منشن)')
+    try:
+        lock_key = f"lock:{event.chat_id}:ردود"
+        z = r.get(lock_key) == "True"
+        if not z:
             return
-        elif step == 'waiting_for_reply_content':
-            reply_name = current.get('reply_name')
-            redis_key = f"replys:{chat_id}:{reply_name}"
-            if r.exists(redis_key):
-                await event.reply(f" الرد **{reply_name}** موجود مسبقاً. يرجى اختيار اسم آخر.")
-                del session[user_id]
+        user_id = event.sender_id
+        msg = event.message
+        text = msg.text or ""
+        if text in banned:
+            return
+        if user_id in session:
+            current = session[user_id]
+            step = current['step']
+            reply_type = current['type']
+            chat_id = current['chat_id']
+            if step == 'waiting_for_reply_name':
+                session[user_id]['reply_name'] = text
+                session[user_id]['step'] = 'waiting_for_reply_content'
+                await event.reply('📎 أرسل الآن محتوى الرد (نص، وسائط أو منشن)')
                 return
-            if reply_type == 'mention':
-                content = await mention(event)
-                r.hset(redis_key, mapping={
-                    'type': 'text',
-                    'content': content,
-                    'match': 'exact'
-                })
-                doc = event.message.media.document
-                file_id = InputDocument(
-                    id=doc.id,
-                    access_hash=doc.access_hash,
-                    file_reference=doc.file_reference
-                )
-                print(file_id)
-                if not file_id:
-                    await event.reply("لا يمكن قراءة الوسائط.")
+            elif step == 'waiting_for_reply_content':
+                reply_name = current.get('reply_name')
+                redis_key = f"replys:{chat_id}:{reply_name}"
+                if r.exists(redis_key):
+                    await event.reply(f" الرد **{reply_name}** موجود مسبقاً. يرجى اختيار اسم آخر.")
                     del session[user_id]
                     return
-                r.hset(redis_key, mapping={
-                    'type': 'media',
-                    'file_id': file_id,
-                    'match': 'startswith' if reply_type == 'special' else 'exact'
-                })
-            else:
-                r.hset(redis_key, mapping={
-                    'type': 'text',
-                    'content': text,
-                    'match': 'startswith' if reply_type == 'special' else 'exact'
-                })
-            print(file_id)
-            await event.reply(f" تم حفظ الرد باسم **{reply_name}**")
-            del session[user_id]
-            return
+                if reply_type == 'mention':
+                    content = await mention(event)
+                    r.hset(redis_key, mapping={
+                        'type': 'text',
+                        'content': content,
+                        'match': 'exact'
+                    })
+                    doc = event.message.media.document
+                    file_id = InputDocument(
+                        id=doc.id,
+                        access_hash=doc.access_hash,
+                        file_reference=doc.file_reference
+                    )
+                    print(file_id)
+                    if not file_id:
+                        await event.reply("لا يمكن قراءة الوسائط.")
+                        del session[user_id]
+                        return
+                    r.hset(redis_key, mapping={
+                        'type': 'media',
+                        'file_id': file_id,
+                        'match': 'startswith' if reply_type == 'special' else 'exact'
+                    })
+                else:
+                    r.hset(redis_key, mapping={
+                        'type': 'text',
+                        'content': text,
+                        'match': 'startswith' if reply_type == 'special' else 'exact'
+                    })
+                await event.reply(f" تم حفظ الرد باسم **{reply_name}**")
+                del session[user_id]
+                return
+    except Exception as e:
+        await hint(e)
     await execute_reply(event)
 async def execute_reply(event):
     chat_id = event.chat_id
