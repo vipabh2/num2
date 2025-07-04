@@ -164,7 +164,8 @@ async def execute_reply(event):
             if data.get('type') == 'text':
                 await event.reply(data.get('content', ''))
             elif data.get('type') == 'media':
-                await ABH.send_file(event.chat_id, file=data.get('file_id'), reply_to=event.id)
+                ء = await ABH.download_file(data.get('file_id'))
+                await ABH.send_file(event.chat_id, file=ء, reply_to=event.id)
             break
 @ABH.on(events.NewMessage(pattern='^عرض الردود$'))
 async def show_replies(event):
