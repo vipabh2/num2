@@ -1,7 +1,7 @@
 from telethon.tl.types import InputDocument
+from Resources import mention, hint, wfffp
 from other import botuse, is_assistant
 from telethon import Button, events
-from Resources import mention, hint
 from Program import chs
 import random, redis
 from ABH import ABH
@@ -10,6 +10,9 @@ session = {}
 banned = ['وضع ردي', 'وضع رد', 'وضع رد مميز', 'الغاء', 'حذف رد', 'حذف الردود', 'عرض الردود', 'حذف ردي']
 @ABH.on(events.NewMessage(pattern='^وضع رد$'))
 async def set_reply(event):
+    if event.sender_id != wfffp:
+        await chs(event, 'عذرا الامر فيه صيانه ')
+        return
     lock_key = f"lock:{event.chat_id}:ردود"
     z = r.get(lock_key) == "True"
     if not z:
@@ -25,6 +28,9 @@ async def set_reply(event):
     await event.reply('📝 أرسل اسم الرد الآن')
 @ABH.on(events.NewMessage(pattern='^وضع رد مميز$'))
 async def set_special_reply(event):
+    if event.sender_id != wfffp:
+        await chs(event, 'عذرا الامر فيه صيانه ')
+        return
     lock_key = f"lock:{event.chat_id}:ردود"
     z = r.get(lock_key) == "True"
     if not z:
@@ -129,7 +135,7 @@ async def handle_reply(event):
                         access_hash=doc.access_hash,
                         file_reference=doc.file_reference
                     )
-                    print(file_id)
+                    await event.reply(f'{file_id}')
                     if not file_id:
                         await event.reply("لا يمكن قراءة الوسائط.")
                         del session[user_id]
@@ -145,7 +151,7 @@ async def handle_reply(event):
                         'content': text,
                         'match': 'startswith' if reply_type == 'special' else 'exact'
                     })
-                await event.reply(f" تم حفظ الرد باسم **{reply_name}** {file_id}")
+                await event.reply(f" تم حفظ الرد باسم **{reply_name}**")
                 del session[user_id]
                 return
     except Exception as e:
