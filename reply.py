@@ -129,7 +129,6 @@ async def handle_reply(event):
                     file_reference=doc.file_reference
                 )
                 if not file_id:
-                    send_and_download(file_id, event.chat_id)
                     await event.reply("لا يمكن قراءة الوسائط.")
                     del session[user_id]
                     return
@@ -162,13 +161,8 @@ async def execute_reply(event):
             if data.get('type') == 'text':
                 await event.reply(data.get('content', ''))
             elif data.get('type') == 'media':
-                send_and_download(data.get('file_id'), event.chat_id)
                 await ABH.send_file(event.chat_id, file=data.get('file_id'), reply_to=event.id)
             break
-async def send_and_download(file_id, chat_id):
-    msg = await ABH.send_file(chat_id, file=file_id)
-    path = await ABH.download_media(msg.media, file='dest_path')
-    return path
 @ABH.on(events.NewMessage(pattern='^عرض الردود$'))
 async def show_replies(event):
     if not is_assistant(event.chat_id, event.sender_id):
