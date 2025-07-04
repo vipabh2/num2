@@ -162,19 +162,32 @@ async def execute_reply(event):
     text = event.raw_text or ""
     pattern = f"replys:{chat_id}:*"
     for key in r.scan_iter(match=pattern):
-        reply_name = key.split(":", 2)[-1]
-        data = r.hgetall(key)
+        reply_name = key.decode().split(":", 2)[-1]
+        data_raw = r.hgetall(key)
+        data = {k.decode(): v.decode() for k, v in data_raw.items()}
         match_type = data.get('match')
-        if (match_type == 'exact' and text == reply_name) or \
-           (match_type == 'startswith' and text.startswith(reply_name)) or \
-           (match_type == 'contains' and reply_name in text):
+        if (
+            (match_type == 'exact' and text == reply_name) or
+            (match_type == 'startswith' and text.startswith(reply_name)) or
+            (match_type == 'contains' and reply_name in text)
+        ):
             if data.get('type') == 'text':
-                await event.reply(data.get('content', '.'))
-            elif data.get('type') == 'media' and data.get('file_id'):
-                await ABH.send_file(event.chat_id, file=data.get('file_id'))
-                # await ABH.send_file(event.chat_id, file=data.get('file_id'), reply_to=event.id)
+                content = data.get('content')
+                if content:
+                    await event.reply(content)
+                else:
+                    await event.reply("⚠️ لا يوجد محتوى نصي.")
+            elif data.get('type') == 'media':
+                file_id = data.get('file_id')
+                if file_id:
+                    try:
+                        await ABH.send_file(event.chat_id, file=file_id, reply_to=event.id)
+                    except Exception as e:
+                        await event.reply(f"❌ فشل إرسال الملف: {e}")
+                else:
+                    await event.reply("⚠️ لا يوجد معرف ملف.")
             else:
-                await event.reply("...")
+                await event.reply("⚠️ نوع الرد غير معروف.")
             break
 @ABH.on(events.NewMessage(pattern='^عرض الردود$'))
 async def show_replies(event):
