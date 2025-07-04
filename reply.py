@@ -125,13 +125,10 @@ async def handle_reply(event):
                 file_id = None
                 if msg.photo:
                     file_id = msg.photo.id
-                    print(file_id)
                 elif msg.document:
                     file_id = msg.document.id
-                    print(file_id)
                 elif msg.video:
                     file_id = msg.video.id
-                    print(file_id)
                 else:
                     file_id = None
                 if not file_id:
