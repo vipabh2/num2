@@ -120,7 +120,7 @@ async def download_audio(event):
                 try:
                     await event.client.edit_message(event.chat_id, m_id, f'جاري تنزيل {query}')
                 except Exception as e:
-                    await hint(event, f"خطأ في تحديث الرسالة: {str(e)}")
+                    await hint(f"خطأ في تحديث الرسالة: {str(e)}")
                     pass
         else:
             await event.reply(f'جاري تنزيل {query}')
