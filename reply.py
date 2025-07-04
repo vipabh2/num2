@@ -164,7 +164,6 @@ async def execute_reply(event):
     for key in r.scan_iter(match=pattern):
         reply_name = key.decode().split(":", 2)[-1]
         data_raw = r.hgetall(key)
-        data = {k.decode(): v.decode() for k, v in data_raw.items()}
         match_type = data.get('match')
         if (
             (match_type == 'exact' and text == reply_name) or
