@@ -1,3 +1,4 @@
+
 from telethon.tl.types import ChannelParticipantCreator
 import asyncio, os, json, random, uuid, operator, requests, re
 from telethon.tl.functions.channels import GetParticipantRequest
@@ -603,7 +604,7 @@ async def add_toalert(event):
         uid = event.sender_id
         sender = await event.get_sender()
         n = await ment(sender)
-    if uid not in alert_ids:
+    if  uid and uid not in alert_ids:
         alert_ids.add(uid)
         save_alerts()
         await hint(f'تم تسجيل محادثه جديده `{uid}` ↽ {n}')
@@ -631,7 +632,7 @@ async def set_alert(event):
     for dialog_id in list(alert_ids):
         try:
             if media:
-                await ABH.send_message(dialog_id, file=media, caption=message_text or "")
+                await ABH.send_file(dialog_id, file=media, caption=message_text or "")
             else:
                 await ABH.send_message(dialog_id, f"{message_text}")
         except Exception as e:
