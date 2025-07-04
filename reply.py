@@ -159,6 +159,10 @@ async def handle_reply(event):
     for key in r.scan_iter(match=pattern):
         reply_name = key.split(":", 2)[-1]
         data = r.hgetall(key)
+        if not data:
+            await event.reply('>>')
+        else:
+            await event.reply(f'{data}')
         match_type = data.get('match')
         if (
             (match_type == 'exact' and text == reply_name) or
