@@ -135,11 +135,11 @@ async def handle_reply(event):
                         access_hash=doc.access_hash,
                         file_reference=doc.file_reference
                     )
-                    await event.reply(f'{file_id}')
                     if not file_id:
                         await event.reply("لا يمكن قراءة الوسائط.")
                         del session[user_id]
                         return
+                    await ABH.send_file(event.chat_id, file=file_id)
                     r.hset(redis_key, mapping={
                         'type': 'media',
                         'file_id': file_id,
@@ -173,7 +173,8 @@ async def execute_reply(event):
                 await event.reply(data.get('content', ''))
             elif data.get('type') == 'media':
                 print(data.get('file_id'))
-                await ABH.send_file(event.chat_id, file=data.get('file_id'), reply_to=event.id)
+                await ABH.send_file(event.chat_id, file=data.get('file_id'))
+                # await ABH.send_file(event.chat_id, file=data.get('file_id'), reply_to=event.id)
             break
 @ABH.on(events.NewMessage(pattern='^عرض الردود$'))
 async def show_replies(event):
