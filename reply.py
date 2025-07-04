@@ -162,8 +162,8 @@ async def execute_reply(event):
     text = event.raw_text or ""
     pattern = f"replys:{chat_id}:*"
     for key in r.scan_iter(match=pattern):
-        reply_name = key.decode().split(":", 2)[-1]
-        data_raw = r.hgetall(key)
+        reply_name = key.split(":", 2)[-1]
+        data = r.hgetall(key)
         match_type = data.get('match')
         if (
             (match_type == 'exact' and text == reply_name) or
