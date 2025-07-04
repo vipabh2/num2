@@ -122,7 +122,7 @@ async def handle_reply(event):
                     'match': 'exact'
                 })
             elif msg.media:
-                file_id = getattr(msg.file, "id", None)
+                file_id = msg.file_id
                 if not file_id:
                     await event.reply(" لا يمكن قراءة الوسائط.")
                     del session[user_id]
