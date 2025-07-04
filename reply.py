@@ -156,15 +156,20 @@ async def execute_reply(event):
     pattern = f"replys:{chat_id}:*"
     for key in r.scan_iter(match=pattern):
         reply_name = key.split(":", 2)[-1]
-        data = r.hgetall(key)
+        data_raw = r.hgetall(key)
+        if not data_raw:
+            return
+        data = {k.decode('utf-8'): v.decode('utf-8') for k, v in data_raw.items()}
         match_type = data.get('match')
         if (match_type == 'exact' and text == reply_name) or \
-           (match_type == 'startswith' and text.startswith(reply_name)) or \
-           (match_type == 'contains' and reply_name in text):
+        (match_type == 'startswith' and text.startswith(reply_name)) or \
+        (match_type == 'contains' and reply_name in text):
             if data.get('type') == 'text':
                 await event.reply(data.get('content', ''))
             elif data.get('type') == 'media':
-                await ABH.send_file(event.chat_id, file=data.get('file_id'), reply_to=event.id)
+                file_id = data.get('file_id')
+                if file_id:
+                    await ABH.send_file(event.chat_id, file=file_id, reply_to=event.id)
             break
 @ABH.on(events.NewMessage(pattern='^عرض الردود$'))
 async def show_replies(event):
