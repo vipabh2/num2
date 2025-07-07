@@ -2,25 +2,24 @@ from telethon.tl.types import InputDocument
 from Resources import mention, hint, wfffp
 from other import botuse, is_assistant
 from telethon import Button, events
+import random, redis, base64, json
 from Program import chs
-import random, redis
 from ABH import ABH
+async def chs(e, t):
+    ABH.send_message(e.chat_id, t, reply_to=e.id)
 r = redis.Redis(host='localhost', port=6379, db=0, decode_responses=True)
 session = {}
 banned = ['وضع ردي', 'وضع رد', 'وضع رد مميز', 'الغاء', 'حذف رد', 'حذف الردود', 'عرض الردود', 'حذف ردي']
 @ABH.on(events.NewMessage(pattern='^وضع رد$'))
 async def set_reply(event):
-    if event.sender_id != wfffp:
-        await chs(event, 'عذرا الامر فيه صيانه ')
-        return
     lock_key = f"lock:{event.chat_id}:ردود"
     z = r.get(lock_key) == "True"
     if not z:
         await chs(event, 'عذرا بس امر الردود معطل 😑')
         return
     if not is_assistant(event.chat_id, event.sender_id):
-        await chs(event, 'عذرا الامر خاص بالمعاونين فقط🤭')
-        return
+         await chs(event, 'عذرا الامر خاص بالمعاونين فقط🤭')
+         return
     type = "وضع رد"
     await botuse(type)
     user_id = event.sender_id
@@ -28,17 +27,14 @@ async def set_reply(event):
     await event.reply('📝 أرسل اسم الرد الآن')
 @ABH.on(events.NewMessage(pattern='^وضع رد مميز$'))
 async def set_special_reply(event):
-    if event.sender_id != wfffp:
-        await chs(event, 'عذرا الامر فيه صيانه ')
-        return
     lock_key = f"lock:{event.chat_id}:ردود"
     z = r.get(lock_key) == "True"
     if not z:
         await chs(event, 'عذرا بس امر الردود معطل 😑')
         return
     if not is_assistant(event.chat_id, event.sender_id):
-        await chs(event, 'عذرا الامر خاص بالمعاونين فقط🤭')
-        return
+         await chs(event, 'عذرا الامر خاص بالمعاونين فقط🤭')
+         return
     type = "وضع رد مميز"
     await botuse(type)
     user_id = event.sender_id
@@ -128,37 +124,34 @@ async def handle_reply(event):
                     'content': content,
                     'match': 'exact'
                 })
-                doc = event.message.media.document
-                file_id = InputDocument(
-                    id=doc.id,
-                    access_hash=doc.access_hash,
-                    file_reference=doc.file_reference
-                )
-                if not file_id:
-                    await event.reply("لا يمكن قراءة الوسائط.")
-                    del session[user_id]
-                    return
-                await ABH.send_file(event.chat_id, file=file_id)
-                r.hset(redis_key, mapping={
-                    'type': 'media',
-                    'file_id': file_id,
-                    'match': 'startswith' if reply_type == 'special' else 'exact'
-                })
-            else:
-                r.hset(redis_key, mapping={
-                    'type': 'text',
-                    'content': text,
-                    'match': 'startswith' if reply_type == 'special' else 'exact'
-                })
-            await event.reply(f" تم حفظ الرد باسم **{reply_name}**")
-            del session[user_id]
-            return
+        if event.media:
+            doc = event.message.media.document
+            file_id = {
+                "id": str(doc.id),
+                "access_hash": str(doc.access_hash),
+                "file_reference": base64.b64encode(doc.file_reference).decode()
+            }
+            r.hset(redis_key, mapping={
+                'type': 'media',
+                'file_id': json.dumps(file_id),
+                'match': 'startswith' if reply_type == 'special' else 'exact'
+            })
+        else:
+            r.hset(redis_key, mapping={
+                'type': 'text',
+                'content': text,
+                'match': 'startswith' if reply_type == 'special' else 'exact'
+            })
+        await event.reply(f" تم حفظ الرد باسم **{reply_name}**")
+        del session[user_id]
+        return
     chat_id = event.chat_id
     text = event.raw_text or ""
     pattern = f"replys:{chat_id}:*"
     for key in r.scan_iter(match=pattern):
         reply_name = key.split(":", 2)[-1]
         data = r.hgetall(key)
+        print(data)
         match_type = data.get('match')
         if (
             (match_type == 'exact' and text == reply_name) or
@@ -169,20 +162,22 @@ async def handle_reply(event):
                 content = data.get('content')
                 if content:
                     await event.reply(content)
-                else:
-                    await event.reply("⚠️ لا يوجد محتوى نصي.")
-            elif data.get('type') == 'media':
+                    return
+            if data.get('type') == 'media':
                 file_id = data.get('file_id')
                 if file_id:
                     try:
+                        file_data = json.loads(file_id)
+                        file_id = InputDocument(
+                            id=int(file_data['id']),
+                            access_hash=int(file_data['access_hash']),
+                            file_reference=base64.b64decode(file_data['file_reference'])
+                        )
                         await ABH.send_file(event.chat_id, file=file_id, reply_to=event.id)
                     except Exception as e:
                         await event.reply(f"❌ فشل إرسال الملف: {e}")
                 else:
                     await event.reply("⚠️ لا يوجد معرف ملف.")
-            else:
-                await event.reply("⚠️ نوع الرد غير معروف.")
-            break
 @ABH.on(events.NewMessage(pattern='^عرض الردود$'))
 async def show_replies(event):
     if not is_assistant(event.chat_id, event.sender_id):
@@ -206,8 +201,8 @@ async def delete_reply(event):
         await chs(event, 'عذرا بس امر الردود معطل 😑')
         return
     if not is_assistant(event.chat_id, event.sender_id):
-        await chs(event, 'عذرا الامر خاص بالمعاونين فقط🤭')
-        return
+         await chs(event, 'عذرا الامر خاص بالمعاونين فقط🤭')
+         return
     type = "حذف رد"
     await botuse(type)
     chat_id = event.chat_id
@@ -229,8 +224,8 @@ async def delete_all_replies(event):
         await chs(event, 'عذرا بس امر الردود معطل 😑')
         return
     if not is_assistant(event.chat_id, event.sender_id):
-        await chs(event, 'عذرا الامر خاص بالمعاونين فقط🤭')
-        return
+         await chs(event, 'عذرا الامر خاص بالمعاونين فقط🤭')
+         return
     type = "حذف الردود"
     await botuse(type)
     chat_id = event.chat_id
