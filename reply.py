@@ -131,12 +131,23 @@ async def handle_reply(event):
                     'match': 'exact'
                 })
         if event.media:
-            doc = event.message.media
-            file_id = {
-                "id": str(doc.id),
-                "access_hash": str(doc.access_hash),
-                "file_reference": base64.b64encode(doc.file_reference).decode()
-            }
+            if hasattr(event.media, 'document'):
+                doc = event.media.document
+                file_id = {
+                    "id": str(doc.id),
+                    "access_hash": str(doc.access_hash),
+                    "file_reference": base64.b64encode(doc.file_reference).decode()
+                }
+            elif hasattr(event.media, 'photo'):
+                photo = event.media.photo
+                file_id = {
+                    "id": str(photo.id),
+                    "access_hash": str(photo.access_hash),
+                    "file_reference": base64.b64encode(photo.file_reference).decode()
+                }
+            else:
+                del session[user_id]
+                return
             r.hset(redis_key, mapping={
                 'type': 'media',
                 'file_id': json.dumps(file_id),
