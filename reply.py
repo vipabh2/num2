@@ -131,7 +131,7 @@ async def handle_reply(event):
                     'match': 'exact'
                 })
         if event.media:
-            doc = event.message.media.document
+            doc = event.message.media
             file_id = {
                 "id": str(doc.id),
                 "access_hash": str(doc.access_hash),
