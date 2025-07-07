@@ -95,6 +95,34 @@ async def delete_my_reply(event):
     r.delete(redis_key)
     r.delete(user_reply_key)
     await event.reply(f"🗑️ تم حذف ردك **{reply_name}** بنجاح.")
+from telethon.tl.types import InputPhoto, InputDocument
+import base64
+import json
+
+async def send_saved_media(event, file_id_json):
+    try:
+        file_data = json.loads(file_id_json)
+        id = int(file_data['id'])
+        access_hash = int(file_data['access_hash'])
+        file_reference = base64.b64decode(file_data['file_reference'])
+        try:
+            media = InputPhoto(
+                id=id,
+                access_hash=access_hash,
+                file_reference=file_reference
+            )
+            await ABH.send_file(event.chat_id, file=media, reply_to=event.id)
+            return
+        except Exception:
+            pass
+        media = InputDocument(
+            id=id,
+            access_hash=access_hash,
+            file_reference=file_reference
+        )
+        await ABH.send_file(event.chat_id, file=media, reply_to=event.id)
+    except Exception as e:
+        await hint(event, f"❌ فشل إرسال الوسائط: {e}")
 @ABH.on(events.NewMessage)
 async def handle_reply(event):
     lock_key = f"lock:{event.chat_id}:ردود"
@@ -182,18 +210,8 @@ async def handle_reply(event):
             if data.get('type') == 'media':
                 file_id = data.get('file_id')
                 if file_id:
-                    try:
-                        file_data = json.loads(file_id)
-                        file_id = InputDocument(
-                            id=int(file_data['id']),
-                            access_hash=int(file_data['access_hash']),
-                            file_reference=base64.b64decode(file_data['file_reference'])
-                        )
-                        await ABH.send_file(event.chat_id, file=file_id, reply_to=event.id)
-                    except Exception as e:
-                        await event.reply(f"❌ فشل إرسال الملف: {e}")
-                else:
-                    await event.reply("⚠️ لا يوجد معرف ملف.")
+                    file_id_json = data.get('file_id')
+                    await send_saved_media(event, file_id_json)
 @ABH.on(events.NewMessage(pattern='^عرض الردود$'))
 async def show_replies(event):
     if not is_assistant(event.chat_id, event.sender_id):
@@ -285,7 +303,7 @@ async def ABN_HASHEM(event):
     caption = "أبن هاشم (رض) مرات متواضع ،🌚 @K_4x1"
     button = [Button.url(text="click", url="https://t.me/wfffp")]
     pic = 'links/vipabh.jpg'
-    await event.client.send_file(event.chat_id, pic, caption=caption, reply_to=event.message.id, buttons=button)
+    await ABH.send_file(event.chat_id, pic, caption=caption, reply_to=event.message.id, buttons=button)
 auto = [
         "ع س",
         "عليكم السلام",
