@@ -156,6 +156,7 @@ async def handle_reply(event):
         if event.media:
             if hasattr(event.media, 'document'):
                 x = event.message.message
+                print(x)
                 doc = event.media.document
                 file_id = {
                     "id": str(doc.id),
@@ -165,6 +166,7 @@ async def handle_reply(event):
                 }
             elif hasattr(event.media, 'photo'):
                 x = event.message.message
+                print(x)
                 photo = event.media.photo
                 file_id = {
                     "caption": x,
