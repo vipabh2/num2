@@ -4,9 +4,6 @@ from other import botuse, is_assistant
 from telethon import Button, events
 import random, redis, base64, json
 from Program import chs
-from ABH import ABH
-async def chs(e, t):
-    ABH.send_message(e.chat_id, t, reply_to=e.id)
 r = redis.Redis(host='localhost', port=6379, db=0, decode_responses=True)
 session = {}
 banned = ['وضع ردي', 'وضع رد', 'وضع رد مميز', 'الغاء', 'حذف رد', 'حذف الردود', 'عرض الردود', 'حذف ردي']
