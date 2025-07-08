@@ -117,8 +117,7 @@ async def send_saved_media(event, file_id_json):
         access_hash=access_hash,
         file_reference=file_reference
     )
-    x = cap if cap else None
-    await ABH.send_file(event.chat_id, file=media, caption=x, reply_to=event.id)
+    await ABH.send_file(event.chat_id, file=media, caption=cap, reply_to=event.id)
 @ABH.on(events.NewMessage)
 async def handle_reply(event):
     lock_key = f"lock:{event.chat_id}:ردود"
@@ -156,7 +155,7 @@ async def handle_reply(event):
                 })
         if event.media:
             if hasattr(event.media, 'document'):
-                x = event.message.message
+                x = event.message.message or ""
                 doc = event.media.document
                 file_id = {
                     "id": str(doc.id),
