@@ -159,7 +159,7 @@ async def handle_reply(event):
                 doc = event.media.document
                 file_id = {
                     "id": str(doc.id),
-                    "cap": x,
+                    "caption": x,
                     "access_hash": str(doc.access_hash),
                     "file_reference": base64.b64encode(doc.file_reference).decode()
                 }
@@ -167,7 +167,7 @@ async def handle_reply(event):
                 x = event.message.message
                 photo = event.media.photo
                 file_id = {
-                    "cap": x,
+                    "caption": x,
                     "id": str(photo.id),
                     "access_hash": str(photo.access_hash),
                     "file_reference": base64.b64encode(photo.file_reference).decode()
