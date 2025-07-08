@@ -108,7 +108,7 @@ async def send_saved_media(event, file_id_json):
             access_hash=access_hash,
             file_reference=file_reference
         )
-        await ABH.send_file(event.chat_id, file=media, reply_to=event.id)
+        await ABH.send_file(event.chat_id, file=media, caption=cap, reply_to=event.id)
         return
     except Exception:
         pass
