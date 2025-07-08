@@ -1,4 +1,4 @@
-from telethon.tl.types import InputDocument
+from telethon.tl.types import InputPhoto, InputDocument
 from Resources import mention, hint, wfffp
 from other import botuse, is_assistant
 from telethon import Button, events
@@ -95,34 +95,29 @@ async def delete_my_reply(event):
     r.delete(redis_key)
     r.delete(user_reply_key)
     await event.reply(f"🗑️ تم حذف ردك **{reply_name}** بنجاح.")
-from telethon.tl.types import InputPhoto, InputDocument
-import base64
-import json
-
 async def send_saved_media(event, file_id_json):
+    file_data = json.loads(file_id_json)
+    id = int(file_data['id'])
+    cap = file_data['caption']
+    access_hash = int(file_data['access_hash'])
+    file_reference = base64.b64decode(file_data['file_reference'])
     try:
-        file_data = json.loads(file_id_json)
-        id = int(file_data['id'])
-        access_hash = int(file_data['access_hash'])
-        file_reference = base64.b64decode(file_data['file_reference'])
-        try:
-            media = InputPhoto(
-                id=id,
-                access_hash=access_hash,
-                file_reference=file_reference
-            )
-            await ABH.send_file(event.chat_id, file=media, reply_to=event.id)
-            return
-        except Exception:
-            pass
-        media = InputDocument(
+        media = InputPhoto(
             id=id,
             access_hash=access_hash,
             file_reference=file_reference
         )
         await ABH.send_file(event.chat_id, file=media, reply_to=event.id)
-    except Exception as e:
-        await hint(event, f"❌ فشل إرسال الوسائط: {e}")
+        return
+    except Exception:
+        pass
+    media = InputDocument(
+        id=id,
+        access_hash=access_hash,
+        file_reference=file_reference
+    )
+    x = cap if cap else None
+    await ABH.send_file(event.chat_id, file=media, caption=x, reply_to=event.id)
 @ABH.on(events.NewMessage)
 async def handle_reply(event):
     lock_key = f"lock:{event.chat_id}:ردود"
@@ -160,15 +155,19 @@ async def handle_reply(event):
                 })
         if event.media:
             if hasattr(event.media, 'document'):
+                x = event.message.message
                 doc = event.media.document
                 file_id = {
                     "id": str(doc.id),
+                    "cap": x,
                     "access_hash": str(doc.access_hash),
                     "file_reference": base64.b64encode(doc.file_reference).decode()
                 }
             elif hasattr(event.media, 'photo'):
+                x = event.message.message
                 photo = event.media.photo
                 file_id = {
+                    "cap": x,
                     "id": str(photo.id),
                     "access_hash": str(photo.access_hash),
                     "file_reference": base64.b64encode(photo.file_reference).decode()
