@@ -289,7 +289,7 @@ abh = [
 ]
 @ABH.on(events.NewMessage(pattern=r'^مخفي$'))
 async def anymous(event):
-    if event.is_reply or not event.is_group:
+    if not event.is_group:
         return
     type = "مخفي"
     await botuse(type)
