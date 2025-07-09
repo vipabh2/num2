@@ -15,7 +15,10 @@ async def on_bot_added(event):
             if participant.participant.rank or participant.participant.admin_rights:
                 await event.reply("شكرا علئ الاشراف ضلعي")
             else:
-                await event.reply("يالفكر ضفتني عضو دضيفني مشرف شبيك")
+                return
+                if event.user_added or event.user_joined:
+                    if event.user_id == (await ABH.get_me()).id:
+                        await event.reply("يالفكر ضفتني عضو دضيفني مشرف شبيك")
         except Exception as e:
             await hint(f"⚠️ حدث خطأ أثناء التحقق من الصلاحيات: {e}")
 @ABH.on(events.NewMessage(pattern='مخفي اطلع'))
