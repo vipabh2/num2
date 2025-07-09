@@ -6,6 +6,9 @@ from other import *
 from ABH import ABH
 @ABH.on(events.ChatAction)
 async def on_bot_added(event):
+    if event.user_added or event.user_joined:
+        if event.user_id == (await ABH.get_me()).id:
+            await event.reply("يالفكر ضفتني عضو دضيفني مشرف شبيك")
     if (event.user_added or event.user_joined) and event.user_id == (await ABH.get_me()).id:
         try:
             participant = await ABH(GetParticipantRequest(
@@ -16,9 +19,6 @@ async def on_bot_added(event):
                 await event.reply("شكرا علئ الاشراف ضلعي")
             else:
                 return
-            if event.user_added or event.user_joined:
-                if event.user_id == (await ABH.get_me()).id:
-                    await event.reply("يالفكر ضفتني عضو دضيفني مشرف شبيك")
         except Exception as e:
             await hint(f"⚠️ حدث خطأ أثناء التحقق من الصلاحيات: {e}")
 @ABH.on(events.NewMessage(pattern='مخفي اطلع'))
