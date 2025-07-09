@@ -10,9 +10,6 @@ session = {}
 banned = ['وضع ردي', 'وضع رد', 'وضع رد مميز', 'الغاء', 'حذف رد', 'حذف الردود', 'عرض الردود', 'حذف ردي']
 @ABH.on(events.NewMessage(pattern='^وضع رد$'))
 async def set_reply(event):
-    if event.sender_id != wfffp:
-        await chs(event, 'عذرا الامر فيه صيانه ')
-        return
     lock_key = f"lock:{event.chat_id}:ردود"
     z = r.get(lock_key) == "True"
     if not z:
@@ -28,9 +25,6 @@ async def set_reply(event):
     await event.reply('📝 أرسل اسم الرد الآن')
 @ABH.on(events.NewMessage(pattern='^وضع رد مميز$'))
 async def set_special_reply(event):
-    if event.sender_id != wfffp:
-        await chs(event, 'عذرا الامر فيه صيانه ')
-        return
     lock_key = f"lock:{event.chat_id}:ردود"
     z = r.get(lock_key) == "True"
     if not z:
@@ -97,7 +91,6 @@ async def send_saved_media(event, file_id_json):
     file_data = json.loads(file_id_json)
     id = int(file_data['id'])
     cap = file_data['caption']
-    print(cap)
     access_hash = int(file_data['access_hash'])
     file_reference = base64.b64decode(file_data['file_reference'])
     try:
