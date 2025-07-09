@@ -7,7 +7,7 @@ from ABH import ABH
 @ABH.on(events.ChatAction)
 async def on_bot_added(event):
     if event.user_added or event.user_joined:
-        if event.user_id == (await client.get_me()).id:
+        if event.user_id == (await ABH.get_me()).id:
             await event.reply("يالفكر ضفتني عضو دضيفني مشرف شبيك")
 @ABH.on(events.NewMessage(pattern='مخفي اطلع'))
 async def memkikme(event):
