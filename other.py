@@ -669,16 +669,6 @@ async def handle_whisper(event):
     await botuse(type)
     global l, m1, reply
     sender_id = event.sender_id
-    if sender_id in l and l[sender_id]:
-        button = [
-            Button.url("اكمال الهمسة", url=f"https://t.me/{(await ABH.get_me()).username}?start={whisper_id}"), 
-            Button.data("اضغط هنا للبدء", data='del')
-                  ]
-        await event.reply(
-            "هيييي ماتكدر تسوي همستين بوقت واحد \n **جرب تدز نقطة بالخاص**",
-        buttons=[button]
-        )
-        return
     reply = await event.get_reply_message()
     if not reply:
         await event.reply("صديقي الامر هاذ ميشتغل اذا مو رد")
@@ -711,6 +701,16 @@ async def handle_whisper(event):
         buttons=[button]
     )
     l[sender_id] = True
+    if sender_id in l and l[sender_id]:
+        button = [
+            Button.url("اكمال الهمسة", url=f"https://t.me/{(await ABH.get_me()).username}?start={whisper_id}"), 
+            Button.data("اضغط هنا للبدء", data='del')
+                  ]
+        await event.reply(
+            "هيييي ماتكدر تسوي همستين بوقت واحد \n **جرب تدز نقطة بالخاص**",
+        buttons=[button]
+        )
+        return
 @ABH.on(events.CallbackQuery(data='del'))
 async def delwhisper(e):
     sender_id = e.sender_id
