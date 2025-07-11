@@ -1,7 +1,7 @@
-from telethon.tl.types import ChannelParticipantCreator
-import asyncio, os, json, random, uuid, operator, requests, re
 from telethon.tl.functions.channels import GetParticipantRequest
-from Resources import suras, mention, ment, wfffp, hint
+import asyncio, os, json, random, uuid, operator, requests, re
+from Resources import suras, mention, ment, wfffp, hint, chs
+from telethon.tl.types import ChannelParticipantCreator
 from playwright.async_api import async_playwright
 from database import store_whisper, get_whisper
 from telethon import events, Button
@@ -670,8 +670,13 @@ async def handle_whisper(event):
     global l, m1, reply
     sender_id = event.sender_id
     if sender_id in l and l[sender_id]:
+        button = [
+            Button.url("اكمال الهمسة", url=f"https://t.me/{(await ABH.get_me()).username}?start={whisper_id}"), 
+            Button.data("اضغط هنا للبدء", data='del')
+                  ]
         await event.reply(
             "هيييي ماتكدر تسوي همستين بوقت واحد \n **جرب تدز نقطة بالخاص**",
+        buttons=[button]
         )
         return
     reply = await event.get_reply_message()
@@ -706,6 +711,12 @@ async def handle_whisper(event):
         buttons=[button]
     )
     l[sender_id] = True
+@ABH.on(events.CallbackQuery(data='del'))
+async def delwhisper(e):
+    sender_id = e.sender_id
+    if l[sender_id]:
+        l[sender_id] = False
+        await chs(e, 'تم حذف جلسة الهمسة')
 @ABH.on(events.NewMessage(pattern=r'/start (\w+)'))
 async def start_with_param(event):
     whisper_id = event.pattern_match.group(1)
