@@ -5,7 +5,6 @@ from telethon.tl.types import ChannelParticipantCreator
 from playwright.async_api import async_playwright
 from database import store_whisper, get_whisper
 from telethon import events, Button
-from Program import chs
 from ABH import ABH
 def is_assistant(chat_id, user_id):
     data = load_auth()
@@ -717,7 +716,8 @@ async def delwhisper(e):
     sender_id = e.sender_id
     if l[sender_id]:
         l[sender_id] = False
-        await chs(e, 'تم حذف جلسة الهمسة')
+        b = Button.url("كيف اهمس", url=f"https://t.me/{(await ABH.get_me()).username}?start={how_can_i_whisper}")
+        await e.edit('تم حذف جلسة الهمسة', button=b)
 @ABH.on(events.NewMessage(pattern=r'/start (\w+)'))
 async def start_with_param(event):
     whisper_id = event.pattern_match.group(1)
