@@ -695,6 +695,7 @@ async def handle_whisper(event):
         "to_name": to_user.first_name
     }
     save_whispers()
+    button = Button.url("اضغط هنا للبدء", url=f"https://t.me/{(await ABH.get_me()).username}?start={whisper_id}")
     m1 = await event.reply(
         f'همسة مرسلة من ( [{name}](tg://user?id={sender_id}) ) إلى ( [{to_name}](tg://user?id={rid}) ) 🙂🙂',
         buttons=[button]
@@ -705,11 +706,9 @@ async def handle_whisper(event):
             Button.url("اكمال الهمسة", url=f"https://t.me/{(await ABH.get_me()).username}?start={whisper_id}"), 
             Button.data("اضغط هنا للبدء", data='del')
                   ]
-        await ABH.send_message(
-            event.chat_id,
+        await event.reply(
             "هيييي ماتكدر تسوي همستين بوقت واحد \n **جرب تدز نقطة بالخاص**",
-        buttons=[button],
-        reply_to=event.id
+        buttons=[button]
         )
         return
 @ABH.on(events.CallbackQuery(data='del'))
