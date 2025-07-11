@@ -698,7 +698,7 @@ async def handle_whisper(event):
     if sender_id in l and l[sender_id]:
         button = [
             Button.url("اكمال الهمسة", url=f"https://t.me/{(await ABH.get_me()).username}?start={whisper_id}"), 
-            Button.data("اضغط هنا للبدء", data='del')
+            Button.inline("اضغط هنا للبدء", data='del')
                   ]
         await event.reply(
             "هيييي ماتكدر تسوي همستين بوقت واحد \n **جرب تدز نقطة بالخاص**",
