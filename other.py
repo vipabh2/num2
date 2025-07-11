@@ -716,7 +716,7 @@ async def delwhisper(e):
     sender_id = e.sender_id
     if l[sender_id]:
         l[sender_id] = False
-        b = Button.url("كيف اهمس", url=f"https://t.me/{(await ABH.get_me()).username}?start={how_can_i_whisper}")
+        b = Button.url("كيف اهمس", url=f"https://t.me/{(await ABH.get_me()).username}?start=how_can_i_whisper")
         await e.edit('تم حذف جلسة الهمسة', button=b)
 @ABH.on(events.NewMessage(pattern=r'/start (\w+)'))
 async def start_with_param(event):
