@@ -717,7 +717,7 @@ async def delwhisper(e):
     if l[sender_id]:
         l[sender_id] = False
         b = Button.url("كيف اهمس", url=f"https://t.me/{(await ABH.get_me()).username}?start=how_can_i_whisper")
-        await e.edit('تم حذف جلسة الهمسة', button=b)
+        await e.edit('تم حذف جلسة الهمسة', buttons=b)
 @ABH.on(events.NewMessage(pattern=r'/start (\w+)'))
 async def start_with_param(event):
     whisper_id = event.pattern_match.group(1)
