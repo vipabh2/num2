@@ -5,7 +5,6 @@ from telethon.tl.types import ChannelParticipantCreator
 from playwright.async_api import async_playwright
 from database import store_whisper, get_whisper
 from telethon import events, Button
-from Program import chs
 from ABH import ABH
 def is_assistant(chat_id, user_id):
     data = load_auth()
@@ -696,22 +695,22 @@ async def handle_whisper(event):
         "to_name": to_user.first_name
     }
     save_whispers()
-    button = Button.url("اضغط هنا للبدء", url=f"https://t.me/{(await ABH.get_me()).username}?start={whisper_id}")
-    m1 = await event.reply(
-        f'همسة مرسلة من ( [{name}](tg://user?id={sender_id}) ) إلى ( [{to_name}](tg://user?id={rid}) ) 🙂🙂',
-        buttons=[button]
-    )
-    l[sender_id] = True
     if sender_id in l and l[sender_id]:
         button = [
             Button.url("اكمال الهمسة", url=f"https://t.me/{(await ABH.get_me()).username}?start={whisper_id}"), 
-            Button.inline("اضغط هنا للبدء", data='del')
+            Button.data("اضغط هنا للبدء", data='del')
                   ]
         await event.reply(
             "هيييي ماتكدر تسوي همستين بوقت واحد \n **جرب تدز نقطة بالخاص**",
         buttons=[button]
         )
         return
+    button = Button.url("اضغط هنا للبدء", url=f"https://t.me/{(await ABH.get_me()).username}?start={whisper_id}")
+    m1 = await event.reply(
+        f'همسة مرسلة من ( [{name}](tg://user?id={sender_id}) ) إلى ( [{to_name}](tg://user?id={rid}) ) 🙂🙂',
+        buttons=[button]
+    )
+    l[sender_id] = True
 @ABH.on(events.CallbackQuery(data='del'))
 async def delwhisper(e):
     sender_id = e.sender_id
