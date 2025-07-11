@@ -5,6 +5,7 @@ from telethon.tl.types import ChannelParticipantCreator
 from playwright.async_api import async_playwright
 from database import store_whisper, get_whisper
 from telethon import events, Button
+from Program import chs
 from ABH import ABH
 def is_assistant(chat_id, user_id):
     data = load_auth()
@@ -673,6 +674,10 @@ async def handle_whisper(event):
     if not reply:
         await event.reply("صديقي الامر هاذ ميشتغل اذا مو رد")
         return
+    sender = await reply.get_sender()
+    if getattr(sender, "bot", False):
+        await chs(event, 'عزيزي تسوي همسه ل بوت انت شكد حديقه')
+        return
     if reply.sender_id == sender_id:
         await event.reply("شني خالي تسوي همسه لنفسك")
         return
@@ -698,10 +703,10 @@ async def handle_whisper(event):
     if sender_id in l and l[sender_id]:
         button = [
             Button.url("اكمال الهمسة", url=f"https://t.me/{(await ABH.get_me()).username}?start={whisper_id}"), 
-            Button.inline("اضغط هنا للبدء", data='del')
+            Button.inline("حذف الهمسة", data='del')
                   ]
         await event.reply(
-            "هيييي ماتكدر تسوي همستين بوقت واحد \n **جرب تدز نقطة بالخاص**",
+            "هيييي ماتكدر تسوي همستين بوقت واحد \n **اختر احد الازرار🙂**",
         buttons=[button]
         )
         return
