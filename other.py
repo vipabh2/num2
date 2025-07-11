@@ -5,6 +5,7 @@ from telethon.tl.types import ChannelParticipantCreator
 from playwright.async_api import async_playwright
 from database import store_whisper, get_whisper
 from telethon import events, Button
+from Program import chs
 from ABH import ABH
 def is_assistant(chat_id, user_id):
     data = load_auth()
