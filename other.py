@@ -1,6 +1,6 @@
 from telethon.tl.functions.channels import GetParticipantRequest
 import asyncio, os, json, random, uuid, operator, requests, re
-from Resources import suras, mention, ment, wfffp, hint, chs
+from Resources import suras, mention, ment, wfffp, hint
 from telethon.tl.types import ChannelParticipantCreator
 from playwright.async_api import async_playwright
 from database import store_whisper, get_whisper
