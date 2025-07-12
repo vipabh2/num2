@@ -21,7 +21,7 @@ async def myhandlers(e):
         ],
         [
             Button.inline('اوامر اليوت', data='yt'),
-            Button.inline('رجوع', data='back')
+            Button.url('تحديثات البوت', url=f'https://t.me/{CHANNEL_KEY}')
         ]
     ]
     await e.reply('شتريد من الاوامر متكلي ', buttons=buttons)
@@ -80,7 +80,7 @@ async def get_screen_log(event):
         await chs(event, 'تم الارسال في الخاص')
     except subprocess.CalledProcessError:
         await event.respond("⚠️ حدث خطأ أثناء قراءة سجل screen.\nتحقق من اسم الجلسة أو صلاحيات الوصول.")
-CHANNEL_KEY = 'ANYMOUSupdate'
+CHANNEL_KEY = 'x04ou'
 r = redis.Redis(host='localhost', port=6379, db=0, decode_responses=True)
 async def chs(event, c):
     buttons = Button.url('🫆', url=f'https://t.me/{CHANNEL_KEY}')
@@ -96,14 +96,14 @@ async def run_cmd(command: str):
 @ABH.on(events.NewMessage(pattern="^تحديث$", from_users=[wfffp]))
 async def update_repo(event):
     stdout, stderr, code = await run_cmd("git pull")
+    await asyncio.sleep(2)
+    await event.reply(f" تحديث السورس بنجاح")
     if code == 0:
-        await event.reply(f" تحديث السورس بنجاح")
         os.execv(sys.executable, [sys.executable, "config.py"])
     else:
         await event.reply(f" حدث خطأ أثناء التحديث:\n\n{stderr}")
 @ABH.on(events.NewMessage(pattern=r'^تعيين القناة (.+)', from_users=[wfffp]))
 async def add_channel(event):
-    global CHANNEL_KEY
     ch = event.pattern_match.group(1)
     x = r.exists(CHANNEL_KEY)
     if x:
