@@ -104,8 +104,10 @@ async def update_repo(event):
         await event.reply(f" حدث خطأ أثناء التحديث:\n\n{stderr}")
 @ABH.on(events.NewMessage(pattern=r'^تعيين القناة (.+)', from_users=[wfffp]))
 async def add_channel(event):
+    global CHANNEL_KEY
     ch = event.pattern_match.group(1)
     x = r.exists(CHANNEL_KEY)
+    await event.reply(f" تم اضافة قيمة القناة{ch}")
     if x:
         r.delete(CHANNEL_KEY)
     r.set(CHANNEL_KEY, ch)
