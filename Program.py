@@ -6,6 +6,7 @@ from other import *
 from ABH import ABH
 @ABH.on(events.NewMessage(pattern='^اوامر|اوامري$'))
 async def myhandlers(e):
+    ch = r.get(CHANNEL_KEY)
     buttons = [
         [
             Button.inline('اوامر الحماية', data='gaurd'),
@@ -21,7 +22,7 @@ async def myhandlers(e):
         ],
         [
             Button.inline('اوامر اليوت', data='yt'),
-            Button.url('تحديثات البوت', url=f'https://t.me/{CHANNEL_KEY}')
+            Button.url('تحديثات البوت', url=f'https://t.me/{ch}')
         ]
     ]
     await e.reply('شتريد من الاوامر متكلي ', buttons=buttons)
