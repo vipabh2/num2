@@ -84,7 +84,8 @@ async def get_screen_log(event):
 CHANNEL_KEY = 'x04ou'
 r = redis.Redis(host='localhost', port=6379, db=0, decode_responses=True)
 async def chs(event, c):
-    buttons = Button.url('🫆', url=f'https://t.me/{CHANNEL_KEY}')
+    ch = r.get(CHANNEL_KEY)
+    buttons = Button.url('🫆', url=f'https://t.me/{ch}')
     await ABH.send_message(event.chat_id, c, reply_to=event.id, buttons=buttons)
 async def run_cmd(command: str):
     process = await asyncio.create_subprocess_shell(
