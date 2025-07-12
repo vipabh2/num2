@@ -4,17 +4,26 @@ import json, redis, subprocess
 from Resources import *
 from other import *
 from ABH import ABH
-@ABH.on(events.NewMessage(pattern='^اوامري$'))
+@ABH.on(events.NewMessage(pattern='^اوامر|اوامري$'))
 async def myhandlers(e):
     buttons = [
-        Button.inline('اوامر الحماية', data='gaurd'),
-        Button.inline('اوامر الرفع', data='ADD'),
-        Button.inline('اوامر الالعاب', data='g'),
-        Button.inline('اوامر التفاعل', data='c'),
-        Button.inline('اوامر المسح', data='d'),
-        Button.inline('اوامر الفلوس', data='m'),
-        Button.inline('اوامر اليوت', data='yt'),
+        [
+            Button.inline('اوامر الحماية', data='gaurd'),
+            Button.inline('اوامر الرفع', data='ADD')
+        ],
+        [
+            Button.inline('اوامر الالعاب', data='g'),
+            Button.inline('اوامر التفاعل', data='c')
+        ],
+        [
+            Button.inline('اوامر المسح', data='d'),
+            Button.inline('اوامر الفلوس', data='m')
+        ],
+        [
+            Button.inline('اوامر اليوت', data='yt'),
+            Button.inline('رجوع', data='back')
         ]
+    ]
     await e.reply('شتريد من الاوامر متكلي ', buttons=buttons)
 @ABH.on(events.ChatAction)
 async def on_bot_added(event):
