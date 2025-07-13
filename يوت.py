@@ -18,10 +18,10 @@ async def toggle_feature(event):
     lock_key = f"lock:{event.chat_id}:{feature}"    
     if action == "تفعيل":
         r.set(lock_key, "True")
-        await chs(event, f'تم تفعيل الميزة {feature} تدلل حبيبي')
+        await chs(event, f'تم تفعيل ال{feature} تدلل حبيبي')
     else:
         r.set(lock_key, "False")
-        await chs(event, f'تم تعطيل الميزة {feature} تدلل حبيبي')
+        await chs(event, f'تم تعطيل ال{feature} تدلل حبيبي')
 COOKIES_FILE = 'c.txt'
 if not os.path.exists("downloads"):
     os.makedirs("downloads")
