@@ -38,14 +38,14 @@ async def handle_m(event):
     الان = datetime.today()
     x_datetime = datetime(*x)
     الباقي = x_datetime - الان
-    await msg.edit(f'باقي {الباقي.days} لمحرم يوم', buttons=None)
+    await event.edit(f'باقي {الباقي.days} لمحرم يوم', buttons=None)
 @ABH.on(events.CallbackQuery(data='rm'))
 async def handle_rm(event):
     x = (2026, 2, 22)
     الان = datetime.today()
     x_datetime = datetime(*x)
     الباقي = x_datetime - الان
-    await msg.edit(f'باقي {الباقي.days} لرمضان يوم', buttons=None)
+    await event.edit(f'باقي {الباقي.days} لرمضان يوم', buttons=None)
 @ABH.on(events.CallbackQuery(data='sh'))
 async def handle_sh(event):
     x = (2026, 1, 22)
@@ -59,7 +59,7 @@ async def handle_r(event):
     الان = datetime.today()
     x_datetime = datetime(*x)
     الباقي = x_datetime - الان
-    await msg.edit(f'باقي {الباقي.days} لرجب يوم', buttons=None)
+    await event.edit(f'باقي {الباقي.days} لرجب يوم', buttons=None)
 @ABH.on(events.NewMessage(pattern=r'^\d{4}-\d{2}-\d{2}$'))
 async def set_user_date(event):
     user_id = event.sender_id
