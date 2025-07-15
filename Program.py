@@ -4,6 +4,22 @@ import json, redis, subprocess
 from Resources import *
 from other import *
 from ABH import ABH
+async def botuse(types):
+    await creat_useFILE()
+    if isinstance(types, str):
+        types = [types]
+    with open('use.json', 'r', encoding='utf-8') as f:
+        try:
+            data = json.load(f)
+        except json.JSONDecodeError:
+            data = {}
+    for t in types:
+        if t in data:
+            data[t] += 1
+        else:
+            data[t] = 1
+    with open('use.json', 'w', encoding='utf-8') as f:
+        json.dump(data, f, ensure_ascii=False, indent=4)
 @ABH.on(events.NewMessage(pattern='^اوامر|اوامري$'))
 async def myhandlers(event):
     global buttons
