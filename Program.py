@@ -85,6 +85,8 @@ async def callbacklist(event):
         await event.edit('**اوامر الفلوس** \n `الاغنياء` \n ل اظهار عدد اكثر 10 اشخاص عندهم فلوس بالمجموعه \n \n `ثروتي` \n يظهرلك عدد فلوسك بالبوت\n \n `ثروته` \n يظهرلك ثروه الشخص الي سويت عليه رد \n\n `حول` \n بالرد على مستخدم مع تحديد عدد مادي لتحويله للمستخدم \n\n', buttons=b)
     elif data == 'r':
         await event.edit('تفضل اختار' , buttons=buttons)       
+    else:
+        return
 @ABH.on(events.ChatAction)
 async def on_bot_added(event):
     if event.user_added or event.user_joined:
