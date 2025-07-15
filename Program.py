@@ -5,7 +5,6 @@ from Resources import *
 from other import *
 from ABH import ABH
 async def botuse(types):
-    await creat_useFILE()
     if isinstance(types, str):
         types = [types]
     with open('use.json', 'r', encoding='utf-8') as f:
