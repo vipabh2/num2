@@ -2,7 +2,7 @@ from telethon import events, Button
 import asyncio, os, sys, random
 import json, redis, subprocess
 from Resources import *
-from other import botuse
+from other import *
 from ABH import ABH
 @ABH.on(events.NewMessage(pattern='^اوامر|اوامري$'))
 async def myhandlers(event):
