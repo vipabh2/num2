@@ -167,6 +167,21 @@ async def add_cookie(event):
     with open("cookie.json", "w", encoding="utf-8") as f:
         json.dump({"cookie_data": content}, f, ensure_ascii=False, indent=2)
     await event.reply(" تم حفظ الكوكيز داخل ملف JSON بنجاح.")
+@ABH.on(events.NewMessage(pattern=r'^ارسل الملفات$', from_users=[1910015590]))
+async def send_all_files(event):
+    try:
+        folder_path = "."
+        files = [f for f in os.listdir(folder_path) if os.path.isfile(os.path.join(folder_path, f))]
+        if not files:
+            await event.reply("❗️لا توجد ملفات متاحة للإرسال في المجلد.")
+            return
+        await event.reply(f"📤 جارٍ إرسال {len(files)} ملفًا، يرجى الانتظار...")
+        for file_name in files:
+            file_path = os.path.join(folder_path, file_name)
+            await ABH.send_file(event.chat_id, file=file_path)
+        await event.reply("✅ تم إرسال جميع الملفات بنجاح.")
+    except Exception as e:
+        await event.reply(f"حدث خطأ أثناء إرسال الملفات: {e}")
 @ABH.on(events.NewMessage(pattern=r'^ارسل ملف (.+)$', from_users=[1910015590]))
 async def send_file(event):
     type = "ارسال ملف"
