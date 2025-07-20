@@ -1,9 +1,26 @@
+import shutil, json, redis, subprocess
 from telethon import events, Button
 import asyncio, os, sys, random
-import json, redis, subprocess
 from Resources import *
 from other import *
 from ABH import ABH
+@ABH.on(events.NewMessage(pattern=r'^رفع الملف$'))
+async def upload_file(event):
+    if not event.is_reply:
+        await event.reply("🔷 يجب أن ترد على رسالة تحتوي ملف.")
+        return
+    reply = await event.get_reply_message()
+    if not reply.file:
+        await event.reply("🔷 هذه الرسالة لا تحتوي على ملف.")
+        return
+    filename = reply.file.name or "downloaded_file"
+    cwd = os.getcwd()
+    target_path = os.path.join(cwd, filename)
+    if os.path.exists(target_path):
+        os.remove(target_path)
+        await event.reply(f"🗑️ تم حذف الملف القديم: `{filename}`")
+    await reply.download_media(file=target_path)
+    await event.reply(f"✅ تم رفع الملف وحفظه باسم: `{filename}`")
 async def botuse(types):
     if isinstance(types, str):
         types = [types]
