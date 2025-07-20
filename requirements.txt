@@ -7,3 +7,4 @@ pytz
 google-api-python-client
 google-generativeai
 playwright>=1.43.0
+sqlalchemy>=2.0.19
