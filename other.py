@@ -119,33 +119,50 @@ async def is_owner(chat_id, user_id):
         return isinstance(participant.participant, ChannelParticipantCreator)
     except:
         return False
-@ABH.on(events.NewMessage(pattern=r'^رفع معاون$'))
+@ABH.on(events.NewMessage(pattern=r'^رفع معاون(?: (.+))?$'))
 async def add_assistant(event):
     if not event.is_group:
         return
-    type = "رفع معاون"
-    await botuse(type)
-    reply = await event.get_reply_message()
     chat_id = str(event.chat_id)
-    if not reply:
-        return await event.reply(f"عزيزي {sm}، يجب الرد على رسالة المستخدم الذي تريد إضافته.")
-    target_id = reply.sender_id
-    try:
-        data = load_auth()
-        if chat_id not in data:
-            data[chat_id] = []
-        if target_id not in data[chat_id]:
-            data[chat_id].append(target_id)
-            save_auth(data)
-            sender = await reply.get_sender()
-            rm = await ment(sender)
-            await event.reply(f"تم رفع المستخدم {rm} إلى معاون في هذه المجموعة.")
+    user_id = event.sender_id
+    sm = await mention(event)
+    if not (await is_owner(event.chat_id, user_id) or user_id == 1910015590):
+        return await event.reply(f"عذراً {sm}، هذا الأمر مخصص للمالك فقط.")
+    target_id = None
+    reply = await event.get_reply_message()
+    arg = event.pattern_match.group(1)
+    if reply:
+        target_id = reply.sender_id
+    elif arg:
+        if arg.isdigit():
+            target_id = int(arg)
+        elif arg.startswith("@"):
+            try:
+                entity = await ABH.get_entity(arg)
+                target_id = entity.id
+            except:
+                return await event.reply(f"لا يمكن العثور على المستخدم {arg}.")
         else:
-            sender = await reply.get_sender()
-            rm = await ment(sender)
-            await event.reply(f"المستخدم {rm} موجود مسبقًا في قائمة المعاونين لهذه المجموعة.")
-    except Exception as e:
-        await hint(event, f"حدث خطأ أثناء تنفيذ الأمر: {e}")
+            return await event.reply("يرجى إدخال معرف رقمي أو اسم مستخدم صحيح.")
+    else:
+        return await event.reply("يرجى الرد على رسالة المستخدم أو كتابة معرفه.")
+    try:
+        await ABH.get_entity(target_id)
+    except:
+        return await event.reply(f"المستخدم {target_id} غير موجود.")
+    data = load_auth()
+    if chat_id not in data:
+        data[chat_id] = []
+    if target_id in data[chat_id]:
+        return await event.reply("المستخدم موجود مسبقًا في قائمة المعاونين.")
+    data[chat_id].append(target_id)
+    save_auth(data)
+    if reply:
+        sender = await reply.get_sender()
+        rm = await ment(sender)
+        await event.reply(f"تم رفع المستخدم {rm} إلى معاون في هذه المجموعة.")
+    else:
+        await event.reply(f"تم رفع المستخدم {target_id} إلى معاون في هذه المجموعة.")
 @ABH.on(events.NewMessage(pattern=r'^تنزيل معاون$'))
 async def remove_assistant(event):
     if not event.is_group:
