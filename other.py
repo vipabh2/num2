@@ -667,7 +667,6 @@ async def publish_to_groups(event):
         await event.reply("❌ يرجى الرد على رسالة تحتوي على نص أو ملف بعد كتابة `نشر الكروبات`.")
         return
     sent_count = 0
-    print(f"alert_ids: {alert_ids}")
     for dialog_id in list(alert_ids):
         try:
             if not str(dialog_id).startswith("-100"):
@@ -679,7 +678,7 @@ async def publish_to_groups(event):
             sent_count += 1
         except Exception as e:
             await alert(f"⚠️ فشل الإرسال إلى {dialog_id} : {str(e)}")
-            # remove_user(dialog_id)
+            remove_user(dialog_id)
     await event.reply(f"✅ تم إرسال التنبيه إلى {sent_count} مجموعة.")
 whispers_file = 'whispers.json'
 sent_log_file = 'sent_whispers.json'
