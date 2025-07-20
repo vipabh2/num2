@@ -123,19 +123,21 @@ async def is_owner(chat_id, user_id):
 async def add_assistant(event):
     if not event.is_group:
         return
+    id = event.pattern_match.group(1)
+    reply = await event.get_reply_message()
+    if id.isdigit() or id.startswith("@") and reply:
+        await chs(event, f'دوختني والله العظيم هسه ارفع {id} لو الرد؟')
     sm = await mention(event)
     chat_id = str(event.chat_id)
     user_id = event.sender_id
     if not (await is_owner(event.chat_id, user_id) or user_id == 1910015590):
         return await event.reply(f"عذراً {sm}، هذا الأمر مخصص للمالك فقط.")
-    reply = await event.get_reply_message()
     type = "رفع معاون"
     await botuse(type)
+    target_id = int(id)
     if not await ABH.get_entity(target_id):
         return await event.reply(f"المستخدم {id} غير موجود.")
-    id = event.pattern_match.group(1)
     if id.isdigit() and not reply:
-        target_id = int(id)
         data = load_auth()
     if chat_id not in data:
         data[chat_id] = []
