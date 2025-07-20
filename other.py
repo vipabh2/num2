@@ -678,8 +678,8 @@ async def publish_to_groups(event):
                 await ABH.send_message(dialog_id, f"{message_text}")
             sent_count += 1
         except Exception as e:
-            await alert(f"⚠️ فشل الإرسال إلى {dialog_id}")
-            remove_user(dialog_id)
+            await alert(f"⚠️ فشل الإرسال إلى {dialog_id} : {str(e)}")
+            # remove_user(dialog_id)
     await event.reply(f"✅ تم إرسال التنبيه إلى {sent_count} مجموعة.")
 whispers_file = 'whispers.json'
 sent_log_file = 'sent_whispers.json'
