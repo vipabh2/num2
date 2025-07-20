@@ -205,6 +205,11 @@ async def remove_assistant(event):
             await event.reply(f"{rm} غير موجود مسبقًا في قائمة المعاونين لهذه المجموعة.")
     except Exception as e:
         await hint(event, f"❌ حدث خطأ أثناء تنفيذ الأمر: {e}")
+async def m(user_id):
+    user = await ABH.get_entity(user_id)
+    if user.first_name:
+        return f"[{user.first_name}](tg://user?id={user_id})"
+    return f"@{user.username}" if user.username else f"`{user_id}`"
 @ABH.on(events.NewMessage(pattern='^المعاونين$'))
 async def show_assistants(event):
     type = "المعاونين"
@@ -913,4 +918,3 @@ async def how_to_whisper(event):
             caption=c,
             reply_to=event.id
         )
-    
