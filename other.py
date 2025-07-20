@@ -177,63 +177,34 @@ async def remove_assistant(event):
     try:
         id_or_username = event.pattern_match.group(1)
         reply = await event.get_reply_message()
-        if id_or_username.isdigit() or id_or_username.startswith("@") and reply:
-            await chs(event, f'دوختني والله العظيم هسه أنزّل {id_or_username} لو الرد؟')
-            if id_or_username.isdigit():
-                target_id = int(id_or_username)
-                if not await ABH.get_entity(target_id):
-                    return await event.reply(f"المستخدم {id_or_username} غير موجود.")
-            else:
-                target_id = id_or_username
-            data = load_auth()
-            if chat_id not in data:
-                data[chat_id] = []
-            if target_id in data[chat_id]:
-                data[chat_id].remove(target_id)
-                save_auth(data)
-                sender = await reply.get_sender()
-                rm = await ment(sender)
-                await event.reply(f"تم إزالة {rm} من قائمة المعاونين لهذه المجموعة.")
-            else:
-                await event.reply(f"المستخدم غير موجود مسبقًا في قائمة المعاونين لهذه المجموعة.")
-            return
-        if id_or_username.isdigit() and not reply:
-            target_id = int(id_or_username)
-            if not await ABH.get_entity(target_id):
-                return await event.reply(f"المستخدم {id_or_username} غير موجود.")
-            data = load_auth()
-            if chat_id not in data:
-                data[chat_id] = []
-            if target_id in data[chat_id]:
-                data[chat_id].remove(target_id)
-                save_auth(data)
-                await event.reply(f"تم إزالة المستخدم {target_id} من قائمة المعاونين لهذه المجموعة.")
-            else:
-                await event.reply(f"المستخدم {target_id} غير موجود في قائمة المعاونين لهذه المجموعة.")
-            return
-        if not reply:
-            return await event.reply(f"عزيزي {sm}، يجب الرد على رسالة المستخدم الذي تريد تنزيله.")
-        target_id = reply.sender_id
         data = load_auth()
         if chat_id not in data:
             data[chat_id] = []
-        e = await reply.get_sender()
-        rm = await ment(e)
+        target_id = None
+        if reply:
+            target_id = reply.sender_id
+            sender = await reply.get_sender()
+            rm = await ment(sender)
+        elif id_or_username.isdigit():
+            target_id = int(id_or_username)
+            rm = await m(target_id)
+        elif id_or_username.startswith("@"):
+            target_id = id_or_username
+            rm = id_or_username
+        else:
+            return await event.reply(f"عذرًا {sm}، لم أفهم المستخدم المطلوب.")
+        try:
+            await ABH.get_entity(target_id)
+        except:
+            return await event.reply(f"المستخدم {rm} غير موجود.")
         if target_id in data[chat_id]:
             data[chat_id].remove(target_id)
             save_auth(data)
             await event.reply(f"تم إزالة {rm} من قائمة المعاونين لهذه المجموعة.")
         else:
-            await event.reply(f"{rm} غير موجود في قائمة المعاونين لهذه المجموعة.")
+            await event.reply(f"{rm} غير موجود مسبقًا في قائمة المعاونين لهذه المجموعة.")
     except Exception as e:
-        await event.reply(f"❌ حدث خطأ أثناء تنفيذ الأمر: {e}")
-async def m(user_id):
-    try:
-        user = await ABH.get_entity(user_id)
-        name = getattr(user, 'first_name', None) or 'غير معروف'
-        return f"[{name}](tg://user?id={user.id})"
-    except:
-        return f"`{user_id}`"
+        await hint(event, f"❌ حدث خطأ أثناء تنفيذ الأمر: {e}")
 @ABH.on(events.NewMessage(pattern='^المعاونين$'))
 async def show_assistants(event):
     type = "المعاونين"
@@ -942,3 +913,4 @@ async def how_to_whisper(event):
             caption=c,
             reply_to=event.id
         )
+    
