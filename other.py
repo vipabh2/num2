@@ -119,19 +119,18 @@ async def is_owner(chat_id, user_id):
         return isinstance(participant.participant, ChannelParticipantCreator)
     except:
         return False
-@ABH.on(events.NewMessage(pattern=r'^رفع معاون (.+)$'))
+@ABH.on(events.NewMessage(pattern=r'^رفع معاون$'))
 async def add_assistant(event):
     if not event.is_group:
         return
     type = "رفع معاون"
     await botuse(type)
-    #try:
-        id = event.pattern_match.group(1)
-        reply = await event.get_reply_message()
-        chat_id = str(event.chat_id)
-        if not reply:
-            return await event.reply(f"عزيزي {sm}، يجب الرد على رسالة المستخدم الذي تريد إضافته.")
-        target_id = reply.sender_id
+    reply = await event.get_reply_message()
+    chat_id = str(event.chat_id)
+    if not reply:
+        return await event.reply(f"عزيزي {sm}، يجب الرد على رسالة المستخدم الذي تريد إضافته.")
+    target_id = reply.sender_id
+    try:
         data = load_auth()
         if chat_id not in data:
             data[chat_id] = []
@@ -142,9 +141,11 @@ async def add_assistant(event):
             rm = await ment(sender)
             await event.reply(f"تم رفع المستخدم {rm} إلى معاون في هذه المجموعة.")
         else:
+            sender = await reply.get_sender()
+            rm = await ment(sender)
             await event.reply(f"المستخدم {rm} موجود مسبقًا في قائمة المعاونين لهذه المجموعة.")
     except Exception as e:
-        await event.reply(f"حدث خطأ أثناء تنفيذ الأمر: {e}")
+        await hint(event, f"حدث خطأ أثناء تنفيذ الأمر: {e}")
 @ABH.on(events.NewMessage(pattern=r'^تنزيل معاون$'))
 async def remove_assistant(event):
     if not event.is_group:
