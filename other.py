@@ -667,6 +667,7 @@ async def publish_to_groups(event):
         await event.reply("❌ يرجى الرد على رسالة تحتوي على نص أو ملف بعد كتابة `نشر الكروبات`.")
         return
     sent_count = 0
+    print(f"alert_ids: {alert_ids}")
     for dialog_id in list(alert_ids):
         try:
             entity = await ABH.get_entity(dialog_id)
