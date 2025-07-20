@@ -5,7 +5,5 @@ beautifulsoup4==4.13.4
 soupsieve==2.7
 pytz
 google-api-python-client
-googletrans==4.0.0-rc1
 google-generativeai
-playwright
-sqlalchemy
+playwright>=1.43.0
