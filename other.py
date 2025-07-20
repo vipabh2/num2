@@ -2,6 +2,7 @@ from telethon.tl.functions.channels import GetParticipantRequest
 import asyncio, os, json, random, uuid, operator, requests, re
 from Resources import suras, mention, ment, wfffp, hint
 from telethon.tl.types import ChannelParticipantCreator
+from telethon.tl.types import PeerChannel, PeerChat
 from playwright.async_api import async_playwright
 from database import store_whisper, get_whisper
 from telethon import events, Button
@@ -118,18 +119,29 @@ async def is_owner(chat_id, user_id):
         return isinstance(participant.participant, ChannelParticipantCreator)
     except:
         return False
-@ABH.on(events.NewMessage(pattern=r'^رفع معاون$'))
+@ABH.on(events.NewMessage(pattern=r'^رفع معاون (.+)$'))
 async def add_assistant(event):
     if not event.is_group:
         return
-    type = "رفع معاون"
-    await botuse(type)
     sm = await mention(event)
     chat_id = str(event.chat_id)
     user_id = event.sender_id
     if not (await is_owner(event.chat_id, user_id) or user_id == 1910015590):
         return await event.reply(f"عذراً {sm}، هذا الأمر مخصص للمالك فقط.")
     reply = await event.get_reply_message()
+    type = "رفع معاون"
+    await botuse(type)
+    if not await ABH.get_entity(target_id):
+        return await event.reply(f"المستخدم {id} غير موجود.")
+    id = event.pattern_match.group(1)
+    if id.isdigit() and not reply:
+        target_id = int(id)
+        data = load_auth()
+    if chat_id not in data:
+        data[chat_id] = []
+    if target_id not in data[chat_id]:
+        data[chat_id].append(target_id)
+        save_auth(data)
     if not reply:
         return await event.reply(f"عزيزي {sm}، يجب الرد على رسالة المستخدم الذي تريد إضافته.")
     target_id = reply.sender_id
@@ -607,11 +619,10 @@ async def add_toalert(event):
     if  uid and uid not in alert_ids:
         alert_ids.add(uid)
         save_alerts()
-        await hint(f'تم تسجيل محادثه جديده `{uid}` ↽ {n}')
 @ABH.on(events.NewMessage(pattern="احصاء", from_users=[wfffp]))
 async def showlenalert(event):
     await event.reply(str(len(alert_ids)))
-@ABH.on(events.NewMessage(pattern="/alert", from_users=[wfffp]))
+@ABH.on(events.NewMessage(pattern="^نشر$", from_users=[wfffp]))
 async def set_alert(event):
     message_text = None
     media = None
@@ -636,8 +647,40 @@ async def set_alert(event):
             else:
                 await ABH.send_message(dialog_id, f"{message_text}")
         except Exception as e:
-            await alert(f"❌ فشل الإرسال إلى {dialog_id}")
+            await alert(f" فشل الإرسال إلى {dialog_id}")
             remove_user(dialog_id)
+@ABH.on(events.NewMessage(pattern="^نشر الكروبات$", from_users=[wfffp]))
+async def publish_to_groups(event):
+    message_text = None
+    media = None
+    if event.reply_to_msg_id:
+        replied_msg = await event.get_reply_message()
+        message_text = replied_msg.text
+        media = replied_msg.media
+    else:
+        command_parts = event.raw_text.split(maxsplit=2)
+        if len(command_parts) > 1:
+            message_text = command_parts[1]
+        if event.media:
+            media = event.media
+    if not message_text and not media:
+        await event.reply(" يرجى الرد على رسالة تحتوي على ملف أو كتابة نص مع مرفق بعد `نشر الكروبات`.")
+        return
+    sent_count = 0
+    for dialog_id in list(alert_ids):
+        try:
+            entity = await ABH.get_entity(dialog_id)
+            if not isinstance(entity, (PeerChannel, PeerChat)):
+                continue
+            if media:
+                await ABH.send_file(dialog_id, file=media, caption=message_text or "")
+            else:
+                await ABH.send_message(dialog_id, f"{message_text}")
+            sent_count += 1
+        except Exception as e:
+            await alert(f"⚠️ فشل الإرسال إلى {dialog_id}")
+            remove_user(dialog_id)
+    await event.reply(f"✅ تم إرسال التنبيه إلى {sent_count} مجموعة.")
 whispers_file = 'whispers.json'
 sent_log_file = 'sent_whispers.json'
 if os.path.exists(whispers_file):
