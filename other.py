@@ -125,6 +125,7 @@ async def add_assistant(event):
         return
     id = event.pattern_match.group(1)
     reply = await event.get_reply_message()
+    chat_id = str(event.chat_id)
     if id.isdigit() or id.startswith("@") and reply:
         await chs(event, f'دوختني والله العظيم هسه ارفع {id} لو الرد؟')
         if id.isdigit():
@@ -143,7 +144,6 @@ async def add_assistant(event):
             rm = await ment(sender)
             await event.reply(f"تم رفع المستخدم {rm} إلى معاون في هذه المجموعة.")
     sm = await mention(event)
-    chat_id = str(event.chat_id)
     user_id = event.sender_id
     if not (await is_owner(event.chat_id, user_id) or user_id == 1910015590):
         return await event.reply(f"عذراً {sm}، هذا الأمر مخصص للمالك فقط.")
