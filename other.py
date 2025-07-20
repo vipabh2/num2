@@ -123,17 +123,46 @@ async def is_owner(chat_id, user_id):
 async def add_assistant(event):
     if not event.is_group:
         return
-    id = event.pattern_match.group(1)
-    reply = await event.get_reply_message()
-    chat_id = str(event.chat_id)
-    if id.isdigit() or id.startswith("@") and reply:
-        await chs(event, f'دوختني والله العظيم هسه ارفع {id} لو الرد؟')
-        if id.isdigit():
-            target_id = int(id)
-            if not await ABH.get_entity(target_id):
-                return await event.reply(f"المستخدم {id} غير موجود.")
-        else:
-            target_id = id
+    type = "رفع معاون"
+    await botuse(type)
+    try:
+        id = event.pattern_match.group(1)
+        reply = await event.get_reply_message()
+        chat_id = str(event.chat_id)
+        if id.isdigit() or id.startswith("@") and reply:
+            await chs(event, f'دوختني والله العظيم هسه ارفع {id} لو الرد؟')
+            if id.isdigit():
+                target_id = int(id)
+                if not await ABH.get_entity(target_id):
+                    return await event.reply(f"المستخدم {id} غير موجود.")
+            else:
+                target_id = id
+            data = load_auth()
+            if chat_id not in data:
+                data[chat_id] = []
+            if target_id not in data[chat_id]:
+                data[chat_id].append(target_id)
+                save_auth(data)
+                sender = await reply.get_sender()
+                rm = await ment(sender)
+                await event.reply(f"تم رفع المستخدم {rm} إلى معاون في هذه المجموعة.")
+        sm = await mention(event)
+        user_id = event.sender_id
+        if not (await is_owner(event.chat_id, user_id) or user_id == 1910015590):
+            return await event.reply(f"عذراً {sm}، هذا الأمر مخصص للمالك فقط.")
+        target_id = int(id)
+        if not await ABH.get_entity(target_id):
+            return await event.reply(f"المستخدم {id} غير موجود.")
+        if id.isdigit() and not reply:
+            data = load_auth()
+        if chat_id not in data:
+            data[chat_id] = []
+        if target_id not in data[chat_id]:
+            data[chat_id].append(target_id)
+            save_auth(data)
+        if not reply:
+            return await event.reply(f"عزيزي {sm}، يجب الرد على رسالة المستخدم الذي تريد إضافته.")
+        target_id = reply.sender_id
         data = load_auth()
         if chat_id not in data:
             data[chat_id] = []
@@ -143,36 +172,10 @@ async def add_assistant(event):
             sender = await reply.get_sender()
             rm = await ment(sender)
             await event.reply(f"تم رفع المستخدم {rm} إلى معاون في هذه المجموعة.")
-    sm = await mention(event)
-    user_id = event.sender_id
-    if not (await is_owner(event.chat_id, user_id) or user_id == 1910015590):
-        return await event.reply(f"عذراً {sm}، هذا الأمر مخصص للمالك فقط.")
-    type = "رفع معاون"
-    await botuse(type)
-    target_id = int(id)
-    if not await ABH.get_entity(target_id):
-        return await event.reply(f"المستخدم {id} غير موجود.")
-    if id.isdigit() and not reply:
-        data = load_auth()
-    if chat_id not in data:
-        data[chat_id] = []
-    if target_id not in data[chat_id]:
-        data[chat_id].append(target_id)
-        save_auth(data)
-    if not reply:
-        return await event.reply(f"عزيزي {sm}، يجب الرد على رسالة المستخدم الذي تريد إضافته.")
-    target_id = reply.sender_id
-    data = load_auth()
-    if chat_id not in data:
-        data[chat_id] = []
-    if target_id not in data[chat_id]:
-        data[chat_id].append(target_id)
-        save_auth(data)
-        sender = await reply.get_sender()
-        rm = await ment(sender)
-        await event.reply(f"تم رفع المستخدم {rm} إلى معاون في هذه المجموعة.")
-    else:
-        await event.reply(f"المستخدم {rm} موجود مسبقًا في قائمة المعاونين لهذه المجموعة.")
+        else:
+            await event.reply(f"المستخدم {rm} موجود مسبقًا في قائمة المعاونين لهذه المجموعة.")
+    except Exception as e:
+        await event.reply(f"حدث خطأ أثناء تنفيذ الأمر: {e}")
 @ABH.on(events.NewMessage(pattern=r'^تنزيل معاون$'))
 async def remove_assistant(event):
     if not event.is_group:
