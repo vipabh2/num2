@@ -125,7 +125,7 @@ async def add_assistant(event):
         return
     id = event.pattern_match.group(1)
     reply = await event.get_reply_message()
-    if id.isdigit() or id.startswith("@") and reply:
+    if id.isdigit() and reply:
         await chs(event, f'دوختني والله العظيم هسه ارفع {id} لو الرد؟')
         if id.isdigit():
             target_id = int(id)
