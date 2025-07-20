@@ -670,9 +670,8 @@ async def publish_to_groups(event):
     print(f"alert_ids: {alert_ids}")
     for dialog_id in list(alert_ids):
         try:
-            entity = await ABH.get_entity(dialog_id)
-            if not isinstance(entity, (PeerChannel, PeerChat)):
-                continue
+            if not dialog_id.startswith("-100"):
+                return
             if media:
                 await ABH.send_file(dialog_id, file=media, caption=message_text or "")
             else:
