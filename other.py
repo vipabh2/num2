@@ -671,7 +671,7 @@ async def publish_to_groups(event):
     for dialog_id in list(alert_ids):
         try:
             if not dialog_id.startswith("-100"):
-                return
+                continue
             if media:
                 await ABH.send_file(dialog_id, file=media, caption=message_text or "")
             else:
