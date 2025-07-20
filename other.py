@@ -649,7 +649,7 @@ async def set_alert(event):
         except Exception as e:
             await alert(f" فشل الإرسال إلى {dialog_id}")
             remove_user(dialog_id)
-@ABH.on(events.NewMessage(pattern="^نشر الكروبات$", from_users=[wfffp]))
+@ABH.on(events.NewMessage(pattern="^نشر الكروبات (.+)$", from_users=[wfffp]))
 async def publish_to_groups(event):
     message_text = None
     media = None
