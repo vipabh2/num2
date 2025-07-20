@@ -127,6 +127,21 @@ async def add_assistant(event):
     reply = await event.get_reply_message()
     if id.isdigit() or id.startswith("@") and reply:
         await chs(event, f'دوختني والله العظيم هسه ارفع {id} لو الرد؟')
+        if id.isdigit():
+            target_id = int(id)
+            if not await ABH.get_entity(target_id):
+                return await event.reply(f"المستخدم {id} غير موجود.")
+        else:
+            target_id = id
+        data = load_auth()
+        if chat_id not in data:
+            data[chat_id] = []
+        if target_id not in data[chat_id]:
+            data[chat_id].append(target_id)
+            save_auth(data)
+            sender = await reply.get_sender()
+            rm = await ment(sender)
+            await event.reply(f"تم رفع المستخدم {rm} إلى معاون في هذه المجموعة.")
     sm = await mention(event)
     chat_id = str(event.chat_id)
     user_id = event.sender_id
