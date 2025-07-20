@@ -649,7 +649,7 @@ async def set_alert(event):
         except Exception as e:
             await alert(f" فشل الإرسال إلى {dialog_id}")
             remove_user(dialog_id)
-@ABH.on(events.NewMessage(pattern="^نشر الكروبات (.+)$", from_users=[wfffp]))
+@ABH.on(events.NewMessage(pattern=r"^نشر الكروبات$", from_users=[wfffp]))
 async def publish_to_groups(event):
     message_text = None
     media = None
@@ -658,13 +658,13 @@ async def publish_to_groups(event):
         message_text = replied_msg.text
         media = replied_msg.media
     else:
-        command_parts = event.raw_text.split(maxsplit=2)
+        command_parts = event.raw_text.split(maxsplit=1)
         if len(command_parts) > 1:
             message_text = command_parts[1]
         if event.media:
             media = event.media
     if not message_text and not media:
-        await event.reply(" يرجى الرد على رسالة تحتوي على ملف أو كتابة نص مع مرفق بعد `نشر الكروبات`.")
+        await event.reply("❌ يرجى الرد على رسالة تحتوي على نص أو ملف بعد كتابة `نشر الكروبات`.")
         return
     sent_count = 0
     for dialog_id in list(alert_ids):
