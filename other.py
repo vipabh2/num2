@@ -131,6 +131,8 @@ async def add_assistant(event):
     target_id = None
     reply = await event.get_reply_message()
     arg = event.pattern_match.group(1)
+    if reply and arg:
+        return await chs(event, "مافهمت هسه ارفع المستخدم بالرد لو بالامر.")
     if reply:
         target_id = reply.sender_id
     elif arg:
@@ -141,7 +143,7 @@ async def add_assistant(event):
                 entity = await ABH.get_entity(arg)
                 target_id = entity.id
             except:
-                return await event.reply(f"لا يمكن العثور على المستخدم {arg}.")
+                return await event.reply(f"ما اعتقد اكو هيج مستخدم `{arg}`.")
         else:
             return await event.reply("يرجى إدخال معرف رقمي أو اسم مستخدم صحيح.")
     else:
@@ -149,7 +151,7 @@ async def add_assistant(event):
     try:
         await ABH.get_entity(target_id)
     except:
-        return await event.reply(f"المستخدم {target_id} غير موجود.")
+        return await event.reply(f"ما اعتقد اكو هيج مستخدم `{arg}`..")
     data = load_auth()
     if chat_id not in data:
         data[chat_id] = []
@@ -204,7 +206,7 @@ async def remove_assistant(event):
         else:
             await event.reply(f"{rm} غير موجود مسبقًا في قائمة المعاونين لهذه المجموعة.")
     except Exception as e:
-        await hint(event, f"❌ حدث خطأ أثناء تنفيذ الأمر: {e}")
+        await hint(event, f" حدث خطأ أثناء تنفيذ الأمر: {e}")
 async def m(user_id):
     user = await ABH.get_entity(user_id)
     if user.first_name:
