@@ -25,8 +25,8 @@ async def notAssistantres(event):
     rs = await r.get_sender()
     target_name = await ment(rs)
     user_points = points.get(str(user_id), {}).get(str(chat_id), {}).get("points", 0)
-    if user_points < 10000:
-        return await event.reply("عزيزي الفقير , لازم ثروتك اكثر من عشر الاف.")
+    if user_points < 100000:
+        return await event.reply("عزيزي الفقير , لازم ثروتك اكثر من 100 الف.")
     try:
         participant = await ABH(GetParticipantRequest(channel=chat_id, participant=rs.id))
         if isinstance(participant.participant, (ChannelParticipantCreator, ChannelParticipantAdmin)):
