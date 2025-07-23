@@ -219,12 +219,12 @@ async def my_date(event):
         target = event.sender_id
         result = await ABH(GetParticipantRequest(channel=chat, participant=target))
         participant = result.participant
-        date_joined = participant.date.strftime("%Y-%m-%d %H:%M:%S")
+        date_joined = participant.date.strftime("%Y-%m-%d %H:%M")
         await event.reply(f"تاريخ الانضمام ↞ {date_joined}")
     except Exception as e:
         await event.reply("لا يمكن العثور على تاريخ الانضمام للمستخدم.")
         await hint(event, f"خطأ: my_date {str(e)}")
-@ABH.on(events.NewMessage(pattern=r'^تاريخه|تاريخ انضمامه|تاريخ انضمام$'))
+@ABH.on(events.NewMessage(pattern=r'^تاريخه|تاريخ انضمامه|تاريخ انضمامه$'))
 async def his_date(event):
     if not event.is_group:
         return
@@ -239,7 +239,7 @@ async def his_date(event):
         target = reply.sender_id
         result = await ABH(GetParticipantRequest(channel=chat, participant=target))
         participant = result.participant
-        date_joined = participant.date.strftime("%Y-%m-%d %H:%M:%S")
+        date_joined = participant.date.strftime("%Y-%m-%d %H:%M")
         await event.reply(f"تاريخ انضمامه ↞ {date_joined}")
     except Exception as e:
         await event.reply("لا يمكن العثور على تاريخ الانضمام للمستخدم.")
