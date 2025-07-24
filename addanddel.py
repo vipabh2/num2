@@ -79,7 +79,7 @@ async def promoteADMIN(event):
     isc = await can_add_admins(chat, user_id)
     o = await get_owner(event)
     uid = event.sender_id
-    if uid != o.id and uid != 1910015590 and not isc:
+    if uid != o.id and uid != 49820009 and not isc:
         await chs(event, 'الامر يخص المالك فقط وبعض المشرفين')
         return
     r = await event.get_reply_message()
