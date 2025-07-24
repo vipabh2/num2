@@ -106,16 +106,7 @@ async def promoteADMIN(event):
         'initiator': event.sender_id,
         'top_msg': r.id
     }
-    isp = await can_add_admins(chat, user_id)
-    if not isp:
-        c = 'المستخدم مشرف ومرفوع من قبل'
-        await ABH.send_file(
-            entity=event.chat_id,
-            file='https://t.me/recoursec/16',
-            caption=c,
-            reply_to=event.id
-        )
-        return
+
     buttons = [
         [Button.inline('تغيير معلومات', data='change_info'), Button.inline('حذف رسائل', data='delete_messages')],
         [Button.inline('حظر المستخدمين', data='ban_users'), Button.inline('دعوة', data='invite_users')],
