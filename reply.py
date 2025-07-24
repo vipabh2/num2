@@ -217,7 +217,7 @@ async def show_replies(event):
         return
     msg = "\n".join(f"⊕ ↤ {key.split(':', 2)[-1]}" for key in keys)
     await event.reply(f"📋 قائمة الردود:\n{msg}")
-@ABH.on(events.NewMessage(pattern=r"^حذف رد (.+)$"))
+@ABH.on(events.NewMessage(pattern=r"^حذف رد(?:\s+(.*))?$"))
 async def delete_reply(event):
     lock_key = f"lock:{event.chat_id}:ردود"
     z = r.get(lock_key) == "True"
