@@ -5,7 +5,7 @@ from telethon.tl.functions.channels import EditAdminRequest
 from telethon.tl.types import ChannelParticipantAdmin
 from telethon.tl.types import ChatAdminRights
 from top import points, add_user, save_points
-from Program import CHANNEL_KEY, chs
+from Program import chs
 from telethon import events, Button
 from Resources import *
 from other import botuse
@@ -79,8 +79,8 @@ async def promoteADMIN(event):
     isc = await can_add_admins(chat, user_id)
     o = await get_owner(event)
     uid = event.sender_id
-    if uid != o.id and uid != 7278066500 and not isc:
-        await chs(event, 'الامر يخص المالك فقط وبعض المشرفين')
+    if uid != o.id or uid != wfffp or not isc:
+        await chs(event, 'عذرا الامر لا يخصك')
         return
     r = await event.get_reply_message()
     if not r:
@@ -111,7 +111,7 @@ async def promoteADMIN(event):
         [Button.inline('تغيير معلومات', data='change_info'), Button.inline('حذف رسائل', data='delete_messages')],
         [Button.inline('حظر المستخدمين', data='ban_users'), Button.inline('دعوة', data='invite_users')],
         [Button.inline('الاتصال', data='manage_call'), Button.inline('اضافة مشرفين', data='add_admins')],
-        [Button.inline('تثبيت رسائل', data='pin_messages'), Button.inline('زر فارغ👍🏾', data='empty')],
+        [Button.inline('تثبيت رسائل', data='pin_messages')],
         [Button.inline('تم', data='done')]
         ]
     c = 'يتم رفع المستخدم مشرف \n يرجى تحديد الصلاحيات'
@@ -150,9 +150,9 @@ async def promoti(event):
             manage_call=rights.get('manage_call', False),
             manage_topics = False,
             anonymous = False,
-           # post_stories = True,
-            #edit_stories = True,
-        #    delete_stories =  True
+            # post_stories = True,
+            # edit_stories = True,
+            # delete_stories =  True
         )
         c = 'مشرف'
         await ABH(EditAdminRequest(event.chat_id, target_user_id, admin_rights, rank=c))
