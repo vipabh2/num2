@@ -5,6 +5,18 @@ from telethon.tl.types import ChannelParticipantAdmin
 import google.generativeai as genai
 import pytz, os, json
 from ABH import ABH
+def adj(filename: str, data: dict):
+    if os.path.exists(filename):
+        with open(filename, 'r', encoding='utf-8') as f:
+            try:
+                existing_data = json.load(f)
+            except json.JSONDecodeError:
+                existing_data = {}
+    else:
+        existing_data = {}
+    existing_data.update(data)
+    with open(filename, 'w', encoding='utf-8') as f:
+        json.dump(existing_data, f, ensure_ascii=False, indent=2)
 async def can_add_admins(chat, user_id):
     try:
         result = await ABH(GetParticipantRequest(
