@@ -338,13 +338,77 @@ unrestrict_rights = ChatBannedRights(
     send_inline=False,
     embed_links=False
 )
-warns = {}
+def adw(user_id: int, chat_id: int) -> int:
+    filename = "warns.json"
+    if os.path.exists(filename):
+        with open(filename, 'r', encoding='utf-8') as f:
+            try:
+                warns = json.load(f)
+            except json.JSONDecodeError:
+                warns = {}
+    else:
+        warns = {}
+    user_id = str(user_id)
+    chat_id = str(chat_id)
+    if user_id not in warns:
+        warns[user_id] = {}
+    if chat_id not in warns[user_id]:
+        warns[user_id][chat_id] = 0
+    warns[user_id][chat_id] += 1
+    with open(filename, 'w', encoding='utf-8') as f:
+        json.dump(warns, f, ensure_ascii=False, indent=2)
+    return warns[user_id][chat_id]
+# @ABH.on(events.NewMessage)
+# async def handler_res(event):
+#     if not event.is_group:
+#         return
+#     ء = redas.hget(str(event.chat_id), 't')
+#     if not ء or not event.is_group:
+#         return
+#     if event.message.action or not event.raw_text:
+#         return 
+#     message_text = event.raw_text.strip()
+#     x = contains_banned_word(message_text)
+#     if x:
+#         try:
+#             user_id = event.sender_id
+#             chat = await event.get_chat()
+#             if await is_admin(chat, user_id):
+#                 await event.delete()
+#                 return
+#             await event.delete()
+#             w = adw(user_id, chat_id)
+#             s = await mention(event)
+#             chat_id = event.chat_id
+#             hint_channel = await LC(chat_id)
+#             await ABH.send_message(
+#                 int(hint_channel),
+#                 f'المستخدم ( {s} ) ارسل كلمة غير مرغوب بها ( {x} ) \n   ايديه ( `{user_id}` ) تم تحذيره ومسحها \n تحذيراته ( 3\{w} ) '
+#                 )
+#             type = "تقييد بسبب الفشار"
+#             await botuse(type)
+
+#         except:
+#             return
+#         if w >= 3:
+#             await ABH(EditBannedRequest(chat.id, user_id, restrict_rights))
+#             name = await mention(event)
+#             warns[user_id][chat.id] = 0
+#             hint_channel = await LC(chat.id)
+#             if hint_channel:
+#                 try:
+#                     await ABH.send_message(int(hint_channel), f'تم تقييد المستخدم {name}')
+#                 except:
+#                     pass
+#             await asyncio.sleep(1200)
+#             await ABH(EditBannedRequest(chat.id, user_id, unrestrict_rights))
 @ABH.on(events.NewMessage)
 async def handler_res(event):
     if not event.is_group:
         return
-    ء = redas.hget(str(event.chat_id), 't')
-    if not ء or not event.is_group:
+    chat_id = event.chat_id
+    ء = redas.hget(str(chat_id), 't')
+    if not ء:
         return
     if event.message.action or not event.raw_text:
         return 
@@ -358,35 +422,41 @@ async def handler_res(event):
                 await event.delete()
                 return
             await event.delete()
-            if user_id not in warns:
-                warns[user_id] = {}
-            if chat.id not in warns[user_id]:
-                warns[user_id][chat.id] = 0
-            warns[user_id][chat.id] += 1
+            w = adw(user_id, chat_id)
             s = await mention(event)
-            chat_id = event.chat_id
             hint_channel = await LC(chat_id)
             await ABH.send_message(
                 int(hint_channel),
-                f'المستخدم ( {s} ) ارسل كلمة غير مرغوب بها ( {x} ) \n   ايديه ( `{user_id}` ) تم تحذيره ومسحها \n تحذيراته ( 3\{warns[user_id][chat_id]} ) '
-                )
+                f'المستخدم ( {s} ) ارسل كلمة غير مرغوب بها ( {x} ) \n   ايديه ( `{user_id}` ) تم تحذيره ومسحها \n تحذيراته ( 3\\{w} ) '
+            )
             type = "تقييد بسبب الفشار"
             await botuse(type)
-
-        except:
+        except Exception as e:
+            print(f"Error in warning handler: {e}")
             return
-        if warns[user_id][chat.id] >= 2:
-            await ABH(EditBannedRequest(chat.id, user_id, restrict_rights))
+        if w >= 3:
+            await ABH(EditBannedRequest(chat_id, user_id, restrict_rights))
             name = await mention(event)
-            warns[user_id][chat.id] = 0
-            hint_channel = await LC(chat.id)
+            filename = "warns.json"
+            if os.path.exists(filename):
+                with open(filename, 'r', encoding='utf-8') as f:
+                    warns = json.load(f)
+            else:
+                warns = {}
+            uid = str(user_id)
+            cid = str(chat_id)
+            if uid in warns and cid in warns[uid]:
+                warns[uid][cid] = 0
+                with open(filename, 'w', encoding='utf-8') as f:
+                    json.dump(warns, f, ensure_ascii=False, indent=2)
+            hint_channel = await LC(chat_id)
             if hint_channel:
                 try:
                     await ABH.send_message(int(hint_channel), f'تم تقييد المستخدم {name}')
                 except:
                     pass
             await asyncio.sleep(1200)
-            await ABH(EditBannedRequest(chat.id, user_id, unrestrict_rights))
+            await ABH(EditBannedRequest(chat_id, user_id, unrestrict_rights))
 @ABH.on(events.NewMessage(pattern='!تجربة'))
 async def test_broadcast(event):
     chat_id = event.chat_id
