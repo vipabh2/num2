@@ -369,8 +369,8 @@ async def handler_res(event):
                 )
             type = "تقييد بسبب الفشار"
             await botuse(type)
-
-        except:
+        except Exception as e:
+            await hint(event, e)
             return
         if warns[user_id][chat.id] >= 2:
             await ABH(EditBannedRequest(chat.id, user_id, restrict_rights))
