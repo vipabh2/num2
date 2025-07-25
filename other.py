@@ -235,7 +235,7 @@ async def myname(event):
     await botuse(type)
     name = await mention(event)
     await event.reply(name)
-@ABH.on(events.NewMessage(pattern=r"^اسمه(?:ة)?$"))
+@ABH.on(events.NewMessage(pattern=r"^اسمه|اسمة$"))
 async def hisname(event):
     type = "اسمه"
     await botuse(type)
