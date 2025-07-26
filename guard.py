@@ -310,7 +310,7 @@ def normalize_arabic(text):
 normalized_banned_words = set(normalize_arabic(word) for word in banned_words)
 async def is_admin(chat, user_id):
     try:
-        participant = await ABH(GetParticipantRequest(chat, user_id))
+        participant = await ABH(GetParticipantRequest(chat.id, user_id))
         return isinstance(participant.participant, (ChannelParticipantAdmin, ChannelParticipantCreator))
     except:
         return False
@@ -369,8 +369,8 @@ async def handler_res(event):
                 )
             type = "تقييد بسبب الفشار"
             await botuse(type)
-
-        except:
+        except Exception as e:
+            await hint(e)
             return
         if warns[user_id][chat.id] >= 2:
             await ABH(EditBannedRequest(chat.id, user_id, restrict_rights))
