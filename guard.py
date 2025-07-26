@@ -322,7 +322,7 @@ async def handler_res(event):
             # if await is_admin(chat, user_id):
             #     await event.delete()
             #     return
-            await event.delete()
+            # await event.delete()
             if user_id not in warns:
                 warns[user_id] = {}
             if chat.id not in warns[user_id]:
