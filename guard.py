@@ -384,7 +384,7 @@ async def handler_res(event):
         w = add_warning(user_id, chat)
         await botuse("تحذير مستخدمين")
         s = await mention(event)
-        if w < 2:
+        if w < 1:
             hint_channel = await LC(chat)
             await ABH.send_message(
                 int(hint_channel),
@@ -400,7 +400,7 @@ async def handler_res(event):
             )
             type = "تقييد بسبب الفشار"
             await botuse(type)
-        elif w > 2:
+        elif w >= 3:
             hint_channel = await LC(chat)
             if hint_channel:
                 await ABH.send_message(
