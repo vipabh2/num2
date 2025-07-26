@@ -319,9 +319,9 @@ async def handler_res(event):
         try:
             user_id = event.sender_id
             chat = await event.get_chat()
-            if await is_admin(chat, user_id):
-                await event.delete()
-                return
+            # if await is_admin(chat, user_id):
+            #     await event.delete()
+            #     return
             await event.delete()
             if user_id not in warns:
                 warns[user_id] = {}
@@ -376,4 +376,3 @@ async def test_broadcast(event):
         await event.reply("✔︙تم إرسال رسالة التجربة إلى قناة التبليغات بنجاح.")
     except Exception as e:
         await event.reply(f"︙حدث خطأ أثناء إرسال الرسالة: {e}")
-
