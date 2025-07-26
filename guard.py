@@ -355,7 +355,7 @@ async def handler_res(event):
                 try:
                     await ABH.send_message(int(hint_channel), f'تم تقييد المستخدم {name}')
                 except Exception as e:
-                    await hint(event, e)
+                    await hint(e)
                     pass
             # await asyncio.sleep(1200)
             # await ABH(EditBannedRequest(chat.id, user_id, unrestrict_rights))
