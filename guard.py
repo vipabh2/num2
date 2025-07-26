@@ -42,7 +42,7 @@ async def notAssistantres(event):
         send_messages=True
     )      
     try:
-        await ABH(EditBannedRequest(channel=chat.id, participant=user_id, banned_rights=rights))
+        await ABH(EditBannedRequest(channel=chat, participant=user_id, banned_rights=rights))
     except Exception as e:
         await event.reply("ياريت اقيده بس ماكدر 🥲")
         await hint(e)
@@ -74,7 +74,7 @@ async def restrict_user(event):
         return
     name = await ment(sender)
     try:
-        participant = await ABH(GetParticipantRequest(channel=chat.id, participant=sender.id))
+        participant = await ABH(GetParticipantRequest(channel=chat, participant=sender.id))
         if isinstance(participant.participant, (ChannelParticipantCreator, ChannelParticipantAdmin)):
             return await event.reply(f"لا يمكنك تقييد {name} لانه مشرف ")
     except:
@@ -89,7 +89,7 @@ async def restrict_user(event):
         send_messages=True
     )      
     try:
-        await ABH(EditBannedRequest(channel=chat.id, participant=user_id, banned_rights=rights))
+        await ABH(EditBannedRequest(channel=chat, participant=user_id, banned_rights=rights))
         type = "تقييد عام"
         await botuse(type)
         ء = await r.get_sender()
@@ -117,7 +117,7 @@ async def monitor_messages(event):
                     send_messages=True
                 )
                 await event.delete()
-                await ABH(EditBannedRequest(channel=chat.id, participant=user_id, banned_rights=rights))
+                await ABH(EditBannedRequest(channel=chat, participant=user_id, banned_rights=rights))
                 ء = await event.get_sender()
                 rrr = await mention(event)
                 c = f"تم اعاده تقييد {rrr} لمدة ** {remaining//60} دقيقة و {remaining%60} ثانية.**"
@@ -310,7 +310,7 @@ def normalize_arabic(text):
 normalized_banned_words = set(normalize_arabic(word) for word in banned_words)
 async def is_admin(chat, user_id):
     try:
-        participant = await ABH(GetParticipantRequest(chat.id, user_id))
+        participant = await ABH(GetParticipantRequest(chat, user_id))
         return isinstance(participant.participant, (ChannelParticipantAdmin, ChannelParticipantCreator))
     except:
         return False
@@ -350,16 +350,16 @@ async def handler_res(event):
     if x:
         try:
             user_id = event.sender_id
-            chat = await event.get_chat()
-            if await is_admin(chat.id, user_id):
+            chat = event.chat_id
+            if await is_admin(chat, user_id):
                 await event.delete()
                 return
             await event.delete()
             if user_id not in warns:
                 warns[user_id] = {}
-            if chat.id not in warns[user_id]:
-                warns[user_id][chat.id] = 0
-            warns[user_id][chat.id] += 1
+            if chat not in warns[user_id]:
+                warns[user_id][chat] = 0
+            warns[user_id][chat] += 1
             s = await mention(event)
             chat_id = event.chat_id
             hint_channel = await LC(chat_id)
@@ -372,18 +372,18 @@ async def handler_res(event):
         except Exception as e:
             await hint(e)
             return
-        if warns[user_id][chat.id] >= 2:
-            await ABH(EditBannedRequest(chat.id, user_id, restrict_rights))
+        if warns[user_id][chat] >= 2:
+            await ABH(EditBannedRequest(chat, user_id, restrict_rights))
             name = await mention(event)
-            warns[user_id][chat.id] = 0
-            hint_channel = await LC(chat.id)
+            warns[user_id][chat] = 0
+            hint_channel = await LC(chat)
             if hint_channel:
                 try:
                     await ABH.send_message(int(hint_channel), f'تم تقييد المستخدم {name}')
                 except:
                     pass
             await asyncio.sleep(1200)
-            await ABH(EditBannedRequest(chat.id, user_id, unrestrict_rights))
+            await ABH(EditBannedRequest(chat, user_id, unrestrict_rights))
 @ABH.on(events.NewMessage(pattern='!تجربة'))
 async def test_broadcast(event):
     chat_id = event.chat_id
