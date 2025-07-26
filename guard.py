@@ -49,7 +49,7 @@ async def notAssistantres(event):
     await botuse("تقييد ميم")
     sender_name = await ment(sender)
     delpoints(event.sender_id, chat_id, points, 1000000)
-    caption = f"تم تقييد {target_name} لمدة 30 ثانية. \n بطلب من {sender_name} \n\n **ملاحظة:** تم خصم 10000 نقطة من ثروتك."
+    caption = f"تم تقييد {target_name} لمدة 30 ثانية. \n بطلب من {sender_name} \n\n **ملاحظة:** تم خصم 1000000 دينار من ثروتك."
     await ABH.send_file(chat_id, "https://t.me/VIPABH/592", caption=caption)
 restriction_end_times = {}
 @ABH.on(events.NewMessage(pattern='^تقييد عام|مخفي قيده|مخفي قيدة$'))
@@ -341,7 +341,31 @@ unrestrict_rights = ChatBannedRights(
     send_inline=False,
     embed_links=False
 )
-warns = {}
+WARN_FILE = "warns.json"
+def load_warns():
+    if os.path.exists(WARN_FILE):
+        with open(WARN_FILE, "r", encoding="utf-8") as f:
+            return json.load(f)
+    else:
+        return {}
+def save_warns(warns_data):
+    with open(WARN_FILE, "w", encoding="utf-8") as f:
+        json.dump(warns_data, f, ensure_ascii=False, indent=2)
+def add_warning(user_id: int, chat_id: int) -> int:
+    warns = load_warns()
+    user_id_str = str(user_id)
+    chat_id_str = str(chat_id)
+    if user_id_str not in warns:
+        warns[user_id_str] = {}
+    if chat_id_str not in warns[user_id_str]:
+        warns[user_id_str][chat_id_str] = 0
+    warns[user_id_str][chat_id_str] += 1
+    if warns[user_id_str][chat_id_str] >= 3:
+        warns[user_id_str][chat_id_str] = 0
+        save_warns(warns)
+        return 0
+    save_warns(warns)
+    return warns[user_id_str][chat_id_str]
 @ABH.on(events.NewMessage)
 async def handler_res(event):
     lock_key = f"lock:{event.chat_id}:تقييد"
@@ -350,41 +374,45 @@ async def handler_res(event):
         return
     message_text = event.raw_text.strip()
     x = contains_banned_word(message_text)
+    user_id = event.sender_id
+    chat = event.chat_id
     if x:
-        try:
-            user_id = event.sender_id
-            chat = event.chat_id
-            if await is_admin(chat, user_id):
-                await event.delete()
-                return
+        if await is_admin(chat, user_id):
             await event.delete()
-            if user_id not in warns:
-                warns[user_id] = {}
-            if chat not in warns[user_id]:
-                warns[user_id][chat] = 0
-            warns[user_id][chat] += 1
-            s = await mention(event)
-            chat_id = event.chat_id
-            hint_channel = await LC(chat_id)
+            return
+        await event.delete()
+        w = add_warning(user_id, chat)
+        await botuse("تحذير مستخدمين")
+        s = await mention(event)
+        if w < 2:
+            hint_channel = await LC(chat)
             await ABH.send_message(
                 int(hint_channel),
-                f'المستخدم ( {s} ) ارسل كلمة غير مرغوب بها ( {x} ) \n   ايديه ( `{user_id}` ) تم تحذيره ومسحها \n تحذيراته ( 3\\{warns[user_id][chat_id]} ) '
-                )
+                f"""🚫 تم رصد مخالفة
+
+            👤 المستخدم: {s}
+            🆔 المعرف: `{user_id}`
+            ❗ الكلمة المحظورة: `{x}`
+
+            ⚠️ تم حذف الرسالة وتحذيره.
+            🔢 عدد التحذيرات: {w} / 3
+            """
+            )
             type = "تقييد بسبب الفشار"
             await botuse(type)
-        except Exception as e:
-            await hint(e)
-            return
-        if warns[user_id][chat] >= 2:
-            await ABH(EditBannedRequest(chat, user_id, restrict_rights))
-            name = await mention(event)
-            warns[user_id][chat] = 0
+        elif w > 2:
             hint_channel = await LC(chat)
             if hint_channel:
-                try:
-                    await ABH.send_message(int(hint_channel), f'تم تقييد المستخدم {name}')
-                except:
-                    pass
+                await ABH.send_message(
+                    int(hint_channel),
+                    f"""🔒 تم تقييد المستخدم
+
+                👤 {s}
+                ❗️بسبب تكرار استخدام كلمات محظورة.
+
+                ⏳ سيتم رفع التقييد تلقائيًا بعد 20 دقيقة.
+                """
+                )
             await asyncio.sleep(1200)
             await ABH(EditBannedRequest(chat, user_id, unrestrict_rights))
 @ABH.on(events.NewMessage(pattern='!تجربة'))
@@ -404,4 +432,3 @@ async def test_broadcast(event):
         await event.reply("✔︙تم إرسال رسالة التجربة إلى قناة التبليغات بنجاح.")
     except Exception as e:
         await event.reply(f"︙حدث خطأ أثناء إرسال الرسالة: {e}")
-        
