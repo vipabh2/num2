@@ -292,101 +292,65 @@ banned_words = [
     "فريخ", "فريخة", "فريخه", "فرخي", "قضيب", "مايا", "ماية", "مايه", "بكسمك", 
     "كس امك", "طيز", "طيزك", "فرخ", "كواد", "اخلكحبة", "اينيج", "بربوك", "زب", 'سب' 
 ]
+warns = {}
 def normalize_arabic(text):
     text = re.sub(r'[\u064B-\u0652\u0640]', '', text)
-    replace_map = {
-        'أ': 'ا',
-        'إ': 'ا',
-        'آ': 'ا',
-        'ى': 'ي',
-        'ؤ': 'و',
-        'ئ': 'ي',
-        'ة': 'ه',
-    }
-    for src, target in replace_map.items():
-        text = text.replace(src, target)    
-    text = re.sub(r'(.)\1+', r'\1', text)    
+    text = re.sub(r'(.)\1+', r'\1', re.sub(r'[إأآىؤئة]', lambda m: {
+        'أ': 'ا', 'إ': 'ا', 'آ': 'ا', 'ى': 'ي', 'ؤ': 'و', 'ئ': 'ي', 'ة': 'ه'
+    }[m.group()], text))
     return text
-normalized_banned_words = set(normalize_arabic(word) for word in banned_words)
+
+normalized_banned_words = set(normalize_arabic(w) for w in banned_words)
+
 async def is_admin(chat, user_id):
     try:
-        participant = await ABH(GetParticipantRequest(chat, user_id))
-        return isinstance(participant.participant, (ChannelParticipantAdmin, ChannelParticipantCreator))
-    except:
-        return False
-def contains_banned_word(message):
-    message = normalize_arabic(message)
-    words = message.split()
-    return any(word in normalized_banned_words for word in words)
-restrict_rights = ChatBannedRights(
-    until_date=None,
-    send_messages=True,
-    send_media=True,
-    send_stickers=True,
-    send_gifs=True,
-    send_games=True,
-    send_inline=True,
-    embed_links=True
-)
-unrestrict_rights = ChatBannedRights(
-    until_date=None,
-    send_messages=False,
-    send_media=False,
-    send_stickers=False,
-    send_gifs=False,
-    send_games=False,
-    send_inline=False,
-    embed_links=False
-)
-warns = {}
+        p = await ABH(GetParticipantRequest(chat, user_id))
+        return isinstance(p.participant, (ChannelParticipantAdmin, ChannelParticipantCreator))
+    except: return False
+
+def contains_banned_word(msg):
+    msg = normalize_arabic(msg.strip())
+    return next((word for word in msg.split() if word in normalized_banned_words), None)
+
+restrict_rights = ChatBannedRights(**{k: True for k in [
+    'send_messages', 'send_media', 'send_stickers', 'send_gifs', 'send_games', 'send_inline', 'embed_links']})
+unrestrict_rights = ChatBannedRights(**{k: False for k in [
+    'send_messages', 'send_media', 'send_stickers', 'send_gifs', 'send_games', 'send_inline', 'embed_links']})
+
 @ABH.on(events.NewMessage)
 async def handler_res(event):
-    if not event.is_group:
+    if not (event.is_group and event.raw_text and not event.message.action):
         return
-    ء = redas.hget(str(event.chat_id), 't')
-    if not ء or not event.is_group:
+    if not redas.hget(str(event.chat_id), 't'):
         return
-    if event.message.action or not event.raw_text:
-        return 
-    message_text = event.raw_text.strip()
-    x = contains_banned_word(message_text)
-    if x:
-        try:
-            user_id = event.sender_id
-            chat = await event.get_chat()
-            if await is_admin(chat, user_id):
-                await event.delete()
-                return
-            await event.delete()
-            if user_id not in warns:
-                warns[user_id] = {}
-            if chat.id not in warns[user_id]:
-                warns[user_id][chat.id] = 0
-            warns[user_id][chat.id] += 1
-            s = await mention(event)
-            chat_id = event.chat_id
-            hint_channel = await LC(chat_id)
-            await ABH.send_message(
-                int(hint_channel),
-                f'المستخدم ( {s} ) ارسل كلمة غير مرغوب بها ( {x} ) \n   ايديه ( `{user_id}` ) تم تحذيره ومسحها \n تحذيراته ( 3\{warns[user_id][chat_id]} ) '
-                )
-            type = "تقييد بسبب الفشار"
-            await botuse(type)
 
-        except:
-            return
-        if warns[user_id][chat.id] >= 2:
-            await ABH(EditBannedRequest(chat.id, user_id, restrict_rights))
-            name = await mention(event)
-            warns[user_id][chat.id] = 0
-            hint_channel = await LC(chat.id)
-            if hint_channel:
-                try:
-                    await ABH.send_message(int(hint_channel), f'تم تقييد المستخدم {name}')
-                except:
-                    pass
-            await asyncio.sleep(1200)
-            await ABH(EditBannedRequest(chat.id, user_id, unrestrict_rights))
+    word = contains_banned_word(event.raw_text)
+    if not word: return
+
+    user_id = event.sender_id
+    chat = await event.get_chat()
+
+    if await is_admin(chat, user_id):
+        await event.delete(); return
+
+    await event.delete()
+    warns.setdefault(user_id, {}).setdefault(chat.id, 0)
+    warns[user_id][chat.id] += 1
+
+    mention_text = await mention(event)
+    hint_channel = await LC(chat.id)
+    await ABH.send_message(int(hint_channel), f'المستخدم ( {mention_text} ) ارسل كلمة غير مرغوب بها ( {word} )\nايديه ( `{user_id}` ) تم تحذيره ومسحها\nتحذيراته ( 3\\{warns[user_id][chat.id]} )')
+
+    await botuse("تقييد بسبب الفشار")
+
+    if warns[user_id][chat.id] >= 2:
+        warns[user_id][chat.id] = 0
+        await ABH(EditBannedRequest(chat.id, user_id, restrict_rights))
+        if hint_channel:
+            try: await ABH.send_message(int(hint_channel), f'تم تقييد المستخدم {mention_text}')
+            except: pass
+        await asyncio.sleep(1200)
+        await ABH(EditBannedRequest(chat.id, user_id, unrestrict_rights))
 @ABH.on(events.NewMessage(pattern='!تجربة'))
 async def test_broadcast(event):
     chat_id = event.chat_id
