@@ -360,12 +360,13 @@ def add_warning(user_id: int, chat_id: int) -> int:
     if chat_id_str not in warns[user_id_str]:
         warns[user_id_str][chat_id_str] = 0
     warns[user_id_str][chat_id_str] += 1
-    if warns[user_id_str][chat_id_str] >= 3:
+    current_warns = warns[user_id_str][chat_id_str]
+    if current_warns >= 3:
         warns[user_id_str][chat_id_str] = 0
         save_warns(warns)
         return 0
     save_warns(warns)
-    return warns[user_id_str][chat_id_str]
+    return current_warns
 @ABH.on(events.NewMessage)
 async def handler_res(event):
     lock_key = f"lock:{event.chat_id}:تقييد"
