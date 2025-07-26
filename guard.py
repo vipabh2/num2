@@ -364,7 +364,6 @@ def add_warning(user_id: int, chat_id: int) -> int:
     if current_warns > 3:
         warns[user_id_str][chat_id_str] = 1
         save_warns(warns)
-        return 0
     save_warns(warns)
     return current_warns
 @ABH.on(events.NewMessage)
