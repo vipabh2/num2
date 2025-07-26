@@ -25,8 +25,8 @@ async def notAssistantres(event):
     rs = await r.get_sender()
     target_name = await ment(rs)
     user_points = points.get(str(user_id), {}).get(str(chat_id), {}).get("points", 0)
-    if user_points < 10000:
-        return await event.reply("عزيزي الفقير , لازم ثروتك اكثر من عشر الاف.")
+    if user_points < 1000000:
+        return await event.reply("عزيزي الفقير , لازم ثروتك اكثر من مليون دينار.")
     try:
         participant = await ABH(GetParticipantRequest(channel=chat_id, participant=rs.id))
         if isinstance(participant.participant, (ChannelParticipantCreator, ChannelParticipantAdmin)):
@@ -48,7 +48,7 @@ async def notAssistantres(event):
         await hint(e)
     await botuse("تقييد ميم")
     sender_name = await ment(sender)
-    delpoints(event.sender_id, chat_id, points, 10000)
+    delpoints(event.sender_id, chat_id, points, 1000000)
     caption = f"تم تقييد {target_name} لمدة 30 ثانية. \n بطلب من {sender_name} \n\n **ملاحظة:** تم خصم 10000 نقطة من ثروتك."
     await ABH.send_file(chat_id, "https://t.me/VIPABH/592", caption=caption)
 restriction_end_times = {}
@@ -404,3 +404,4 @@ async def test_broadcast(event):
         await event.reply("✔︙تم إرسال رسالة التجربة إلى قناة التبليغات بنجاح.")
     except Exception as e:
         await event.reply(f"︙حدث خطأ أثناء إرسال الرسالة: {e}")
+        
