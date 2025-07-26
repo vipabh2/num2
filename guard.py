@@ -316,21 +316,21 @@ async def handler_res(event):
     message_text = event.raw_text.strip()
     x = contains_banned_word(message_text)
     if x:
+        user_id = event.sender_id
+        chat = await event.get_chat()
+        # if await is_admin(chat, user_id):
+        #     await event.delete()
+        #     return
+        # await event.delete()
+        if user_id not in warns:
+            warns[user_id] = {}
+        if chat.id not in warns[user_id]:
+            warns[user_id][chat.id] = 0
+        warns[user_id][chat.id] += 1
+        s = await mention(event)
+        chat_id = event.chat_id
+        hint_channel = await LC(chat_id)
         try:
-            user_id = event.sender_id
-            chat = await event.get_chat()
-            # if await is_admin(chat, user_id):
-            #     await event.delete()
-            #     return
-            # await event.delete()
-            if user_id not in warns:
-                warns[user_id] = {}
-            if chat.id not in warns[user_id]:
-                warns[user_id][chat.id] = 0
-            warns[user_id][chat.id] += 1
-            s = await mention(event)
-            chat_id = event.chat_id
-            hint_channel = await LC(chat_id)
             await ABH.send_message(
                 int(hint_channel),
                 f'المستخدم ( {s} ) ارسل كلمة غير مرغوب بها ( {x} ) \n   ايديه ( `{user_id}` ) تم تحذيره ومسحها \n تحذيراته ( 3\\{warns[user_id][chat_id]} ) '
