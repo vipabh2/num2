@@ -338,7 +338,7 @@ async def handler_res(event):
             type = "تقييد بسبب الفشار"
             await botuse(type)
         except Exception as e:
-            await hint(event, e)
+            await hint(e)
             return
         now = int(time.time())
         rights = ChatBannedRights(
