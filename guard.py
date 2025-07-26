@@ -358,11 +358,11 @@ def add_warning(user_id: int, chat_id: int) -> int:
     if user_id_str not in warns:
         warns[user_id_str] = {}
     if chat_id_str not in warns[user_id_str]:
-        warns[user_id_str][chat_id_str] = 0
+        warns[user_id_str][chat_id_str] = 1
     warns[user_id_str][chat_id_str] += 1
     current_warns = warns[user_id_str][chat_id_str]
     if current_warns > 3:
-        warns[user_id_str][chat_id_str] = 0
+        warns[user_id_str][chat_id_str] = 1
         save_warns(warns)
         return 0
     save_warns(warns)
