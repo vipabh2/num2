@@ -384,7 +384,7 @@ async def handler_res(event):
         w = add_warning(user_id, chat)
         await botuse("تحذير مستخدمين")
         s = await mention(event)
-        if w == 3:
+        if w >= 3:
             hint_channel = await LC(chat)
             if hint_channel:
                 await ABH.send_message(
