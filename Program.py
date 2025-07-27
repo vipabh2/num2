@@ -1,4 +1,6 @@
-import shutil, json, redis, subprocess
+from telethon.tl.types import ChannelParticipantAdmin, ChannelParticipantCreator
+from telethon.tl.functions.channels import GetParticipantRequest
+import json, redis, subprocess
 from telethon import events, Button
 import asyncio, os, sys, random
 from Resources import *
@@ -123,19 +125,21 @@ async def callbacklist(event):
 async def on_bot_added(event):
     if event.user_added or event.user_joined:
         if event.user_id == (await ABH.get_me()).id:
-            await event.reply("يالفكر ضفتني عضو دضيفني مشرف شبيك")
-    if (event.user_added or event.user_joined) and event.user_id == (await ABH.get_me()).id:
+            m = await mention(event)
+            await event.reply(f"يالفكر ضفتني عضو دضيفني مشرف شبيك {m}")
         try:
-            participant = await ABH(GetParticipantRequest(
-                channel=event.chat_id,
-                participant='me'
-            ))
-            if participant.participant.rank or participant.participant.admin_rights:
-                await event.reply("شكرا علئ الاشراف ضلعي")
-            else:
-                return
-        except Exception as event:
-            await hint(f"⚠️ حدث خطأ أثناء التحقق من الصلاحيات: {event}")
+            me = await ABH.get_me()
+            if event.user_id == me.id:
+                participant = await ABH(GetParticipantRequest(
+                    channel=event.chat_id,
+                    participant='me'
+                ))
+                p = participant.participant
+                if isinstance(p, (ChannelParticipantAdmin, ChannelParticipantCreator)):
+                    m = await mention(event)
+                    await event.reply(f"شكرا علئ الاشراف ضلعي {m}")
+        except Exception as e:
+            await hint(f"⚠️ حدث خطأ أثناء التحقق من الصلاحيات: {e}")
 @ABH.on(events.NewMessage(pattern='مخفي اطلع'))
 async def memkikme(event):
     if not event.is_group:
