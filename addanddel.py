@@ -64,20 +64,20 @@ session = {}
 async def promoteADMIN(event):
     if not event.is_group:
         return
+    chat = await event.get_chat()
     user_id = event.sender_id
-    chat = event.chat_id
-    isc = await can_add_admins(chat, user_id)
-    o = await get_owner(event)
-    uid = event.sender_id
-    if uid != o.id or uid != wfffp or not isc:
-        await chs(event, 'عذرا الامر لا يخصك')
-        return
-    me = await ABH.get_permissions(chat, 'me')
+    me = await ABH.get_permissions(chat.id, 'me')
     if not me.is_admin or not me.add_admins:
         await chs(event, " لا أمتلك صلاحية تعديل المشرفين.")
         return
     type = "ترقية"
     await botuse(type)
+    isc = await can_add_admins(chat, user_id)
+    o = await get_owner(event)
+    uid = event.sender_id
+    if uid != o.id and uid != 1910015590 and not isc:
+        await chs(event, 'الامر يخص المالك فقط وبعض المشرفين')
+        return
     r = await event.get_reply_message()
     if not r:
         await chs(event, 'لازم تسوي رد لشخص علمود ارفعه')
@@ -102,12 +102,21 @@ async def promoteADMIN(event):
         'initiator': event.sender_id,
         'top_msg': r.id
     }
-
+    isp = await can_add_admins(chat, user_id)
+    if not isp:
+        c = 'المستخدم مشرف ومرفوع من قبل'
+        await ABH.send_file(
+            entity=event.chat_id,
+            file='https://t.me/recoursec/16',
+            caption=c,
+            reply_to=event.id
+        )
+        return
     buttons = [
         [Button.inline('تغيير معلومات', data='change_info'), Button.inline('حذف رسائل', data='delete_messages')],
         [Button.inline('حظر المستخدمين', data='ban_users'), Button.inline('دعوة', data='invite_users')],
         [Button.inline('الاتصال', data='manage_call'), Button.inline('اضافة مشرفين', data='add_admins')],
-        [Button.inline('تثبيت رسائل', data='pin_messages')],
+        [Button.inline('تثبيت رسائل', data='pin_messages'), Button.inline('زر فارغ👍🏾', data='empty')],
         [Button.inline('تم', data='done')]
         ]
     c = 'يتم رفع المستخدم مشرف \n يرجى تحديد الصلاحيات'
@@ -146,9 +155,9 @@ async def promoti(event):
             manage_call=rights.get('manage_call', False),
             manage_topics = False,
             anonymous = False,
-            # post_stories = True,
-            # edit_stories = True,
-            # delete_stories =  True
+            post_stories = True,
+            edit_stories = True,
+            delete_stories =  True
         )
         c = 'مشرف'
         await ABH(EditAdminRequest(event.chat_id, target_user_id, admin_rights, rank=c))
