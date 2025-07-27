@@ -99,7 +99,8 @@ async def restrict_user(event):
         await r.delete()
         await event.delete()
     except Exception as e:
-        await event.reply(f" ياريت اقيده بس ماكدر {e}")
+        await hint(e)
+        await event.reply(f" ياريت اقيده بس ماكدر ")
 @ABH.on(events.NewMessage)
 async def monitor_messages(event):
     if not event.is_group:
@@ -321,26 +322,6 @@ def contains_banned_word(message):
         if word in normalized_banned_words:
             return word
     return None
-restrict_rights = ChatBannedRights(
-    until_date=None,
-    send_messages=True,
-    send_media=True,
-    send_stickers=True,
-    send_gifs=True,
-    send_games=True,
-    send_inline=True,
-    embed_links=True
-)
-unrestrict_rights = ChatBannedRights(
-    until_date=None,
-    send_messages=False,
-    send_media=False,
-    send_stickers=False,
-    send_gifs=False,
-    send_games=False,
-    send_inline=False,
-    embed_links=False
-)
 WARN_FILE = "warns.json"
 def load_warns():
     if os.path.exists(WARN_FILE):
@@ -395,11 +376,17 @@ async def handler_res(event):
                 ❗️بسبب تكرار استخدام كلمات محظورة.
 
                 ⏳ سيتم رفع التقييد تلقائيًا بعد 20 دقيقة.
-                w🔢 عدد التحذيرات: {w} / 3
+                🔢 عدد التحذيرات: {w} / 3
                 """
-                )
-            await asyncio.sleep(1200)
-            await ABH(EditBannedRequest(chat, user_id, unrestrict_rights))
+            )
+            now = int(time.time())
+            restriction_duration = 20 * 60
+            restriction_end_times[user_id] = now + restriction_duration
+            rights = ChatBannedRights(
+                until_date=now + restriction_duration,
+                send_messages=True
+            )     
+            await ABH(EditBannedRequest(channel=chat, participant=user_id, banned_rights=rights))
         else:
             hint_channel = await LC(chat)
             await ABH.send_message(
