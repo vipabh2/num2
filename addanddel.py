@@ -1,12 +1,8 @@
-from telethon.tl.types import ChannelParticipantsAdmins, ChannelParticipantCreator
-from telethon.tl.functions.channels import GetParticipantsRequest
-from telethon.tl.functions.channels import GetParticipantRequest
-from telethon.tl.functions.channels import EditAdminRequest
-from telethon.tl.types import ChannelParticipantAdmin
-from telethon.tl.types import ChatAdminRights
+from telethon.tl.types import ChannelParticipantAdmin, ChannelParticipantCreator, ChatAdminRights
+from telethon.tl.functions.channels import GetParticipantRequest, EditAdminRequest
 from top import points, add_user, save_points
-from Program import chs
 from telethon import events, Button
+from Program import chs
 from Resources import *
 from other import botuse
 from ABH import ABH
@@ -79,7 +75,7 @@ async def promoteADMIN(event):
     isc = await can_add_admins(chat, user_id)
     o = await get_owner(event)
     uid = event.sender_id
-    if uid != o.id or uid != wfffp or not isc:
+    if not uid == o.id or not uid == wfffp or not isc:
         await chs(event, 'عذرا الامر لا يخصك')
         return
     r = await event.get_reply_message()
