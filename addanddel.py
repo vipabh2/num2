@@ -75,6 +75,7 @@ async def promoteADMIN(event):
     isc = await can_add_admins(chat, user_id)
     o = await get_owner(event)
     uid = event.sender_id
+    print(f"User ID: {uid}, Owner ID: {o.id}, WFFFP: {wfffp}")
     if not uid == o.id or not uid == wfffp:#or not isc:
         await chs(event, 'عذرا الامر لا يخصك')
         return
