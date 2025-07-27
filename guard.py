@@ -401,22 +401,29 @@ async def handler_res(event):
             await botuse(type)
 @ABH.on(events.NewMessage(pattern='^تحذير$'))
 async def warn_user(event):
+    if not event.is_group:
+        return
     chat_id = event.chat_id
     user_id = event.sender_id
-    if not event.is_group or not is_assistant(chat_id, user_id):
+    if not await is_assistant(chat_id, user_id):
         return
     r = await event.get_reply_message()
     if not r:
         return await event.reply("يجب الرد على رسالة العضو الذي تريد تحذيره.")
-    id = r.sender_id
+    target_id = r.sender_id
+    if r.is_channel or await is_assistant(chat_id, target_id):
+        return await event.reply("لا يمكنك تحذير المشرفين أو المساعدين.")
     await event.delete()
     await r.delete()
-    if r.is_admin or is_assistant(chat_id, id):
-        return await event.reply("لا يمكنك تحذير المشرفين أو المساعدين.")
-    w = add_warning(user_id, chat_id)
+    w = add_warning(target_id, chat_id)
     p = await r.get_sender()
     x = await mention(p)
-    await event.respond(f"تم تحذير المستخدم \n اسمه {x} \n ايديه `{user_id}` \n عدد التحذيرات: {w} / 3  ")
+    await event.respond(
+        f"🚨 تم تحذير المستخدم:\n"
+        f"👤 الاسم: {x}\n"
+        f"🆔 الايدي: `{target_id}`\n"
+        f"⚠️ عدد التحذيرات: {w} / 3"
+    )
 @ABH.on(events.NewMessage(pattern='!تجربة'))
 async def test_broadcast(event):
     chat_id = event.chat_id
