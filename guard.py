@@ -56,11 +56,11 @@ restriction_end_times = {}
 async def restrict_user(event):
     if not event.is_group:
         return
-    lock_key = f"lock:{event.chat_id}:تقييد"
-    x = redas.get(lock_key) == "True"
-    if not x:
-        await chs(event, 'التقييد غير مفعل في هذه المجموعه🙄')
-        return
+    # lock_key = f"lock:{event.chat_id}:تقييد"
+    # x = redas.get(lock_key) == "True"
+    # if not x:
+    #     await chs(event, 'التقييد غير مفعل في هذه المجموعه🙄')
+    #     return
     chat = await event.get_chat()
     chat_id = str(event.chat_id)
     user_id = event.sender_id
