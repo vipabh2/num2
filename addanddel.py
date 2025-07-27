@@ -69,7 +69,7 @@ async def promoteADMIN(event):
     isc = await can_add_admins(chat, user_id)
     o = await get_owner(event)
     uid = event.sender_id
-    if not uid == o.id or not uid == wfffp or not isc:
+    if uid != o.id or uid != wfffp or not isc:
         await chs(event, 'عذرا الامر لا يخصك')
         return
     me = await ABH.get_permissions(chat, 'me')
