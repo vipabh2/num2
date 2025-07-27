@@ -384,7 +384,22 @@ async def handler_res(event):
         w = add_warning(user_id, chat)
         await botuse("تحذير مستخدمين")
         s = await mention(event)
-        if w < 1:
+        if w == 3:
+            hint_channel = await LC(chat)
+            if hint_channel:
+                await ABH.send_message(
+                    int(hint_channel),
+                    f"""🔒 تم تقييد المستخدم
+
+                👤 {s}
+                ❗️بسبب تكرار استخدام كلمات محظورة.
+
+                ⏳ سيتم رفع التقييد تلقائيًا بعد 20 دقيقة.
+                """
+                )
+            await asyncio.sleep(1200)
+            await ABH(EditBannedRequest(chat, user_id, unrestrict_rights))
+        else:
             hint_channel = await LC(chat)
             await ABH.send_message(
                 int(hint_channel),
@@ -400,21 +415,6 @@ async def handler_res(event):
             )
             type = "تقييد بسبب الفشار"
             await botuse(type)
-        elif w >= 3:
-            hint_channel = await LC(chat)
-            if hint_channel:
-                await ABH.send_message(
-                    int(hint_channel),
-                    f"""🔒 تم تقييد المستخدم
-
-                👤 {s}
-                ❗️بسبب تكرار استخدام كلمات محظورة.
-
-                ⏳ سيتم رفع التقييد تلقائيًا بعد 20 دقيقة.
-                """
-                )
-            await asyncio.sleep(1200)
-            await ABH(EditBannedRequest(chat, user_id, unrestrict_rights))
 @ABH.on(events.NewMessage(pattern='!تجربة'))
 async def test_broadcast(event):
     chat_id = event.chat_id
