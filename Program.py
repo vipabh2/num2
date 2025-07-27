@@ -125,8 +125,7 @@ async def callbacklist(event):
 async def on_bot_added(event):
     if event.user_added or event.user_joined:
         if event.user_id == (await ABH.get_me()).id:
-            m = await mention(event)
-            await event.reply(f"يالفكر ضفتني عضو دضيفني مشرف شبيك {m}")
+            await event.reply(f"يالفكر ضفتني عضو دضيفني مشرف شبيك")
         try:
             me = await ABH.get_me()
             if event.user_id == me.id:
@@ -136,8 +135,7 @@ async def on_bot_added(event):
                 ))
                 p = participant.participant
                 if isinstance(p, (ChannelParticipantAdmin, ChannelParticipantCreator)):
-                    m = await mention(event)
-                    await event.reply(f"شكرا علئ الاشراف ضلعي {m}")
+                    await event.reply(f"شكرا علئ الاشراف ضلعي")
         except Exception as e:
             await hint(f"⚠️ حدث خطأ أثناء التحقق من الصلاحيات: {e}")
 @ABH.on(events.NewMessage(pattern='مخفي اطلع'))
