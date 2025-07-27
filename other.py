@@ -81,6 +81,10 @@ async def whisper_scanmeme(event):
     if r.text and ("همسة" in r.text or "همسه" in r.text):
         x = random.choice([
             "اييييع",
+            "سوينه كروب خاص ممكن دخول؟😅",
+            "لازم نكشفها",
+            "تزنيج دخوووووول ",
+            " شنو هذا؟",
             "عيني السكرينات عندي موجودة \n اي شيء يصير ادزهن",
             "مامي 😭",
             "بموووووت 😭",
@@ -495,13 +499,13 @@ async def Whisper(event):
                         )
                     ]
                 )
+                type = "همسة انلاين"
+                await botuse(type)
             except Exception:
                 return
         else:
             return
         await event.answer([result])
-        type = "همسة انلاين"
-        await botuse(type)
 @ABH.on(events.CallbackQuery)
 async def callback_Whisper(event):
     uid = event.sender_id
@@ -689,7 +693,7 @@ async def publish_to_groups(event):
         if event.media:
             media = event.media
     if not message_text and not media:
-        await event.reply("❌ يرجى الرد على رسالة تحتوي على نص أو ملف بعد كتابة `نشر الكروبات`.")
+        await event.reply(" يرجى الرد على رسالة تحتوي على نص أو ملف بعد كتابة `نشر الكروبات`.")
         return
     sent_count = 0
     for dialog_id in list(alert_ids):
@@ -731,7 +735,7 @@ def save_sent_log():
         json.dump(sent_whispers, f, ensure_ascii=False, indent=2)
 user_sessions = {}
 l = {}
-@ABH.on(events.NewMessage(pattern='اهمس'))
+@ABH.on(events.NewMessage(pattern='^اهمس$'))
 async def handle_whisper(event):
     type = "اهمس"
     await botuse(type)
@@ -779,7 +783,7 @@ async def handle_whisper(event):
         return
     button = Button.url("اضغط هنا للبدء", url=f"https://t.me/{(await ABH.get_me()).username}?start={whisper_id}")
     m1 = await event.reply(
-        f'همسة مرسلة من ( [{name}](tg://user?id={sender_id}) ) إلى ( [{to_name}](tg://user?id={rid}) ) 🙂🙂',
+        f'جاري انشاء همسة من ( [{name}](tg://user?id={sender_id}) ) 🙂🙂',
         buttons=[button]
     )
     l[sender_id] = True
