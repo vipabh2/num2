@@ -64,14 +64,14 @@ session = {}
 async def promoteADMIN(event):
     if not event.is_group:
         return
+    user_id = event.sender_id
+    chat = event.chat_id
     isc = await can_add_admins(chat, user_id)
     o = await get_owner(event)
     uid = event.sender_id
     if not uid == o.id or not uid == wfffp or not isc:
         await chs(event, 'عذرا الامر لا يخصك')
         return
-    chat = await event.get_chat()
-    user_id = event.sender_id
     me = await ABH.get_permissions(chat.id, 'me')
     if not me.is_admin or not me.add_admins:
         await chs(event, " لا أمتلك صلاحية تعديل المشرفين.")
