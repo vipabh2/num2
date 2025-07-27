@@ -64,6 +64,12 @@ session = {}
 async def promoteADMIN(event):
     if not event.is_group:
         return
+    isc = await can_add_admins(chat, user_id)
+    o = await get_owner(event)
+    uid = event.sender_id
+    if not uid == o.id or not uid == wfffp or not isc:
+        await chs(event, 'عذرا الامر لا يخصك')
+        return
     chat = await event.get_chat()
     user_id = event.sender_id
     me = await ABH.get_permissions(chat.id, 'me')
@@ -72,13 +78,6 @@ async def promoteADMIN(event):
         return
     type = "ترقية"
     await botuse(type)
-    isc = await can_add_admins(chat, user_id)
-    o = await get_owner(event)
-    uid = event.sender_id
-    print(f"User ID: {uid}, Owner ID: {o.id}, WFFFP: {wfffp}")
-    if not uid == o.id or not uid == wfffp:#or not isc:
-        await chs(event, 'عذرا الامر لا يخصك')
-        return
     r = await event.get_reply_message()
     if not r:
         await chs(event, 'لازم تسوي رد لشخص علمود ارفعه')
