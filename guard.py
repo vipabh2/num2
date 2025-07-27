@@ -401,12 +401,12 @@ async def handler_res(event):
             await botuse(type)
 @ABH.on(events.NewMessage(pattern='^تحذير$'))
 async def warn_user(event):
+    chat_id = event.chat_id
     if not event.is_group or not is_assistant(chat_id, user_id):
         return
     r = await event.get_reply_message()
     if not r:
         return await event.reply("يجب الرد على رسالة العضو الذي تريد تحذيره.")
-    chat_id = event.chat_id
     user_id = r.sender_id
     await event.delete()
     await r.delete()
