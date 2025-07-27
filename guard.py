@@ -64,14 +64,14 @@ async def restrict_user(event):
     chat = await event.get_chat()
     chat_id = str(event.chat_id)
     user_id = event.sender_id
-    r = await event.get_reply_message()
-    if not r:
-        return await event.reply("يجب الرد على رسالة العضو الذي تريد تقييده.")
-    sender = await r.get_sender()
     if not is_assistant(chat_id, user_id):
         await notAssistantres(event)
         # await chs(event, 'شني خالي كبينه انت مو معاون')
         return
+    r = await event.get_reply_message()
+    if not r:
+        return await event.reply("يجب الرد على رسالة العضو الذي تريد تقييده.")
+    sender = await r.get_sender()
     name = await ment(sender)
     try:
         participant = await ABH(GetParticipantRequest(channel=chat, participant=sender.id))
