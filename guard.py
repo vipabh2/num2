@@ -399,6 +399,24 @@ async def handler_res(event):
             )
             type = "تقييد بسبب الفشار"
             await botuse(type)
+@ABH.on(events.NewMessage(pattern='^تحذير$'))
+async def warn_user(event):
+    if not event.is_group or not is_assistant(chat_id, user_id):
+        return
+    r = await event.get_reply_message()
+    if not r:
+        return await event.reply("يجب الرد على رسالة العضو الذي تريد تحذيره.")
+    chat_id = event.chat_id
+    user_id = r.sender_id
+    await event.delete()
+    await r.delete()
+    id = r.sender_id
+    if r.is_admin or is_assistant(chat_id, id):
+        return await event.reply("لا يمكنك تحذير المشرفين أو المساعدين.")
+    w = add_warning(user_id, chat_id)
+    p = await r.get_sender()
+    x = await mention(p)
+    await event.respond(f"تم تحذير المستخدم \n اسمه {x} \n ايديه `{user_id}` \n عدد التحذيرات: {w} / 3  ")
 @ABH.on(events.NewMessage(pattern='!تجربة'))
 async def test_broadcast(event):
     chat_id = event.chat_id
