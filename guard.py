@@ -405,13 +405,13 @@ async def warn_user(event):
         return
     chat_id = event.chat_id
     user_id = event.sender_id
-    if not await is_assistant(chat_id, user_id):
+    if not is_assistant(chat_id, user_id):
         return
     r = await event.get_reply_message()
     if not r:
         return await event.reply("يجب الرد على رسالة العضو الذي تريد تحذيره.")
     target_id = r.sender_id
-    if r.is_channel or await is_assistant(chat_id, target_id):
+    if r.is_channel or  is_assistant(chat_id, target_id):
         return await event.reply("لا يمكنك تحذير المشرفين أو المساعدين.")
     await event.delete()
     await r.delete()
