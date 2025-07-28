@@ -239,8 +239,8 @@ async def edited(event):
 @ABH.on(events.CallbackQuery(pattern=r'^yes:(\d+)$'))
 async def yes_callback(event):
     try:
-        await event.answer(' تم تسجيل المستخدم كملغّم.')
         uid, الرابط, mention_text, date_posted, date_edited = report_data.get(event.id, (None, None, None, None, None))
+        print(uid, الرابط, mention_text, date_posted, date_edited)
         if uid and الرابط and mention_text:
             m = await mention(event)
             await event.edit(
@@ -251,14 +251,14 @@ async def yes_callback(event):
                 تاريخ التعديل - {date_edited}
                 بواسطه {m}
     """)
+        await event.answer(' تم تسجيل المستخدم كملغّم.')
     except Exception as e:
         await hint(e)
 @ABH.on(events.CallbackQuery(pattern=r'^no:(\d+)$'))
 async def no_callback(event):
     try:    
-        uid = int(event.pattern_match.group(1))
-        await event.answer(f" تم تجاهل التبليغ عن المستخدم {uid}")
         uid, الرابط, mention_text, date_posted, date_edited = report_data.get(event.id, (None, None, None, None, None))
+        print(uid, الرابط, mention_text, date_posted, date_edited)
         if uid and الرابط and mention_text:
             m = await mention(event)
             await event.edit(
@@ -269,6 +269,7 @@ async def no_callback(event):
                 تاريخ التعديل - {date_edited}
                 بواسطه {m}
     """)
+        await event.answer(f" تم تجاهل التبليغ عن المستخدم {uid}")
         await ads(group, uid)
     except Exception as e:
         await hint(e)
