@@ -239,7 +239,7 @@ async def edited(event):
 @ABH.on(events.CallbackQuery(pattern=r'^yes:(\d+)$'))
 async def yes_callback(event):
     await event.answer(' تم تسجيل المستخدم كملغّم.')
-    uid, الرابط, mention_text, date_posted, date_edited = report_data.get(event.message.id, (None, None, None, None, None))
+    uid, الرابط, mention_text, date_posted, date_edited = report_data.get(event.id, (None, None, None, None, None))
     if uid and الرابط and mention_text:
         m = await mention(event)
         await event.edit(
@@ -254,7 +254,7 @@ async def yes_callback(event):
 async def no_callback(event):
     uid = int(event.pattern_match.group(1))
     await event.answer(f" تم تجاهل التبليغ عن المستخدم {uid}")
-    uid, الرابط, mention_text, date_posted, date_edited = report_data.get(event.message.id, (None, None, None, None, None))
+    uid, الرابط, mention_text, date_posted, date_edited = report_data.get(event.id, (None, None, None, None, None))
     if uid and الرابط and mention_text:
         m = await mention(event)
         await event.edit(
