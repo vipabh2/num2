@@ -1,7 +1,7 @@
 from telethon.tl.types import ChannelParticipantCreator, ChannelParticipantAdmin, ChatBannedRights
 from telethon.tl.functions.channels import EditBannedRequest, GetParticipantRequest
 from telethon.tl.types import ChatBannedRights, MessageEntityUrl
-from Resources import group, mention, ment, hint
+from Resources import group, mention, ment, hint, wfffp
 from other import is_assistant, botuse, is_owner
 from telethon import events, Button
 from Program import r as redas, chs
