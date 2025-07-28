@@ -186,13 +186,13 @@ report_data = {}
 async def edited(event):
     if not event.is_group or not event.message.edit_date:
         return
-    chat_dest = await LC(chat_id)
-    if not chat_dest:
-        return
     msg = event.message
     chat_id = event.chat_id
     has_media = msg.media
     has_document = msg.document
+    chat_dest = await LC(chat_id)
+    if not chat_dest:
+        return
     has_url = any(isinstance(entity, MessageEntityUrl) for entity in (msg.entities or []))
     if not (has_media or has_document or has_url):
         return
