@@ -184,50 +184,53 @@ async def LC(group_id: int) -> int | None:
 report_data = {}
 @ABH.on(events.MessageEdited)
 async def edited(event):
-    if not event.is_group or not event.message.edit_date:
-        return
-    msg = event.message
-    chat_id = event.chat_id
-    has_media = msg.media
-    has_document = msg.document
-    has_url = any(isinstance(entity, MessageEntityUrl) for entity in (msg.entities or []))
-    if not (has_media or has_document or has_url):
-        return
-    await asyncio.sleep(60)
-    await sent_msg.delete()
-    uid = event.sender_id
-    perms = await ABH.get_permissions(chat_id, uid)
-    if perms.is_admin:
-        return
-    chat_obj = await event.get_chat()
-    mention_text = await mention(event)
-    if getattr(chat_obj, "username", None):
-        رابط = f"https://t.me/{chat_obj.username}/{event.id}"
-    else:
-        clean_id = str(chat_obj.id).replace("-100", "")
-        رابط = f"https://t.me/c/{clean_id}/{event.id}"
-    buttons = [
-        [
-            Button.inline(' نعم', data=f"yes:{uid}"),
-            Button.inline(' لا', data=f"no:{uid}")
+    try:
+        if not event.is_group or not event.message.edit_date:
+            return
+        msg = event.message
+        chat_id = event.chat_id
+        has_media = msg.media
+        has_document = msg.document
+        has_url = any(isinstance(entity, MessageEntityUrl) for entity in (msg.entities or []))
+        if not (has_media or has_document or has_url):
+            return
+        await asyncio.sleep(60)
+        await sent_msg.delete()
+        uid = event.sender_id
+        perms = await ABH.get_permissions(chat_id, uid)
+        if perms.is_admin:
+            return
+        chat_obj = await event.get_chat()
+        mention_text = await mention(event)
+        if getattr(chat_obj, "username", None):
+            رابط = f"https://t.me/{chat_obj.username}/{event.id}"
+        else:
+            clean_id = str(chat_obj.id).replace("-100", "")
+            رابط = f"https://t.me/c/{clean_id}/{event.id}"
+        buttons = [
+            [
+                Button.inline(' نعم', data=f"yes:{uid}"),
+                Button.inline(' لا', data=f"no:{uid}")
+            ]
         ]
-    ]
-    date_posted = event.message.date.strftime('%Y-%m-%d %H:%M')
-    date_edited = event.message.edit_date.strftime('%Y-%m-%d %H:%M')
-    sent_msg = await ABH.send_message(
-        int(wfffp),
-        f"""تم تعديل رسالة مشتبه بها:
-المستخدم: {mention_text}  
-[رابط الرسالة]({رابط})  
-معرفه: `{uid}`
-هل تعتقد أن هذه الرسالة تحتوي على تلغيم؟  
-تاريخ النشر - {date_posted}
-تاريخ التعديل - {date_edited}
-""",
-        buttons=buttons,
-        link_preview=True
-    )
-    report_data[sent_msg.id] = (uid, رابط, mention_text, date_posted, date_edited)
+        date_posted = event.message.date.strftime('%Y-%m-%d %H:%M')
+        date_edited = event.message.edit_date.strftime('%Y-%m-%d %H:%M')
+        sent_msg = await ABH.send_message(
+            int(wfffp),
+            f"""تم تعديل رسالة مشتبه بها:
+    المستخدم: {mention_text}  
+    [رابط الرسالة]({رابط})  
+    معرفه: `{uid}`
+    هل تعتقد أن هذه الرسالة تحتوي على تلغيم؟  
+    تاريخ النشر - {date_posted}
+    تاريخ التعديل - {date_edited}
+    """,
+            buttons=buttons,
+            link_preview=True
+        )
+        report_data[sent_msg.id] = (uid, رابط, mention_text, date_posted, date_edited)
+    except Exception as e:
+        await hint(e)
 @ABH.on(events.CallbackQuery(pattern=r'^yes:(\d+)$'))
 async def yes_callback(event):
     await event.answer(' تم تسجيل المستخدم كملغّم.')
