@@ -251,7 +251,7 @@ async def yes_callback(event):
                 تاريخ التعديل - {date_edited}
                 بواسطه {m}
     """)
-        except Exception as e:
+    except Exception as e:
         await hint(e)
 @ABH.on(events.CallbackQuery(pattern=r'^no:(\d+)$'))
 async def no_callback(event):
