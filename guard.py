@@ -1,7 +1,7 @@
 from telethon.tl.types import ChannelParticipantCreator, ChannelParticipantAdmin, ChatBannedRights
 from telethon.tl.functions.channels import EditBannedRequest, GetParticipantRequest
 from telethon.tl.types import ChatBannedRights, MessageEntityUrl
-from Resources import group, mention, ment, hint, wfffp
+from Resources import group, mention, ment, hint
 from other import is_assistant, botuse, is_owner
 from telethon import events, Button
 from Program import r as redas, chs
@@ -186,6 +186,9 @@ report_data = {}
 async def edited(event):
     if not event.is_group or not event.message.edit_date:
         return
+    chat_dest = await LC(chat_id)
+    if not chat_dest:
+        return
     msg = event.message
     chat_id = event.chat_id
     has_media = msg.media
@@ -216,7 +219,7 @@ async def edited(event):
     date_posted = event.message.date.strftime('%Y-%m-%d %H:%M')
     date_edited = event.message.edit_date.strftime('%Y-%m-%d %H:%M')
     sent_msg = await ABH.send_message(
-        int(wfffp),
+        int(chat_dest),
         f"""تم تعديل رسالة مشتبه بها:
 المستخدم: {mention_text}  
 [رابط الرسالة]({رابط})  
