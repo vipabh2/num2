@@ -238,34 +238,40 @@ async def edited(event):
         return
 @ABH.on(events.CallbackQuery(pattern=r'^yes:(\d+)$'))
 async def yes_callback(event):
-    await event.answer(' تم تسجيل المستخدم كملغّم.')
-    uid, الرابط, mention_text, date_posted, date_edited = report_data.get(event.id, (None, None, None, None, None))
-    if uid and الرابط and mention_text:
-        m = await mention(event)
-        await event.edit(
-            f"""تم تأكيد أن المستخدم {mention_text} ملغم.
-            [رابط الرسالة]({الرابط})
-            معرفه: `{uid}`
-            تاريخ النشر - {date_posted}
-            تاريخ التعديل - {date_edited}
-            بواسطه {m}
-""")
+    try:
+        await event.answer(' تم تسجيل المستخدم كملغّم.')
+        uid, الرابط, mention_text, date_posted, date_edited = report_data.get(event.id, (None, None, None, None, None))
+        if uid and الرابط and mention_text:
+            m = await mention(event)
+            await event.edit(
+                f"""تم تأكيد أن المستخدم {mention_text} ملغم.
+                [رابط الرسالة]({الرابط})
+                معرفه: `{uid}`
+                تاريخ النشر - {date_posted}
+                تاريخ التعديل - {date_edited}
+                بواسطه {m}
+    """)
+        except Exception as e:
+        await hint(e)
 @ABH.on(events.CallbackQuery(pattern=r'^no:(\d+)$'))
 async def no_callback(event):
-    uid = int(event.pattern_match.group(1))
-    await event.answer(f" تم تجاهل التبليغ عن المستخدم {uid}")
-    uid, الرابط, mention_text, date_posted, date_edited = report_data.get(event.id, (None, None, None, None, None))
-    if uid and الرابط and mention_text:
-        m = await mention(event)
-        await event.edit(
-            f"""تم تجاهل التبليغ عن المستخدم {mention_text}.
-            [رابط الرسالة]({الرابط})
-            ايديه `{uid}`
-            تاريخ النشر - {date_posted}
-            تاريخ التعديل - {date_edited}
-            بواسطه {m}
-""")
-    await ads(group, uid)
+    try:    
+        uid = int(event.pattern_match.group(1))
+        await event.answer(f" تم تجاهل التبليغ عن المستخدم {uid}")
+        uid, الرابط, mention_text, date_posted, date_edited = report_data.get(event.id, (None, None, None, None, None))
+        if uid and الرابط and mention_text:
+            m = await mention(event)
+            await event.edit(
+                f"""تم تجاهل التبليغ عن المستخدم {mention_text}.
+                [رابط الرسالة]({الرابط})
+                ايديه `{uid}`
+                تاريخ النشر - {date_posted}
+                تاريخ التعديل - {date_edited}
+                بواسطه {m}
+    """)
+        await ads(group, uid)
+    except Exception as e:
+        await hint(e)
 @ABH.on(events.NewMessage(pattern='اضف قناة التبليغات'))
 async def add_hintchannel(event):
     chat_id = event.chat_id
