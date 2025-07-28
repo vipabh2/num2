@@ -239,7 +239,8 @@ async def edited(event):
 @ABH.on(events.CallbackQuery(pattern=r'^yes:(\d+)$'))
 async def yes_callback(event):
     try:
-        uid, الرابط, mention_text, date_posted, date_edited = report_data.get(event.message.id, (None, None, None, None, None))
+        msg = await event.get_message()
+        uid, الرابط, mention_text, date_posted, date_edited = report_data.get(msg.id, (None, None, None, None, None))
         print(uid, الرابط, mention_text, date_posted, date_edited)
         if uid and الرابط and mention_text:
             m = await mention(event)
@@ -256,8 +257,9 @@ async def yes_callback(event):
         await hint(e)
 @ABH.on(events.CallbackQuery(pattern=r'^no:(\d+)$'))
 async def no_callback(event):
-    try:    
-        uid, الرابط, mention_text, date_posted, date_edited = report_data.get(event.message.id, (None, None, None, None, None))
+    try:
+        msg = await event.get_message()
+        uid, الرابط, mention_text, date_posted, date_edited = report_data.get(msg.id, (None, None, None, None, None))
         print(uid, الرابط, mention_text, date_posted, date_edited)
         if uid and الرابط and mention_text:
             m = await mention(event)
