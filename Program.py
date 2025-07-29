@@ -16,8 +16,9 @@ async def developer_info(event):
         entity=event.chat_id,
         file="links/photo_2025-07-30_02-35-06.jpg",
         caption='🌚',
-        buttons=x
-)
+        buttons=x,
+        reply_to = event.id
+    )
 @ABH.on(events.NewMessage(pattern=r'^رفع الملف$', from_users=[wfffp]))
 async def upload_file(event):
     if not event.is_reply:
