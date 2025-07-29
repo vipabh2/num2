@@ -1,8 +1,9 @@
 from telethon.tl.functions.channels import GetParticipantRequest
 import asyncio, os, json, random, uuid, operator, requests, re
+from telethon.tl.functions.messages import SendReactionRequest
 from Resources import suras, mention, ment, wfffp, hint, react
+from telethon.tl.types import InputPeerUser, ReactionEmoji
 from telethon.tl.types import ChannelParticipantCreator
-from telethon.tl.types import PeerChannel, PeerChat
 from playwright.async_api import async_playwright
 from database import store_whisper, get_whisper
 from telethon import events, Button
@@ -381,7 +382,12 @@ async def ai_handler(event):
         return
     type = "ai"
     await botuse(type)
-    await react(event, '👀')
+    await ABH(SendReactionRequest(
+        peer=event.chat_id,
+        msg_id=event.id,
+        reaction=[ReactionEmoji(emoticon='❤️')],
+        big=True
+    ))    
     async with event.client.action(event.chat_id, 'typing'):
         response = await asyncio.to_thread(ask_ai, user_q)
     await event.respond(response, reply_to=event.id)
