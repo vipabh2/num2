@@ -12,6 +12,7 @@ async def change_own_rank(event):
         return
     new_rank = event.pattern_match.group(1)
     if not new_rank:
+        await react(event, "🤔")
         await chs(event, "اكتب اللقب وي الامر ك `تغيير لقبي ` + لقب.")
         return
     await botuse("تغيير لقبي")
@@ -20,6 +21,7 @@ async def change_own_rank(event):
     me = await ABH.get_permissions(chat.id, 'me')
     if not me.is_admin or not me.add_admins:
         await chs(event, " لا أمتلك صلاحية تعديل المشرفين.")
+        await react(event, "💔")
         return
     o = await get_owner(event)
     if user_id == o.id:
@@ -32,9 +34,11 @@ async def change_own_rank(event):
             user = await ABH.get_entity(result.participant.promoted_by)
             menti = await ment(user)
             await chs(event, f"خلي {menti} يعدل لقبك لدوخني توكل")
+            await react(event, "🤣")
             return
     if len(new_rank) > 14:
         await chs(event, "اللقب لازم يكون اقل من 14 حرف.")
+        await react(event, "👍")
         return
     try:
         pp = await ABH(GetParticipantRequest(chat.id, user_id))
@@ -42,9 +46,11 @@ async def change_own_rank(event):
     except Exception as e:
         await ABH.send_message(wfffp, f"خطأ في جلب بيانات المستخدم: {e}")
         await event.reply(f"والله مابيه حيل اعذرني يخوي")
+        await react(event, "💔")
         return
     if not isinstance(participant, (ChannelParticipantAdmin, ChannelParticipantCreator)):
         await chs(event, "يالفقير لازم تكون مشرف بالاول علمود اغيرلك لقب🙄🙄.")
+        await react(event, "🤣")
         return
     admin_right = participant.admin_rights
     try:
@@ -55,9 +61,11 @@ async def change_own_rank(event):
             rank=new_rank
         ))
         await chs(event, f"تم تغيير لقبك الى `{new_rank}`")
+        await react(event, "🤙")
     except Exception as e:
         await ABH.send_message(wfffp, f"خطأ عند تعديل اللقب: {e}")
         await chs(event, "والله مابيه حيل اعذرني يخوي")
+        await react(event, "💔")
 promot = {}
 session = {}
 @ABH.on(events.NewMessage(pattern='^ترقية$'))
@@ -69,6 +77,7 @@ async def promoteADMIN(event):
     me = await ABH.get_permissions(chat.id, 'me')
     if not me.is_admin or not me.add_admins:
         await chs(event, " لا أمتلك صلاحية تعديل المشرفين.")
+        await react(event, "💔")
         return
     type = "ترقية"
     await botuse(type)
@@ -77,10 +86,12 @@ async def promoteADMIN(event):
     uid = event.sender_id
     if uid != o.id and uid != 1910015590 and not isc:
         await chs(event, 'الامر يخص المالك فقط وبعض المشرفين')
+        await react(event, "💔")
         return
     r = await event.get_reply_message()
     if not r:
         await chs(event, 'لازم تسوي رد لشخص علمود ارفعه')
+        await react(event, "🤔")
         return
     chat_id = event.chat_id
     if chat_id not in promot:
@@ -102,8 +113,9 @@ async def promoteADMIN(event):
         'initiator': event.sender_id,
         'top_msg': r.id
     }
-    isp = await can_add_admins(chat, user_id)
-    if not isp:
+    isp = await is_admin(chat, user_id)
+    if isp:
+        await react(event, "🤔")
         c = 'المستخدم مشرف ومرفوع من قبل'
         await ABH.send_file(
             entity=event.chat_id,
@@ -144,6 +156,7 @@ async def promoti(event):
     rights = promot[chat_id][target_user_id]['rights']
     if data == 'done':
         await event.answer(' تم تنفيذ الترقية', alert=False)
+        await react(event, "👍")
         await event.edit('تم رفع المستخدم بنجاح \n لتغيير اللقب ارسل ```تغيير لقبي ``` + لقب معين ')
         admin_rights = ChatAdminRights(
             change_info=rights.get('change_info', False),
@@ -177,12 +190,13 @@ async def promote_handler(event):
     message = await event.get_reply_message()
     if not message or not message.sender:
         await event.reply("يجب الرد على شخص حتى ترفعه.")
+        await react(event, "🤔")
         return
     match = event.pattern_match
     amount = int(match.group(1)) if match.group(1) else 1001
     uid = str(event.sender_id)
     target_id = str(message.sender_id)
-    giver_name = (await event.get_sender()).first_name or "مجهول"
+    giver_name = await mention(event)
     if target_id == 1910015590:
         await event.reply(f'جاري رفع {giver_name} سمب')
     receiver_name = message.sender.first_name or "مجهول"
@@ -194,13 +208,16 @@ async def promote_handler(event):
         return
     if amount < 1000:
         await event.reply("أقل مبلغ مسموح للرفع هو 1000.")
+        await react(event, "🤣")
         return
     giver_money = points[uid][gid]['points']
     if giver_money < 1000:
         await event.reply(f" رصيدك {giver_money}، والحد الأدنى للرفع هو 10.")
+        await react(event, "🤣")
         return
     if giver_money < amount:
         await event.reply(f" رصيدك لا يكفي. تحاول ترفع بـ {amount} فلوس ورصيدك فقط {giver_money}.")
+        await react(event, "🤣")
         return
     points[uid][gid]['points'] = giver_money - amount
     points[gid][target_id]["status"] = "مرفوع"
@@ -208,6 +225,7 @@ async def promote_handler(event):
     points[gid][target_id]["promote_value"] = amount
     save_points(points)
     await event.reply(f" تم رفع {receiver_name} مقابل {amount} فلوس")
+    await react(event, "👍")
 @ABH.on(events.NewMessage(pattern='تنزيل سمب'))
 async def demote_handler(event):
     if not event.is_group:
@@ -217,6 +235,7 @@ async def demote_handler(event):
     message = await event.get_reply_message()
     if not message or not message.sender:
         await event.reply("متكدر تنزل العدم , سوي رد على شخص")
+        await react(event, "🤔")
         return
     gid = str(event.chat_id)
     sender_id = str(event.sender_id)
@@ -233,6 +252,7 @@ async def demote_handler(event):
     amount = int(promote_value * (1.5 if sender_id == giver_id else 2))
     if executor_money < amount:
         await event.reply(f"ما تگدر تنزله لأن رصيدك {executor_money}، والكلفة المطلوبة {amount}")
+        await react(event, "💔")
         return
     points[sender_id][gid]['points'] -= amount
     del points[gid][target_id]
@@ -241,6 +261,7 @@ async def demote_handler(event):
     save_points(points)
     r = await event.get_reply_message()
     await event.reply(f"تم تنزيل {r.sender.first_name}  من السمبية")
+    await react(event, "👍")
 @ABH.on(events.NewMessage(pattern='السمبات'))
 async def show_handler(event):
     if not event.is_group:
@@ -250,6 +271,7 @@ async def show_handler(event):
     chat_id = str(event.chat_id)
     if chat_id not in points or not points[chat_id]:
         await event.reply("ماكو سمبات هنا بالمجموعة")
+        await react(event, "👍")
         return
     response = "قائمة السمبات👇\n"
     removed_users = []
