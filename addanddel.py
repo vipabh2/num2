@@ -156,8 +156,8 @@ async def promoti(event):
         return
     rights = promot[chat_id][target_user_id]['rights']
     if data == 'done':
+        await react(event, "❤")
         await event.answer(' تم تنفيذ الترقية', alert=False)
-        await react(event, "👍")
         await event.edit('تم رفع المستخدم بنجاح \n لتغيير اللقب ارسل ```تغيير لقبي ``` + لقب معين ')
         admin_rights = ChatAdminRights(
             change_info=rights.get('change_info', False),
