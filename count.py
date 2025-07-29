@@ -59,8 +59,6 @@ def try_fix_json_file(file_path):
         except json.JSONDecodeError:
             fixed_lines.append(lines[i])
     return {}
-# file_path = "uinfo.json"
-# data = try_fix_json_file(file_path)
 @ABH.on(events.NewMessage)
 async def unified_handler(event):
     global uinfo, WEAK
@@ -116,15 +114,14 @@ async def اليومي(event):
     for user, data in sorted_users:
         if guid in data:
             first_name = data[guid].get('fname', 'مجهول')
-            user_id = user
             msg_count = data[guid]["msg"]
-            top_users.append(f"المستخدم [{first_name}](tg://user?id={user_id}) رسائله -> {msg_count}")
+            top_users.append(f"المستخدم {first_name} رسائله -> {msg_count}")
     if top_users:
         x = await event.reply("\n".join(top_users))
-        await asyncio.sleep(60)
-        await x.delete()
+        await react(event, "👍")
     else:
         await event.reply("لا توجد بيانات لعرضها.")
+        await react(event, "💔")
 @ABH.on(events.NewMessage(pattern="^توب الاسبوعي|تفاعل$"))
 async def الاسبوعي(event):
     if not event.is_group:
@@ -142,13 +139,13 @@ async def الاسبوعي(event):
         if guid in data:
             fname = data[guid].get('fname', 'مجهول')
             msg_count = data[guid]["msg"]
-            top_users.append(f"{idx}. [{fname}](tg://user?id={user}) - {msg_count} رسالة")
+            top_users.append(f"{idx}. {fname} - {msg_count} رسالة")
     if top_users:
         x = await event.reply("\n".join(top_users))
-        await asyncio.sleep(60)
-        await x.delete()
+        await react(event, "👍")
     else:
         await event.reply("لا توجد بيانات لعرضها.")
+        await react(event, "💔")
 @ABH.on(events.NewMessage(pattern='رسائلي'))
 async def show_my_res(event):
     type = "رسائلي"
@@ -158,6 +155,7 @@ async def show_my_res(event):
     unm1 = str(event.sender_id)
     guid1 = str(event.chat_id)
     if unm1 in uinfo and guid1 in uinfo[unm1]:
+        await react(event, "👍")
         msg_count = uinfo[unm1][guid1]["msg"]
         await event.reply(f"المستخدم [{uid1}](tg://user?id={unm1}) أرسلت {msg_count} رسالة في هذه المجموعة.")
 @ABH.on(events.NewMessage(pattern=r'^(رسائله|رسائلة|رسائل)$'))
@@ -167,6 +165,7 @@ async def his_res(event):
     r = await event.get_reply_message()  
     await asyncio.sleep(1)
     if not r:
+        await react(event, "🤔")
         return
     uid1 = r.sender.first_name
     unm1 = str(r.sender_id)
@@ -174,6 +173,7 @@ async def his_res(event):
     if unm1 in uinfo and guid1 in uinfo[unm1]:
         msg_count = uinfo[unm1][guid1]["msg"]
         await event.reply(f"المستخدم [{uid1}](tg://user?id={unm1}) أرسل {msg_count} رسالة في هذه المجموعة.")
+        await react(event, "👍")
 @ABH.on(events.NewMessage(pattern='^اوامر التوب$'))
 async def title(event):
     if not event.is_group:
