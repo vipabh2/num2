@@ -142,6 +142,7 @@ async def on_bot_added(event):
 async def memkikme(event):
     if not event.is_group:
         return
+    print(telethon.__version__)
     await botuse("مخفي اطلع")
     o = await get_owner(event)
     id = event.sender_id
