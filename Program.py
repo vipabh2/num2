@@ -1,11 +1,18 @@
 from telethon.tl.types import ChannelParticipantAdmin, ChannelParticipantCreator
 from telethon.tl.functions.channels import GetParticipantRequest
-import json, redis, subprocess
 from telethon import events, Button
 import asyncio, os, sys, random
+import json, redis, subprocess
 from Resources import *
 from other import *
 from ABH import ABH
+@ABH.on(events.NewMessage(pattern='^بوت$'))
+async def bot_info(event):
+    await event.reply('👀')
+@ABH.on(events.NewMessage(pattern='^المطور$'))
+async def developer_info(event):
+    x = [[Button.url('ابـ،ـن،هـ.ـاشـ.ـم ✘', url='https://t.me/wfffp')]]
+    await event.respond(file='https://t.me/VIPABH/1250', caption='🌚', buttons=x)
 @ABH.on(events.NewMessage(pattern=r'^رفع الملف$', from_users=[wfffp]))
 async def upload_file(event):
     if not event.is_reply:
