@@ -9,6 +9,14 @@ from database import store_whisper, get_whisper
 from telethon import events, Button
 from Program import chs
 from ABH import ABH
+@ABH.on(events.NewMessage)
+async def react_to_message(event):
+    await ABH(SendReactionRequest(
+        peer=event.chat_id,
+        msg_id=event.id,
+        reaction=[ReactionEmoji(emoticon='❤️')],
+        big=True
+    ))
 def is_assistant(chat_id, user_id):
     data = load_auth()
     assistants = data.get(str(chat_id), [])
