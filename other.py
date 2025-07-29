@@ -1,6 +1,6 @@
 from telethon.tl.functions.channels import GetParticipantRequest
 import asyncio, os, json, random, uuid, operator, requests, re
-from Resources import suras, mention, ment, wfffp, hint
+from Resources import suras, mention, ment, wfffp, hint, react
 from telethon.tl.types import ChannelParticipantCreator
 from telethon.tl.types import PeerChannel, PeerChat
 from playwright.async_api import async_playwright
