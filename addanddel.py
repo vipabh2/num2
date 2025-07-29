@@ -155,9 +155,9 @@ async def promoti(event):
             manage_call=rights.get('manage_call', False),
             manage_topics = False,
             anonymous = False,
-            # post_stories = True,
-            # edit_stories = True,
-            # delete_stories =  True
+            post_stories = True,
+            edit_stories = True,
+            delete_stories =  True
         )
         c = 'مشرف'
         await ABH(EditAdminRequest(event.chat_id, target_user_id, admin_rights, rank=c))
