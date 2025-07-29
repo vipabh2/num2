@@ -1,3 +1,4 @@
+import telethon
 from telethon.tl.types import ChannelParticipantAdmin, ChannelParticipantCreator
 from telethon.tl.functions.channels import GetParticipantRequest
 import json, redis, subprocess
