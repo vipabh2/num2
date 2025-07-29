@@ -386,7 +386,7 @@ async def ai_handler(event):
         peer=event.chat_id,
         msg_id=event.id,
         reaction=[ReactionEmoji(emoticon='❤️')],
-        big=True
+        big=False
     ))    
     async with event.client.action(event.chat_id, 'typing'):
         response = await asyncio.to_thread(ask_ai, user_q)
@@ -931,3 +931,11 @@ async def how_to_whisper(event):
             caption=c,
             reply_to=event.id
         )
+@ABH.on(events.NewMessage(pattern='ها'))
+async def react_to_message(event):
+    await ABH(SendReactionRequest(
+        peer=event.chat_id,
+        msg_id=event.id,
+        reaction=[ReactionEmoji(emoticon='❤️')],
+        big=True
+    ))
