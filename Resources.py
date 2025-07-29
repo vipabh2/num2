@@ -5,6 +5,13 @@ from telethon.tl.types import ChannelParticipantAdmin
 import google.generativeai as genai
 import pytz, os, json
 from ABH import ABH
+async def react(event, x)
+    await ABH(SendReactionRequest(
+        peer=event.chat_id,
+        msg_id=event.id,
+        reaction=[ReactionEmoji(emoticon=f'{x}')],
+        big=True
+    ))
 def adj(filename: str, data: dict):
     if os.path.exists(filename):
         with open(filename, 'r', encoding='utf-8') as f:
