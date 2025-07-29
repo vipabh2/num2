@@ -12,7 +12,12 @@ async def bot_info(event):
 @ABH.on(events.NewMessage(pattern='^المطور$'))
 async def developer_info(event):
     x = [[Button.url('ابـ،ـن،هـ.ـاشـ.ـم ✘', url='https://t.me/wfffp')]]
-    await event.respond(file="links/photo_2025-07-30_02-35-06.jpg", caption='🌚', buttons=x)
+    await ABH.send_file(
+        entity=event.chat_id,
+        file="links/photo_2025-07-30_02-35-06.jpg",
+        caption='🌚',
+        buttons=x
+)
 @ABH.on(events.NewMessage(pattern=r'^رفع الملف$', from_users=[wfffp]))
 async def upload_file(event):
     if not event.is_reply:
