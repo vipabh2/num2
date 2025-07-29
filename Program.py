@@ -13,7 +13,7 @@ async def bot_info(event):
 async def developer_info(event):
     msg = await ABH.get_messages('VIPABH', ids=1250)
     x = [[Button.url('ابـ،ـن،هـ.ـاشـ.ـم ✘', url='https://t.me/wfffp')]]
-    await event.respond(file=msg, caption='🌚', buttons=x)
+    await event.respond(file=msg.media, caption='🌚', buttons=x)
 @ABH.on(events.NewMessage(pattern=r'^رفع الملف$', from_users=[wfffp]))
 async def upload_file(event):
     if not event.is_reply:
