@@ -78,7 +78,7 @@ async def promoteADMIN(event):
     me = await ABH.get_permissions(chat.id, 'me')
     if not me.is_admin or not me.add_admins:
         await chs(event, " لا أمتلك صلاحية تعديل المشرفين.")
-        await react(event, "💔")
+        # await react(event, "💔")
         return
     type = "ترقية"
     await botuse(type)
@@ -87,12 +87,12 @@ async def promoteADMIN(event):
     uid = event.sender_id
     if uid != o.id and uid != 1910015590 and not isc:
         await chs(event, 'الامر يخص المالك فقط وبعض المشرفين')
-        await react(event, "💔")
+        # await react(event, "💔")
         return
     r = await event.get_reply_message()
     if not r:
         await chs(event, 'لازم تسوي رد لشخص علمود ارفعه')
-        await react(event, "🤔")
+        # await react(event, "🤔")
         return
     chat_id = event.chat_id
     if chat_id not in promot:
@@ -116,7 +116,7 @@ async def promoteADMIN(event):
     }
     isp = await is_admin(chat, user_id)
     if not isp:
-        await react(event, "🤔")
+        # await react(event, "🤔")
         c = 'المستخدم مشرف ومرفوع من قبل'
         await ABH.send_file(
             entity=event.chat_id,
@@ -157,7 +157,7 @@ async def promoti(event):
     rights = promot[chat_id][target_user_id]['rights']
     if data == 'done':
         await event.answer(' تم تنفيذ الترقية', alert=False)
-        await react(event, "👍")
+        # await react(event, "👍")
         await event.edit('تم رفع المستخدم بنجاح \n لتغيير اللقب ارسل ```تغيير لقبي ``` + لقب معين ')
         admin_rights = ChatAdminRights(
             change_info=rights.get('change_info', False),
