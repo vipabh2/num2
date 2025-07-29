@@ -26,6 +26,7 @@ async def change_own_rank(event):
         return
     o = await get_owner(event)
     if user_id == o.id:
+        await react(event, "🤣")
         await event.reply('هاي عود انت المالك')
         return
     x = await ABH.get_me()
