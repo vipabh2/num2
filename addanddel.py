@@ -13,7 +13,7 @@ async def change_own_rank(event):
         return
     new_rank = event.pattern_match.group(1)
     if not new_rank:
-        await react(event, "🤔")
+        # await react(event, "🤔")
         await chs(event, "اكتب اللقب وي الامر ك `تغيير لقبي ` + لقب.")
         return
     await botuse("تغيير لقبي")
@@ -22,7 +22,7 @@ async def change_own_rank(event):
     me = await ABH.get_permissions(chat.id, 'me')
     if not me.is_admin or not me.add_admins:
         await chs(event, " لا أمتلك صلاحية تعديل المشرفين.")
-        await react(event, "💔")
+        # await react(event, "💔")
         return
     o = await get_owner(event)
     if user_id == o.id:
@@ -35,11 +35,11 @@ async def change_own_rank(event):
             user = await ABH.get_entity(result.participant.promoted_by)
             menti = await ment(user)
             await chs(event, f"خلي {menti} يعدل لقبك لدوخني توكل")
-            await react(event, "🤣")
+            # await react(event, "🤣")
             return
     if len(new_rank) > 14:
         await chs(event, "اللقب لازم يكون اقل من 14 حرف.")
-        await react(event, "👍")
+        # await react(event, "👍")
         return
     try:
         pp = await ABH(GetParticipantRequest(chat.id, user_id))
@@ -47,11 +47,11 @@ async def change_own_rank(event):
     except Exception as e:
         await ABH.send_message(wfffp, f"خطأ في جلب بيانات المستخدم: {e}")
         await event.reply(f"والله مابيه حيل اعذرني يخوي")
-        await react(event, "💔")
+        # await react(event, "💔")
         return
     if not isinstance(participant, (ChannelParticipantAdmin, ChannelParticipantCreator)):
         await chs(event, "يالفقير لازم تكون مشرف بالاول علمود اغيرلك لقب🙄🙄.")
-        await react(event, "🤣")
+        # await react(event, "🤣")
         return
     admin_right = participant.admin_rights
     try:
@@ -66,7 +66,7 @@ async def change_own_rank(event):
     except Exception as e:
         await ABH.send_message(wfffp, f"خطأ عند تعديل اللقب: {e}")
         await chs(event, "والله مابيه حيل اعذرني يخوي")
-        await react(event, "💔")
+        # await react(event, "💔")
 promot = {}
 session = {}
 @ABH.on(events.NewMessage(pattern='^ترقية$'))
