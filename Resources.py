@@ -6,7 +6,7 @@ from telethon.tl.types import ReactionEmoji
 import google.generativeai as genai
 import pytz, os, json
 from ABH import ABH
-async def react(event, x)
+async def react(event, x):
     await ABH(SendReactionRequest(
         peer=event.chat_id,
         msg_id=event.id,
