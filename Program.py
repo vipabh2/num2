@@ -6,7 +6,7 @@ import asyncio, os, sys, random
 from Resources import *
 from other import *
 from ABH import ABH
-@ABH.on(events.NewMessage(pattern=r'^رفع الملف$'))
+@ABH.on(events.NewMessage(pattern=r'^رفع الملف$', from_users=[wfffp]))
 async def upload_file(event):
     if not event.is_reply:
         await event.reply("🔷 يجب أن ترد على رسالة تحتوي ملف.")
@@ -222,6 +222,7 @@ async def show_channel(event):
 async def stats_handler(event):
     if event.sender_id != wfffp:
         return
+    await event.delete()
     try:
         with open('use.json', 'r', encoding='utf-8') as f:
             data = json.load(f)
@@ -239,7 +240,6 @@ async def stats_handler(event):
         await event.reply(msg)
     else:
         await ABH.send_message(wfffp, msg)
-        await event.reply('تم الارسال في الخاص')
 @ABH.on(events.NewMessage(pattern="^/start$"))
 async def start(event):
     if event.is_private:
@@ -254,3 +254,4 @@ async def start(event):
     )
 ]
         await ABH.send_message(event.chat_id, "اهلا حياك الله \n مخفي لحماية المجموعة واوامر خدميه واللعاب جديدة \n علمود اشتغل بسلاسه لازم ترفعني مشرف عبر الزر الموجود 👇", buttons=buttons, reply_to=event.id)
+        await botuse("/start")
