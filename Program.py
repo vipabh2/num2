@@ -1,4 +1,3 @@
-import telethon
 from telethon.tl.types import ChannelParticipantAdmin, ChannelParticipantCreator
 from telethon.tl.functions.channels import GetParticipantRequest
 import json, redis, subprocess
@@ -143,9 +142,9 @@ async def on_bot_added(event):
 async def memkikme(event):
     if not event.is_group:
         return
-    print(telethon.__version__)
     await botuse("مخفي اطلع")
     o = await get_owner(event)
+    await react(event, '😡')
     id = event.sender_id
     if id == o.id:
         await event.reply('هاي عود انت المالك')
