@@ -381,6 +381,7 @@ async def ai_handler(event):
         return
     type = "ai"
     await botuse(type)
+    await react(event, '👀')
     async with event.client.action(event.chat_id, 'typing'):
         response = await asyncio.to_thread(ask_ai, user_q)
     await event.respond(response, reply_to=event.id)
