@@ -13,7 +13,7 @@ async def change_own_rank(event):
         return
     new_rank = event.pattern_match.group(1)
     if not new_rank:
-        # await react(event, "🤔")
+        await react(event, "🤔")
         await chs(event, "اكتب اللقب وي الامر ك `تغيير لقبي ` + لقب.")
         return
     await botuse("تغيير لقبي")
@@ -22,7 +22,7 @@ async def change_own_rank(event):
     me = await ABH.get_permissions(chat.id, 'me')
     if not me.is_admin or not me.add_admins:
         await chs(event, " لا أمتلك صلاحية تعديل المشرفين.")
-        # await react(event, "💔")
+        await react(event, "💔")
         return
     o = await get_owner(event)
     if user_id == o.id:
@@ -35,11 +35,11 @@ async def change_own_rank(event):
             user = await ABH.get_entity(result.participant.promoted_by)
             menti = await ment(user)
             await chs(event, f"خلي {menti} يعدل لقبك لدوخني توكل")
-            # await react(event, "🤣")
+            await react(event, "🤣")
             return
     if len(new_rank) > 14:
         await chs(event, "اللقب لازم يكون اقل من 14 حرف.")
-        # await react(event, "👍")
+        await react(event, "👍")
         return
     try:
         pp = await ABH(GetParticipantRequest(chat.id, user_id))
@@ -47,11 +47,11 @@ async def change_own_rank(event):
     except Exception as e:
         await ABH.send_message(wfffp, f"خطأ في جلب بيانات المستخدم: {e}")
         await event.reply(f"والله مابيه حيل اعذرني يخوي")
-        # await react(event, "💔")
+        await react(event, "💔")
         return
     if not isinstance(participant, (ChannelParticipantAdmin, ChannelParticipantCreator)):
         await chs(event, "يالفقير لازم تكون مشرف بالاول علمود اغيرلك لقب🙄🙄.")
-        # await react(event, "🤣")
+        await react(event, "🤣")
         return
     admin_right = participant.admin_rights
     try:
@@ -62,11 +62,11 @@ async def change_own_rank(event):
             rank=new_rank
         ))
         await chs(event, f"تم تغيير لقبك الى `{new_rank}`")
-        await react(event, "🤙")
+        await react(event, "🤝")
     except Exception as e:
         await ABH.send_message(wfffp, f"خطأ عند تعديل اللقب: {e}")
         await chs(event, "والله مابيه حيل اعذرني يخوي")
-        # await react(event, "💔")
+        await react(event, "💔")
 promot = {}
 session = {}
 @ABH.on(events.NewMessage(pattern='^ترقية$'))
@@ -78,7 +78,7 @@ async def promoteADMIN(event):
     me = await ABH.get_permissions(chat.id, 'me')
     if not me.is_admin or not me.add_admins:
         await chs(event, " لا أمتلك صلاحية تعديل المشرفين.")
-        # await react(event, "💔")
+        await react(event, "💔")
         return
     type = "ترقية"
     await botuse(type)
@@ -87,12 +87,12 @@ async def promoteADMIN(event):
     uid = event.sender_id
     if uid != o.id and uid != 1910015590 and not isc:
         await chs(event, 'الامر يخص المالك فقط وبعض المشرفين')
-        # await react(event, "💔")
+        await react(event, "💔")
         return
     r = await event.get_reply_message()
     if not r:
         await chs(event, 'لازم تسوي رد لشخص علمود ارفعه')
-        # await react(event, "🤔")
+        await react(event, "🤔")
         return
     chat_id = event.chat_id
     if chat_id not in promot:
@@ -116,7 +116,7 @@ async def promoteADMIN(event):
     }
     isp = await is_admin(chat, user_id)
     if not isp:
-        # await react(event, "🤔")
+        await react(event, "🤔")
         c = 'المستخدم مشرف ومرفوع من قبل'
         await ABH.send_file(
             entity=event.chat_id,
@@ -157,7 +157,7 @@ async def promoti(event):
     rights = promot[chat_id][target_user_id]['rights']
     if data == 'done':
         await event.answer(' تم تنفيذ الترقية', alert=False)
-        # await react(event, "👍")
+        await react(event, "👍")
         await event.edit('تم رفع المستخدم بنجاح \n لتغيير اللقب ارسل ```تغيير لقبي ``` + لقب معين ')
         admin_rights = ChatAdminRights(
             change_info=rights.get('change_info', False),
@@ -169,9 +169,9 @@ async def promoti(event):
             manage_call=rights.get('manage_call', False),
             manage_topics = False,
             anonymous = False,
-            # post_stories = True,
-            # edit_stories = True,
-            # delete_stories =  True
+            post_stories = True,
+            edit_stories = True,
+            delete_stories =  True
         )
         c = 'مشرف'
         await ABH(EditAdminRequest(event.chat_id, target_user_id, admin_rights, rank=c))
