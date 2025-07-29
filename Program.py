@@ -11,8 +11,11 @@ async def bot_info(event):
     await event.reply('👀')
 @ABH.on(events.NewMessage(pattern='^المطور$'))
 async def developer_info(event):
-    x = [[Button.url('ابـ،ـن،هـ.ـاشـ.ـم ✘', url='https://t.me/wfffp')]]
-    await event.respond(file='https://t.me/VIPABH/1250', caption='🌚', buttons=x)
+    try:
+        x = [[Button.url('ابـ،ـن،هـ.ـاشـ.ـم ✘', url='https://t.me/wfffp')]]
+        await event.respond(file='https://t.me/VIPABH/1250', caption='🌚', buttons=x)
+    except Exception as e:
+        await event.reply(f"🔷 حدث خطأ: {e}")
 @ABH.on(events.NewMessage(pattern=r'^رفع الملف$', from_users=[wfffp]))
 async def upload_file(event):
     if not event.is_reply:
