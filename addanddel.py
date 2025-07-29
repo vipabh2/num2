@@ -115,8 +115,8 @@ async def promoteADMIN(event):
         'initiator': event.sender_id,
         'top_msg': r.id
     }
-    isp = await is_admin(chat, user_id)
-    if not isp:
+    isp = await is_admin(chat, target_user_id)
+    if isp:
         await react(event, "🤔")
         c = 'المستخدم مشرف ومرفوع من قبل'
         await ABH.send_file(
