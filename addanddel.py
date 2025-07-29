@@ -2,9 +2,10 @@ from telethon.tl.types import ChannelParticipantAdmin, ChannelParticipantCreator
 from telethon.tl.functions.channels import GetParticipantRequest, EditAdminRequest
 from top import points, add_user, save_points
 from telethon import events, Button
+from guard import is_admin
 from Program import chs
-from Resources import *
 from other import botuse
+from Resources import *
 from ABH import ABH
 @ABH.on(events.NewMessage(pattern=r"^تغيير لقبي\s*(.*)$"))
 async def change_own_rank(event):
