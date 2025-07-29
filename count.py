@@ -1,9 +1,10 @@
 from telethon.tl.types import User
 from ABH import ABH #type: ignore
+import asyncio, os, json, pytz
 from datetime import datetime
 from telethon import events
 from other import botuse
-import asyncio, os, json, pytz
+from Resources import *
 DATA_FILE = "uinfo.json"
 DATA_FILE_WEAK = "uinfoWEAK.json"
 RESET_FILE = "last_reset.txt"
