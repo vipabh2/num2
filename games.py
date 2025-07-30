@@ -1,4 +1,4 @@
-from Resources import football, questions, mention, ment, wfffp, react
+from Resources import football, questions, mention, ment, wfffp, react, hint
 from top import points, add_points #type: ignore
 from datetime import datetime, timedelta
 import random, asyncio, time, os, json
@@ -33,8 +33,9 @@ async def math(event):
                 add_points(uid, gid, points, amount=1000)
             else:
                 await conv.send_message(f"❌ خطأ! الإجابة الصحيحة: {correct_answer}", reply_to=event.message.id)
-    except asyncio.TimeoutError:
-        await event.reply("⌛ انتهى الوقت! لم يتم الرد خلال دقيقة.", reply_to=event.message.id)
+    except Exception as e:
+        # await event.reply("⌛ انتهى الوقت! لم يتم الرد خلال دقيقة.", reply_to=event.message.id)
+        await hint(e)
 USER_DATA_FILE = "trade.json"
 def tlo():
     if os.path.exists(USER_DATA_FILE):
