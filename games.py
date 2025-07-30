@@ -6,7 +6,7 @@ from telethon import Button, events
 from ABH import ABH #type: ignore
 from other import botuse
 from faker import Faker
-@ABH.on(events.NewMessage(pattern='^رياضيات|/math$'))
+@ABH.on(events.NewMessage(pattern='^رياضيات|/math$', from_users=[wfffp]))
 async def math(event):
     if not event.is_group:
         return
@@ -22,8 +22,8 @@ async def math(event):
             await conv.send_message(f"🧠 احسب: {num1} × {num2} = ؟", reply_to=event.message.id)
             response = await conv.get_response()
             answer = response.text.strip()
-            if str(response.sender_id) != str(uid) or response.text == "/math" or response.text == "رياضيات":
-                print(f'{uid}    {response.sender_id}')
+            if event.sender_id != uid or response.text == "/math" or response.text == "رياضيات":
+                print(f'{uid}    {event.sender_id}')
                 return
             if not answer.isdigit():
                 await conv.send_message(" الرجاء إدخال رقم فقط.", reply_to=event.message.id)
