@@ -18,21 +18,23 @@ async def math(event):
     num2 = random.randint(1, 9)
     correct_answer = num1 * num2
     try:
-        async with ABH.conversation(event.sender_id, timeout=60) as conv:
-            await conv.send_message(f"🧠 احسب: {num1} × {num2} = ؟")
+        async with ABH.conversation(event.chat_id, timeout=60) as conv:
+            await conv.send_message(f"🧠 احسب: {num1} × {num2} = ؟", reply_to=event.message.id)
             response = await conv.get_response()
             answer = response.text.strip()
             if not answer.isdigit():
-                await conv.send_message("❌ الرجاء إدخال رقم فقط.")
+                await conv.send_message("❌ الرجاء إدخال رقم فقط.", reply_to=event.message.id)
+                return
+            if uid != event.sender_id:
                 return
             if int(answer) == correct_answer:
                 await react(event, "🎉")
-                await conv.send_message("✅ إجابة صحيحة! ربحت 1000 دينار 💰")
+                await conv.send_message("✅ إجابة صحيحة! ربحت 1000 دينار 💰", reply_to=event.message.id)
                 add_points(uid, gid, points, amount=1000)
             else:
-                await conv.send_message(f"❌ خطأ! الإجابة الصحيحة: {correct_answer}")
+                await conv.send_message(f"❌ خطأ! الإجابة الصحيحة: {correct_answer}", reply_to=event.message.id)
     except asyncio.TimeoutError:
-        await event.reply("⌛ انتهى الوقت! لم يتم الرد خلال دقيقة.")
+        await event.reply("⌛ انتهى الوقت! لم يتم الرد خلال دقيقة.", reply_to=event.message.id)
 USER_DATA_FILE = "trade.json"
 def tlo():
     if os.path.exists(USER_DATA_FILE):
