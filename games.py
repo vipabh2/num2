@@ -19,20 +19,20 @@ async def math(event):
     correct_answer = num1 * num2
     try:
         async with ABH.conversation(event.chat_id, event.sender_id, timeout=60) as conv:
-            await conv.send_message(f"احسب {num1} × {num2} = ?")
+            await conv.send_message(f"🧠 احسب: {num1} × {num2} = ؟")
             response = await conv.get_response()
             answer = response.text.strip()
             if not answer.isdigit():
-                await conv.send_message("❌ الرجاء إدخال رقم صحيح فقط.")
+                await conv.send_message("❌ الرجاء إدخال رقم فقط.")
                 return
             if int(answer) == correct_answer:
                 await react(event, "🎉")
                 await conv.send_message("✅ إجابة صحيحة! ربحت 1000 دينار 💰")
                 add_points(uid, gid, points, amount=1000)
             else:
-                await conv.send_message(f"❌ إجابة خاطئة! الصحيح هو: {correct_answer}")
+                await conv.send_message(f"❌ خطأ! الإجابة الصحيحة: {correct_answer}")
     except asyncio.TimeoutError:
-        await event.reply("⌛ انتهى الوقت! حاول مرة أخرى.")
+        await event.reply("⌛ انتهى الوقت! لم يتم الرد خلال دقيقة.")
 USER_DATA_FILE = "trade.json"
 def tlo():
     if os.path.exists(USER_DATA_FILE):
