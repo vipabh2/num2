@@ -24,8 +24,8 @@ async def math(event):
             answer = response.text.strip()
             if uid != event.sender_id:
                 return
-            if response.text == "/math" or response.text == "رياضيات":
-                return
+            # if response.text == "/math" or response.text == "رياضيات":
+            #     return
             if not answer.isdigit():
                 await conv.send_message(" الرجاء إدخال رقم فقط.", reply_to=event.message.id)
                 return
