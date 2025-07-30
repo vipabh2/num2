@@ -1,5 +1,7 @@
 from Resources import football, questions, mention, ment, wfffp, react
+from telethon.tl.functions.messages import SendReactionRequest
 from top import points, add_points #type: ignore
+from telethon.tl.types import ReactionEmoji
 from datetime import datetime, timedelta
 import random, asyncio, time, os, json
 from telethon import Button, events
