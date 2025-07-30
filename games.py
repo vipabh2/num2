@@ -31,9 +31,9 @@ async def math(event):
                 await conv.send_message("✅ إجابة صحيحة! ربحت 1000 دينار 💰", reply_to=response.id)
                 await ABH(SendReactionRequest(
                     peer=event.chat_id,
-                msg_id=response.id,
-                reaction=[ReactionEmoji(emoticon=f'🎉')],
-                big=True
+                    msg_id=response.id,
+                    reaction=[ReactionEmoji(emoticon=f'🎉')],
+                    big=True
                 ))
                 add_points(uid, gid, points, amount=1000)
             else:
