@@ -42,20 +42,21 @@ async def ignore_math(event):
     if uid in math_sessions:
         del math_sessions[uid]
     await event.edit("تم تجاهل السؤال.")
-# async def new_math_handler(event):
-#     if not event.is_group:
-#         return
-#     uid = str(event.sender_id)
-#     if uid in math_sessions:
-#         try:
-#             user_answer = int(event.raw_text.strip())
-#         except ValueError:
-#             return
-#         if user_answer == math_sessions[uid]:
-#             await event.reply("✅ إجابة صحيحة!")
-#         else:
-#             await event.reply(f"❌ خطأ، الإجابة الصحيحة هي: {math_sessions[uid]}")
-#         del math_sessions[uid]
+@ABH.on(events.NewMessage)
+async def check_math_answer(event):
+    if not event.is_group:
+        return
+    uid = str(event.sender_id)
+    if uid in math_sessions:
+        try:
+            user_answer = int(event.raw_text.strip())
+        except ValueError:
+            return
+        if user_answer == math_sessions[uid]:
+            await event.reply("✅ إجابة صحيحة!")
+        else:
+            await event.reply(f"❌ خطأ، الإجابة الصحيحة هي: {math_sessions[uid]}")
+        del math_sessions[uid]
 USER_DATA_FILE = "trade.json"
 def tlo():
     if os.path.exists(USER_DATA_FILE):
