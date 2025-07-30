@@ -1,4 +1,4 @@
-from Resources import football, questions, mention, ment, wfffp #type: ignore
+from Resources import football, questions, mention, ment, wfffp, react
 from top import points, add_points #type: ignore
 from datetime import datetime, timedelta
 import random, asyncio, time, os, json
@@ -6,6 +6,34 @@ from telethon import Button, events
 from ABH import ABH #type: ignore
 from other import botuse
 from faker import Faker
+@ABH.on(events.NewMessage(pattern='^رياضيات|/math$'))
+async def math(event):
+    if not event.is_group:
+        return
+    type = "رياضيات"
+    await botuse(type)
+    uid = event.sender_id
+    num1 = random.randint(1, 9)
+    num2 = random.randint(1, 9)
+    x = num1 * num2
+    await event.reply(f"احسب {num1} X {num2} = ?")
+    async with ABH.conversation(event.chat_id, timeout=60) as conv:
+        try:
+            response = await conv.get_response()
+            answer = response.text.strip()
+            if not answer.isdigit():
+                await conv.send_message("الرجاء إدخال رقم صحيح.")
+                return
+            uid = str(uid)
+            if answer.isdigit() and int(answer) == x:
+                await react(event, "🎉")
+                await conv.send_message("اجابة صحيحة 🎉 \n ربحت 1000 دينار")
+                gid = event.chat_id
+                add_points(uid, gid, points, amount=1000)
+            else:
+                await conv.send_message(f"اجابة خاطئة! الجواب الصحيح هو {x}.")
+        except asyncio.TimeoutError:
+            return
 USER_DATA_FILE = "trade.json"
 def tlo():
     if os.path.exists(USER_DATA_FILE):
