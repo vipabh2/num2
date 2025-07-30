@@ -1,7 +1,5 @@
 from Resources import football, questions, mention, ment, wfffp, react
-from telethon.tl.functions.messages import SendReactionRequest
 from top import points, add_points #type: ignore
-from telethon.tl.types import ReactionEmoji
 from datetime import datetime, timedelta
 import random, asyncio, time, os, json
 from telethon import Button, events
@@ -25,21 +23,16 @@ async def math(event):
             response = await conv.get_response()
             answer = response.text.strip()
             if not answer.isdigit():
-                await conv.send_message("❌ الرجاء إدخال رقم فقط.", reply_to=response.id)
+                await conv.send_message(" الرجاء إدخال رقم فقط.", reply_to=event.message.id)
                 return
-            if uid != str(event.sender_id):
+            if uid != event.sender_id or response.text == "/math" or response.text == "رياضيات":
                 return
             if int(answer) == correct_answer:
-                await conv.send_message("✅ إجابة صحيحة! ربحت 1000 دينار 💰", reply_to=response.id)
-                await ABH(SendReactionRequest(
-                    peer=event.chat_id,
-                    msg_id=response.id,
-                    reaction=[ReactionEmoji(emoticon=f'🎉')],
-                    big=True
-                ))
+                await react(event, "🎉")
+                await conv.send_message("✅ إجابة صحيحة! ربحت 1000 دينار 💰", reply_to=event.message.id)
                 add_points(uid, gid, points, amount=1000)
             else:
-                await conv.send_message(f"❌ خطأ! الإجابة الصحيحة: {correct_answer}", reply_to=response.id)
+                await conv.send_message(f"❌ خطأ! الإجابة الصحيحة: {correct_answer}", reply_to=event.message.id)
     except asyncio.TimeoutError:
         await event.reply("⌛ انتهى الوقت! لم يتم الرد خلال دقيقة.", reply_to=event.message.id)
 USER_DATA_FILE = "trade.json"
