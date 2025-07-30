@@ -18,7 +18,7 @@ async def math(event):
     num2 = random.randint(1, 9)
     correct_answer = num1 * num2
     try:
-        async with ABH.conversation(event.chat_id, timeout=60) as conv:
+        async with ABH.conversation(event.chat_id, event.sender_id, timeout=60) as conv:
             await conv.send_message(f"احسب {num1} × {num2} = ?")
             response = await conv.get_response()
             answer = response.text.strip()
