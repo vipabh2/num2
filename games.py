@@ -25,7 +25,7 @@ async def math(event):
             if not answer.isdigit():
                 await conv.send_message("❌ الرجاء إدخال رقم فقط.", reply_to=event.message.id)
                 return
-            if uid != event.sender_id:
+            if uid != str(event.sender_id):
                 return
             if int(answer) == correct_answer:
                 await react(event, "🎉")
