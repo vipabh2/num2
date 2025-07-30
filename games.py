@@ -1,4 +1,4 @@
-from Resources import football, questions, mention, ment, wfffp, react, hint
+from Resources import football, questions, mention, ment, wfffp, react
 from top import points, add_points #type: ignore
 from datetime import datetime, timedelta
 import random, asyncio, time, os, json
@@ -22,20 +22,19 @@ async def math(event):
             await conv.send_message(f"🧠 احسب: {num1} × {num2} = ؟", reply_to=event.message.id)
             response = await conv.get_response()
             answer = response.text.strip()
-            if uid != event.sender_id:
+            if uid != response.sender_id or response.text == "/math" or response.text == "رياضيات":
                 return
-            # if not answer.isdigit():
-            #     await conv.send_message(" الرجاء إدخال رقم فقط.", reply_to=event.message.id)
-            #     return
+            if not answer.isdigit():
+                await conv.send_message(" الرجاء إدخال رقم فقط.", reply_to=event.message.id)
+                return
             if int(answer) == correct_answer:
                 await react(event, "🎉")
                 await conv.send_message("✅ إجابة صحيحة! ربحت 1000 دينار 💰", reply_to=event.message.id)
                 add_points(uid, gid, points, amount=1000)
             else:
                 await conv.send_message(f"❌ خطأ! الإجابة الصحيحة: {correct_answer}", reply_to=event.message.id)
-    except Exception as e:
-        # await event.reply("⌛ انتهى الوقت! لم يتم الرد خلال دقيقة.", reply_to=event.message.id)
-        await hint(e)
+    except asyncio.TimeoutError:
+        await event.reply("⌛ انتهى الوقت! لم يتم الرد خلال دقيقة.", reply_to=event.message.id)
 USER_DATA_FILE = "trade.json"
 def tlo():
     if os.path.exists(USER_DATA_FILE):
