@@ -24,11 +24,9 @@ async def math(event):
             answer = response.text.strip()
             if uid != event.sender_id:
                 return
-            # if response.text == "/math" or response.text == "رياضيات":
+            # if not answer.isdigit():
+            #     await conv.send_message(" الرجاء إدخال رقم فقط.", reply_to=event.message.id)
             #     return
-            if not answer.isdigit():
-                await conv.send_message(" الرجاء إدخال رقم فقط.", reply_to=event.message.id)
-                return
             if int(answer) == correct_answer:
                 await react(event, "🎉")
                 await conv.send_message("✅ إجابة صحيحة! ربحت 1000 دينار 💰", reply_to=event.message.id)
