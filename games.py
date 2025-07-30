@@ -6,35 +6,36 @@ from telethon import Button, events
 from ABH import ABH #type: ignore
 from other import botuse
 from faker import Faker
-# @ABH.on(events.NewMessage(pattern='^رياضيات|/math$'))
-async def math(event):
+math_sessions = {}
+@ABH.on(events.NewMessage(pattern='^رياضيات|/math$'))
+async def math_handler(event):
     if not event.is_group:
         return
-    type = "رياضيات"
-    await botuse(type)
     uid = str(event.sender_id)
     gid = str(event.chat_id)
+    if uid in math_sessions:
+        await event.reply("لديك سؤال لم تُجب عليه بعد.")
+        return
     num1 = random.randint(1, 9)
     num2 = random.randint(1, 9)
     correct_answer = num1 * num2
-    try:
-        async with ABH.conversation(event.chat_id, timeout=60) as conv:
-            await conv.send_message(f"🧠 احسب: {num1} × {num2} = ؟", reply_to=event.message.id)
-            response = await conv.get_response()
-            answer = response.text.strip()
-            if answer in ["/math", "رياضيات"]:
-                return
-            if not answer.isdigit():
-                await conv.send_message(" الرجاء إدخال رقم فقط.", reply_to=event.message.id)
-                return
-            if int(answer) == correct_answer:
-                await react(event, "🎉")
-                await conv.send_message("✅ إجابة صحيحة! ربحت 1000 دينار 💰", reply_to=event.message.id)
-                add_points(uid, gid, points, amount=1000)
-            else:
-                await conv.send_message(f"❌ خطأ! الإجابة الصحيحة: {correct_answer}", reply_to=event.message.id)
-    except asyncio.TimeoutError:
-        await event.reply("⌛ انتهى الوقت! لم يتم الرد خلال دقيقة.", reply_to=event.message.id)
+    math_sessions[uid] = correct_answer
+    await event.reply(f"ما ناتج: {num1} × {num2} ؟")
+@ABH.on(events.NewMessage)
+async def check_math_answer(event):
+    if not event.is_group:
+        return
+    uid = str(event.sender_id)
+    if uid in math_sessions:
+        try:
+            user_answer = int(event.raw_text.strip())
+        except ValueError:
+            return
+        if user_answer == math_sessions[uid]:
+            await event.reply("✅ إجابة صحيحة!")
+        else:
+            await event.reply(f"❌ خطأ، الإجابة الصحيحة هي: {math_sessions[uid]}")
+        del math_sessions[uid]
 USER_DATA_FILE = "trade.json"
 def tlo():
     if os.path.exists(USER_DATA_FILE):
