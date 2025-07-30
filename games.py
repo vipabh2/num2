@@ -22,7 +22,7 @@ async def math(event):
             await conv.send_message(f"🧠 احسب: {num1} × {num2} = ؟", reply_to=event.message.id)
             response = await conv.get_response()
             if response.sender_id != event.sender_id:
-                return            
+                return
             answer = response.text.strip()
             if answer in ["/math", "رياضيات"]:
                 return
