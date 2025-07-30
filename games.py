@@ -6,7 +6,7 @@ from telethon import Button, events
 from ABH import ABH #type: ignore
 from other import botuse
 from faker import Faker
-@ABH.on(events.NewMessage(pattern='^رياضيات|/math$', from_user=wfffp))
+@ABH.on(events.NewMessage(pattern='^رياضيات|/math$', from_users=[wfffp]))
 async def math(event):
     if not event.is_group:
         return
