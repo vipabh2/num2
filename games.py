@@ -12,28 +12,27 @@ async def math(event):
         return
     type = "رياضيات"
     await botuse(type)
-    uid = event.sender_id
+    uid = str(event.sender_id)
+    gid = str(event.chat_id)
     num1 = random.randint(1, 9)
     num2 = random.randint(1, 9)
-    x = num1 * num2
-    await event.reply(f"احسب {num1} X {num2} = ?")
-    async with ABH.conversation(event.chat_id, timeout=60) as conv:
-        try:
+    correct_answer = num1 * num2
+    await event.reply(f"احسب {num1} × {num2} = ?")
+    try:
+        async with ABH.conversation(event.chat_id, timeout=60) as conv:
             response = await conv.get_response()
             answer = response.text.strip()
             if not answer.isdigit():
-                await conv.send_message("الرجاء إدخال رقم صحيح.")
+                await conv.send_message("❌ الرجاء إدخال رقم صحيح فقط.")
                 return
-            uid = str(uid)
-            if answer.isdigit() and int(answer) == x:
+            if int(answer) == correct_answer:
                 await react(event, "🎉")
-                await conv.send_message("اجابة صحيحة 🎉 \n ربحت 1000 دينار")
-                gid = event.chat_id
+                await conv.send_message("✅ إجابة صحيحة! ربحت 1000 دينار 💰")
                 add_points(uid, gid, points, amount=1000)
             else:
-                await conv.send_message(f"اجابة خاطئة! الجواب الصحيح هو {x}.")
-        except asyncio.TimeoutError:
-            return
+                await conv.send_message(f"❌ إجابة خاطئة! الصحيح هو: {correct_answer}")
+    except asyncio.TimeoutError:
+        await event.reply("⌛ انتهى الوقت! حاول مرة أخرى.")
 USER_DATA_FILE = "trade.json"
 def tlo():
     if os.path.exists(USER_DATA_FILE):
