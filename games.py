@@ -22,7 +22,9 @@ async def math(event):
             await conv.send_message(f"🧠 احسب: {num1} × {num2} = ؟", reply_to=event.message.id)
             response = await conv.get_response()
             answer = response.text.strip()
-            if uid != event.sender_id or response.text == "/math" or response.text == "رياضيات":
+            if uid != event.sender_id:
+                return
+            if response.text == "/math" or response.text == "رياضيات":
                 return
             if not answer.isdigit():
                 await conv.send_message(" الرجاء إدخال رقم فقط.", reply_to=event.message.id)
