@@ -21,9 +21,10 @@ async def math(event):
         async with ABH.conversation(event.chat_id, timeout=60) as conv:
             await conv.send_message(f"🧠 احسب: {num1} × {num2} = ؟", reply_to=event.message.id)
             response = await conv.get_response()
+            if response.sender_id != event.sender_id:
+                return            
             answer = response.text.strip()
-            if str(event.sender_id) != str(uid) or answer.text == "/math" or answer.text == "رياضيات":
-                print(f'{uid}    {event.sender_id}')
+            if answer in ["/math", "رياضيات"]:
                 return
             if not answer.isdigit():
                 await conv.send_message(" الرجاء إدخال رقم فقط.", reply_to=event.message.id)
