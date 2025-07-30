@@ -13,29 +13,49 @@ async def math_handler(event):
         return
     uid = str(event.sender_id)
     gid = str(event.chat_id)
+    b = [Button.inline("تجديد السؤال", b"new_math"), Button.inline("الجواب عليه", b"ignore_math")]
     if uid in math_sessions:
-        await event.reply("لديك سؤال لم تُجب عليه بعد.")
+        await event.reply("لديك سؤال لم تجيب عليه بعد.", buttons=b)
         return
     num1 = random.randint(1, 9)
     num2 = random.randint(1, 9)
     correct_answer = num1 * num2
     math_sessions[uid] = correct_answer
     await event.reply(f"ما ناتج: {num1} × {num2} ؟")
-@ABH.on(events.NewMessage)
-async def check_math_answer(event):
+@ABH.on(events.CallbackQuery(data=b"new_math"))
+async def new_math(event):
     if not event.is_group:
         return
     uid = str(event.sender_id)
     if uid in math_sessions:
-        try:
-            user_answer = int(event.raw_text.strip())
-        except ValueError:
-            return
-        if user_answer == math_sessions[uid]:
-            await event.reply("✅ إجابة صحيحة!")
-        else:
-            await event.reply(f"❌ خطأ، الإجابة الصحيحة هي: {math_sessions[uid]}")
         del math_sessions[uid]
+    num1 = random.randint(1, 9)
+    num2 = random.randint(1, 9)
+    correct_answer = num1 * num2
+    math_sessions[uid] = correct_answer
+    await event.edit(f"ما ناتج: {num1} × {num2} ؟")
+@ABH.on(events.CallbackQuery(data=b"ignore_math"))
+async def ignore_math(event):
+    if not event.is_group:
+        return
+    uid = str(event.sender_id)
+    if uid in math_sessions:
+        del math_sessions[uid]
+    await event.edit("تم تجاهل السؤال.")
+# async def new_math_handler(event):
+#     if not event.is_group:
+#         return
+#     uid = str(event.sender_id)
+#     if uid in math_sessions:
+#         try:
+#             user_answer = int(event.raw_text.strip())
+#         except ValueError:
+#             return
+#         if user_answer == math_sessions[uid]:
+#             await event.reply("✅ إجابة صحيحة!")
+#         else:
+#             await event.reply(f"❌ خطأ، الإجابة الصحيحة هي: {math_sessions[uid]}")
+#         del math_sessions[uid]
 USER_DATA_FILE = "trade.json"
 def tlo():
     if os.path.exists(USER_DATA_FILE):
