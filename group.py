@@ -4,6 +4,7 @@ from ABH import ABH, events #type: ignore
 from datetime import datetime, timedelta
 from hijri_converter import Gregorian
 from googletrans import Translator
+from top import points, add_points
 from Resources import hint, ment
 from telethon import Button
 from ABH import ABH, events
@@ -36,9 +37,9 @@ async def spam_handler(event):
         data[user_id] = {"count": count, "id": replied.sender_id}
         save_data(data)
         cost = count * 10000
-        points = points[uid][event.sender_id]["points"]
-        if points < cost:
-            await event.reply(f"ما تكدر تسوي ازعاج {count} مرات، تحتاج {cost} نقطة، عندك {points} نقطة.\n تكدر تسوي ب {points // 10000} مرات.")
+        m = points[uid][event.sender_id]["points"]
+        if m < cost:
+            await event.reply(f"ما تكدر تسوي ازعاج {count} مرات، تحتاج {cost} نقطة، عندك {m} نقطة.\n تكدر تسوي ب {m // 10000} مرات.")
             return
     except Exception as e:
         await hint(f"خطأ في تنفيذ الأمر: {str(e)}")
