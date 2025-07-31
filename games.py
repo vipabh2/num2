@@ -53,10 +53,23 @@ async def check_math_answer(event):
         except ValueError:
             return
         if user_answer == math_sessions[uid]:
-            await event.reply("✅ إجابة صحيحة!")
+            x = 5000
+            buttons=[Button.inline('اضغط ل عرض فلوسك', b'moneymuch')]
+            await event.reply(f"اجابة صحيحة 🎉 \n ربحت {x} نقطة.", buttons=buttons)
         else:
             await event.reply(f"❌ خطأ، الإجابة الصحيحة هي: {math_sessions[uid]}")
         del math_sessions[uid]
+@ABH.on(events.CallbackQuery(data=b'moneymuch'))
+async def show_money(event):
+    if not event.is_group:
+        return
+    uid = str(event.sender_id)
+    gid = str(event.chat_id)
+    if uid in points and gid in points[uid]:
+        user_points = points[uid][gid]["points"]
+        await event.answer(f"فلوسك {user_points} دينار", alert=True)
+    else:
+        await event.answer("ليس لديك نقاط.", alert=True)
 USER_DATA_FILE = "trade.json"
 def tlo():
     if os.path.exists(USER_DATA_FILE):
