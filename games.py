@@ -11,6 +11,7 @@ math_sessions = {}
 async def math_handler(event):
     if not event.is_group:
         return
+    await botuse('رياضيات')
     uid = str(event.sender_id)
     gid = str(event.chat_id)
     b = [Button.inline("تجديد السؤال", b"new_math"), Button.inline("الجواب عليه", b"ignore_math")]
