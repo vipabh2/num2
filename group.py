@@ -22,23 +22,26 @@ def save_data(data):
 async def spam_handler(event):
     if not event.is_group:
         return
-    if not event.is_reply:
-        await event.reply(" يجب الرد على رسالة لتنفيذ الإزعاج.")
-        return
-    if not event.pattern_match.group(1):
-        await event.reply(" يجب تحديد عدد مرات الإزعاج بعد الأمر.")
-        return
-    count = int(event.pattern_match.group(1))
-    replied = await event.get_reply_message()
-    user_id = str(event.sender_id)
-    data = load_data()
-    data[user_id] = {"count": count, "id": replied.sender_id}
-    save_data(data)
-    cost = count * 10000
-    points = points[uid][event.sender_id]["points"]
-    if points < cost:
-        await event.reply(f"ما تكدر تسوي ازعاج {count} مرات، تحتاج {cost} نقطة، عندك {points} نقطة.\n تكدر تسوي ب {points // 10000} مرات.")
-        return
+    try:
+        if not event.is_reply:
+            await event.reply(" يجب الرد على رسالة لتنفيذ الإزعاج.")
+            return
+        if not event.pattern_match.group(1):
+            await event.reply(" يجب تحديد عدد مرات الإزعاج بعد الأمر.")
+            return
+        count = int(event.pattern_match.group(1))
+        replied = await event.get_reply_message()
+        user_id = str(event.sender_id)
+        data = load_data()
+        data[user_id] = {"count": count, "id": replied.sender_id}
+        save_data(data)
+        cost = count * 10000
+        points = points[uid][event.sender_id]["points"]
+        if points < cost:
+            await event.reply(f"ما تكدر تسوي ازعاج {count} مرات، تحتاج {cost} نقطة، عندك {points} نقطة.\n تكدر تسوي ب {points // 10000} مرات.")
+            return
+        except Exception as e:
+        await hintt(f"خطأ في تنفيذ الأمر: {str(e)}")
 @ABH.on(events.NewMessage(pattern='^/dates|مواعيد$'))
 async def show_dates(event):
     if not event.is_group:
