@@ -54,10 +54,11 @@ async def check_math_answer(event):
             return
         if user_answer == math_sessions[uid]:
             x = 5000
-            buttons=[Button.inline('اضغط ل عرض فلوسك', b'moneymuch')]
+            buttons=[Button.inline('فلوسك', b'moneymuch')]
             await event.reply(f"اجابة صحيحة 🎉 \n ربحت {x} نقطة.", buttons=buttons)
+            add_points(uid, str(event.chat_id), points, amount=x)
         else:
-            await event.reply(f"❌ خطأ، الإجابة الصحيحة هي: {math_sessions[uid]}")
+            await event.reply(f"غلط , الاجابة هيه {math_sessions[uid]}")
         del math_sessions[uid]
 @ABH.on(events.CallbackQuery(data=b'moneymuch'))
 async def show_money(event):
