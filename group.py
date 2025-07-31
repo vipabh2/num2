@@ -8,7 +8,32 @@ from Resources import hint, ment
 from telethon import Button
 from ABH import ABH, events
 from other import botuse
-import asyncio
+import asyncio, os, json
+SPAM_FILE = "spam.json"
+def load_data():
+    if not os.path.exists(SPAM_FILE):
+        return {}
+    with open(SPAM_FILE, "r", encoding="utf-8") as f:
+        return json.load(f)
+def save_data(data):
+    with open(SPAM_FILE, "w", encoding="utf-8") as f:
+        json.dump(data, f, ensure_ascii=False, indent=4)
+@ABH.on(events.NewMessage(pattern=r'^ازعاج (\d+)$'))
+async def spam_handler(event):
+    if not event.is_reply:
+        await event.reply(" يجب الرد على رسالة لتنفيذ الإزعاج.")
+        return
+    count = int(event.pattern_match.group(1))
+    replied = await event.get_reply_message()
+    user_id = str(event.sender_id)
+    data = load_data()
+    data[user_id] = {"count": count, "id": replied.sender_id}
+    save_data(data)
+    cost = count * 10000
+    points = points[uid][event.sender_id]["points"]
+    if points < cost:
+        await event.reply(f"ما تكدر تسوي ازعاج {count} مرات، تحتاج {cost} نقطة، عندك {points} نقطة.\n تكدر تسوي ب {points // 10000} مرات.")
+        return
 @ABH.on(events.NewMessage(pattern='^/dates|مواعيد$'))
 async def show_dates(event):
     if not event.is_group:
