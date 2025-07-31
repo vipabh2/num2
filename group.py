@@ -20,8 +20,13 @@ def save_data(data):
         json.dump(data, f, ensure_ascii=False, indent=4)
 @ABH.on(events.NewMessage(pattern=r'^ازعاج (\d+)$'))
 async def spam_handler(event):
+    if not event.is_group:
+        return
     if not event.is_reply:
         await event.reply(" يجب الرد على رسالة لتنفيذ الإزعاج.")
+        return
+    if not event.pattern_match.group(1):
+        await event.reply(" يجب تحديد عدد مرات الإزعاج بعد الأمر.")
         return
     count = int(event.pattern_match.group(1))
     replied = await event.get_reply_message()
