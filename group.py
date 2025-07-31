@@ -37,7 +37,7 @@ async def spam_handler(event):
         data[user_id] = {"count": count, "id": replied.sender_id}
         save_data(data)
         cost = count * 10000
-        m = points[uid][event.sender_id]["points"]
+        m = points[event.sender_id][event.chat_id]["points"]
         if m < cost:
             await event.reply(f"ما تكدر تسوي ازعاج {count} مرات، تحتاج {cost} نقطة، عندك {m} نقطة.\n تكدر تسوي ب {m // 10000} مرات.")
             return
