@@ -19,50 +19,45 @@ def load_data():
 def save_data(data):
     with open(SPAM_FILE, "w", encoding="utf-8") as f:
         json.dump(data, f, ensure_ascii=False, indent=4)
-@ABH.on(events.NewMessage(pattern=r'^ازعاج (\d+)$'))
+spams = {}
+@ABH.on(events.NewMessage)
 async def spam_handler(event):
     if not event.is_group:
         return
-    try:
-        if not event.is_reply:
-            await event.reply("❗ يجب الرد على رسالة لتنفيذ الإزعاج.")
-            return
-        count = int(event.pattern_match.group(1))
-        if count <= 0:
-            await event.reply("❗ يجب أن يكون عدد الإزعاج أكبر من 0.")
-            return
+    user_id = event.sender_id
+    text = event.raw_text.strip()
+    if text.lower() == "ازعاج" and event.is_reply:
         replied = await event.get_reply_message()
-        data = load_data()
-        data[str(event.chat.id)] = {
-            "count": count,
-            "id": replied.sender_id
+        spams[user_id] = {
+            "stage": "count",
+            "target_id": replied.sender_id
         }
-        save_data(data)
-        await event.reply(f"✅ سيتم تنفيذ الإزعاج {count} مرات على المستخدم.")
-    except Exception as e:
-        await hint(f"⚠️ حدث خطأ أثناء تنفيذ الأمر:\n{str(e)}")
-@ABH.on(events.NewMessage)
-async def execute_spam(event):
-    if not event.is_group:
+        await event.reply("🟡 أرسل عدد مرات الإزعاج (مثلًا: 5)")
         return
-    data = load_data()
-    chat_id = str(event.chat.id)
-    if chat_id not in data:
+    if user_id in spams and spams[user_id]["stage"] == "count":
+        if text.isdigit():
+            count = int(text)
+            if count <= 0:
+                await event.reply("❗ العدد يجب أن يكون أكبر من صفر.")
+                return
+            spams[user_id]["count"] = count
+            spams[user_id]["stage"] = "emoji"
+            await event.reply("🟡 أرسل الإيموجي الذي تريد استخدامه")
+        else:
+            await event.reply("❗ أرسل رقم فقط لتحديد عدد الإزعاج.")
         return
-    count = data[chat_id]["count"]
-    target_id = data[chat_id]["id"]
-    if count <= 0:
-        del data[chat_id]
-        save_data(data)
+    if user_id in spams and spams[user_id]["stage"] == "emoji":
+        emoji = text
+        data = spams[user_id]
+        try:
+            for _ in range(data["count"]):
+                await react(event, emoji)
+            await event.reply(f"✅ تم تنفيذ الإزعاج {data['count']} مرات على المستخدم بـ {emoji}")
+        except Exception as e:
+            await event.reply(f"⚠️ خطأ أثناء التنفيذ:\n{e}")
+        finally:
+            del spams[user_id]
         return
-    try:
-        await react(event, target_id)
-        data[chat_id]["count"] -= 1
-        if data[chat_id]["count"] <= 0:
-            del data[chat_id]
-        save_data(data)
-    except Exception as e:
-        await hint(f"⚠️ خطأ في تنفيذ الإزعاج:\n{str(e)}")
 @ABH.on(events.NewMessage(pattern='^/dates|مواعيد$'))
 async def show_dates(event):
     if not event.is_group:
