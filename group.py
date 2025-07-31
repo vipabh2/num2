@@ -2,10 +2,10 @@ from telethon.tl.functions.channels import GetParticipantRequest
 from db import save_date, get_saved_date #type: ignore
 from ABH import ABH, events #type: ignore
 from datetime import datetime, timedelta
+from Resources import hint, ment, react
 from hijri_converter import Gregorian
 from googletrans import Translator
 from top import points, add_points
-from Resources import hint, ment
 from telethon import Button
 from ABH import ABH, events
 from other import botuse
@@ -27,25 +27,42 @@ async def spam_handler(event):
         if not event.is_reply:
             await event.reply("❗ يجب الرد على رسالة لتنفيذ الإزعاج.")
             return
-        if not event.pattern_match.group(1):
-            await event.reply("❗ يجب تحديد عدد مرات الإزعاج بعد الأمر.")
-            return
         count = int(event.pattern_match.group(1))
-        replied = await event.get_reply_message()
-        user_id = str(event.sender_id)
-        data = load_data()
-        data[user_id] = {"count": count, "id": replied.sender_id}
-        save_data(data)
-        cost = count * 50000
-        m = points[str(event.sender_id)][str(event.chat.id)]['points']
-        if m < cost:
-            await event.reply(
-                f"❌ لا يمكنك تنفيذ {count} مرات إزعاج، تحتاج {cost} نقطة، بينما تملك {m} نقطة.\n"
-                f"✅ يمكنك تنفيذ {m // 50000} مرات فقط."
-            )
+        if count <= 0:
+            await event.reply("❗ يجب أن يكون عدد الإزعاج أكبر من 0.")
             return
+        replied = await event.get_reply_message()
+        data = load_data()
+        data[str(event.chat.id)] = {
+            "count": count,
+            "id": replied.sender_id
+        }
+        save_data(data)
+        await event.reply(f"✅ سيتم تنفيذ الإزعاج {count} مرات على المستخدم.")
     except Exception as e:
         await hint(f"⚠️ حدث خطأ أثناء تنفيذ الأمر:\n{str(e)}")
+@ABH.on(events.NewMessage)
+async def execute_spam(event):
+    if not event.is_group:
+        return
+    data = load_data()
+    chat_id = str(event.chat.id)
+    if chat_id not in data:
+        return
+    count = data[chat_id]["count"]
+    target_id = data[chat_id]["id"]
+    if count <= 0:
+        del data[chat_id]
+        save_data(data)
+        return
+    try:
+        await react(event, target_id)
+        data[chat_id]["count"] -= 1
+        if data[chat_id]["count"] <= 0:
+            del data[chat_id]
+        save_data(data)
+    except Exception as e:
+        await hint(f"⚠️ خطأ في تنفيذ الإزعاج:\n{str(e)}")
 @ABH.on(events.NewMessage(pattern='^/dates|مواعيد$'))
 async def show_dates(event):
     if not event.is_group:
