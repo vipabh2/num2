@@ -40,8 +40,8 @@ async def spam_handler(event):
         if points < cost:
             await event.reply(f"ما تكدر تسوي ازعاج {count} مرات، تحتاج {cost} نقطة، عندك {points} نقطة.\n تكدر تسوي ب {points // 10000} مرات.")
             return
-        except Exception as e:
-        await hintt(f"خطأ في تنفيذ الأمر: {str(e)}")
+    except Exception as e:
+        await hint(f"خطأ في تنفيذ الأمر: {str(e)}")
 @ABH.on(events.NewMessage(pattern='^/dates|مواعيد$'))
 async def show_dates(event):
     if not event.is_group:
