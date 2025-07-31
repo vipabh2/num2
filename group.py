@@ -25,10 +25,10 @@ async def spam_handler(event):
         return
     try:
         if not event.is_reply:
-            await event.reply(" يجب الرد على رسالة لتنفيذ الإزعاج.")
+            await event.reply("❗ يجب الرد على رسالة لتنفيذ الإزعاج.")
             return
         if not event.pattern_match.group(1):
-            await event.reply(" يجب تحديد عدد مرات الإزعاج بعد الأمر.")
+            await event.reply("❗ يجب تحديد عدد مرات الإزعاج بعد الأمر.")
             return
         count = int(event.pattern_match.group(1))
         replied = await event.get_reply_message()
@@ -36,13 +36,16 @@ async def spam_handler(event):
         data = load_data()
         data[user_id] = {"count": count, "id": replied.sender_id}
         save_data(data)
-        cost = count * 10000
+        cost = count * 50000
         m = points[str(event.sender_id)][str(event.chat.id)]['points']
         if m < cost:
-            await event.reply(f"ما تكدر تسوي ازعاج {count} مرات، تحتاج {cost} نقطة، عندك {m} نقطة.\n تكدر تسوي ب {m // 10000} مرات.")
+            await event.reply(
+                f"❌ لا يمكنك تنفيذ {count} مرات إزعاج، تحتاج {cost} نقطة، بينما تملك {m} نقطة.\n"
+                f"✅ يمكنك تنفيذ {m // 50000} مرات فقط."
+            )
             return
     except Exception as e:
-        await hint(f"خطأ في تنفيذ الأمر: {str(e)}")
+        await hint(f"⚠️ حدث خطأ أثناء تنفيذ الأمر:\n{str(e)}")
 @ABH.on(events.NewMessage(pattern='^/dates|مواعيد$'))
 async def show_dates(event):
     if not event.is_group:
