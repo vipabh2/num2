@@ -25,6 +25,16 @@ async def handler(event):
  if not event.is_group: return
  uid = event.sender_id
  cid = event.chat_id
+ if uid in spams and spams[uid]["stage"] == "active":
+  d = spams[uid]
+  if event.chat_id == d["chat"] and event.sender_id == d["target"]:
+   if d["count"] > 0:
+    await react(event, d["emoji"])
+    d["count"] -= 1
+    if d["count"] <= 0:
+     await event.reply("تم الانتهاء من الإزعاج")
+     del spams[uid]
+   return
  text = event.raw_text.strip()
  if text == "ازعاج" and event.is_reply:
   r = await event.get_reply_message()
@@ -44,12 +54,6 @@ async def handler(event):
   spams[uid]["stage"] = "active"
   await event.reply("تم التفعيل")
   return
- for s_id, data in list(spams.items()):
-  if data.get("stage") == "active" and event.sender_id == data["target"] and event.chat_id == data["chat"]:
-   try:
-    for _ in range(data["count"]):
-     await event.client.send_reaction(event.chat_id, event.id, reaction=data["emoji"])
-   except: pass
 @ABH.on(events.NewMessage(pattern='^/dates|مواعيد$'))
 async def show_dates(event):
     if not event.is_group:
