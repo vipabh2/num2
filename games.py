@@ -6,61 +6,72 @@ from telethon import Button, events
 from ABH import ABH #type: ignore
 from other import botuse
 from faker import Faker
-math_sessions = {}
+math_sessions={}
 @ABH.on(events.NewMessage(pattern='^رياضيات|/math$'))
 async def math_handler(event):
-    if not event.is_group:
-        return
-    await botuse('رياضيات')
-    uid = str(event.sender_id)
-    gid = str(event.chat_id)
-    b = [Button.inline("تجديد السؤال", b"new_math"), Button.inline("الجواب عليه", b"ignore_math")]
-    if uid in math_sessions:
-        await event.reply("لديك سؤال لم تجيب عليه بعد.", buttons=b)
-        return
-    num1 = random.randint(1, 9)
-    num2 = random.randint(1, 9)
-    correct_answer = num1 * num2
-    math_sessions[uid] = correct_answer
-    await event.reply(f"ما ناتج: {num1} × {num2} ؟")
+ if not event.is_group:
+  return
+ await botuse('رياضيات')
+ uid=str(event.sender_id)
+ gid=str(event.chat_id)
+ b=[Button.inline("تجديد السؤال",b"new_math"),Button.inline("الجواب عليه",b"ignore_math")]
+ if uid in math_sessions:
+  await event.reply("لديك سؤال لم تجيب عليه بعد.",buttons=b)
+  return
+ num1=random.randint(1,9)
+ num2=random.randint(1,9)
+ correct_answer=num1*num2
+ math_sessions[uid]=correct_answer
+ await event.reply(f"ما ناتج: {num1} × {num2} ؟")
 @ABH.on(events.CallbackQuery(data=b"new_math"))
 async def new_math(event):
-    if not event.is_group:
-        return
-    uid = str(event.sender_id)
-    if uid in math_sessions:
-        del math_sessions[uid]
-    num1 = random.randint(1, 9)
-    num2 = random.randint(1, 9)
-    correct_answer = num1 * num2
-    math_sessions[uid] = correct_answer
-    await event.edit(f"ما ناتج: {num1} × {num2} ؟")
+ if not event.is_group:
+  return
+ uid=str(event.sender_id)
+ if uid in math_sessions:
+  del math_sessions[uid]
+ num1=random.randint(1,9)
+ num2=random.randint(1,9)
+ correct_answer=num1*num2
+ math_sessions[uid]=correct_answer
+ await event.edit(f"ما ناتج: {num1} × {num2} ؟")
 @ABH.on(events.CallbackQuery(data=b"ignore_math"))
 async def ignore_math(event):
-    if not event.is_group:
-        return
-    id = str(event.sender_id)
-    if id in math_sessions:
-        del math_sessions[id]
-    await event.edit("تم تجاهل السؤال.")
+ if not event.is_group:
+  return
+ id=str(event.sender_id)
+ if id in math_sessions:
+  del math_sessions[id]
+ await event.edit("تم تجاهل السؤال.")
 @ABH.on(events.NewMessage)
 async def check_math_answer(event):
-    if not event.is_group:
-        eventuid = str(event.sender_id)
-        return
-    if eventuid in math_sessions:
-        try:
-            user_answer = int(event.raw_text.strip())
-        except ValueError:
-            return
-        if user_answer == math_sessions[eventuid]:
-            x = 5000
-            buttons=[Button.inline('فلوسك', b'moneymuch')]
-            await event.reply(f"اجابة صحيحة 🎉 \n ربحت {x} نقطة.", buttons=buttons)
-            add_points(eventuid, str(event.chat_id), points, amount=x)
-        else:
-            await event.reply(f"غلط , الاجابة هيه {math_sessions[eventuid]}")
-        del math_sessions[eventuid]
+ eventuid=str(event.sender_id)
+ if not event.is_group:
+  return
+ if eventuid in math_sessions:
+  try:
+   user_answer=int(event.raw_text.strip())
+  except ValueError:
+   return
+  if user_answer==math_sessions[eventuid]:
+   x=5000
+   buttons=[Button.inline('فلوسك',b'moneymuch')]
+   await event.reply(f"اجابة صحيحة 🎉 \n ربحت {x} نقطة.",buttons=buttons)
+   add_points(eventuid,str(event.chat_id),points,amount=x)
+  else:
+   await event.reply(f"غلط , الاجابة هيه {math_sessions[eventuid]}")
+  del math_sessions[eventuid]
+@ABH.on(events.CallbackQuery(data=b'moneymuch'))
+async def show_money(event):
+ if not event.is_group:
+  return
+ uid=str(event.sender_id)
+ gid=str(event.chat_id)
+ if uid in points and gid in points[uid]:
+  user_points=points[uid][gid]["points"]
+  await event.answer(f"فلوسك {user_points} دينار",alert=True)
+ else:
+  await event.answer("ليس لديك نقاط.",alert=True)
 @ABH.on(events.CallbackQuery(data=b'moneymuch'))
 async def show_money(event):
     if not event.is_group:
