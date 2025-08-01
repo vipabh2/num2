@@ -28,6 +28,7 @@ async def handler(event):
             return
         sender_id = event.sender_id
         chat_id = event.chat_id
+        uid = event.sender_id
         text = event.raw_text.strip()
         if sender_id in spams:
             d = spams[sender_id]
