@@ -23,41 +23,37 @@ spams = {}
 sessions = {}
 @ABH.on(events.NewMessage)
 async def handler(event):
-    try:
-        if not event.is_group or not event.sender_id == wfffp:
+    if not event.is_group or not event.sender_id == wfffp:
+        return
+    sender_id = event.sender_id
+    chat_id = event.chat_id
+    uid = event.sender_id
+    text = event.raw_text.strip()
+    if sender_id in spams:
+        d = spams[sender_id]
+        if chat_id == d["chat"] and d["stage"] == "active":
+            if d["count"] > 0:
+                await react(event, d["emoji"])
+                d["count"] -= 1
+                if d["count"] <= 0:
+                    await event.reply("تم الانتهاء من الإزعاج")
+                    del spams[sender_id]
             return
-        sender_id = event.sender_id
-        chat_id = event.chat_id
-        uid = event.sender_id
-        text = event.raw_text.strip()
-        if sender_id in spams:
-            d = spams[sender_id]
-            if chat_id == d["chat"] and d["stage"] == "active":
-                if d["count"] > 0:
-                    await react(event, d["emoji"])
-                    d["count"] -= 1
-                    if d["count"] <= 0:
-                        await event.reply("تم الانتهاء من الإزعاج")
-                        del spams[sender_id]
-                return
-        if text == "ازعاج" and event.is_reply:
-            r = await event.get_reply_message()
-            target_id = r.sender_id
-            if target_id == sender_id:
-                await event.reply("لا يمكنك إزعاج نفسك.")
-                return
-            if uid in points and chat_id in points[uid]:
-                user_points = points[uid][chat_id]["points"]
-            else:
-                await hint(event, "لم يتم العثور على نقاط المستخدم.")
-            if user_points < 50*1000:
-                await event.reply("ما عندك الفلوس الكافيه علمود تسوي ولو واحد ازعاج")
-                return
-            sessions[sender_id] = {"target": target_id, "stage": "count", "chat": chat_id}
-            await event.reply("عدد؟")
+    if text == "ازعاج" and event.is_reply:
+        r = await event.get_reply_message()
+        target_id = r.sender_id
+        if target_id == sender_id:
+            await event.reply("لا يمكنك إزعاج نفسك.")
             return
-    except Exception as e:
-        await hint( f"خطأ في handler: {str(e)}")
+        if uid in points and chat_id in points[uid]:
+            user_points = points[uid][chat_id]["points"]
+        else:
+            await hint("لم يتم العثور على نقاط المستخدم.")
+        if user_points < 50*1000:
+            await event.reply("ما عندك الفلوس الكافيه علمود تسوي ولو واحد ازعاج")
+            return
+        sessions[sender_id] = {"target": target_id, "stage": "count", "chat": chat_id}
+        await event.reply("عدد؟")
         return
     if sender_id in sessions:
         sess = sessions[sender_id]
