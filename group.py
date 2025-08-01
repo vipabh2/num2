@@ -22,45 +22,38 @@ def save_data(data):
 spams = {}
 @ABH.on(events.NewMessage)
 async def handler(event):
-    if not event.is_group:
-        return
-    sender_id = event.sender_id
-    chat_id = event.chat_id
-    text = event.raw_text.strip()
-    if sender_id in spams:
-        d = spams[sender_id]
-        if chat_id == d["chat"] and d["stage"] == "active":
-            if d["count"] > 0:
-                await react(event, d["emoji"])
-                d["count"] -= 1
-                if d["count"] <= 0:
-                    await event.reply("تم الانتهاء من الإزعاج")
-                    del spams[sender_id]
-            return
-    if text == "ازعاج" and event.is_reply:
-        r = await event.get_reply_message()
-        target_id = r.sender_id
-        if target_id == sender_id:
-            await event.reply("لا يمكنك إزعاج نفسك.")
-            return
-        spams[target_id] = {"stage": "count", "chat": chat_id}
-        await event.reply("عدد؟")
-        return
-    for target_id, data in spams.items():
-        if data.get("stage") == "count" and data.get("chat") == chat_id:
-            if text.isdigit() and int(text) > 0:
-                spams[target_id]["count"] = int(text)
-                spams[target_id]["stage"] = "emoji"
-                await event.reply("الإيموجي؟")
-            else:
-                await event.reply("أرسل رقم صالح")
-            return
-    for target_id, data in spams.items():
-        if data.get("stage") == "emoji" and data.get("chat") == chat_id:
-            spams[target_id]["emoji"] = text
-            spams[target_id]["stage"] = "active"
-            await event.reply("تم التفعيل")
-            return
+ if not event.is_group: return
+ uid = event.sender_id
+ cid = event.chat_id
+ if uid in spams and spams[uid]["stage"] == "active":
+  d = spams[uid]
+  if event.chat_id == d["chat"] and event.sender_id == d["target"]:
+   if d["count"] > 0:
+    await react(event, d["emoji"])
+    d["count"] -= 1
+    if d["count"] <= 0:
+     await spams[uid]["id"].reply("تم الانتهاء من الإزعاج")
+     del spams[uid]
+   return
+ text = event.raw_text.strip()
+ if text == "ازعاج" and event.is_reply:
+  r = await event.get_reply_message()
+  spams[uid] = {"stage": "count", "target": r.sender_id, "chat": cid, 'id': event.id}
+  await event.reply("عدد؟")
+  return
+ if uid in spams and spams[uid]["stage"] == "count":
+  if text.isdigit() and int(text) > 0:
+   spams[uid]["count"] = int(text)
+   spams[uid]["stage"] = "emoji"
+   await event.reply("الإيموجي؟")
+  else:
+   await event.reply("أرسل رقم صالح")
+  return
+ if uid in spams and spams[uid]["stage"] == "emoji":
+  spams[uid]["emoji"] = text
+  spams[uid]["stage"] = "active"
+  await event.reply("تم التفعيل")
+  return
 @ABH.on(events.NewMessage(pattern='^/dates|مواعيد$'))
 async def show_dates(event):
     if not event.is_group:
