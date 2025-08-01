@@ -20,42 +20,36 @@ def save_data(data):
     with open(SPAM_FILE, "w", encoding="utf-8") as f:
         json.dump(data, f, ensure_ascii=False, indent=4)
 spams = {}
-
 @ABH.on(events.NewMessage)
-async def spam_handler(event):
+async def handler(event):
  if not event.is_group: return
- user_id = event.sender_id
- chat_id = event.chat_id
+ uid = event.sender_id
+ cid = event.chat_id
  text = event.raw_text.strip()
  if text == "ازعاج" and event.is_reply:
-  replied = await event.get_reply_message()
-  spams[user_id] = {"stage": "count", "target_id": replied.sender_id, "chat_id": chat_id}
-  await event.reply("أرسل العدد")
+  r = await event.get_reply_message()
+  spams[uid] = {"stage": "count", "target": r.sender_id, "chat": cid}
+  await event.reply("عدد؟")
   return
- if user_id in spams and spams[user_id]["stage"] == "count":
-  if text.isdigit():
-   count = int(text)
-   if count <= 0:
-    await event.reply("العدد أكبر من صفر")
-    return
-   spams[user_id]["count"] = count
-   spams[user_id]["stage"] = "emoji"
-   await event.reply("أرسل الإيموجي")
+ if uid in spams and spams[uid]["stage"] == "count":
+  if text.isdigit() and int(text) > 0:
+   spams[uid]["count"] = int(text)
+   spams[uid]["stage"] = "emoji"
+   await event.reply("الإيموجي؟")
   else:
-   await event.reply("أرسل رقم فقط")
+   await event.reply("أرسل رقم صالح")
   return
- if user_id in spams and spams[user_id]["stage"] == "emoji":
-  spams[user_id]["emoji"] = text
-  spams[user_id]["stage"] = "active"
+ if uid in spams and spams[uid]["stage"] == "emoji":
+  spams[uid]["emoji"] = text
+  spams[uid]["stage"] = "active"
   await event.reply("تم التفعيل")
   return
- for spammer_id, data in list(spams.items()):
-  if data.get("stage") == "active":
-   if event.sender_id == data["target_id"] and event.chat_id == data["chat_id"]:
-    try:
-     for _ in range(data["count"]):
-      await event.respond(data["emoji"])
-    except: pass
+ for s_id, data in list(spams.items()):
+  if data.get("stage") == "active" and event.sender_id == data["target"] and event.chat_id == data["chat"]:
+   try:
+    for _ in range(data["count"]):
+     await event.client.send_reaction(event.chat_id, event.id, reaction=data["emoji"])
+   except: pass
 @ABH.on(events.NewMessage(pattern='^/dates|مواعيد$'))
 async def show_dates(event):
     if not event.is_group:
