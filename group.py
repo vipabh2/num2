@@ -38,7 +38,8 @@ async def handler(event):
  text = event.raw_text.strip()
  if text == "ازعاج" and event.is_reply:
   r = await event.get_reply_message()
-  spams[uid] = {"stage": "count", "target": r.sender_id, "chat": cid, 'id': event.id}
+  x = event.id
+  spams[uid] = {"stage": "count", "target": r.sender_id, "chat": cid, 'id': x}
   await event.reply("عدد؟")
   return
  if uid in spams and spams[uid]["stage"] == "count":
