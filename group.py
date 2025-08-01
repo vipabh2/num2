@@ -2,7 +2,7 @@ from telethon.tl.functions.channels import GetParticipantRequest
 from db import save_date, get_saved_date #type: ignore
 from ABH import ABH, events #type: ignore
 from datetime import datetime, timedelta
-from Resources import hint, ment, react
+from Resources import hint, ment, react، wfffp
 from hijri_converter import Gregorian
 from googletrans import Translator
 from top import points, add_points
