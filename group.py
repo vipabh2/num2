@@ -23,7 +23,7 @@ spams={}
 sessions={}
 @ABH.on(events.NewMessage)
 async def handler(event):
- if not event.is_group or not event.sender_id==wfffp:
+ if not event.is_group or not event.sender_id==wfffp or event.sender_id==6520830528:
   return
  sender_id=event.sender_id
  chat_id=event.chat_id
