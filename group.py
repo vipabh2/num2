@@ -9,7 +9,25 @@ from telethon import Button
 from ABH import ABH, events
 from other import botuse
 import asyncio, os, json
-from top import *
+import json
+def load_points(filename="points.json"):
+    try:
+        with open(filename, "r") as file:
+            return json.load(file)
+    except FileNotFoundError:
+        return {}
+def save_points(data, filename="points.json"):
+    with open(filename, "w") as file:
+        json.dump(data, file, indent=4)
+points = load_points()
+def add_points(uid, gid, points, amount=0):
+    uid, gid = str(uid), str(gid)
+    if uid not in points:
+        points[uid] = {}
+    if gid not in points[uid]:
+        points[uid][gid] = {"points": 0}
+    points[uid][gid]["points"] += amount
+    save_points(points)
 SPAM_FILE = "spam.json"
 def load_data():
     if not os.path.exists(SPAM_FILE):
@@ -61,7 +79,6 @@ async def handler(event):
    sessions[user_id]={"target":target_id,"stage":"await_count","chat":chat_id,"points":user_points}
    await event.reply("عدد؟")
    return
-
   if user_id in sessions:
    s=sessions[user_id]
    if s["chat"]!=chat_id:
