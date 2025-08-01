@@ -59,6 +59,8 @@ async def handler(event):
 
         if user_id in spams:
             s = spams[user_id]
+            print(s)
+            print( s["emoji"])
             if chat_id == s["chat"] and s["stage"] == "active":
                 if s["count"] > 0:
                     await react(event, s["emoji"])
