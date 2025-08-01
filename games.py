@@ -39,27 +39,28 @@ async def new_math(event):
 async def ignore_math(event):
     if not event.is_group:
         return
-    if str(event.sender_id) in math_sessions:
-        del math_sessions[uid]
+    id = str(event.sender_id)
+    if id in math_sessions:
+        del math_sessions[id]
     await event.edit("تم تجاهل السؤال.")
 @ABH.on(events.NewMessage)
 async def check_math_answer(event):
     if not event.is_group:
-        uid = str(event.sender_id)
+        eventuid = str(event.sender_id)
         return
-    if uid in math_sessions:
+    if eventuid in math_sessions:
         try:
             user_answer = int(event.raw_text.strip())
         except ValueError:
             return
-        if user_answer == math_sessions[uid]:
+        if user_answer == math_sessions[eventuid]:
             x = 5000
             buttons=[Button.inline('فلوسك', b'moneymuch')]
             await event.reply(f"اجابة صحيحة 🎉 \n ربحت {x} نقطة.", buttons=buttons)
-            add_points(uid, str(event.chat_id), points, amount=x)
+            add_points(eventuid, str(event.chat_id), points, amount=x)
         else:
-            await event.reply(f"غلط , الاجابة هيه {math_sessions[uid]}")
-        del math_sessions[uid]
+            await event.reply(f"غلط , الاجابة هيه {math_sessions[eventuid]}")
+        del math_sessions[eventuid]
 @ABH.on(events.CallbackQuery(data=b'moneymuch'))
 async def show_money(event):
     if not event.is_group:
