@@ -32,14 +32,14 @@ async def handler(event):
     await react(event, d["emoji"])
     d["count"] -= 1
     if d["count"] <= 0:
-     await spams[uid]["id"].reply("تم الانتهاء من الإزعاج")
+     await event.reply("تم الانتهاء من الإزعاج")
      del spams[uid]
    return
  text = event.raw_text.strip()
  if text == "ازعاج" and event.is_reply:
   r = await event.get_reply_message()
   x = event.id
-  spams[uid] = {"stage": "count", "target": r.sender_id, "chat": cid, 'id': x}
+  spams[uid] = {"stage": "count", "target": r.sender_id, "chat": cid}
   await event.reply("عدد؟")
   return
  if uid in spams and spams[uid]["stage"] == "count":
