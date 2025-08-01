@@ -20,6 +20,7 @@ def save_data(data):
     with open(SPAM_FILE, "w", encoding="utf-8") as f:
         json.dump(data, f, ensure_ascii=False, indent=4)
 spams = {}
+sessions = {}
 @ABH.on(events.NewMessage)
 async def handler(event):
     if not event.is_group:
@@ -43,22 +44,28 @@ async def handler(event):
         if target_id == sender_id:
             await event.reply("لا يمكنك إزعاج نفسك.")
             return
-        spams[target_id] = {"stage": "count", "chat": chat_id}
+        sessions[sender_id] = {"target": target_id, "stage": "count", "chat": chat_id}
         await event.reply("عدد؟")
         return
-    for target_id, data in spams.items():
-        if data.get("stage") == "count" and data.get("chat") == chat_id:
+    if sender_id in sessions:
+        sess = sessions[sender_id]
+        if sess["chat"] == chat_id and sess["stage"] == "count":
             if text.isdigit() and int(text) > 0:
-                spams[target_id]["count"] = int(text)
-                spams[target_id]["stage"] = "emoji"
+                sess["count"] = int(text)
+                sess["stage"] = "emoji"
                 await event.reply("الإيموجي؟")
             else:
                 await event.reply("أرسل رقم صالح")
             return
-    for target_id, data in spams.items():
-        if data.get("stage") == "emoji" and data.get("chat") == chat_id:
-            spams[target_id]["emoji"] = text
-            spams[target_id]["stage"] = "active"
+        if sess["chat"] == chat_id and sess["stage"] == "emoji":
+            target_id = sess["target"]
+            spams[target_id] = {
+                "stage": "active",
+                "chat": chat_id,
+                "count": sess["count"],
+                "emoji": text
+            }
+            del sessions[sender_id]
             await event.reply("تم التفعيل")
             return
 @ABH.on(events.NewMessage(pattern='^/dates|مواعيد$'))
