@@ -26,7 +26,7 @@ async def spam_handler(event):
         return
     user_id = event.sender_id
     text = event.raw_text.strip()
-    if text.lower() == "ازعاج" and event.is_reply:
+    if text == "ازعاج" and event.is_reply:
         replied = await event.get_reply_message()
         spams[user_id] = {
             "stage": "count",
