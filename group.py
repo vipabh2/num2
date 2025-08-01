@@ -44,7 +44,10 @@ async def handler(event):
         if target_id == sender_id:
             await event.reply("لا يمكنك إزعاج نفسك.")
             return
-        user_points = points[event.sender_id][chat_id]["points"]
+        if uid in points and chat_id in points[uid]:
+            user_points = points[uid][chat_id]["points"]
+        else:
+            await hint(event, "لم يتم العثور على نقاط المستخدم.")
         if user_points < 50*1000:
             await event.reply("ما عندك الفلوس الكافيه علمود تسوي ولو واحد ازعاج")
             return
