@@ -39,8 +39,7 @@ async def new_math(event):
 async def ignore_math(event):
     if not event.is_group:
         return
-    uid = str(event.sender_id)
-    if uid in math_sessions:
+    if str(event.sender_id) in math_sessions:
         del math_sessions[uid]
     await event.edit("تم تجاهل السؤال.")
 @ABH.on(events.NewMessage)
