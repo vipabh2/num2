@@ -56,7 +56,7 @@ async def handler(event):
             await event.reply("عدد؟")
             return
     except Exception as e:
-        await hint(event, f"خطأ في handler: {str(e)}")
+        await hint( f"خطأ في handler: {str(e)}")
         return
     if sender_id in sessions:
         sess = sessions[sender_id]
