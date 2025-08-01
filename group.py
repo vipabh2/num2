@@ -5,11 +5,11 @@ from datetime import datetime, timedelta
 from Resources import hint, ment, react, wfffp
 from hijri_converter import Gregorian
 from googletrans import Translator
-from top import points, add_points
 from telethon import Button
 from ABH import ABH, events
 from other import botuse
 import asyncio, os, json
+from top import *
 SPAM_FILE = "spam.json"
 def load_data():
     if not os.path.exists(SPAM_FILE):
