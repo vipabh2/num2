@@ -47,6 +47,7 @@ async def handler(event):
             return
         if uid in points and chat_id in points[uid]:
             user_points = points[uid][chat_id]["points"]
+            return
         else:
             await hint("لم يتم العثور على نقاط المستخدم.")
         if user_points < 50*1000:
