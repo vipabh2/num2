@@ -47,6 +47,7 @@ async def ignore_math(event):
 async def check_math_answer(event):
     if not event.is_group:
         uid = str(event.sender_id)
+        return
     if uid in math_sessions:
         try:
             user_answer = int(event.raw_text.strip())
