@@ -20,7 +20,7 @@ def save_data(data):
     with open(SPAM_FILE, "w", encoding="utf-8") as f:
         json.dump(data, f, ensure_ascii=False, indent=4)
 spams = {}
-# @ABH.on(events.NewMessage)
+@ABH.on(events.NewMessage)
 async def handler(event):
  if not event.is_group: return
  uid = event.sender_id
