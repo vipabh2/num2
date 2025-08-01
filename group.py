@@ -1,324 +1,71 @@
-from telethon.tl.functions.channels import GetParticipantRequest
-from db import save_date, get_saved_date #type: ignore
-from ABH import ABH, events #type: ignore
-from datetime import datetime, timedelta
-from Resources import hint, ment, react, wfffp
-from hijri_converter import Gregorian
-from googletrans import Translator
-from telethon import Button
-from ABH import ABH, events
-from other import botuse
-import asyncio, os, json
-from top import *
-SPAM_FILE = "spam.json"
-def load_data():
-    if not os.path.exists(SPAM_FILE):
-        return {}
-    with open(SPAM_FILE, "r", encoding="utf-8") as f:
-        return json.load(f)
-def save_data(data):
-    with open(SPAM_FILE, "w", encoding="utf-8") as f:
-        json.dump(data, f, ensure_ascii=False, indent=4)
 spams={}
 sessions={}
 @ABH.on(events.NewMessage)
 async def handler(event):
- if not event.is_group or not event.sender_id==wfffp or event.sender_id==6520830528:
-  return
- sender_id=event.sender_id
- chat_id=event.chat_id
- uid=str(sender_id)
- text=event.raw_text.strip()
- if sender_id in spams:
-  d=spams[sender_id]
-  if chat_id==d["chat"] and d["stage"]=="active":
-   if d["count"]>0:
-    await react(event,d["emoji"])
-    d["count"]-=1
-    if d["count"]<=0:
-     await event.reply("تم الانتهاء من الإزعاج")
-     del spams[sender_id]
+ try:
+  if not event.is_group or event.sender_id!=wfffp or event.sender_id==6520830528:
    return
- if text=="ازعاج" and event.is_reply:
-  r=await event.get_reply_message()
-  target_id=r.sender_id
-  if target_id==sender_id:
-   await event.reply("لا يمكنك إزعاج نفسك.")
-   return
-  if uid in points and str(chat_id) in points[uid]:
-   user_points=points[uid][str(chat_id)]["points"]
-  else:
-   await hint("لم يتم العثور على نقاط المستخدم.")
-   return
-  if user_points<50000:
-   await event.reply("ما عندك الفلوس الكافيه علمود تسوي ولو واحد ازعاج")
-   return
-  sessions[sender_id]={"target":target_id,"stage":"count","chat":chat_id,"user_points":user_points}
-  await event.reply("عدد؟")
-  return
- if sender_id in sessions:
-  sess=sessions[sender_id]
-  if sess["chat"]==chat_id and sess["stage"]=="count":
-   if text.isdigit() and int(text)>0:
-    sess["count"]=int(text)
-    x=sess["count"]*50000
-    if sess["user_points"]<x:
-     h=sess["user_points"]//50000
-     await event.reply(f"ما عندك الفلوس الكافيه علمود تسوي ازعاج \n تكدر تسوي ب {h} ازعاج")
-     del sessions[sender_id]
-     return
-    sess["stage"]="emoji"
-    await event.reply("الإيموجي؟")
+  sender_id=event.sender_id
+  chat_id=event.chat_id
+  uid=str(sender_id)
+  text=event.raw_text.strip()
+  if sender_id in spams:
+   d=spams[sender_id]
+   if chat_id==d["chat"] and d["stage"]=="active":
+    if d["count"]>0:
+     await react(event,d["emoji"])
+     d["count"]-=1
+     if d["count"]<=0:
+      await event.reply("تم الانتهاء من الإزعاج")
+      del spams[sender_id]
+    return
+  if text=="ازعاج" and event.is_reply:
+   r=await event.get_reply_message()
+   target_id=r.sender_id
+   if target_id==sender_id:
+    await event.reply("لا يمكنك إزعاج نفسك.")
+    return
+   if uid in points and str(chat_id) in points[uid]:
+    user_points=points[uid][str(chat_id)]["points"]
    else:
-    await event.reply("أرسل رقم صالح")
+    await hint("لم يتم العثور على نقاط المستخدم.")
+    return
+   if user_points<50000:
+    await event.reply("ما عندك الفلوس الكافيه علمود تسوي ولو واحد ازعاج")
+    return
+   sessions[sender_id]={"target":target_id,"stage":"count","chat":chat_id,"user_points":user_points}
+   await event.reply("عدد؟")
    return
-  if sess["chat"]==chat_id and sess["stage"]=="emoji":
-   target_id=sess["target"]
-   spams[target_id]={
-    "stage":"active",
-    "chat":chat_id,
-    "count":sess["count"],
-    "emoji":text
-   }
-   uid=str(sender_id)
-   gid=str(chat_id)
-   points[uid][gid]["points"]-=sess["count"]*50000
-   save_points(points)
-   del sessions[sender_id]
-   await event.reply("تم التفعيل")
-   return
-@ABH.on(events.NewMessage(pattern='^/dates|مواعيد$'))
-async def show_dates(event):
-    if not event.is_group:
-        return
-    global uid, msg
-    type = "مواعيد"
-    await botuse(type)
-    btton = [[
-        Button.inline("محرم", b"m"),
-        Button.inline("رمضان", b"rm"),
-        Button.inline("شعبان", b"sh"),
-        Button.inline("رجب", b"r"),
-        Button.inline("حدد تاريخ", b"set_date")
-    ]]
-    msg = await event.respond("اختر الشهر المناسب أو حدد تاريخ خاص 👇", buttons=btton, reply_to=event.id)
-    uid = event.sender_id
-@ABH.on(events.CallbackQuery(data='set_date'))
-async def set_date(event):
-    المرسل_الثاني = event.sender_id
-    if المرسل_الثاني != uid:
-        await event.answer('عزيزي الامر لا يخصك', alert=True)
-        return
-    await event.edit("من فضلك أدخل التاريخ بصيغة YYYY-MM-DD مثال: 2025-06-15", buttons=None)
-@ABH.on(events.CallbackQuery(data='m'))
-async def handle_m(event):
-    x = (2026, 6, 17)
-    الان = datetime.today()
-    x_datetime = datetime(*x)
-    الباقي = x_datetime - الان
-    await event.edit(f'باقي {الباقي.days} لمحرم يوم', buttons=None)
-@ABH.on(events.CallbackQuery(data='rm'))
-async def handle_rm(event):
-    x = (2026, 2, 22)
-    الان = datetime.today()
-    x_datetime = datetime(*x)
-    الباقي = x_datetime - الان
-    await event.edit(f'باقي {الباقي.days} لرمضان يوم', buttons=None)
-@ABH.on(events.CallbackQuery(data='sh'))
-async def handle_sh(event):
-    x = (2026, 1, 22)
-    الان = datetime.today()
-    x_datetime = datetime(*x)
-    الباقي = x_datetime - الان
-    await msg.edit(f'باقي {الباقي.days} لشعبان يوم', buttons=None)
-@ABH.on(events.CallbackQuery(data='r'))
-async def handle_r(event):
-    x = (2025, 12, 22)
-    الان = datetime.today()
-    x_datetime = datetime(*x)
-    الباقي = x_datetime - الان
-    await event.edit(f'باقي {الباقي.days} لرجب يوم', buttons=None)
-@ABH.on(events.NewMessage(pattern=r'^\d{4}-\d{2}-\d{2}$'))
-async def set_user_date(event):
-    user_id = event.sender_id
-    date = event.text
-    try:
-        datetime.strptime(date, "%Y-%m-%d")
-        save_date(user_id, date)
-        await event.reply(f"تم حفظ التاريخ {date}. يمكنك الآن معرفة كم باقي.")
-    except ValueError:
-        await event.reply("التاريخ المدخل غير صالح، يرجى إدخاله بصيغة YYYY-MM-DD.")
-@ABH.on(events.NewMessage(pattern='^كم باقي$'))
-async def check_remaining_days(event):
-    if not event.is_group:
-        return
-    type = "كم باقي"
-    await botuse(type)
-    user_id = event.sender_id
-    saved_date = get_saved_date(user_id)
-    if saved_date:
-        t = datetime.today()
-        saved_date_obj = datetime.strptime(saved_date, "%Y-%m-%d").date()
-        days_difference = (saved_date_obj - t.date()).days
-        msg = f"باقي {days_difference} ايام" if days_difference >= 0 else f"التاريخ قد مضى منذ {abs(days_difference)} يوم"
-        await event.reply(msg)
+  if sender_id in sessions:
+   sess=sessions[sender_id]
+   if sess["chat"]==chat_id and sess["stage"]=="count":
+    if text.isdigit() and int(text)>0:
+     sess["count"]=int(text)
+     x=sess["count"]*50000
+     if sess["user_points"]<x:
+      h=sess["user_points"]//50000
+      await event.reply(f"ما عندك الفلوس الكافيه علمود تسوي ازعاج \n تكدر تسوي ب {h} ازعاج")
+      del sessions[sender_id]
+      return
+     sess["stage"]="emoji"
+     await event.reply("الإيموجي؟")
     else:
-        await event.reply("لم تحدد تاريخًا بعد، يرجى تحديد تاريخ أولاً.")
-@ABH.on(events.NewMessage(pattern='^تاريخ$'))
-async def today(event):
-    if not event.is_group:
-        return
-    type = "تاريخ"
-    await botuse(type)
-    tt = datetime.now().date()
-    tt_minus_one = tt - timedelta(days=1)
-    hd = Gregorian(tt_minus_one.year, tt_minus_one.month, tt_minus_one.day).to_hijri()
-    hd_str = f"{hd.day} {hd.month_name('ar')} {hd.year} هـ"
-    await event.reply(f"الهجري: \n{hd_str} \nالميلادي: \n{tt}")
-@ABH.on(events.NewMessage(pattern=r'كشف ايدي (\d+)'))
-async def link(event):
-    if not event.is_group:
-        return
-    type = "كشف ايدي"
-    await botuse(type)
-    global user
-    user_id = event.pattern_match.group(1)
-    if not user_id:
-        await event.reply("استخدم الأمر كـ `كشف ايدي 1910015590`")
-        return
-    try:
-        user = await event.client.get_entity(int(user_id))
-    except:
-        return await event.reply(f"لا يوجد حساب بهذا الآيدي...")
-    tag = await ment(user)
-    button = [Button.inline("تغيير إلى رابط", b"recgange")]
-    await event.reply(f"⌔︙{tag}", buttons=[button])
-@ABH.on(events.CallbackQuery(data=b"recgange"))
-async def chang(event):
-    await asyncio.sleep(3)
-    await event.edit(f"⌔︙رابط المستخدم: tg://user?id={user.id}")
-@ABH.on(events.NewMessage(pattern=r'(ترجمة|ترجمه)'))
-async def translation(event):
-    if not event.is_group:
-        return
-    type = "ترجمة"
-    await botuse(type)
-    translator = Translator()
-    if event.is_reply:
-        replied_message = await event.get_reply_message()
-        original_text = replied_message.text 
-    else:
-        command_parts = event.message.text.split(' ', 1)
-        original_text = command_parts[1] if len(command_parts) > 1 else None
-    if not original_text:
-        await event.reply("يرجى الرد على رسالة تحتوي على النص المراد ترجمته أو كتابة النص بجانب الأمر.")
-        
-        return
-    detected_language = await translator.detect(original_text)
-    if detected_language.lang == "ar": 
-        translated = await translator.translate(original_text, dest="en")
-    else: 
-        translated = await translator.translate(original_text, dest="ar")
-    response = (
-        f"اللغة المكتشفة: {detected_language.lang}\n"
-        f"النص المترجم: `{translated.text}`"
-    )
-    await event.reply(response)
-rights_translation = {
-    "change_info": "تغيير معلومات المجموعة",
-    "ban_users": "حظر الأعضاء",
-    "invite_users": "دعوة أعضاء",
-    "pin_messages": "تثبيت الرسائل",
-    "add_admins": "إضافة مشرفين",
-    "manage_call": "إدارة المكالمات الصوتية",
-    "anonymous": "الوضع المتخفي",
-    "manage_topics": "إدارة المواضيع",
-}
-def translate_rights_lines(rights_obj):
-    lines = []
-    for key, name in rights_translation.items():
-        status = getattr(rights_obj, key, False)
-        emoji = "👍🏾" if status else "👎🏾"
-        lines.append(f"{emoji} ⇜ {name}")
-    return "\n".join(lines) if lines else "لا يوجد صلاحيات"
-@ABH.on(events.NewMessage(pattern=r'^صلاحياته(?: (.+))?$'))
-async def his_rights(event):
-    if not event.is_group:
-        return
-    type = "صلاحياته"
-    await botuse(type)
-    try:
-        chat = await event.get_input_chat()
-        match = event.pattern_match.group(1)
-        if match:
-            target = match
-        else:
-            reply = await event.get_reply_message()
-            if not reply:
-                await event.reply("استخدم الرد على رسالة المستخدم أو أرسل معرفه بعد الأمر.")
-                return
-            target = reply.sender_id
-        result = await ABH(GetParticipantRequest(channel=chat, participant=target))
-        translated = translate_rights_lines(result.participant.admin_rights)
-        await event.reply(f"صلاحياته\n{translated}")
-    except Exception:
-        await event.reply("لا يمكن عرض الصلاحيات.")
-@ABH.on(events.NewMessage(pattern=r'^لقبه(?: (.+))?$'))
-async def nickname_r(event):
-    if not event.is_group:
-        return
-    type = "لقبه"
-    await botuse(type)
-    try:
-        chat = await event.get_input_chat()
-        match = event.pattern_match.group(1)
-        if match:
-            target = match
-        else:
-            reply = await event.get_reply_message()
-            if not reply:
-                await event.reply("استخدم الرد على رسالة المستخدم أو أرسل معرفه بعد الأمر.")
-                return
-            target = reply.sender_id
-        result = await ABH(GetParticipantRequest(channel=chat, participant=target))
-        participant = result.participant
-        nickname = getattr(participant, 'rank', None) or "مشرف"
-        await event.reply(f"لقبه ↞ {nickname}")
-    except Exception:
-        await event.reply("المستخدم ليس مشرفًا أو لا يمكن العثور عليه.")
-@ABH.on(events.NewMessage(pattern=r'^تاريخي|انضمامي|تاريخ انضمامي$'))
-async def my_date(event):
-    if not event.is_group:
-        return
-    type = "تاريخي"
-    await botuse(type)
-    try:
-        chat = await event.get_input_chat()
-        target = event.sender_id
-        result = await ABH(GetParticipantRequest(channel=chat, participant=target))
-        participant = result.participant
-        date_joined = participant.date.strftime("%Y-%m-%d %H:%M")
-        await event.reply(f"تاريخ الانضمام ↞ {date_joined}")
-    except Exception as e:
-        await event.reply("لا يمكن العثور على تاريخ الانضمام للمستخدم.")
-        await hint(event, f"خطأ: my_date {str(e)}")
-@ABH.on(events.NewMessage(pattern=r'^تاريخه|تاريخ انضمامه|تاريخ انضمامه$'))
-async def his_date(event):
-    if not event.is_group:
-        return
-    type = "تاريخه"
-    await botuse(type)
-    try:
-        chat = await event.get_input_chat()
-        reply = await event.get_reply_message()
-        if not reply:
-            await event.reply("استخدم الرد على رسالة المستخدم أو أرسل معرفه بعد الأمر.")
-            return
-        target = reply.sender_id
-        result = await ABH(GetParticipantRequest(channel=chat, participant=target))
-        participant = result.participant
-        date_joined = participant.date.strftime("%Y-%m-%d %H:%M")
-        await event.reply(f"تاريخ انضمامه ↞ {date_joined}")
-    except Exception as e:
-        await event.reply("لا يمكن العثور على تاريخ الانضمام للمستخدم.")
-        await hint(event, f"خطأ: his_date {str(e)}")
+     await event.reply("أرسل رقم صالح")
+    return
+   if sess["chat"]==chat_id and sess["stage"]=="emoji":
+    target_id=sess["target"]
+    spams[target_id]={
+     "stage":"active",
+     "chat":chat_id,
+     "count":sess["count"],
+     "emoji":text
+    }
+    uid=str(sender_id)
+    gid=str(chat_id)
+    points[uid][gid]["points"]-=sess["count"]*50000
+    save_points(points)
+    del sessions[sender_id]
+    await event.reply("تم التفعيل")
+    return
+ except Exception as e:
+  await event.reply(f"حدث خطأ: {e}")
