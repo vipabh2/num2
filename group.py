@@ -9,104 +9,121 @@ from telethon import Button
 from ABH import ABH, events
 from other import botuse
 import asyncio, os, json
-import json
-def load_points(filename="points.json"):
+
+points_file = "points.json"
+spam_file = "spam.json"
+
+def load_points(filename=points_file):
     try:
-        with open(filename, "r") as file:
-            return json.load(file)
+        with open(filename, "r") as f:
+            return json.load(f)
     except FileNotFoundError:
         return {}
-def save_points(data, filename="points.json"):
-    with open(filename, "w") as file:
-        json.dump(data, file, indent=4)
-points = load_points()
-def add_points(uid, gid, points, amount=0):
+
+def save_points(data, filename=points_file):
+    with open(filename, "w") as f:
+        json.dump(data, f, indent=4)
+
+def add_points(uid, gid, points_data, amount=0):
     uid, gid = str(uid), str(gid)
-    if uid not in points:
-        points[uid] = {}
-    if gid not in points[uid]:
-        points[uid][gid] = {"points": 0}
-    points[uid][gid]["points"] += amount
-    save_points(points)
-SPAM_FILE = "spam.json"
+    if uid not in points_data:
+        points_data[uid] = {}
+    if gid not in points_data[uid]:
+        points_data[uid][gid] = {"points": 0}
+    points_data[uid][gid]["points"] += amount
+    save_points(points_data)
+
 def load_data():
-    if not os.path.exists(SPAM_FILE):
+    if not os.path.exists(spam_file):
         return {}
-    with open(SPAM_FILE, "r", encoding="utf-8") as f:
+    with open(spam_file, "r", encoding="utf-8") as f:
         return json.load(f)
+
 def save_data(data):
-    with open(SPAM_FILE, "w", encoding="utf-8") as f:
+    with open(spam_file, "w", encoding="utf-8") as f:
         json.dump(data, f, ensure_ascii=False, indent=4)
-spams={}
-sessions={}
+
+points = load_points()
+spams = {}
+sessions = {}
 
 @ABH.on(events.NewMessage)
 async def handler(event):
- try:
-  if not event.is_group or event.sender_id!=wfffp or event.sender_id==6520830528:
-   return
-  user_id=event.sender_id
-  chat_id=event.chat_id
-  uid=str(user_id)
-  gid=str(chat_id)
-  text=event.raw_text.strip()
+    try:
+        if not event.is_group or event.sender_id != wfffp or event.sender_id == 6520830528:
+            return
+        user_id = event.sender_id
+        chat_id = event.chat_id
+        uid, gid = str(user_id), str(chat_id)
+        text = event.raw_text.strip()
 
-  if user_id in spams:
-   s=spams[user_id]
-   if chat_id==s["chat"] and s["stage"]=="active":
-    if s["count"]>0:
-     await react(event,s["emoji"])
-     s["count"]-=1
-     if s["count"]<=0:
-      await event.reply("تم الانتهاء من الإزعاج")
-      del spams[user_id]
-    return
+        if user_id in spams:
+            s = spams[user_id]
+            if chat_id == s["chat"] and s["stage"] == "active":
+                if s["count"] > 0:
+                    await react(event, s["emoji"])
+                    s["count"] -= 1
+                    if s["count"] <= 0:
+                        await event.reply("تم الانتهاء من الإزعاج")
+                        del spams[user_id]
+                return
 
-  if text=="ازعاج" and event.is_reply:
-   r=await event.get_reply_message()
-   target_id=r.sender_id
-   if target_id==user_id:
-    await event.reply("لا يمكنك إزعاج نفسك.")
-    return
-   if uid in points and gid in points[uid]:
-    user_points=points[uid][gid]["points"]
-   else:
-    await hint("لم يتم العثور على نقاط المستخدم.")
-    return
-   if user_points<50000:
-    await event.reply("ما عندك الفلوس الكافيه علمود تسوي ولو واحد ازعاج")
-    return
-   sessions[user_id]={"target":target_id,"stage":"await_count","chat":chat_id,"points":user_points}
-   await event.reply("عدد؟")
-   return
-  if user_id in sessions:
-   s=sessions[user_id]
-   if s["chat"]!=chat_id:
-    return
-   if s["stage"]=="await_count":
-    if text.isdigit() and int(text)>0:
-     c=int(text)
-     cost=c*50000
-     if s["points"]<cost:
-      h=s["points"]//50000
-      await event.reply(f"ما عندك الفلوس الكافيه علمود تسوي ازعاج\nتكدر تسوي بـ {h} ازعاج")
-      del sessions[user_id]
-      return
-     s["count"]=c
-     s["stage"]="await_emoji"
-     await event.reply("الإيموجي؟")
-    else:
-     await event.reply("أرسل رقم صالح")
-    return
-   if s["stage"]=="await_emoji":
-    spams[s["target"]]={"stage":"active","chat":chat_id,"count":s["count"],"emoji":text}
-    points[uid][gid]["points"]-=s["count"]*50000
-    save_points(points)
-    del sessions[user_id]
-    await event.reply("تم التفعيل")
-    return
- except Exception as e:
-  await event.reply(f"حدث خطأ: {e}")
+        if text == "ازعاج" and event.is_reply:
+            r = await event.get_reply_message()
+            target_id = r.sender_id
+            if target_id == user_id:
+                await event.reply("لا يمكنك إزعاج نفسك.")
+                return
+            if uid in points and gid in points[uid]:
+                user_points = points[uid][gid]["points"]
+            else:
+                await hint("لم يتم العثور على نقاط المستخدم.")
+                return
+            if user_points < 50000:
+                await event.reply("ما عندك الفلوس الكافيه علمود تسوي ولو واحد ازعاج")
+                return
+            sessions[user_id] = {
+                "target": target_id,
+                "stage": "await_count",
+                "chat": chat_id,
+                "points": user_points
+            }
+            await event.reply("عدد؟")
+            return
+
+        if user_id in sessions:
+            s = sessions[user_id]
+            if s["chat"] != chat_id:
+                return
+            if s["stage"] == "await_count":
+                if text.isdigit() and int(text) > 0:
+                    count = int(text)
+                    cost = count * 50000
+                    if s["points"] < cost:
+                        h = s["points"] // 50000
+                        await event.reply(f"ما عندك الفلوس الكافيه علمود تسوي ازعاج\nتكدر تسوي بـ {h} ازعاج")
+                        del sessions[user_id]
+                        return
+                    s["count"] = count
+                    s["stage"] = "await_emoji"
+                    await event.reply("الإيموجي؟")
+                else:
+                    await event.reply("أرسل رقم صالح")
+                return
+            if s["stage"] == "await_emoji":
+                spams[s["target"]] = {
+                    "stage": "active",
+                    "chat": chat_id,
+                    "count": s["count"],
+                    "emoji": text
+                }
+                points[uid][gid]["points"] -= s["count"] * 50000
+                save_points(points)
+                del sessions[user_id]
+                await event.reply("تم التفعيل")
+                return
+    except Exception as e:
+        await event.reply(f"حدث خطأ: {e}")
 @ABH.on(events.NewMessage(pattern='^/dates|مواعيد$'))
 async def show_dates(event):
     if not event.is_group:
