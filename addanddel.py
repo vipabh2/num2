@@ -1,12 +1,12 @@
 from telethon.tl.types import ChannelParticipantAdmin, ChannelParticipantCreator, ChatAdminRights
+from Resources import get_owner, react, mention, can_add_admins, ment, wfffp #type: ignore
 from telethon.tl.functions.channels import GetParticipantRequest, EditAdminRequest
-from top import points, add_user, save_points
+from top import points, add_user, save_points#type: ignore
 from telethon import events, Button
 from guard import is_admin
-from Program import chs
-from other import botuse
-from Resources import *
-from ABH import ABH
+from other import botuse #type: ignore
+from Program import chs #type: ignore
+from ABH import ABH #type: ignore
 @ABH.on(events.NewMessage(pattern=r"^تغيير لقبي\s*(.*)$"))
 async def change_own_rank(event):
     if not event.is_group:
