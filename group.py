@@ -1,8 +1,8 @@
 from telethon.tl.functions.channels import GetParticipantRequest
 from db import save_date, get_saved_date #type: ignore
+from Resources import hint, ment, chs, react, wfffp
 from ABH import ABH, events #type: ignore
 from datetime import datetime, timedelta
-from Resources import hint, ment, react, wfffp
 from hijri_converter import Gregorian
 from googletrans import Translator
 from telethon import Button
@@ -20,66 +20,44 @@ def save_spam(data):
     with open(spam_file, 'w', encoding='utf-8') as f:
         json.dump(data, f, ensure_ascii=False, indent=4)
 sessions = {}
-@ABH.on(events.NewMessage)
+@ABH.on(events.NewMessage(pattern=r'^ازعاج (?:\s+(\d{1,2}))?(?:\s+(.+))?$'))
 async def handle_spam(event):
-    if not event.is_group:
+    much = event.pattern_match.group(1)
+    text = event.pattern_match.group(2)
+    if not much or not text:
+        await react(event, "🤔")
+        await chs(event, "استخدم الامر ك `ازعاج 4 🌚`")
         return
-    user_id = str(event.sender_id)
-    chat_id = str(event.chat_id)
-    text = event.raw_text.strip()
-    if chat_id not in sessions:
-        sessions[chat_id] = {}
-    if text == 'ازعاج':
-        if not event.is_reply:
-            await event.reply("عذرًا، يجب الرد على رسالة المستخدم الذي تريد إزعاجه.")
-            await react(event, "🤔")
-            return
-        reply = await event.get_reply_message()
-        target_id = str(reply.sender_id)
-        if target_id == user_id:
-            await event.reply("لا يمكنك إزعاج نفسك.")
-            await react(event, "😅")
-            return
-        sessions[chat_id][user_id] = {
-            'id': target_id,
-            "step": "await_count"
-        }
-        await event.reply("كم عدد المرات؟")
-        response = await event.client.wait_for(events.NewMessage(from_users=event.sender_id, chats=event.chat_id))
-        if not response.text or not response.text.isdigit():
-            await event.reply("يرجى إرسال رقم صحيح.")
-            await react(event, "🤔")
-            sessions[chat_id].pop(user_id, None)
-            return
-        count = int(response.text)
-        if count < 1 or count > 50:
-            await event.reply("العدد يجب أن يكون بين 1 و 50.")
-            await react(event, "⚠️")
-            sessions[chat_id].pop(user_id, None)
-            return
-        sessions[chat_id][user_id].update({
-            "count": count,
-            "step": "await_emoji"
-        })
-        await event.reply("ما الإيموجي الذي تريد استخدامه؟")
-        emoji_response = await event.client.wait_for(events.NewMessage(from_users=event.sender_id, chats=event.chat_id))
-        emoji = emoji_response.raw_text.strip()
-        if not emoji:
-            await event.reply("يرجى إرسال إيموجي صالح.")
-            await react(event, "🤔")
-            sessions[chat_id].pop(user_id, None)
-            return
-        sessions[chat_id][user_id].update({
-            "emoji": emoji,
-            "step": "done"
-        })
-        await event.reply(
-            f"تم الإعداد بنجاح!\n"
-            f"سيتم إرسال {count} × {emoji} إلى المستخدم."
-        )
-        for i in range(count):
-            await event.respond(f"{emoji}", reply_to=int(target_id))
-        sessions[chat_id].pop(user_id, None)
+    if not much.isdigit() or int(much) < 1 or int(much) > 50:
+        await react(event, "🤔")
+        await chs(event, "استخدم الامر ك `ازعاج 4 🌚` \n اكثر من 0 و اقل من 50 ")
+        return
+    if not text:
+        await react(event, "🤔")
+        await chs(event, "استخدم الامر ك `ازعاج 4 🌚` \n ثم رد علئ رسالة")
+        return
+    much = int(much)
+    r = await event.get_reply_message()
+    if not r:
+        await react(event, "🤔")
+        await chs(event, "استخدم الامر ك `ازعاج 4 🌚` \n ثم رد علئ رسالة")
+        return
+    if r.sender_id == ABH.uid:
+        await react(event, "🤔")
+        await chs(event, "لا يمكنك ازعاجي 😒")
+        return
+    if r.sender_id == event.sender_id:
+        await react(event, "🤔")
+        await chs(event, "لا يمكنك ازعاج نفسك 😒")
+        return
+    if r.sender_id == wfffp:
+        await react(event, "🤔")
+        await chs(event, "لا يمكنك ازعاج عمك 😒")
+        return
+    if r.is_bot:
+        await react(event, "🤔")
+        await chs(event, "لا يمكنك ازعاج البوتات 😒")
+        return    
 @ABH.on(events.NewMessage(pattern='^/dates|مواعيد$'))
 async def show_dates(event):
     if not event.is_group:
