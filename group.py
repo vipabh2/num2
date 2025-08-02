@@ -5,6 +5,7 @@ from ABH import ABH, events #type: ignore
 from datetime import datetime, timedelta
 from hijri_converter import Gregorian
 from googletrans import Translator
+from top import points, delpoints
 from telethon import Button
 from ABH import ABH, events
 from other import botuse
@@ -21,11 +22,19 @@ def save_spam(data):
     with open(spam_file, 'w', encoding='utf-8') as f:
         json.dump(data, f, ensure_ascii=False, indent=4)
 sessions = {}
+emoji = [
+    "🤣", "❤️", "👍", "👎", "🔥", "🥰", "👏", "😁", "🤔", "🤯", "😱", "🤬", "😡", "😢", "🎉", "🤩", "🤮", "💩", "🙏", "👌", "🕊",
+    "🤡", "🥱", "☺️", "😍", "🐳", "❤️‍🔥", "🌚", "🌭", "😙", "💯", "⚡️", "🍌", "🏆", "😡", "😘", "🙊", "😎", "👾", "🤷‍♂️",
+    "🤷‍♀️", "🤷", "☃️", "🗿", "🆒", "💘", "🙈", "😇", "😨", "🤝", "✍️", "🤗", "🫡", "🎅", "🎄", "😴", "😭", "🤓", "👻",
+    "👨‍💻", "👀", "🎃", "🙈", "💔", "🤨", "😐", "🍓", "🍾", "💋", "🖕", "😈"
+]
 @ABH.on(events.NewMessage(pattern=r'^ازعاج(?:\s+(\d{1,2}))?(?:\s+(.+))?$'))
 async def handle_spam(event):
     much = event.pattern_match.group(1)
     text = event.pattern_match.group(2)
     r = await event.get_reply_message()
+    id = event.sender_id
+    gid = event.chat_id
     if not r:
         await react(event, "🤔")
         await chs(event, "استخدم الامر ك `ازعاج 4 🌚` \n ثم رد علئ رسالة")
@@ -41,6 +50,15 @@ async def handle_spam(event):
     if not text:
         await react(event, "🤔")
         await chs(event, "استخدم الامر ك `ازعاج 4 🌚` \n ثم رد علئ رسالة")
+        return
+    if len(text) > 1:
+        await react(event, "🤔")
+        await chs(event, "استخدم الامر ك `ازعاج 4 🌚` \n ايموجي واحد فقط")
+        return
+    if text not in emoji:
+        await react(event, "🤔")
+        await chs(event, f"استخدم الامر ك `ازعاج 4 🌚` \n الايموجي غير صالح ```` {' '.join(emoji)} ```"
+        )
         return
     much = int(much)
     uid = (await ABH.get_me()).id
@@ -59,7 +77,25 @@ async def handle_spam(event):
     if r.is_bot:
         await react(event, "🤔")
         await chs(event, "لا يمكنك ازعاج البوتات 😒")
-        return    
+        return
+    money = points[str(uid)][str(gid)]["points"]
+    if money < 50000:
+        await react(event, "🤣")
+        await chs(event, "ليس لديك ما يكفي من النقاط لعمل ازعاج 😒")
+        return
+    ء = money // 50000
+    if ء < 1:
+        await react(event, "🤣")
+        await chs(event, "ليس لديك ما يكفي من النقاط لعمل ازعاج 😒")
+        return
+    b = [Button.inline("نعم", b"yes"), Button.inline("لا", b"no")]
+    await event.respond(f'هل تريد ازعاج {much} مرات بـ "{text}"؟\n\nسيتم خصم {ء} نقاط من رصيدك.', buttons=[b], reply_to=event.id)
+    # delpoints(uid, gid, points, ء)
+    sessions[gid] = {
+        "much": much,
+        "text": text,
+        "reply_to": event.id
+    }
 @ABH.on(events.NewMessage(pattern='^/dates|مواعيد$'))
 async def show_dates(event):
     if not event.is_group:
