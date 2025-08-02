@@ -5,9 +5,10 @@ from ABH import ABH, events #type: ignore
 from datetime import datetime, timedelta
 from hijri_converter import Gregorian
 from googletrans import Translator
-from telethon import Button
 from ABH import ABH, events
+from telethon import Button
 from other import botuse
+from Program import chs
 import asyncio, os, json
 spam_file = "spam.json"
 if not os.path.exists(spam_file):
