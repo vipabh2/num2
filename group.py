@@ -1,14 +1,13 @@
 from telethon.tl.functions.channels import GetParticipantRequest
 from db import save_date, get_saved_date #type: ignore
-from Resources import hint, ment, react, wfffp
+from Resources import hint, ment, chs, react, wfffp
 from ABH import ABH, events #type: ignore
 from datetime import datetime, timedelta
 from hijri_converter import Gregorian
 from googletrans import Translator
-from ABH import ABH, events
 from telethon import Button
+from ABH import ABH, events
 from other import botuse
-from Program import chs
 import asyncio, os, json
 spam_file = "spam.json"
 if not os.path.exists(spam_file):
@@ -43,7 +42,8 @@ async def handle_spam(event):
         await chs(event, "استخدم الامر ك `ازعاج 4 🌚` \n ثم رد علئ رسالة")
         return
     much = int(much)
-    if r.sender_id == ABH.uid:
+    uid = (await ABH.get_me()).id
+    if r.sender_id == uid:
         await react(event, "🤔")
         await chs(event, "لا يمكنك ازعاجي 😒")
         return
