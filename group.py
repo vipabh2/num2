@@ -1,13 +1,12 @@
 from telethon.tl.functions.channels import GetParticipantRequest
 from db import save_date, get_saved_date #type: ignore
-from Resources import hint, ment, react, wfffp
+from Resources import hint, ment, chs, react, wfffp
 from ABH import ABH, events #type: ignore
 from datetime import datetime, timedelta
 from hijri_converter import Gregorian
 from googletrans import Translator
 from telethon import Button
 from ABH import ABH, events
-from Program import chs
 from other import botuse
 import asyncio, os, json
 spam_file = "spam.json"
@@ -20,12 +19,16 @@ def load_spam():
 def save_spam(data):
     with open(spam_file, 'w', encoding='utf-8') as f:
         json.dump(data, f, ensure_ascii=False, indent=4)
-
 sessions = {}
-@ABH.on(events.NewMessage(pattern=r'^ازعاج (?:\s+(\d{1,2}))?(?:\s+(.+))?$'))
+@ABH.on(events.NewMessage(pattern=r'^ازعاج(?:\s+(\d{1,2}))?(?:\s+(.+))?$'))
 async def handle_spam(event):
     much = event.pattern_match.group(1)
     text = event.pattern_match.group(2)
+    r = await event.get_reply_message()
+    if not r:
+        await react(event, "🤔")
+        await chs(event, "استخدم الامر ك `ازعاج 4 🌚` \n ثم رد علئ رسالة")
+        return
     if not much or not text:
         await react(event, "🤔")
         await chs(event, "استخدم الامر ك `ازعاج 4 🌚`")
@@ -39,11 +42,6 @@ async def handle_spam(event):
         await chs(event, "استخدم الامر ك `ازعاج 4 🌚` \n ثم رد علئ رسالة")
         return
     much = int(much)
-    r = await event.get_reply_message()
-    if not r:
-        await react(event, "🤔")
-        await chs(event, "استخدم الامر ك `ازعاج 4 🌚` \n ثم رد علئ رسالة")
-        return
     if r.sender_id == ABH.uid:
         await react(event, "🤔")
         await chs(event, "لا يمكنك ازعاجي 😒")
