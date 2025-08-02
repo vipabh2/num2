@@ -26,36 +26,60 @@ async def handle_spam(event):
         return
     user_id = str(event.sender_id)
     chat_id = str(event.chat_id)
-    text = event.raw_text
+    text = event.raw_text.strip()
+    if chat_id not in sessions:
+        sessions[chat_id] = {}
     if text == 'ازعاج':
         if not event.is_reply:
-            await event.reply("عذرا بس لازم تسوي رد علئ شخص.")
+            await event.reply("عذرًا، يجب الرد على رسالة المستخدم الذي تريد إزعاجه.")
             await react(event, "🤔")
             return
         reply = await event.get_reply_message()
-        id = reply.sender_id
-        sessions[chat_id][user_id] = {'id': id, "step": "much"}
-        await event.reply("عدد")
-        text = await event.client.wait_for(events.NewMessage(from_users=event.sender_id, chats=event.chat_id))
-        if not text.text.isdigit():
-            await event.reply("عذرا بس لازم تكتب رقم.")
-            await react(event, "🤔")
+        target_id = str(reply.sender_id)
+        if target_id == user_id:
+            await event.reply("لا يمكنك إزعاج نفسك.")
+            await react(event, "😅")
             return
-        count = int(text.text)
+        sessions[chat_id][user_id] = {
+            'id': target_id,
+            "step": "await_count"
+        }
+        await event.reply("كم عدد المرات؟")
+        response = await event.client.wait_for(events.NewMessage(from_users=event.sender_id, chats=event.chat_id))
+        if not response.text or not response.text.isdigit():
+            await event.reply("يرجى إرسال رقم صحيح.")
+            await react(event, "🤔")
+            sessions[chat_id].pop(user_id, None)
+            return
+        count = int(response.text)
         if count < 1 or count > 50:
-            await event.reply("العدد لازم يكون بين 1 و 50.")
-            await react(event, "🤔")
+            await event.reply("العدد يجب أن يكون بين 1 و 50.")
+            await react(event, "⚠️")
+            sessions[chat_id].pop(user_id, None)
             return
-        sessions[chat_id][user_id] = {'id': id, "step": "emoji", "count": count}
-        await event.reply("والايموجي")
-        text = await event.client.wait_for(events.NewMessage(from_users=event.sender_id, chats=event.chat_id))
-        if not text.text:
-            await event.reply("عذرا بس لازم تكتب ايموجي.")
+        sessions[chat_id][user_id].update({
+            "count": count,
+            "step": "await_emoji"
+        })
+        await event.reply("ما الإيموجي الذي تريد استخدامه؟")
+        emoji_response = await event.client.wait_for(events.NewMessage(from_users=event.sender_id, chats=event.chat_id))
+        emoji = emoji_response.raw_text.strip()
+        if not emoji:
+            await event.reply("يرجى إرسال إيموجي صالح.")
             await react(event, "🤔")
+            sessions[chat_id].pop(user_id, None)
             return
-        emoji = text.text
-        sessions[chat_id][user_id] = {'id': id, "step": "done", "count": count, "emoji": emoji}
-        await event.reply(f"{sessions[chat_id][user_id]}")
+        sessions[chat_id][user_id].update({
+            "emoji": emoji,
+            "step": "done"
+        })
+        await event.reply(
+            f"تم الإعداد بنجاح!\n"
+            f"سيتم إرسال {count} × {emoji} إلى المستخدم."
+        )
+        for i in range(count):
+            await event.respond(f"{emoji}", reply_to=int(target_id))
+        sessions[chat_id].pop(user_id, None)
 @ABH.on(events.NewMessage(pattern='^/dates|مواعيد$'))
 async def show_dates(event):
     if not event.is_group:
