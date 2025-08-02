@@ -1,6 +1,6 @@
 from telethon.tl.functions.channels import GetParticipantRequest
 from db import save_date, get_saved_date #type: ignore
-from Resources import hint, ment, chs, react, wfffp
+from Resources import hint, ment, react, wfffp
 from ABH import ABH, events #type: ignore
 from datetime import datetime, timedelta
 from hijri_converter import Gregorian
