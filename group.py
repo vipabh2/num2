@@ -74,7 +74,7 @@ async def handle_spam(event):
         await react(event, "🤔")
         await chs(event, "لا يمكنك ازعاج عمك 😒")
         return
-    if r.is_bot:
+    if r.sender.bot:
         await react(event, "🤔")
         await chs(event, "لا يمكنك ازعاج البوتات 😒")
         return
