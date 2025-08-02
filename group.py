@@ -29,7 +29,7 @@ sessions = {}
 
 @ABH.on(events.NewMessage)
 async def handle_spam(event):
-    if not event.is_group:
+    if not event.is_group or event.sender_id is None:
         return
 
     spam_data = load_spam()
@@ -74,7 +74,7 @@ async def handle_spam(event):
                 s["stage"] = "await_emoji"
                 await event.reply("الإيموجي؟")
             else:
-                await event.reply("أرسل رقم صالح")
+                await event.reply("أرسل رقمًا صالحًا.")
             return
 
         if s["stage"] == "await_emoji":
@@ -86,7 +86,7 @@ async def handle_spam(event):
             }
             save_spam(spam_data)
             del sessions[user_id]
-            await event.reply("تم التفعيل")
+            await event.reply("تم التفعيل.")
             return
 @ABH.on(events.NewMessage(pattern='^/dates|مواعيد$'))
 async def show_dates(event):
