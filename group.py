@@ -1,12 +1,13 @@
 from telethon.tl.functions.channels import GetParticipantRequest
 from db import save_date, get_saved_date #type: ignore
-from Resources import hint, ment, chs, react, wfffp
+from Resources import hint, ment, react, wfffp
 from ABH import ABH, events #type: ignore
 from datetime import datetime, timedelta
 from hijri_converter import Gregorian
 from googletrans import Translator
 from telethon import Button
 from ABH import ABH, events
+from Program import chs
 from other import botuse
 import asyncio, os, json
 spam_file = "spam.json"
@@ -19,6 +20,7 @@ def load_spam():
 def save_spam(data):
     with open(spam_file, 'w', encoding='utf-8') as f:
         json.dump(data, f, ensure_ascii=False, indent=4)
+
 sessions = {}
 @ABH.on(events.NewMessage(pattern=r'^ازعاج (?:\s+(\d{1,2}))?(?:\s+(.+))?$'))
 async def handle_spam(event):
