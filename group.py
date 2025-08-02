@@ -9,85 +9,53 @@ from telethon import Button
 from ABH import ABH, events
 from other import botuse
 import asyncio, os, json
-import os, json
-from telethon import events
-
 spam_file = "spam.json"
 if not os.path.exists(spam_file):
     with open(spam_file, 'w', encoding='utf-8') as f:
         json.dump({}, f, ensure_ascii=False, indent=4)
-
 def load_spam():
     with open(spam_file, 'r', encoding='utf-8') as f:
         return json.load(f)
-
 def save_spam(data):
     with open(spam_file, 'w', encoding='utf-8') as f:
         json.dump(data, f, ensure_ascii=False, indent=4)
-
 sessions = {}
-
 @ABH.on(events.NewMessage)
 async def handle_spam(event):
-    if not event.is_group or event.sender_id is None:
+    if not event.is_group:
         return
-
-    spam_data = load_spam()
     user_id = str(event.sender_id)
     chat_id = str(event.chat_id)
     text = event.raw_text
-
-    if user_id in spam_data:
-        s = spam_data[user_id]
-        if s["chat"] == chat_id and s["stage"] == "active":
-            if s["count"] > 0:
-                await react(event, s["emoji"])
-                s["count"] -= 1
-                if s["count"] <= 0:
-                    del spam_data[user_id]
-                    await event.reply("تم الانتهاء من الإزعاج")
-                save_spam(spam_data)
-        return
-
-    if text == "ازعاج" and event.is_reply:
-        r = await event.get_reply_message()
-        target_id = str(r.sender_id)
-        if target_id == user_id:
-            await event.reply("لا يمكنك إزعاج نفسك.")
+    if text == 'ازعاج':
+        if not event.is_reply:
+            await event.reply("عذرا بس لازم تسوي رد علئ شخص.")
+            await react(event, "🤔")
             return
-        sessions[user_id] = {
-            "chat": chat_id,
-            "stage": "await_count",
-            "target": target_id
-        }
-        await event.reply("عدد؟")
-        return
-
-    if user_id in sessions:
-        s = sessions[user_id]
-        if s["chat"] != chat_id:
+        reply = await event.get_reply_message()
+        id = reply.sender_id
+        sessions[chat_id][user_id] = {'id': id, "step": "much"}
+        await event.reply("عدد")
+        text = await event.client.wait_for(events.NewMessage(from_users=event.sender_id, chats=event.chat_id))
+        if not text.text.isdigit():
+            await event.reply("عذرا بس لازم تكتب رقم.")
+            await react(event, "🤔")
             return
-
-        if s["stage"] == "await_count":
-            if text.isdigit() and int(text) > 0:
-                s["count"] = int(text)
-                s["stage"] = "await_emoji"
-                await event.reply("الإيموجي؟")
-            else:
-                await event.reply("أرسل رقمًا صالحًا.")
+        count = int(text.text)
+        if count < 1 or count > 50:
+            await event.reply("العدد لازم يكون بين 1 و 50.")
+            await react(event, "🤔")
             return
-
-        if s["stage"] == "await_emoji":
-            spam_data[s["target"]] = {
-                "chat": chat_id,
-                "stage": "active",
-                "count": s["count"],
-                "emoji": text
-            }
-            save_spam(spam_data)
-            del sessions[user_id]
-            await event.reply("تم التفعيل.")
+        sessions[chat_id][user_id] = {'id': id, "step": "emoji", "count": count}
+        await event.reply("والايموجي")
+        text = await event.client.wait_for(events.NewMessage(from_users=event.sender_id, chats=event.chat_id))
+        if not text.text:
+            await event.reply("عذرا بس لازم تكتب ايموجي.")
+            await react(event, "🤔")
             return
+        emoji = text.text
+        sessions[chat_id][user_id] = {'id': id, "step": "done", "count": count, "emoji": emoji}
+        await event.reply(f"{sessions[chat_id][user_id]}")
 @ABH.on(events.NewMessage(pattern='^/dates|مواعيد$'))
 async def show_dates(event):
     if not event.is_group:
