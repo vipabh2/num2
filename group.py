@@ -78,12 +78,17 @@ async def handle_spam(event):
         await react(event, "🤔")
         await chs(event, "لا يمكنك ازعاج البوتات 😒")
         return
-    money = points[str(uid)][str(gid)]["points"]
-    if money < 50000:
+    uid = str(event.sender_id)
+    gid = str(event.chat_id)
+    if uid in points and gid in points[uid]:
+        m = points[uid][gid]['points']
+    else:
+        m = 0
+    if m < 50000:
         await react(event, "🤣")
         await chs(event, "ليس لديك ما يكفي من النقاط لعمل ازعاج 😒")
         return
-    ء = money // 50000
+    ء = m // 50000
     if ء < 1:
         await react(event, "🤣")
         await chs(event, "ليس لديك ما يكفي من النقاط لعمل ازعاج 😒")
