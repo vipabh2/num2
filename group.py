@@ -35,7 +35,7 @@ async def handle_spam(event):
     spam_data = load_spam()
     user_id = str(event.sender_id)
     chat_id = str(event.chat_id)
-    text = event.raw_text.strip()
+    text = event.raw_text
 
     if user_id in spam_data:
         s = spam_data[user_id]
