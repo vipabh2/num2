@@ -8,6 +8,7 @@ from googletrans import Translator
 from telethon import Button
 from ABH import ABH, events
 from other import botuse
+from Program import chs
 import asyncio, os, json
 spam_file = "spam.json"
 if not os.path.exists(spam_file):
