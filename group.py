@@ -88,7 +88,7 @@ async def handle_spam(event):
         await react(event, "🤣")
         await chs(event, "ليس لديك ما يكفي من النقاط لعمل ازعاج 😒")
         return
-    ء = m // 50000
+    ء = m * 50000
     if ء < 1:
         await react(event, "🤣")
         await chs(event, "ليس لديك ما يكفي من النقاط لعمل ازعاج 😒")
