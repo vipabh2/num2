@@ -241,7 +241,6 @@ async def yes_callback(event):
     try:
         msg = await event.get_message()
         uid, الرابط, mention_text, date_posted, date_edited = report_data.get(msg.id, (None, None, None, None, None))
-        print(uid, الرابط, mention_text, date_posted, date_edited)
         if uid and الرابط and mention_text:
             m = await mention(event)
             await event.edit(
