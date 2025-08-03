@@ -16,8 +16,15 @@ if not os.path.exists(spam_file):
     with open(spam_file, 'w', encoding='utf-8') as f:
         json.dump({}, f, ensure_ascii=False, indent=4)
 def load_spam():
-    with open(spam_file, 'r', encoding='utf-8') as f:
-        return json.load(f)
+    try:
+        with open(spam_file, 'r', encoding='utf-8') as f:
+            data = json.load(f)
+            if isinstance(data, dict):
+                return data
+            else:
+                return {}
+    except (FileNotFoundError, json.JSONDecodeError):
+        return {}
 def spam(data):
     with open(spam_file, 'w', encoding='utf-8') as f:
         json.dump(data, f, ensure_ascii=False, indent=4)
