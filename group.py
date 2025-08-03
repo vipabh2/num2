@@ -37,6 +37,9 @@ emoji = [
 ]
 @ABH.on(events.NewMessage(pattern=r'^ازعاج(?:\s+(\d{1,2}))?(?:\s+(.+))?$'))
 async def handle_spam(event):
+    if not event.is_group:
+        return
+    await botuse("ازعاج")
     much = event.pattern_match.group(1)
     text = event.pattern_match.group(2)
     r = await event.get_reply_message()
