@@ -112,6 +112,7 @@ async def monitor_messages(event):
     if gid in data and uid in data[gid]:
         c = data['count']
         if c > 0:
+            await event.reply(',')
             await react(event, data['text'])
     user_id = event.sender_id
     now = int(time.time())
