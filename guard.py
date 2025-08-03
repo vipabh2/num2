@@ -109,7 +109,7 @@ async def monitor_messages(event):
         return
     data = load_spam()
     gid = str(event.chat_id)
-    uid = str(event.sender_id)
+    uid = event.sender_id
     if gid in data and uid in data[gid]:
         info = data[gid][uid]
         text = info.get('text', '')
