@@ -121,7 +121,7 @@ async def confirm_spam(event):
             await event.answer("انتهت الجلسة (قيمة ناقصة)", alert=True)
             return
         await event.respond(f'تم تفعيل الازعاج {much} مرات بـ "{text}"')
-        delpoints(event.sender_id, event.chat_id, much * 50000)
+        delpoints(event.sender_id, event.chat_id, points, much * 50000)
         if gid not in d:
             d[gid] = []
         d[gid].append({
