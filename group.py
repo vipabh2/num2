@@ -117,7 +117,11 @@ async def confirm_spam(event):
         rid = data["id"]
         await event.respond(f'تم تفعيل الازعاج {much} مرات بـ "{text}"')
         delpoints(event.sender_id, event.chat_id, much * 50000)
-        x[event.chat_id][rid] = {
+        gid = str(event.chat_id)
+        uid = str(rid)
+        if gid not in x:
+            x[gid] = {}
+        x[gid][uid] = {
             "much": much,
             "text": text,
             "id": rid,
