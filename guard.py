@@ -108,7 +108,8 @@ async def monitor_messages(event):
         return
     data = load_spam()
     gid = str(event.chat_id)
-    if gid in data and str(event.sender_id) in data[gid]:
+    uid = str(event.sender_id)
+    if gid in data and uid in data[gid]:
         c = data['count']
         if c > 0:
             await react(event, data['text'])
