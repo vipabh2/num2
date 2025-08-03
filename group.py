@@ -95,12 +95,27 @@ async def handle_spam(event):
         return
     b = [Button.inline("نعم", b"yes"), Button.inline("لا", b"no")]
     await event.respond(f'هل تريد ازعاج {much} مرات بـ "{text}"؟\n\nسيتم خصم {ء} نقاط من رصيدك.', buttons=[b], reply_to=event.id)
-    # delpoints(uid, gid, points, ء)
-    sessions[gid] = {
+    sessions[gid][id] = {
         "much": much,
         "text": text,
         "reply_to": event.id
     }
+@ABH.on(events.CallbackQuery(data=b"yes"))
+async def confirm_spam(event):
+    gid = str(event.chat_id)
+    id = str(event.sender_id)
+    if gid in sessions and id in sessions[gid]:
+        data = sessions[gid][id]
+        much = data["much"]
+        text = data["text"]
+        reply_to = data["reply_to"]
+        await event.respond(f'تم تفعيل الازعاج {much} مرات بـ "{text}"')
+        del sessions[gid][id]
+    else:
+        await event.answer("انتهت جلسة الازعاج", alert=True)
+@ABH.on(events.CallbackQuery(data=b"no"))
+async def cancel_spam(event):
+    event.edit("تم إلغاء الازعاج")
 @ABH.on(events.NewMessage(pattern='^/dates|مواعيد$'))
 async def show_dates(event):
     if not event.is_group:
