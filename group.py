@@ -137,6 +137,26 @@ async def confirm_spam(event):
 async def cancel_spam(event):
     event.edit("تم إلغاء الازعاج")
     del sessions[event.chat_id][event.sender_id]
+@ABH.on(events.NewMessage)
+async def monitor_messages(event):
+    if not event.is_group:
+        return
+    data = load_spam()
+    gid = str(event.chat_id)
+    uid = str(event.sender_id)  
+    if gid in data and uid in data[gid]:
+        info = data[gid][uid]
+        text = info.get('text', '')
+        count = info.get('count', 0)
+        if text and count > 0:
+            await event.reply(",")
+            # await react(event, text)
+            data[gid][uid]['count'] = count - 1
+            if data[gid][uid]['count'] <= 0:
+                del data[gid][uid]
+                if not data[gid]:
+                    del data[gid]
+            spam(data)
 @ABH.on(events.NewMessage(pattern='^/dates|مواعيد$'))
 async def show_dates(event):
     if not event.is_group:
