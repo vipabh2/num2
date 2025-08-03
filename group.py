@@ -156,8 +156,7 @@ async def monitor_messages(event):
         text = info.get('text', '')
         count = info.get('count', 0)
         if text and count > 0:
-            await event.reply(",")
-            # await react(event, text)
+            await react(event, text)
             data[gid][uid]['count'] = count - 1
             if data[gid][uid]['count'] <= 0:
                 del data[gid][uid]
