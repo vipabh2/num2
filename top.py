@@ -99,16 +99,16 @@ async def add_money(event):
 async def add_money(event):
     if not event.is_group:
         return
-    type = "تصفير"
+    uid = event.sender_id
+    gid = event.chat_id
     if uid in points and gid in points[uid]:
         m = points[uid][gid]['points']
     else:
         m = 0
+    type = "تصفير"
     await botuse(type)
-    uid = event.sender_id
     r = await event.get_reply_message()
     if uid == 1910015590 or uid == 6520830528 or uid == 49820009:
-        gid = event.chat_id
         user_id = r.sender_id
         add_points(user_id, gid, points, amount=m)
         await event.reply(f"تم تصفير فلوسه {r.sender.first_name}")
