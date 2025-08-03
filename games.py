@@ -1,4 +1,4 @@
-from Resources import football, questions, mention, ment, wfffp #type: ignore
+from Resources import football, questions, mention, ment, wfffp, react #type: ignore
 from top import points, add_points #type: ignore
 from datetime import datetime, timedelta
 import random, asyncio, time, os, json
@@ -13,10 +13,10 @@ async def math_handler(event):
   return
  await botuse('رياضيات')
  uid=str(event.sender_id)
- gid=str(event.chat_id)
  b=[Button.inline("تجديد السؤال",b"new_math"),Button.inline("الجواب عليه",b"ignore_math")]
  if uid in math_sessions:
   await event.reply("لديك سؤال لم تجيب عليه بعد.",buttons=b)
+  await react(event, '🤔')
   return
  num1=random.randint(1,9)
  num2=random.randint(1,9)
@@ -35,6 +35,7 @@ async def new_math(event):
  correct_answer=num1*num2
  math_sessions[uid]=correct_answer
  await event.edit(f"ما ناتج: {num1} × {num2} ؟")
+ await react(event, '👍')
 @ABH.on(events.CallbackQuery(data=b"ignore_math"))
 async def ignore_math(event):
  if not event.is_group:
@@ -43,6 +44,7 @@ async def ignore_math(event):
  if id in math_sessions:
   del math_sessions[id]
  await event.edit("تم تجاهل السؤال.")
+ await react(event, '👍')
 @ABH.on(events.NewMessage)
 async def check_math_answer(event):
  eventuid=str(event.sender_id)
@@ -57,9 +59,11 @@ async def check_math_answer(event):
    x=5000
    buttons=[Button.inline('فلوسك',b'moneymuch')]
    await event.reply(f"اجابة صحيحة 🎉 \n ربحت {x} نقطة.",buttons=buttons)
+   await react(event, '🎉')
    add_points(eventuid,str(event.chat_id),points,amount=x)
   else:
    await event.reply(f"غلط , الاجابة هيه {math_sessions[eventuid]}")
+   await react(event, '😂')
   del math_sessions[eventuid]
 @ABH.on(events.CallbackQuery(data=b'moneymuch'))
 async def show_money(event):
@@ -110,9 +114,11 @@ async def trade(event):
         seconds = remaining % 60
         formatted_time = f"{minutes:02}:{seconds:02}"
         await event.reply(f"يجب عليك الانتظار {formatted_time} قبل التداول مجددًا.")
+        await react(event, '😐')
         return
     if user_id not in points or gid not in points[user_id]:
         await event.reply("ماعندك فلوس 💔.")
+        await react(event, '😂')
         return
     user_points = points[user_id][gid]["points"]
     if user_points < 1000:
@@ -121,6 +127,7 @@ async def trade(event):
             f"رصيدك الحالي {user_points} نقطة.\n"
             f"يجب أن يكون رصيدك 1000 نقطة على الأقل للتداول."
         )
+        await react(event, '😂')
         return
     f = user_points // 5
     r = random.randint(-50, 75)
@@ -130,63 +137,18 @@ async def trade(event):
         await event.reply(
             f"تم التداول بنجاح \n نسبة نجاح {r}% \n فلوس الربح `{profit}` نقطة 🎉\n"
         )
+        await react(event, '🎉')
     else:
         loss = int(f * (100 + r) / 100)
         points[user_id][gid]["points"] -= abs(loss)
         await event.reply(
             f"تداول بنسبة فاشلة {r}% \n خسرت `{abs(loss)}` نقطة 💔\n"
         )
+        await react(event, '😂')
     if user_id not in user_data:
         user_data[user_id] = {}
     user_data[user_id]["last_play_time"] = current_time
     save_user_data(user_data)
-@ABH.on(events.NewMessage(pattern=r'^شراء حل\s+(.+)$'))
-async def buy(event):
-    if not event.is_group:
-        return
-    type = "شراء حل"
-    await botuse(type)
-    user_id = event.sender_id
-    gid = event.chat_id
-    type = event.pattern_match.group(1).strip()
-    valid_types = {
-        'كرة قدم': 999,
-        '/football': 999,
-        '/quist': 250,
-        '/sport': 300,
-    }
-    if type not in valid_types:
-        await event.reply('ماكو هيج لعبة')
-        return
-    user_points = points[str(user_id)][str(gid)]["points"]
-    price = valid_types[type]
-    if user_points < price:
-        await event.reply(f'عزيزي سعر الشراء {price} وانت ماعندك هلمبغ.')
-        return
-    points[str(user_id)][str(gid)]['points'] -= price
-    await event.reply(f'تم خصم منك {price} وارسال الحل في الخاص 😀')
-    if type in {'كرة قدم', '/football'}:
-        r = random.choice(football)
-        answer = r.get('answer', 'ما محدد الجواب')
-        photo_ref = r.get('photo')
-        if not photo_ref or not isinstance(photo_ref, str) or "/" not in photo_ref:
-            await event.reply("حدث خطأ في تحديد صورة السؤال.")
-        else:
-            message_id = int(photo_ref.split("/")[-1])
-            message = await ABH.get_messages("LANBOT2", ids=message_id)
-            if message and message.media:
-                file_path = await ABH.download_media(message.media)
-                if isinstance(answer, list):
-                    answer = "\n".join(map(str, answer))
-                await ABH.send_file(user_id, file_path, caption=answer, parse_mode=None)
-            else:
-                await event.reply("لم أتمكن من العثور على الصورة.")
-    else:
-        await event.reply("نوع السؤال غير مدعوم حالياً.")
-        if os.path.exists(file_path):
-            os.remove(file_path)
-        else:
-            await event.reply("تعذر إرسال الوسائط.")
 USER_DATA_FILE = "boxing.json"
 def load_user_data():
     if os.path.exists(USER_DATA_FILE):
@@ -205,14 +167,17 @@ async def boxing(event):
     reply = await event.get_reply_message()
     if not reply:
         await event.reply('عزيزي، لازم ترد على رسالة الشخص اللي تريد تضاربه.')
+        await react(event, '🤔')
         return
     try:
         count = int(event.pattern_match.group(1))
     except ValueError:
         await event.reply('تأكد من كتابة رقم صحيح بعد كلمة مضاربة.')
+        await react(event, '🤔')
         return
     if count <= 2999:
         await event.reply('المبلغ يجب أن يكون أكبر من 3000.')
+        await react(event, '😐')
         return
     user1_id = reply.sender_id
     user2_id = event.sender_id
@@ -227,6 +192,7 @@ async def boxing(event):
         s = await event.get_sender()
         x = await mention(s)
         await event.reply(f"لا يمكن مضاربة {x} الآن، انتظر {minutes:02}:{seconds:02} دقيقة.")
+        await react(event, '😐')
         return
     last_attack_time = user_data.get(str(user2_id), {}).get("attacked", 0)
     if current_time - last_attack_time < 10 * 60:
@@ -234,20 +200,25 @@ async def boxing(event):
         minutes = remaining // 60
         seconds = remaining % 60
         await event.reply(f"يجب عليك الانتظار {minutes:02}:{seconds:02} قبل أن تبدأ مضاربة جديدة.")
+        await react(event, '😐')
         return
     if str(user1_id) not in points or gid not in points[str(user1_id)]:
         await event.reply('الشخص الذي تم الرد عليه لا يملك نقاط.')
+        await react(event, '💔')
         return
     if str(user2_id) not in points or gid not in points[str(user2_id)]:
         await event.reply('أنت لا تملك نقاط.')
+        await react(event, '😐')
         return
     mu1 = points[str(user1_id)][gid]['points']
     mu2 = points[str(user2_id)][gid]['points']
     if count > mu1:
         await event.reply('فلوس الشخص الذي تم الرد عليه أقل من مبلغ المضاربة.')
+        await react(event, '😐')
         return
     if count > mu2:
         await event.reply('فلوسك أقل من مبلغ المضاربة.')
+        await react(event, '😂')
         return
     user1_entity = await ABH.get_entity(user1_id)
     user2_entity = await ABH.get_entity(user2_id)
@@ -266,6 +237,7 @@ async def boxing(event):
         f"🏆 الفائز: {winner_name}\n"
         f"💰 الجائزة: {count} نقطة 🎉"
     )
+    await react(event, '🎉')
     user_data[str(user1_id)] = user_data.get(str(user1_id), {})
     user_data[str(user1_id)]["boxed"] = current_time
     user_data[str(user2_id)] = user_data.get(str(user2_id), {})
@@ -301,13 +273,15 @@ async def answer_handler(event):
     if user_id in user_state:
         correct_answer = user_state[user_id]['answer']
         if msg == correct_answer:
-            amount = 250
+            amount = 2500
             await event.reply(f"اجابة صحيحة ربحت ↢ `{amount}`")
+            await react(event, '🎉')
             user_id = event.sender_id
             gid = event.chat_id
             add_points(user_id, gid, points, amount=amount)
         else:
             await event.reply("اجابة خاطئة!")
+            await react(event, '💔')
         del user_state[user_id]
 WIN_VALUES = {
     "🎲": 6,
@@ -349,16 +323,19 @@ async def telegramgames(event):
         seconds = remaining % 60
         formatted_time = f"{minutes:02}:{seconds:02}"
         await event.reply(f" يجب عليك الانتظار {formatted_time} قبل اللعب مجددًا.")
+        await react(event, '😑')
         return
     await asyncio.sleep(4)
     win = value == WIN_VALUES.get(emoji, -1)
     if win:
         await event.reply(f"اررررحب فزت ب {emoji}  تم اضافة ( `{amount}` ) لثروتك")
+        await react(event, '🎉')
         user_id = event.sender_id
         gid = event.chat_id
         add_points(user_id, gid, points, amount=amount)
     else:
         await event.reply(f"للاسف خسرت ب {emoji}\n المقدار: `{value}`")
+        await react(event, '💔')
     user_data[str(user_id)] = {"last_play_time": current_time}
     save_user_data(user_data)
 @ABH.on(events.NewMessage(pattern='/num'))
@@ -764,6 +741,7 @@ async def check_quist(event):
             await event.reply(
                 f"هلا هلا طبوا الشيعة 🫡 \n ربحت (`{p}`) \n فلوسك ↢ {points[str(user_id)][str(gid)]['points']}"
             )
+            await react(event, '🎉')
             del states[user_id]
         else:
             pass
@@ -872,6 +850,7 @@ async def check_sport(event):
             p = random.randint(50, 500)
             add_points(user_id, gid, points, amount=p)
             await event.reply(f"احسنت اجابة صحيحة 🫡 \n ربحت (`{p}`) \n فلوسك ↢ {points[str(user_id)][str(gid)]['points']}")
+            await react(event, '🎉')
             del user_states_s[user_id]
         else:
             pass
@@ -935,19 +914,19 @@ async def handle_choice(event, user_choice_key):
         user_choice = choices[user_choice_key]
         if user_choice_key == bot_choice_key:
             result = "🤝 تعادل"
-            x = 500
+            p = 1000
         elif (
             (user_choice_key == "rock" and bot_choice_key == "cuter") or
             (user_choice_key == "paper" and bot_choice_key == "rock") or
             (user_choice_key == "cuter" and bot_choice_key == "paper")
         ):
             result = "🎉 فزت"
-            x = random.randint(1500, 5000)
+            x = random.randint(3500, 5000)
         else:
             result = "😢 خسرت"
             x = 0
         if x > 0:
-            p = random.randint(500, 1000)
+            p = random.randint(3500, 5000)
             add_points(event.sender_id, chat_id, points, amount=p)
         msg = (
             f"{game['name1']} {user_choice}\n"
