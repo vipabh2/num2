@@ -8,6 +8,7 @@ from Program import r as redas, chs
 import os, asyncio, re, json, time
 from top import points, delpoints
 from group import load_spam
+from group import spam
 from ABH import ABH
 async def notAssistantres(event):
     if not event.is_group:
@@ -110,10 +111,18 @@ async def monitor_messages(event):
     gid = str(event.chat_id)
     uid = str(event.sender_id)
     if gid in data and uid in data[gid]:
-        c = data['count']
-        if c > 0:
-            await event.reply(',')
-            await react(event, data['text'])
+        user_data = data[gid][uid]
+        count = user_data.get('count', 0)
+        text = user_data.get('text', '')
+        if count > 0 and text:
+            await event.reply(",")
+            await react(event, text)
+            data[gid][uid]['count'] -= 1
+            if data[gid][uid]['count'] <= 0:
+                del data[gid][uid]
+                if not data[gid]:  
+                    del data[gid]
+            spam(data)
     user_id = event.sender_id
     now = int(time.time())
     if user_id in restriction_end_times:
