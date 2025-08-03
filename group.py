@@ -123,13 +123,12 @@ async def confirm_spam(event):
         await event.edit(f'تم تفعيل الازعاج {much} مرات بـ "{text}"')
         delpoints(event.sender_id, event.chat_id, points, much * 50000)
         if gid not in d:
-            d[gid] = []
-        d[gid].append({
-            "id": rid,
+            d[gid] = {}
+        d[gid][rid] = {
             "text": text,
             "count": much,
             "reply_to": reply_to
-        })
+        }
         spam(d)
         del sessions[gid][uid]
     else:
