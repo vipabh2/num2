@@ -33,36 +33,30 @@ async def handle_spam(event):
     much = event.pattern_match.group(1)
     text = event.pattern_match.group(2)
     r = await event.get_reply_message()
-    id = event.sender_id
-    gid = event.chat_id
+    uid = str(event.sender_id)
+    gid = str(event.chat_id)
     if not r:
         await react(event, "🤔")
-        await chs(event, "استخدم الامر ك `ازعاج 4 🌚` \n ثم رد علئ رسالة")
+        await chs(event, "استخدم الامر ك `ازعاج 4 🌚` \n ثم رد على رسالة")
         return
     if not much or not text:
         await react(event, "🤔")
         await chs(event, "استخدم الامر ك `ازعاج 4 🌚`")
         return
-    if not much.isdigit() or int(much) < 1 or int(much) > 50:
+    if not much.isdigit() or not (1 <= int(much) <= 50):
         await react(event, "🤔")
-        await chs(event, "استخدم الامر ك `ازعاج 4 🌚` \n اكثر من 0 و اقل من 50 ")
-        return
-    if not text:
-        await react(event, "🤔")
-        await chs(event, "استخدم الامر ك `ازعاج 4 🌚` \n ثم رد علئ رسالة")
+        await chs(event, "استخدم الامر ك `ازعاج 4 🌚` \n العدد يجب أن يكون بين 1 و 50")
         return
     if len(text) > 1:
         await react(event, "🤔")
-        await chs(event, "استخدم الامر ك `ازعاج 4 🌚` \n ايموجي واحد فقط")
+        await chs(event, "استخدم ايموجي واحد فقط")
         return
     if text not in emoji:
         await react(event, "🤔")
-        await chs(event, f"استخدم الامر ك `ازعاج 4 🌚` \n الايموجي غير صالح ```` {' '.join(emoji)} ```"
-        )
+        await chs(event, f"استخدم الامر ك `ازعاج 4 🌚` \n الايموجي غير صالح ``` {' '.join(emoji)} ```")
         return
-    much = int(much)
-    uid = (await ABH.get_me()).id
-    if r.sender_id == uid:
+    bot_user = await ABH.get_me()
+    if r.sender_id == bot_user.id:
         await react(event, "🤔")
         await chs(event, "لا يمكنك ازعاجي 😒")
         return
@@ -74,52 +68,43 @@ async def handle_spam(event):
         await react(event, "🤔")
         await chs(event, "لا يمكنك ازعاج عمك 😒")
         return
-    if r.sender.bot:
+    if r.sender and getattr(r.sender, 'bot', False):
         await react(event, "🤔")
         await chs(event, "لا يمكنك ازعاج البوتات 😒")
         return
-    uid = str(event.sender_id)
-    gid = str(event.chat_id)
-    if uid in points and gid in points[uid]:
-        m = points[uid][gid]['points']
-    else:
-        m = 0
-    if m < 50000:
+    m = points.get(uid, {}).get(gid, {}).get('points', 0)
+    cost = int(much) * 50000
+    if m < cost:
         await react(event, "🤣")
         await chs(event, "ليس لديك ما يكفي من النقاط لعمل ازعاج 😒")
         return
-    ء = much * 50000
-    if ء > m:
-        await react(event, "🤣")
-        await chs(event, "ليس لديك ما يكفي من النقاط لعمل ازعاج 😒")
-        return
-    b = [Button.inline("نعم", b"yes"), Button.inline("لا", b"no")]
-    await event.respond(f'هل تريد ازعاج {much} مرات بـ "{text}"؟\n\nسيتم خصم {ء} نقاط من رصيدك.', buttons=[b], reply_to=event.id)
-    if gid not in sessions:
-        sessions[gid] = {}
-    if id not in sessions[gid]:
-        sessions[gid][id] = {}
-    sessions[gid][id] = {
-        "much": much,
+    buttons = [Button.inline("نعم", b"yes"), Button.inline("لا", b"no")]
+    await event.respond(
+        f'هل تريد ازعاج {much} مرات بـ "{text}"؟\n\nسيتم خصم {cost} نقاط من رصيدك.',
+        buttons=buttons,
+        reply_to=event.id
+    )
+    sessions.setdefault(gid, {})[uid] = {
+        "much": int(much),
         "text": text,
         "reply_to": event.id
     }
 @ABH.on(events.CallbackQuery(data=b"yes"))
 async def confirm_spam(event):
     gid = str(event.chat_id)
-    id = str(event.sender_id)
-    if gid in sessions and id in sessions[gid]:
-        data = sessions[gid][id]
+    uid = str(event.sender_id)
+    if gid in sessions and uid in sessions[gid]:
+        data = sessions[gid][uid]
         much = data["much"]
         text = data["text"]
         reply_to = data["reply_to"]
         await event.respond(f'تم تفعيل الازعاج {much} مرات بـ "{text}"')
-        del sessions[gid][id]
+        del sessions[gid][uid]
     else:
         await event.answer("انتهت جلسة الازعاج", alert=True)
 @ABH.on(events.CallbackQuery(data=b"no"))
 async def cancel_spam(event):
-    event.edit("تم إلغاء الازعاج")
+    await event.edit("تم إلغاء الازعاج")
 @ABH.on(events.NewMessage(pattern='^/dates|مواعيد$'))
 async def show_dates(event):
     if not event.is_group:
