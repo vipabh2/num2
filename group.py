@@ -109,6 +109,9 @@ async def handle_spam(event):
 async def confirm_spam(event):
     gid = str(event.chat_id)
     uid = str(event.sender_id)
+    print("sessions keys:", sessions.keys())
+    print(f"sessions[{gid}]:", sessions.get(gid))
+    print(f"sessions[{gid}][{uid}]:", sessions.get(gid, {}).get(uid))
     d = load_spam()
     if gid in sessions and uid in sessions[gid]:
         data = sessions[gid][uid]
