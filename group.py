@@ -108,11 +108,6 @@ async def handle_spam(event):
 x = {}
 @ABH.on(events.CallbackQuery(data=b"yes"))
 async def confirm_spam(event):
-    x = load_spam()
-    gid = str(event.chat_id)
-    uid = str(rid)
-    if gid not in x:
-        x[gid] = {}
     gid = str(event.chat_id)
     id = str(event.sender_id)
     if gid in sessions and id in sessions[gid]:
@@ -122,14 +117,13 @@ async def confirm_spam(event):
         rid = data["id"]
         await event.respond(f'تم تفعيل الازعاج {much} مرات بـ "{text}"')
         delpoints(event.sender_id, event.chat_id, much * 50000)
-        x[gid][uid] = {
+        x[event.chat_id] = {
             "much": much,
             "text": text,
             "id": rid,
             "reply_to": data["reply_to"]
         }
         spam(x)
-        del sessions[gid][id]
     else:
         await event.answer("انتهت جلسة الازعاج", alert=True)
 @ABH.on(events.CallbackQuery(data=b"no"))
