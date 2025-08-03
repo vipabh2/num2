@@ -95,7 +95,7 @@ async def add_money(event):
         user_id = r.sender_id
         delpoints(user_id, gid, points, amount=p)
         await event.reply(f"تم حذف {p} دينار ل {r.sender.first_name}")
-@ABH.on(events.NewMessage(pattern=r'^تصفير فلوس$'))
+@ABH.on(events.NewMessage(pattern=r'^تصفير فلوس $'))
 async def add_money(event):
     if not event.is_group:
         return
