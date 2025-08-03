@@ -95,6 +95,10 @@ async def handle_spam(event):
         return
     b = [Button.inline("نعم", b"yes"), Button.inline("لا", b"no")]
     await event.respond(f'هل تريد ازعاج {much} مرات بـ "{text}"؟\n\nسيتم خصم {ء} نقاط من رصيدك.', buttons=[b], reply_to=event.id)
+    if gid not in sessions:
+        sessions[gid] = {}
+    if id not in sessions[gid]:
+        sessions[gid][id] = {}
     sessions[gid][id] = {
         "much": much,
         "text": text,
