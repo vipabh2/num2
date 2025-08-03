@@ -1,12 +1,13 @@
 from telethon.tl.types import ChannelParticipantCreator, ChannelParticipantAdmin, ChatBannedRights
 from telethon.tl.functions.channels import EditBannedRequest, GetParticipantRequest
 from telethon.tl.types import ChatBannedRights, MessageEntityUrl
-from Resources import group, mention, ment, hint
+from Resources import group, mention, ment, hint, react
 from other import is_assistant, botuse, is_owner
 from telethon import events, Button
 from Program import r as redas, chs
 import os, asyncio, re, json, time
 from top import points, delpoints
+from group import load_spam
 from ABH import ABH
 async def notAssistantres(event):
     if not event.is_group:
@@ -105,6 +106,12 @@ async def restrict_user(event):
 async def monitor_messages(event):
     if not event.is_group:
         return
+    data = load_spam()
+    gid = str(event.chat_id)
+    if gid in data and data["id"] in data[gid]:
+        c = data['count']
+        if c > 0:
+            await react(event, data['text'])
     user_id = event.sender_id
     now = int(time.time())
     if user_id in restriction_end_times:
