@@ -97,8 +97,6 @@ async def handle_spam(event):
     await event.respond(f'هل تريد ازعاج {much} مرات بـ "{text}"؟\n\nسيتم خصم {ء} نقاط من رصيدك.', buttons=[b], reply_to=event.id)
     if gid not in sessions:
         sessions[gid] = {}
-    if id not in sessions[gid]:
-        sessions[gid][id] = {}
     sessions[gid][id] = {
         "much": much,
         "text": text,
@@ -109,16 +107,19 @@ async def handle_spam(event):
 async def confirm_spam(event):
     gid = str(event.chat_id)
     uid = str(event.sender_id)
-    print("sessions keys:", sessions.keys())
-    print(f"sessions[{gid}]:", sessions.get(gid))
-    print(f"sessions[{gid}][{uid}]:", sessions.get(gid, {}).get(uid))
     d = load_spam()
     if gid in sessions and uid in sessions[gid]:
         data = sessions[gid][uid]
-        much = data["much"]
-        text = data["text"]
-        rid = str(data["id"])
-        reply_to = data["reply_to"]
+        if not data:
+            await event.answer("انتهت الجلسة (بيانات ناقصة)", alert=True)
+            return
+        much = data.get("much")
+        text = data.get("text")
+        rid = str(data.get("id"))
+        reply_to = data.get("reply_to")
+        if not all([much, text, rid]):
+            await event.answer("انتهت الجلسة (قيمة ناقصة)", alert=True)
+            return
         await event.respond(f'تم تفعيل الازعاج {much} مرات بـ "{text}"')
         delpoints(event.sender_id, event.chat_id, much * 50000)
         if gid not in d:
