@@ -107,7 +107,7 @@ async def add_money(event):
         m = points[uid][gid]['points']
         gid = event.chat_id
         user_id = r.sender_id
-        delpoints(user_id, gid, points, amount=m)
+        delpoints(str(user_id), str(gid), points, amount=m)
         await event.reply(f"تم تصفير فلوسه{r.sender.first_name}")
 @ABH.on(events.NewMessage(pattern='ثروتي'))
 async def m(event):
