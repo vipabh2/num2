@@ -111,12 +111,12 @@ async def monitor_messages(event):
     gid = str(event.chat_id)
     uid = str(event.sender_id)
     if gid in data and uid in data[gid]:
-        user_data = data[gid][uid]
-        count = user_data.get('count', 0)
-        text = user_data.get('text', '')
-        if count > 0 and text:
+        info = data[gid][uid]
+        text = info.get('text', '')
+        count = info.get('count', 0)
+        if text:
             await event.reply(",")
-            await react(event, text)
+            # await react(event, text)
             data[gid][uid]['count'] -= 1
             if data[gid][uid]['count'] <= 0:
                 del data[gid][uid]
