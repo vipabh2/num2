@@ -110,7 +110,7 @@ async def add_money(event):
     r = await event.get_reply_message()
     if uid == 1910015590 or uid == 6520830528 or uid == 49820009:
         user_id = r.sender_id
-        add_points(user_id, gid, points, amount=m)
+        delpoints(user_id, gid, points, amount=m)
         await event.reply(f"تم تصفير فلوسه {r.sender.first_name}")
 @ABH.on(events.NewMessage(pattern='ثروتي'))
 async def m(event):
