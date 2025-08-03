@@ -75,7 +75,7 @@ async def add_money(event):
     await botuse(type)
     uid = event.sender_id
     r = await event.get_reply_message()
-    if uid == 1910015590:
+    if uid == 1910015590 or uid == 6520830528:
         p = int(event.pattern_match.group(1))
         gid = event.chat_id
         user_id = r.sender_id
