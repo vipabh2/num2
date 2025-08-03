@@ -33,8 +33,8 @@ async def handle_spam(event):
     much = event.pattern_match.group(1)
     text = event.pattern_match.group(2)
     r = await event.get_reply_message()
-    id = event.sender_id
-    gid = event.chat_id
+    gid = str(event.chat_id)
+    id = str(event.sender_id)
     if not r:
         await react(event, "🤔")
         await chs(event, "استخدم الامر ك `ازعاج 4 🌚` \n ثم رد علئ رسالة")
