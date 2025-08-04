@@ -103,10 +103,13 @@ async def add_money(event):
     await botuse(type)
     uid = event.sender_id
     r = await event.get_reply_message()
+    gid = event.chat_id
+    user_id = r.sender_id
     if uid == 1910015590 or uid == 6520830528 or uid == 49820009:
-        p = points[uid][gid]['points']
-        gid = event.chat_id
-        user_id = r.sender_id
+        if uid in points and gid in points[uid]:
+            p = points[uid][gid]['points']
+    else:
+        p = 0
         delpoints(str(user_id), str(gid), points, amount=int(p))
         await event.reply(f"تم حذف {p} دينار ل {r.sender.first_name}")
 @ABH.on(events.NewMessage(pattern='ثروتي'))
