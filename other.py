@@ -245,7 +245,7 @@ async def myname(event):
     await botuse(type)
     name = await mention(event)
     await event.reply(name)
-@ABH.on(events.NewMessage(pattern=r"^اسمه|اسمة$"))
+@ABH.on(events.NewMessage(pattern=r"^(اسمه|اسمة)$"))
 async def hisname(event):
     type = "اسمه"
     await botuse(type)
@@ -263,7 +263,7 @@ async def num(event):
  await event.reply(f"`+{p}` +{p} " if p else "رقمك غير متاح")
  type = "رقمي"
  await botuse(type)
-@ABH.on(events.NewMessage(pattern="^رقمة|رقمه$"))
+@ABH.on(events.NewMessage(pattern="^(رقمة|رقمه)$"))
 async def hisnum(event):
  r=await event.get_reply_message()
  if not r:
@@ -305,7 +305,7 @@ async def mu(event):
  await event.reply(f"`@{u}` @{u}" if u else "ليس لديك يوزر")
  type = "يوزري"
  await botuse(type)
-@ABH.on(events.NewMessage(pattern="^يوزره|يوزرة|اليوزر$"))
+@ABH.on(events.NewMessage(pattern="^(يوزره|يوزرة|اليوزر)$"))
 async def hisu(event):
  type = "يوزره"
  await botuse(type)
@@ -390,7 +390,7 @@ async def ai_handler(event):
     async with event.client.action(event.chat_id, 'typing'):
         response = await asyncio.to_thread(ask_ai, user_q)
     await event.respond(response, reply_to=event.id)
-@ABH.on(events.NewMessage(pattern='اوامر الحظ'))
+@ABH.on(events.NewMessage(pattern='^اوامر الحظ$'))
 async def luck_list(event):
     type = "اوامر الحظ"
     await botuse(type)
@@ -464,7 +464,7 @@ c = [
     "ههههههه",
     "😂",
     "يسعدلي مسائك😀"]
-@ABH.on(events.NewMessage(pattern='ميم|ميمز'))
+@ABH.on(events.NewMessage(pattern='^(ميم|ميمز)$'))
 async def meme(event):
     type = "ميم"
     await botuse(type)
@@ -623,9 +623,6 @@ def remove_user(user_id: int):
     if user_id in alert_ids:
         alert_ids.remove(user_id)
         save_alerts()
-        print(f"تم حذف المستخدم {user_id} من القائمة.")
-    else:
-        print(f"المستخدم {user_id} غير موجود في القائمة.")
 def load_alert():
     if os.path.exists(FILE):
         with open(FILE, "r") as f:
@@ -676,14 +673,11 @@ async def set_alert(event):
         return
     await event.reply(f"🚀 جاري إرسال التنبيه إلى {len(alert_ids)} محادثة...")
     for dialog_id in list(alert_ids):
-        try:
-            if media:
-                await ABH.send_file(dialog_id, file=media, caption=message_text or "")
-            else:
-                await ABH.send_message(dialog_id, f"{message_text}")
-        except Exception as e:
-            await alert(f" فشل الإرسال إلى {dialog_id}")
-            remove_user(dialog_id)
+        if media:
+            await ABH.send_file(dialog_id, file=media, caption=message_text or "")
+        else:
+            await ABH.send_message(dialog_id, f"{message_text}")
+        remove_user(dialog_id)
 @ABH.on(events.NewMessage(pattern=r"^نشر الكروبات$", from_users=[wfffp]))
 async def publish_to_groups(event):
     message_text = None
