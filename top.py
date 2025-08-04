@@ -95,20 +95,20 @@ async def add_money(event):
         user_id = r.sender_id
         delpoints(user_id, gid, points, amount=p)
         await event.reply(f"تم حذف {p} دينار ل {r.sender.first_name}")
-@ABH.on(events.NewMessage(pattern=r'^تصفير فلوس (\d+)$'))
+@ABH.on(events.NewMessage(pattern=r'^تصفير$'))
 async def add_money(event):
     if not event.is_group:
         return
-    type = "حذف فلوس"
+    type = "تصفير"
     await botuse(type)
     uid = event.sender_id
     r = await event.get_reply_message()
     if uid == 1910015590 or uid == 6520830528 or uid == 49820009:
-        m = points[uid][gid]['points']
+        p = points[uid][gid]['points']
         gid = event.chat_id
         user_id = r.sender_id
-        delpoints(user_id, gid, points, amount=m)
-        await event.reply(f"تم تصفير فلوسه {r.sender.first_name}")
+        delpoints(user_id, gid, points, amount=int(p))
+        await event.reply(f"تم حذف {p} دينار ل {r.sender.first_name}")
 @ABH.on(events.NewMessage(pattern='ثروتي'))
 async def m(event):
     if not event.is_group:
