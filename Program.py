@@ -10,19 +10,17 @@ lol = {}
 @ABH.on(events.NewMessage(from_users=[wfffp]))
 async def som(e):
     g = str(e.chat_id)
+    b = [Button.inline('اي', data='y'), Button.inline('لا', data='n')]
     if g not in lol:
         lol[g] = False
-    if e.text == 'مخفي ضايج' or 'مخفي ونسني' and lol[g] == True:
-        b = [Button.inline('اي', data='y'), Button.inline('لا', data='n')]
+    if e.text in ['مخفي ضايج', 'مخفي ونسني'] and lol[g] == True:
         await e.reply('تدلل حبيبي تريد اضحكك على عضو؟', buttons=b)
     elif e.text == 'على هذا' and lol[g] == True:
         r = await e.get_reply_message()
         name = await ment(r)
         await e.reply(f'تريد اضحكك على {name}', buttons=b)
-@ABH.on(events.CallbackQuery)
+@ABH.on(events.CallbackQuery(from_users=[wfffp]))
 async def callback_handler(event):
-    if event.sender_id != wfffp:
-        return
     data = event.data.decode('utf-8')
     buttons = [Button.inline('حظر', data='ban'), Button.inline('طرد', data='kick'), Button.inline('تقييد', data='res')]
         # await event.edit(' يلا نضحك عليه \n شنو تحب تشوف', buttons=buttons)
