@@ -20,7 +20,7 @@ async def som(e):
         if r and r.sender:
             name = r.sender.first_name
             b = [Button.inline('حظر', data='ban'), Button.inline('طرد', data='kick'), Button.inline('تقييد', data='res')]
-            await e.reply(f'تريد اضحكك على {name}', buttons=b)
+            await e.edit(f' يلا نضحك على {name} \n شنو تحب تشوف', buttons=b)
         else:
             await e.reply('رد على رسالة الشخص اللي تريد تضحك عليه أولًا.')
 @ABH.on(events.CallbackQuery)
@@ -28,8 +28,6 @@ async def callback_handler(event):
     if event.sender_id != wfffp:
         return
     data = event.data.decode('utf-8')
-    buttons = [Button.inline('حظر', data='ban'), Button.inline('طرد', data='kick'), Button.inline('تقييد', data='res')]
-        # await event.edit(' يلا نضحك عليه \n شنو تحب تشوف', buttons=buttons)
     if data == 'y':
         await event.edit('عليمن تريد تضحك؟')
         lol[str(event.chat_id)] = True
