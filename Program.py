@@ -12,13 +12,17 @@ async def som(e):
     g = str(e.chat_id)
     b = [Button.inline('اي', data='y'), Button.inline('لا', data='n')]
     if g not in lol:
-        lol[g] = True
+        lol[g] = False
     if e.text in ['مخفي ضايج', 'مخفي ونسني'] and lol[g] == True:
         await e.reply('تدلل حبيبي تريد اضحكك على عضو؟', buttons=b)
     elif e.text == 'على هذا' and lol[g] == True:
         r = await e.get_reply_message()
-        name = await ment(r)
-        await e.reply(f'تريد اضحكك على {name}', buttons=b)
+        if r and r.sender:
+            name = r.sender.first_name
+            b = [Button.inline('حظر', data='ban'), Button.inline('طرد', data='kick'), Button.inline('تقييد', data='res')]
+            await e.reply(f'تريد اضحكك على {name}', buttons=b)
+        else:
+            await e.reply('رد على رسالة الشخص اللي تريد تضحك عليه أولًا.')
 @ABH.on(events.CallbackQuery)
 async def callback_handler(event):
     if event.sender_id != wfffp:
