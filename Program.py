@@ -15,10 +15,22 @@ async def som(e):
     if e.text == 'مخفي ضايج' or 'مخفي ونسني' and lol[g] == True:
         b = [Button.inline('اي', data='y'), Button.inline('لا', data='n')]
         await e.reply('تدلل حبيبي تريد اضحكك على عضو؟', buttons=b)
-    elif e.text == 'هنا' and lol[g] == True:
+    elif e.text == 'على هذا' and lol[g] == True:
         r = await e.get_reply_message()
         name = await ment(r)
         await e.reply(f'تريد اضحكك على {name}', buttons=b)
+@ABH.on(events.CallbackQuery(from_users=[wfffp]))
+async def callback_handler(event):
+    data = event.data.decode('utf-8')
+    buttons = [Button.inline('حظر', data='ban'), Button.inline('طرد', data='kick'), Button.inline('تقييد', data='res')]
+        # await event.edit(' يلا نضحك عليه \n شنو تحب تشوف', buttons=buttons)
+    if data == 'y':
+        await event.edit('عليمن تريد تضحك؟')
+        lol[str(event.chat_id)] = True
+    elif data == 'n':
+        await event.edit('اوكيه، خليناه بحاله 🤐')
+    else:
+        return
 @ABH.on(events.NewMessage(pattern='^بوت$'))
 async def bot_info(event):
     await event.reply('👀')
