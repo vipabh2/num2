@@ -7,7 +7,7 @@ from Resources import *
 from other import *
 from ABH import ABH
 lol = {}
-@ABH.on(events.NewMessage(from_users=[wfffp]))
+# @ABH.on(events.NewMessage(from_users=[wfffp]))
 async def som(e):
     g = e.chat_id
     x = e.text
