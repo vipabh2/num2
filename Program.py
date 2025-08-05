@@ -11,7 +11,7 @@ lol = {}
 async def som(e):
     g = str(e.chat_id)
     if g not in lol:
-    lol[g] = False
+        lol[g] = False
     if e.text == 'مخفي ضايج' or 'مخفي ونسني' and lol[g] == True:
         b = [Button.inline('اي', data='y'), Button.inline('لا', data='n')]
         await e.reply('تدلل حبيبي تريد اضحكك على عضو؟', buttons=b)
