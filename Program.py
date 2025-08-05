@@ -10,7 +10,8 @@ lol = {}
 @ABH.on(events.NewMessage(from_users=[wfffp]))
 async def som(e):
     g = str(e.chat_id)
-    lol[g] == False
+    if g not in lol:
+    lol[g] = False
     if e.text == 'مخفي ضايج' or 'مخفي ونسني' and lol[g] == True:
         b = [Button.inline('اي', data='y'), Button.inline('لا', data='n')]
         await e.reply('تدلل حبيبي تريد اضحكك على عضو؟', buttons=b)
