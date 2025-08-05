@@ -6,6 +6,18 @@ import json, redis, subprocess
 from Resources import *
 from other import *
 from ABH import ABH
+lol = {}
+@ABH.on(events.NewMessage(from_users=[wfffp]))
+async def som(e):
+    g = e.chat_id
+    x = e.text
+    if x == 'مخفي ضايج' or 'مخفي ونسني':
+        b = [Button.inline('اي', data='y'), Button.inline('لا', data='n')]
+        await e.reply('تدلل حبيبي تريد اضحكك على عضو؟', buttons=b)
+    elif x == 'هنا' and e.chat_id in lol:
+        r = await e.get_reply_message()
+        name = await ment(r)
+        await e.reply(f'تريد اضحكك على {name}', buttons=b)
 @ABH.on(events.NewMessage(pattern='^بوت$'))
 async def bot_info(event):
     await event.reply('👀')
