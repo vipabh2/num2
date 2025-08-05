@@ -19,8 +19,10 @@ async def som(e):
         r = await e.get_reply_message()
         name = await ment(r)
         await e.reply(f'تريد اضحكك على {name}', buttons=b)
-@ABH.on(events.CallbackQuery(from_users=[wfffp]))
+@ABH.on(events.CallbackQuery)
 async def callback_handler(event):
+    if event.sender_id != wfffp:
+        return
     data = event.data.decode('utf-8')
     buttons = [Button.inline('حظر', data='ban'), Button.inline('طرد', data='kick'), Button.inline('تقييد', data='res')]
         # await event.edit(' يلا نضحك عليه \n شنو تحب تشوف', buttons=buttons)
