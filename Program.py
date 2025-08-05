@@ -19,7 +19,7 @@ async def som(e):
         r = await e.get_reply_message()
         name = await ment(r)
         await e.reply(f'تريد اضحكك على {name}', buttons=b)
-@ABH.on(events.CallbackQuery()
+@ABH.on(events.CallbackQuery)
 async def callback_handler(event):
     if event.sender_id != wfffp:
         return
