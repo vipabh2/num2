@@ -9,7 +9,7 @@ from ABH import ABH
 lol = {}
 @ABH.on(events.NewMessage(from_users=[wfffp]))
 async def som(e):
-    g = e.chat_id
+    g = str(e.chat_id)
     lol[g] == False
     if e.text == 'مخفي ضايج' or 'مخفي ونسني' and lol[g] == True:
         b = [Button.inline('اي', data='y'), Button.inline('لا', data='n')]
