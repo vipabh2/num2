@@ -110,7 +110,7 @@ async def add_money(event):
         return
     uid = str(r.sender_id)
     gid = str(event.chat_id)
-    if uid in lit:
+    if id in lit:
         if uid in points and gid in points[uid]:
             p = points[uid][gid].get('points', 0)
         else:
