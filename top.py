@@ -1,6 +1,7 @@
 from ABH import ABH, events
 from other import botuse
 import json
+lit = [7176263278, 6520830528, 49820009, 1910015590]
 def load_points(filename="points.json"):
     try:
         with open(filename, "r") as file:
@@ -75,7 +76,7 @@ async def add_money(event):
     await botuse(type)
     uid = event.sender_id
     r = await event.get_reply_message()
-    if uid == 1910015590 or uid == 6520830528 or uid == 49820009:
+    if uid in lit:
         p = int(event.pattern_match.group(1))
         gid = event.chat_id
         user_id = r.sender_id
@@ -89,7 +90,7 @@ async def add_money(event):
     await botuse(type)
     uid = event.sender_id
     r = await event.get_reply_message()
-    if uid == 1910015590 or uid == 6520830528 or uid == 49820009:
+    if uid in lit:
         p = int(event.pattern_match.group(1))
         gid = event.chat_id
         user_id = r.sender_id
@@ -109,7 +110,7 @@ async def add_money(event):
         return
     uid = str(r.sender_id)
     gid = str(event.chat_id)
-    if id == 1910015590 or id == 6520830528 or id == 49820009:
+    if uid in lit:
         if uid in points and gid in points[uid]:
             p = points[uid][gid].get('points', 0)
         else:
