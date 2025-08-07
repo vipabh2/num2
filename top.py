@@ -135,7 +135,7 @@ async def m(event):
     await botuse(type)
     uid = str(event.sender_id)
     gid = str(event.chat_id)
-    if uid in points and gid in points[uid]:
+    if uid in points:
         m = points[uid][gid]['points']
     else:
         m = 0
@@ -149,7 +149,7 @@ async def replym(event):
     r = await event.get_reply_message()
     uid = str(r.sender_id)
     gid = str(event.chat_id)
-    if uid in points and gid in points[uid]:
+    if uid in points:
         m = points[uid][gid]['points']
     else:
         m = 0
@@ -175,7 +175,7 @@ async def send_money(event):
     user1_id = event.sender_id
     user2_id = reply.sender_id
     gid = str(event.chat_id)
-    if str(user1_id) not in points or gid not in points[str(user1_id)]:
+    if str(user1_id) not in points:
         await event.reply("ليس لديك نقاط كافية.")
         return
     if str(user2_id) not in points:
