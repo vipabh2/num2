@@ -1,6 +1,7 @@
 from ABH import ABH, events
 from other import botuse
 import json
+wfffp = 1910015590
 lit = [6498922948, 7176263278, 6520830528, 49820009, 1910015590]
 def load_points(filename="points.json"):
     try:
