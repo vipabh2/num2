@@ -76,6 +76,9 @@ async def add_money(event):
     await botuse(type)
     uid = event.sender_id
     r = await event.get_reply_message()
+    if r.sender_id in let: 
+        await event.reply("هههههه")
+        return
     if uid in lit:
         p = int(event.pattern_match.group(1))
         gid = event.chat_id
@@ -90,6 +93,9 @@ async def add_money(event):
     await botuse(type)
     uid = event.sender_id
     r = await event.get_reply_message()
+    if r.sender_id in let: 
+        await event.reply("هههههه")
+        return
     if uid in lit:
         p = int(event.pattern_match.group(1))
         gid = event.chat_id
@@ -104,6 +110,9 @@ async def add_money(event):
     await botuse(type)
     id = event.sender_id
     r = await event.get_reply_message()
+    if r.sender_id in let: 
+        await event.reply("هههههه")
+        return
     gid = event.chat_id
     if not r:
         await event.reply("يجب الرد على رسالة المستخدم الذي تريد تصفير نقاطه.")
