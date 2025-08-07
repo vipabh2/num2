@@ -14,9 +14,9 @@ def save_points(data, filename="points.json"):
         json.dump(data, file, indent=4)
 points = load_points()
 def add_points(uid, gid, points, amount=0):
-    uid, gid = str(uid), str(gid)
+    uid = str(uid)
     if uid not in points:
-        points[uid] = {}
+        points[uid] = 0
     points[uid] += amount
     save_points(points)
 def add_user(uid, gid, name, rose, amount):
