@@ -17,9 +17,7 @@ def add_points(uid, gid, points, amount=0):
     uid, gid = str(uid), str(gid)
     if uid not in points:
         points[uid] = {}
-    if gid not in points[uid]:
-        points[uid][gid] = {"points": 0}
-    points[uid][gid]["points"] += amount
+    points[uid]["points"] += amount
     save_points(points)
 def add_user(uid, gid, name, rose, amount):
     uid, gid = str(uid), str(gid)
