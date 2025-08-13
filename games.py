@@ -190,7 +190,7 @@ async def boxing(event):
         minutes = remaining // 60
         seconds = remaining % 60
         s = await event.get_sender()
-        x = await mention(s)
+        x = await ment(s)
         await event.reply(f"لا يمكن مضاربة {x} الآن، انتظر {minutes:02}:{seconds:02} دقيقة.")
         await react(event, '😐')
         return
