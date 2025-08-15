@@ -921,20 +921,18 @@ async def handle_choice(event, user_choice_key):
             (user_choice_key == "cuter" and bot_choice_key == "paper")
         ):
             result = "🎉 فزت"
-            x = random.randint(3500, 5000)
+            p = 5000
         else:
             result = "😢 خسرت"
-            x = 0
-        if x > 0:
-            p = random.randint(3500, 5000)
+            p = 500
             add_points(event.sender_id, chat_id, points, amount=p)
         msg = (
             f"{game['name1']} {user_choice}\n"
             f"{game['name2']} {bot_choice}\n\n"
             f"{result}"
         )
-        if x > 0:
-            msg += f"\n🏅 تم إضافة `{x}` نقطة"
+        if p > 0:
+            msg += f"\n🏅 تم إضافة `{p}` نقطة"
         await event.edit(msg)
     elif game["type"] == "pvp":
         if user_id not in [game["player1"], game["player2"]]:
