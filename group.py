@@ -1,8 +1,9 @@
 from telethon.tl.functions.channels import GetParticipantRequest
+from Resources import hint, ment, react, wfffp, developers
 from db import save_date, get_saved_date #type: ignore
-from Resources import hint, ment, react, wfffp
 from ABH import ABH, events #type: ignore
 from datetime import datetime, timedelta
+import asyncio, os, json, time, random
 from hijri_converter import Gregorian
 from googletrans import Translator
 from top import points, delpoints
@@ -10,7 +11,24 @@ from telethon import Button
 from ABH import ABH, events
 from other import botuse
 from Program import chs
-import asyncio, os, json
+@ABH.on(events.NewMessage(pattern='^سرقة|سرقه$'))
+async def theft(e):
+    r = await e.get_reply_message()
+    if not r:
+        await react(e, '🤔')
+        await e.reply('لازم ترد على رساله حته تخمط من صاحبها')
+        return
+    id = r.sender_id
+    if id == wfffp:
+        await e.reply('ماتكدر تسرق المطور الاساسي')
+        return
+    if id in developers:
+        await e.reply('ماتكدر تسرق المطور')
+        return
+    rp = points[str(id)][e.chat_id]['points']
+    m = await ment(r)
+    if not rp > 10000:
+        await chs(e, f'عذرا بس {m} فلوسه قليله')
 USER_DATA_FILE = "trade.json"
 def tlo():
     if os.path.exists(USER_DATA_FILE):
@@ -98,10 +116,6 @@ async def boxing(event):
     except ValueError:
         await event.reply('تأكد من كتابة رقم صحيح بعد كلمة مضاربة.')
         await react(event, '🤔')
-        return
-    if count <= 2999:
-        await event.reply('المبلغ يجب أن يكون أكبر من 3000.')
-        await react(event, '😐')
         return
     user1_id = reply.sender_id
     user2_id = event.sender_id
