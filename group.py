@@ -544,39 +544,19 @@ async def nickname_r(event):
         await event.reply(f"لقبه ↞ {nickname}")
     except Exception:
         await event.reply("المستخدم ليس مشرفًا أو لا يمكن العثور عليه.")
-@ABH.on(events.NewMessage(pattern=r'^تاريخي|انضمامي|تاريخ انضمامي$'))
+p = ["تاريخه", 'تاريخ انضمامه', 'تاريخ انضمامه']
+@ABH.on(events.NewMessage(pattern=r'^تاريخي|انضمامي|تاريخ انضمامي|تاريخه|تاريخ انضمامه|تاريخ انضمامه$'))
 async def my_date(event):
     if not event.is_group:
         return
-    type = "تاريخي"
-    await botuse(type)
-    try:
-        chat = await event.get_input_chat()
-        target = event.sender_id
-        result = await ABH(GetParticipantRequest(channel=chat, participant=target))
-        participant = result.participant
-        date_joined = participant.date.strftime("%Y-%m-%d %H:%M")
-        await event.reply(f"تاريخ الانضمام ↞ {date_joined}")
-    except Exception as e:
-        await event.reply("لا يمكن العثور على تاريخ الانضمام للمستخدم.")
-        await hint(event, f"خطأ: my_date {str(e)}")
-@ABH.on(events.NewMessage(pattern=r'^تاريخه|تاريخ انضمامه|تاريخ انضمامه$'))
-async def his_date(event):
-    if not event.is_group:
-        return
-    type = "تاريخه"
-    await botuse(type)
-    try:
-        chat = await event.get_input_chat()
-        reply = await event.get_reply_message()
-        if not reply:
-            await event.reply("استخدم الرد على رسالة المستخدم أو أرسل معرفه بعد الأمر.")
-            return
-        target = reply.sender_id
-        result = await ABH(GetParticipantRequest(channel=chat, participant=target))
-        participant = result.participant
-        date_joined = participant.date.strftime("%Y-%m-%d %H:%M")
-        await event.reply(f"تاريخ انضمامه ↞ {date_joined}")
-    except Exception as e:
-        await event.reply("لا يمكن العثور على تاريخ الانضمام للمستخدم.")
-        await hint(event, f"خطأ: his_date {str(e)}")
+    text = event.text
+    if text in p:
+        r = event.get_reply_message()
+        target = r.sender_id
+    target = event.sender_id
+    await botuse(text)
+    chat = await event.get_input_chat()
+    result = await ABH(GetParticipantRequest(channel=chat, participant=target))
+    participant = result.participant
+    date_joined = participant.date.strftime("%Y-%m-%d %H:%M")
+    await event.reply(f"تاريخ الانضمام ↞ {date_joined}")
