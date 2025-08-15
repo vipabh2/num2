@@ -40,6 +40,12 @@ async def handle_spam(event):
     if not event.is_group:
         return
     await botuse("ازعاج")
+    data = load_spam()
+    gid = str(event.chat_id)
+    uid = str(event.sender_id)  
+    if gid in data and uid in data[gid]:
+        await chs(event, 'كعد ازعجه هذا الخسيس من اكمل ذكرني ازعجه الك ')
+        return
     much = event.pattern_match.group(1)
     text = event.pattern_match.group(2)
     r = await event.get_reply_message()
