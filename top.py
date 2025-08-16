@@ -135,7 +135,7 @@ async def m(event):
     uid = str(event.sender_id)
     gid = str(event.chat_id)
     if uid in points:
-        m = points[uid][gid]['points']
+        m = points[uid]['points']
     else:
         m = 0
     await event.reply(f'فلوسك ↢ ( `{m}` )')
