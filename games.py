@@ -361,8 +361,8 @@ async def show_number(event):
 games = {}
 @ABH.on(events.NewMessage(pattern='اكس او|/xo|/Xo'))
 async def xo(event):
-    if not event.is_group:
-        return
+    #if not event.is_group:
+        #return
     type = "اكس او"
     await botuse(type)
     chat_id = event.chat_id
