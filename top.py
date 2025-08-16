@@ -1,4 +1,5 @@
 from ABH import ABH, events
+from Resources import hint
 from other import botuse
 import json
 wfffp = 1910015590
@@ -14,11 +15,14 @@ def save_points(data, filename="points.json"):
         json.dump(data, file, indent=4)
 points = load_points()
 def add_points(uid, gid, points, amount=0):
-    uid = str(uid)
-    if uid not in points:
-        points[uid] = 0
-    points[uid] += amount
-    save_points(points)
+    try:
+        uid = str(uid)
+        if uid not in points:
+            points[uid] = 0
+        points[uid] += amount
+        save_points(points)
+    except Exception as e:
+        print(e)
 def add_user(uid, gid, name, rose, amount):
     uid, gid = str(uid), str(gid)
     if gid not in rose:
@@ -189,7 +193,6 @@ async def send_money(event):
     user2 = await ABH.get_entity(user2_id)
     mention1 = f"[{user1.first_name}](tg://user?id={user1_id})"
     mention2 = f"[{user2.first_name}](tg://user?id={user2_id})"
-
     await event.reply(
         f"💸 تم التحويل بنجاح!\n\n"
         f"🔁 {mention1} ➡️ {mention2}\n"
