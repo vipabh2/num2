@@ -75,7 +75,7 @@ async def add_money(event):
     await botuse(type)
     uid = event.sender_id
     r = await event.get_reply_message()
-    if r.sender_id in lit and uid != wfffp: 
+    if r.sender_id in lit and not uid != wfffp: 
         await event.reply("هههههه")
         return
     if uid in lit:
@@ -109,7 +109,7 @@ async def add_money(event):
     await botuse(type)
     id = event.sender_id
     r = await event.get_reply_message()
-    if r.sender_id in lit and uid != wfffp: 
+    if r.sender_id in lit: 
         await event.reply("هههههه")
         return
     gid = event.chat_id
