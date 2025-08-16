@@ -18,6 +18,7 @@ async def theft(e):
         await react(e, '🤔')
         await e.reply('لازم ترد على رساله حته تخمط من صاحبها')
         return
+    س = await r.get_sender()
     id = r.sender_id
     if id == wfffp:
         await e.reply('ماتكدر تسرق المطور الاساسي')
@@ -30,7 +31,7 @@ async def theft(e):
         await e.reply('ماتكدر تسرق المطور')
         return
     rp = points[str(id)][str(e.chat_id)]['points']
-    m = await ment(r)
+    m = await ment(س)
     if not rp > 10000:
         await chs(e, f'عذرا بس {m} فلوسه قليله')
     
