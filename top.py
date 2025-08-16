@@ -127,7 +127,7 @@ async def add_money(event):
     delpoints(str(uid), str(gid), points, amount=int(p))
     await event.reply(f"تم حذف {p} دينار لـ {r.sender.first_name}")
 @ABH.on(events.NewMessage(pattern='ثروتي'))
-async def m(event):
+async def mm(event):
     if not event.is_group:
         return
     type = "ثروتي"
