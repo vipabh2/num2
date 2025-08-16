@@ -119,13 +119,9 @@ async def add_money(event):
     uid = str(r.sender_id)
     gid = str(event.chat_id)
     if uid in points and gid in points[uid]:
-            p = points[uid][gid].get('points', 0)
-        else:
-            p = 0
-        delpoints(str(uid), str(gid), points, amount=int(p))
-        await event.reply(f"تم حذف {p} دينار لـ {r.sender.first_name}")
-    else:
-        await event.reply("ليس لديك صلاحية تصفير النقاط.")
+        p = points[uid][gid].get('points', 0)
+    delpoints(str(uid), str(gid), points, amount=int(p))
+    await event.reply(f"تم حذف {p} دينار لـ {r.sender.first_name}")
 @ABH.on(events.NewMessage(pattern='ثروتي'))
 async def m(event):
     if not event.is_group:
