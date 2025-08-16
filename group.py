@@ -550,10 +550,11 @@ async def my_date(event):
     if not event.is_group:
         return
     text = event.text
+    target = event.sender_id
     if text in p:
         r = event.get_reply_message()
         target = r.sender_id
-    target = event.sender_id
+        return
     await botuse(text)
     chat = await event.get_input_chat()
     result = await ABH(GetParticipantRequest(channel=chat, participant=target))
