@@ -803,6 +803,7 @@ async def start_with_param(event):
     #     return
     if event.sender_id != data['from']:
         await event.reply("لا يمكنك مشاهدة هذه الهمسة.")
+        return
     type = "مشاهده الهمسه"
     await botuse(type)
     sender = await event.get_sender()
