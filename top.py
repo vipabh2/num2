@@ -43,15 +43,13 @@ def delpoints(uid, gid, points, amount):
         points[uid][gid] = {"points": 0}
     points[uid][gid]["points"] = max(0, points[uid][gid]["points"] - amount)
     save_points(points)
-@ABH.on(events.NewMessage(pattern='^اغنياء$'))
+@ABH.on(events.NewMessage(pattern='^الاغنياء$'))
 async def show_rich(event):
-    if not event.is_group:
-        return
     if not points:
         await event.reply("لا توجد بيانات ثروة حالياً.")
         return
     sorted_points = sorted(points.items(), key=lambda x: x[1], reverse=True)
-    top_rich = sorted_points[:5]
+    top_rich = sorted_points[:10]
     message = "أغنى الأشخاص:\n\n"
     for i, (uid, amt) in enumerate(top_rich, start=1):
         try:
@@ -61,30 +59,6 @@ async def show_rich(event):
             name = f"مستخدم {uid}"
         message += f"{i}. {name} → `{amt}`\n"
     await event.reply(message)
-@ABH.on(events.NewMessage(pattern=r'^الاغنياء$'))
-async def show_top_10_rich(event):
-    if not event.is_group:
-        return
-    type = "الاغنياء"
-    await botuse(type)
-    gid = str(event.chat_id)
-    top_users = []
-    for uid in points.items():
-        top_users.append((uid, groups[gid]["points"]))
-    if not top_users:
-        await event.reply("لا يوجد مشاركون يملكون نقاط في هذه المجموعة.")
-        return
-    top_users = sorted(top_users, key=lambda x: x[1], reverse=True)[:10]
-    message = "**🏆 قائمة أغنى 10 أعضاء في هذه المجموعة:**\n"
-    for i, (uid, score) in enumerate(top_users, 1):
-        try:
-            user = await ABH.get_entity(int(uid))
-            name = user.first_name or "مستخدم"
-            mention = f"[{name}](tg://user?id={uid})"
-            message += f"{i}. {mention} — `{score}` دينار\n"
-        except Exception:
-            continue
-    await event.reply(message, parse_mode="md")
 @ABH.on(events.NewMessage(pattern=r'^اضف فلوس (\d+)$'))
 async def add_money(event):
     if not event.is_group:
