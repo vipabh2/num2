@@ -64,11 +64,11 @@ async def trade(event):
         await event.reply(f"يجب عليك الانتظار {formatted_time} قبل التداول مجددًا.")
         await react(event, '😐')
         return
-    if user_id not in points or gid not in points[user_id]:
+    if user_id not in points:
         await event.reply("ماعندك فلوس 💔.")
         await react(event, '😂')
         return
-    user_points = points[user_id][gid]["points"]
+    user_points = points[user_id]
     if user_points < 1000:
         await event.reply(
             f"ماتكدر تتداول حاليا 💔\n"
@@ -88,7 +88,7 @@ async def trade(event):
         await react(event, '🎉')
     else:
         loss = int(f * (100 + r) / 100)
-        points[user_id][gid]["points"] -= abs(loss)
+        points[user_id] -= abs(loss)
         await event.reply(
             f"تداول بنسبة فاشلة {r}% \n خسرت `{abs(loss)}` نقطة 💔\n"
         )
@@ -146,16 +146,16 @@ async def boxing(event):
         await event.reply(f"يجب عليك الانتظار {minutes:02}:{seconds:02} قبل أن تبدأ مضاربة جديدة.")
         await react(event, '😐')
         return
-    if str(user1_id) not in points or gid not in points[str(user1_id)]:
+    if str(user1_id) not in points:
         await event.reply('الشخص الذي تم الرد عليه لا يملك نقاط.')
         await react(event, '💔')
         return
-    if str(user2_id) not in points or gid not in points[str(user2_id)]:
+    if str(user2_id) not in points:
         await event.reply('أنت لا تملك نقاط.')
         await react(event, '😐')
         return
-    mu1 = points[str(user1_id)][gid]['points']
-    mu2 = points[str(user2_id)][gid]['points']
+    mu1 = points[str(user1_id)]
+    mu2 = points[str(user2_id)]
     if count > mu1:
         await event.reply('فلوس الشخص الذي تم الرد عليه أقل من مبلغ المضاربة.')
         await react(event, '😐')
@@ -170,8 +170,8 @@ async def boxing(event):
     mention2 = f"[{user2_entity.first_name}](tg://user?id={user2_id})"
     winner_id = random.choice([user1_id, user2_id])
     loser_id = user2_id if winner_id == user1_id else user1_id
-    points[str(winner_id)][gid]['points'] += count
-    points[str(loser_id)][gid]['points'] -= count
+    points[str(winner_id)] += count
+    points[str(loser_id)] -= count
     with open("points.json", "w", encoding="utf-8") as f:
         json.dump(points, f, ensure_ascii=False, indent=2)
     winner_name = mention1 if winner_id == user1_id else mention2
@@ -276,7 +276,7 @@ async def handle_spam(event):
     uid = str(event.sender_id)
     gid = str(event.chat_id)
     if uid in points and gid in points[uid]:
-        m = points[uid][gid]['points']
+        m = points[uid]
     else:
         m = 0
     if m < 50000:
