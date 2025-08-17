@@ -66,7 +66,7 @@ async def trade(event):
         return
     if user_id not in points:
         await event.reply("ماعندك فلوس 💔.")
-        await react(event, '😂')
+        await react(event, '😁')
         return
     user_points = points[user_id]
     if user_points < 1000:
@@ -75,7 +75,7 @@ async def trade(event):
             f"رصيدك الحالي {user_points} نقطة.\n"
             f"يجب أن يكون رصيدك 1000 نقطة على الأقل للتداول."
         )
-        await react(event, '😂')
+        await react(event, '😁')
         return
     f = user_points // 5
     r = random.randint(-50, 75)
@@ -92,7 +92,7 @@ async def trade(event):
         await event.reply(
             f"تداول بنسبة فاشلة {r}% \n خسرت `{abs(loss)}` نقطة 💔\n"
         )
-        await react(event, '😂')
+        await react(event, '😁')
     if user_id not in user_data:
         user_data[user_id] = {}
     user_data[user_id]["last_play_time"] = current_time
@@ -162,7 +162,7 @@ async def boxing(event):
         return
     if count > mu2:
         await event.reply('فلوسك أقل من مبلغ المضاربة.')
-        await react(event, '😂')
+        await react(event, '😁')
         return
     user1_entity = await ABH.get_entity(user1_id)
     user2_entity = await ABH.get_entity(user2_id)
