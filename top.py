@@ -36,12 +36,12 @@ def add_user(uid, gid, name, rose, amount):
             "promote_value": 0
         }
 def delpoints(uid, gid, points, amount):
-    uid, gid = str(uid), str(gid)
+    uid = str(uid)
     if uid not in points:
         points[uid] = {}
     if gid not in points[uid]:
-        points[uid][gid] = {"points": 0}
-    points[uid][gid]["points"] = max(0, points[uid][gid]["points"] - amount)
+        points[uid] = {"points": 0}
+    points[uid][gid]["points"] = max(0, points[uid]["points"] - amount)
     save_points(points)
 @ABH.on(events.NewMessage(pattern='^الاغنياء$'))
 async def show_rich(event):
@@ -110,8 +110,8 @@ async def add_money(event):
         return
     uid = str(r.sender_id)
     gid = str(event.chat_id)
-    if uid in points and gid in points[uid]:
-        p = points[uid][gid].get('points', 0)
+    if uid in points:
+        p = points[uid].get('points', 0)
     delpoints(str(uid), str(gid), points, amount=int(p))
     await event.reply(f"تم حذف {p} دينار لـ {r.sender.first_name}")
 @ABH.on(events.NewMessage(pattern='ثروتي'))
@@ -137,7 +137,7 @@ async def replym(event):
     uid = str(r.sender_id)
     gid = str(event.chat_id)
     if uid in points:
-        m = points[uid][gid]['points']
+        m = points[uid]['points']
     else:
         m = 0
     await event.reply(f'فلوسه ↢ ( `{m}` )')
@@ -161,20 +161,18 @@ async def send_money(event):
         return
     user1_id = event.sender_id
     user2_id = reply.sender_id
-    gid = str(event.chat_id)
+    # gid = str(event.chat_id)
     if str(user1_id) not in points:
         await event.reply("ليس لديك نقاط كافية.")
         return
     if str(user2_id) not in points:
         points[str(user2_id)] = {}
-    if gid not in points[str(user2_id)]:
-        points[str(user2_id)][gid] = {"points": 0}
-    sender_points = points[str(user1_id)][gid]["points"]
+    sender_points = points[str(user1_id)]["points"]
     if count > sender_points:
         await event.reply('رصيدك لا يكفي لهذا التحويل.')
         return
-    points[str(user1_id)][gid]["points"] -= count
-    points[str(user2_id)][gid]["points"] += count
+    points[str(user1_id)]["points"] -= count
+    points[str(user2_id)]["points"] += count
     with open("points.json", "w", encoding="utf-8") as f:
         json.dump(points, f, ensure_ascii=False, indent=2)
     user1 = await ABH.get_entity(user1_id)
