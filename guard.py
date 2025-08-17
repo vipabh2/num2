@@ -104,7 +104,7 @@ async def restrict_user(event):
     user_id = user_to_restrict.id
     now = int(time.time())
     restriction_duration = 20 * 60
-    restriction_end_times[user_id] = now + restriction_duration
+    restriction_end_times[chat_id][user_id] = now + restriction_duration
     rights = ChatBannedRights(
         until_date=now + restriction_duration,
         send_messages=True
@@ -117,19 +117,21 @@ async def restrict_user(event):
         rrr = await ment(ء)
         c = f"تم تقييد {rrr} لمدة 20 دقيقة."
         await ABH.send_file(event.chat_id, "https://t.me/VIPABH/592", caption=c)
+        # خلي هنا ارسال رساله بقناة التبليغات
         await r.delete()
         await event.delete()
     except Exception as e:
         await hint(e)
-        await event.reply(f" ياريت اقيده بس ماكدر ")
+        # خلي هنا شرط يتحقق من وجود صلاحيه المسح و شرط عدم وجودها مع تحديد سبب عدم حذف الرساله
+        await event.reply(f" قيدته بس ماكدرت امسح الرساله ")
 @ABH.on(events.NewMessage)
 async def monitor_messages(event):
     if not event.is_group:
         return
     user_id = event.sender_id
     now = int(time.time())
-    if user_id in restriction_end_times:
-        end_time = restriction_end_times[user_id]
+    if user_id in restriction_end_times[event.chat_id][user_id]:
+        end_time = restriction_end_times[event.chat_id][user_id]
         if now < end_time:
             remaining = end_time - now
             try:
@@ -431,7 +433,7 @@ async def handler_res(event):
             )
             now = int(time.time())
             restriction_duration = 20 * 60
-            restriction_end_times[user_id] = now + restriction_duration
+            restriction_end_times[event.chat_id][user_id] = now + restriction_duration
             rights = ChatBannedRights(
                 until_date=now + restriction_duration,
                 send_messages=True
