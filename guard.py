@@ -99,7 +99,8 @@ async def restrict_user(event):
     rights = ChatBannedRights(
         until_date=now + restriction_duration,
         send_messages=True
-    )      
+    )
+    print(restriction_end_times)
     try:
         await ABH(EditBannedRequest(channel=chat, participant=user_id, banned_rights=rights))
         type = "تقييد عام"
