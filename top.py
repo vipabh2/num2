@@ -41,7 +41,7 @@ def delpoints(uid, gid, points, amount):
         points[uid] = {}
     if gid not in points[uid]:
         points[uid] = {"points": 0}
-    points[uid][gid]["points"] = max(0, points[uid]["points"] - amount)
+    points[uid][gid] = max(0, points[uid] - amount)
     save_points(points)
 @ABH.on(events.NewMessage(pattern='^الاغنياء$'))
 async def show_rich(event):
@@ -171,8 +171,8 @@ async def send_money(event):
     if count > sender_points:
         await event.reply('رصيدك لا يكفي لهذا التحويل.')
         return
-    points[str(user1_id)]["points"] -= count
-    points[str(user2_id)]["points"] += count
+    points[str(user1_id)] -= count
+    points[str(user2_id)] += count
     with open("points.json", "w", encoding="utf-8") as f:
         json.dump(points, f, ensure_ascii=False, indent=2)
     user1 = await ABH.get_entity(user1_id)
