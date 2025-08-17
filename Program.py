@@ -236,10 +236,10 @@ async def run_cmd(command: str):
 @ABH.on(events.NewMessage(pattern="^تحديث$", from_users=[wfffp]))
 async def update_repo(event):
     stdout, stderr, code = await run_cmd("git pull")
-    await asyncio.sleep(2)
-    await event.reply(f" تحديث السورس بنجاح")
     if code == 0:
         os.execv(sys.executable, [sys.executable, "config.py"])
+    await asyncio.sleep(2)
+    await event.reply(f" تحديث السورس بنجاح")
     else:
         await event.reply(f" حدث خطأ أثناء التحديث:\n\n{stderr}")
 @ABH.on(events.NewMessage(pattern=r'^تعيين القناة (.+)', from_users=[wfffp]))
