@@ -119,7 +119,7 @@ async def اليومي(event):
             top_users.append(f"المستخدم {first_name} رسائله -> {msg_count}")
     if top_users:
         x = await event.reply("\n".join(top_users))
-        await react(event, "👍")
+        await react(event, "🌚")
     else:
         await event.reply("لا توجد بيانات لعرضها.")
         await react(event, "💔")
