@@ -43,6 +43,24 @@ def delpoints(uid, gid, points, amount):
         points[uid][gid] = {"points": 0}
     points[uid][gid]["points"] = max(0, points[uid][gid]["points"] - amount)
     save_points(points)
+@ABH.on(events.NewMessage(pattern='^اغنياء$'))
+async def show_rich(event):
+    if not event.is_group:
+        return
+    if not points:
+        await event.reply("لا توجد بيانات ثروة حالياً.")
+        return
+    sorted_points = sorted(points.items(), key=lambda x: x[1], reverse=True)
+    top_rich = sorted_points[:5]
+    message = "أغنى الأشخاص:\n\n"
+    for i, (uid, amt) in enumerate(top_rich, start=1):
+        try:
+            user = await event.client.get_entity(int(uid))
+            name = user.first_name if user.first_name else "بدون اسم"
+        except:
+            name = f"مستخدم {uid}"
+        message += f"{i}. {name} → `{amt}`\n"
+    await event.reply(message)
 @ABH.on(events.NewMessage(pattern=r'^الاغنياء$'))
 async def show_top_10_rich(event):
     if not event.is_group:
@@ -50,13 +68,9 @@ async def show_top_10_rich(event):
     type = "الاغنياء"
     await botuse(type)
     gid = str(event.chat_id)
-    if gid.startswith("-100") is False:
-        await event.reply("❌ هذا الأمر يعمل فقط في المجموعات.")
-        return
     top_users = []
-    for uid, groups in points.items():
-        if gid in groups and "points" in groups[gid]:
-            top_users.append((uid, groups[gid]["points"]))
+    for uid in points.items():
+        top_users.append((uid, groups[gid]["points"]))
     if not top_users:
         await event.reply("لا يوجد مشاركون يملكون نقاط في هذه المجموعة.")
         return
