@@ -237,9 +237,9 @@ async def run_cmd(command: str):
 async def update_repo(event):
     stdout, stderr, code = await run_cmd("git pull")
     if code == 0:
-        os.execv(sys.executable, [sys.executable, "config.py"])
         await asyncio.sleep(2)
         await event.reply(f" تحديث السورس بنجاح")
+        os.execv(sys.executable, [sys.executable, "config.py"])
     else:
         await event.reply(f" حدث خطأ أثناء التحديث:\n\n{stderr}")
 @ABH.on(events.NewMessage(pattern=r'^تعيين القناة (.+)', from_users=[wfffp]))
