@@ -275,8 +275,8 @@ async def handle_spam(event):
         return
     uid = str(event.sender_id)
     gid = str(event.chat_id)
-    if uid in points and gid in points[uid]:
-        m = points[uid][gid]['points']
+    if uid in points:
+        m = points[uid]
     else:
         m = 0
     if m < 50000:
