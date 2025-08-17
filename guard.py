@@ -100,15 +100,17 @@ async def restrict_user(event):
             return await event.reply(f"لا يمكنك تقييد {name} لانه مشرف ")
     except:
         return
-    user_to_restrict = await r.get_sender()
-    user_id = user_to_restrict.id
     now = int(time.time())
     restriction_duration = 20 * 60
-    restriction_end_times[event.chat_id][user_id] = now + restriction_duration
+    user_to_restrict = await r.get_sender()
+    user_id = user_to_restrict.id
     rights = ChatBannedRights(
         until_date=now + restriction_duration,
         send_messages=True
     )
+    if event.chat_id in restriction_end_times and user_id in restriction_end_times[event.chat_id]:
+        restriction_end_times[event.chat_id][user_id] = now + restriction_duration
+        return
     try:
         await ABH(EditBannedRequest(channel=chat, participant=user_id, banned_rights=rights))
         type = "تقييد عام"
