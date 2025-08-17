@@ -10,12 +10,14 @@ from top import points, delpoints
 from ABH import ABH
 @ABH.on(events.NewMessage(pattern=r"^المقيدين عام$"))
 async def list_restricted(event):
-    if not restriction_end_times:
-        await event.reply(" لا يوجد أي مستخدم مقيد حالياً.")
-        return
-    msg = "قائمة المقيدين عام\n\n"
+    chat_id = event.chat_id
     now = int(time.time())
-    for user_id, end_time in restriction_end_times[event.chat_id].items():
+    if chat_id not in restriction_end_times or not restriction_end_times[chat_id]:
+        await event.reply("لا يوجد أي مستخدم مقيد حالياً.")
+        return
+    msg = "📋 قائمة المقيدين عام:\n\n"
+    expired_users = []
+    for user_id, end_time in list(restriction_end_times[chat_id].items()):
         try:
             user = await ABH.get_entity(user_id)
             name = f"[{user.first_name}](tg://user?id={user_id})"
@@ -24,10 +26,14 @@ async def list_restricted(event):
                 minutes, seconds = divmod(remaining, 60)
                 msg += f"● {name} ↔ `{user_id}`\n⏱️ باقي: {minutes} دقيقة و {seconds} ثانية\n\n"
             else:
-                del restriction_end_times[event.chat_id][user_id]
+                expired_users.append(user_id)
         except Exception as e:
-            msg += f" مستخدم غير معروف — `{user_id}`\n"
+            msg += f"مستخدم غير معروف — `{user_id}`\n"
             await hint(e)
+    for user_id in expired_users:
+        del restriction_end_times[chat_id][user_id]
+    if msg.strip() == "📋 قائمة المقيدين عام:":
+        msg = "✅ لا يوجد حالياً أي مستخدم مقيد."
     await event.reply(msg, link_preview=False)
 async def notAssistantres(event):
     if not event.is_group:
