@@ -758,9 +758,7 @@ async def handle_whisper(event):
         return
     to_user = await reply.get_sender()
     from_user = await event.get_sender()
-    rid = to_user.id
     name = from_user.first_name
-    to_name = to_user.first_name
     whisper_id = str(uuid.uuid4())[:6]
     whisper_links[whisper_id] = {
         "from": sender_id,
@@ -800,7 +798,8 @@ async def start_with_param(event):
     data = whisper_links.get(whisper_id)
     if not data:
         return
-    if event.sender_id != data['to'] and event.sender_id != data['from']:
+    if event.sender_id != data['from']:
+    # if event.sender_id != data['to'] and event.sender_id != data['from']:
         await event.reply("لا يمكنك مشاهدة هذه الهمسة.")
         return
     type = "مشاهده الهمسه"
