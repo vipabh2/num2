@@ -167,7 +167,7 @@ async def send_money(event):
         return
     if str(user2_id) not in points:
         points[str(user2_id)] = {}
-    sender_points = points[str(user1_id)]["points"]
+    sender_points = points[str(user1_id)]
     if count > sender_points:
         await event.reply('رصيدك لا يكفي لهذا التحويل.')
         return
