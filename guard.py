@@ -7,9 +7,18 @@ from telethon import events, Button
 from Program import r as redas, chs
 import os, asyncio, re, json, time
 from top import points, delpoints
-from group import load_spam
-from group import spam
 from ABH import ABH
+@ABH.on(events.NewMessage(pattern='^المقيدين عام$'))
+async def show_res(e):
+    chat_id = str(e.chat_id)
+    user_id = e.sender_id
+    if not is_assistant(chat_id, user_id):
+        await notAssistantres(e)
+        await chs(e, 'شني خالي كبينه انت مو معاون')
+        return
+    for users in restriction_end_times:
+        x = users, restriction_end_times[user_id]
+        print(x)
 async def notAssistantres(event):
     if not event.is_group:
         return
