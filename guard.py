@@ -17,7 +17,7 @@ async def show_res(e):
         await chs(e, 'شني خالي كبينه انت مو معاون')
         return
     for users in restriction_end_times:
-        x = users, restriction_end_times[user_id]
+        x = users, restriction_end_times[users]
         print(x)
 async def notAssistantres(event):
     if not event.is_group:
