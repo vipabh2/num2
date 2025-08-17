@@ -478,7 +478,7 @@ async def translation(event):
         await event.reply("يرجى الرد على رسالة تحتوي على النص المراد ترجمته أو كتابة النص بجانب الأمر.")
         
         return
-    detected_language = await translator.detect(original_text)
+    detected_language = translator.detect(original_text)
     if detected_language.lang == "ar": 
         translated = await translator.translate(original_text, dest="en")
     else: 
