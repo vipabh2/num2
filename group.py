@@ -81,14 +81,14 @@ async def trade(event):
     r = random.randint(-50, 75)
     if r > 0:
         profit = int(f * (100 + r) / 100)
-        points[user_id][gid]["points"] += profit
+        points[user_id] += profit
         await event.reply(
             f"تم التداول بنجاح \n نسبة نجاح {r}% \n فلوس الربح `{profit}` نقطة 🎉\n"
         )
         await react(event, '🎉')
     else:
         loss = int(f * (100 + r) / 100)
-        points[user_id][gid]["points"] -= abs(loss)
+        points[user_id] -= abs(loss)
         await event.reply(
             f"تداول بنسبة فاشلة {r}% \n خسرت `{abs(loss)}` نقطة 💔\n"
         )
