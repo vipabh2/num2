@@ -104,7 +104,7 @@ async def restrict_user(event):
     user_id = user_to_restrict.id
     now = int(time.time())
     restriction_duration = 20 * 60
-    restriction_end_times[chat_id][user_id] = now + restriction_duration
+    restriction_end_times[user_id] = now + restriction_duration
     rights = ChatBannedRights(
         until_date=now + restriction_duration,
         send_messages=True
@@ -130,8 +130,8 @@ async def monitor_messages(event):
         return
     user_id = event.sender_id
     now = int(time.time())
-    if user_id in restriction_end_times[event.chat_id][user_id]:
-        end_time = restriction_end_times[event.chat_id][user_id]
+    if user_id in restriction_end_times:
+        end_time = restriction_end_times[user_id]
         if now < end_time:
             remaining = end_time - now
             try:
@@ -433,7 +433,7 @@ async def handler_res(event):
             )
             now = int(time.time())
             restriction_duration = 20 * 60
-            restriction_end_times[event.chat_id][user_id] = now + restriction_duration
+            restriction_end_times[user_id] = now + restriction_duration
             rights = ChatBannedRights(
                 until_date=now + restriction_duration,
                 send_messages=True
