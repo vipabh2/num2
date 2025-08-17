@@ -8,18 +8,27 @@ from Program import r as redas, chs
 import os, asyncio, re, json, time
 from top import points, delpoints
 from ABH import ABH
-@ABH.on(events.NewMessage(pattern='^المقيدين عام$'))
-async def show_res(e):
-    chat_id = str(e.chat_id)
-    user_id = e.sender_id
-    if not is_assistant(chat_id, user_id):
-        await notAssistantres(e)
-        await chs(e, 'شني خالي كبينه انت مو معاون')
+@ABH.on(events.NewMessage(pattern=r"^المقيدين عام$"))
+async def list_restricted(event):
+    if not restriction_end_times:
+        await event.reply("🚫 لا يوجد أي مستخدم مقيد حالياً.")
         return
-    for users in restriction_end_times:
-        end_time = restriction_end_times[users]
-        x = users, end_time
-        print(x)
+    msg = "قائمة المقيدين عام:\n\n"
+    now = int(time.time())
+    for user_id, end_time in restriction_end_times.items():
+        try:
+            user = await ABH.get_entity(user_id)
+            name = f"[{user.first_name}](tg://user?id={user_id})"
+            remaining = end_time - now
+            if remaining > 0:
+                minutes, seconds = divmod(remaining, 60)
+                msg += f"🔒 {name} — `{user_id}`\n⏱️ باقي: {minutes} دقيقة و {seconds} ثانية\n\n"
+            else:
+                msg += f"🔒 {name} — `{user_id}`\n⏱️ انتهى التقييد\n\n"
+        except Exception as e:
+            msg += f" مستخدم غير معروف — `{user_id}`\n"
+            await hint(e)
+    await event.reply(msg, link_preview=False)
 async def notAssistantres(event):
     if not event.is_group:
         return
@@ -100,7 +109,6 @@ async def restrict_user(event):
         until_date=now + restriction_duration,
         send_messages=True
     )
-    print(restriction_end_times)
     try:
         await ABH(EditBannedRequest(channel=chat, participant=user_id, banned_rights=rights))
         type = "تقييد عام"
@@ -132,7 +140,6 @@ async def monitor_messages(event):
                 )
                 await event.delete()
                 await ABH(EditBannedRequest(channel=chat, participant=user_id, banned_rights=rights))
-                ء = await event.get_sender()
                 rrr = await mention(event)
                 c = f"تم اعاده تقييد {rrr} لمدة ** {remaining//60} دقيقة و {remaining%60} ثانية.**"
                 await ABH.send_file(event.chat_id, "https://t.me/recoursec/15", caption=c)
