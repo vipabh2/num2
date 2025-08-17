@@ -15,7 +15,7 @@ async def list_restricted(event):
         return
     msg = "قائمة المقيدين عام\n\n"
     now = int(time.time())
-    for user_id, end_time in restriction_end_times.items():
+    for user_id, end_time in restriction_end_times[event.chat_id].items():
         try:
             user = await ABH.get_entity(user_id)
             name = f"[{user.first_name}](tg://user?id={user_id})"
