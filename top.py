@@ -167,7 +167,7 @@ async def send_money(event):
         await event.reply('رصيدك لا يكفي لهذا التحويل.')
         return
     delpoints(user1_id, event.chat_id, points, count)
-    add_money(user2_id, event.chat_id, points, count)
+    add_points(user2_id, event.chat_id, points, count)
     with open("points.json", "w", encoding="utf-8") as f:
         json.dump(points, f, ensure_ascii=False, indent=2)
     user1 = await ABH.get_entity(user1_id)
