@@ -11,9 +11,9 @@ from ABH import ABH
 @ABH.on(events.NewMessage(pattern=r"^المقيدين عام$"))
 async def list_restricted(event):
     if not restriction_end_times:
-        await event.reply("🚫 لا يوجد أي مستخدم مقيد حالياً.")
+        await event.reply(" لا يوجد أي مستخدم مقيد حالياً.")
         return
-    msg = "قائمة المقيدين عام:\n\n"
+    msg = "قائمة المقيدين عام\n\n"
     now = int(time.time())
     for user_id, end_time in restriction_end_times.items():
         try:
@@ -22,9 +22,9 @@ async def list_restricted(event):
             remaining = end_time - now
             if remaining > 0:
                 minutes, seconds = divmod(remaining, 60)
-                msg += f"🔒 {name} — `{user_id}`\n⏱️ باقي: {minutes} دقيقة و {seconds} ثانية\n\n"
+                msg += f"● {name} ↔ `{user_id}`\n⏱️ باقي: {minutes} دقيقة و {seconds} ثانية\n\n"
             else:
-                msg += f"🔒 {name} — `{user_id}`\n⏱️ انتهى التقييد\n\n"
+                msg += f"● {name} ↔ `{user_id}`\n⏱️ انتهى التقييد\n\n"
         except Exception as e:
             msg += f" مستخدم غير معروف — `{user_id}`\n"
             await hint(e)
