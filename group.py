@@ -30,7 +30,7 @@ async def theft(e):
     if id in developers:
         await e.reply('ماتكدر تسرق المطور')
         return
-    rp = points[str(id)][str(e.chat_id)]['points']
+    rp = points[str(id)]
     m = await ment(س)
     if not rp > 10000:
         await chs(e, f'عذرا بس {m} فلوسه قليله')
@@ -275,7 +275,7 @@ async def handle_spam(event):
         return
     uid = str(event.sender_id)
     gid = str(event.chat_id)
-    if uid in points and gid in points[uid]:
+    if uid in points:
         m = points[uid]
     else:
         m = 0
