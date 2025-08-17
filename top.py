@@ -171,8 +171,8 @@ async def send_money(event):
     if count > sender_points:
         await event.reply('رصيدك لا يكفي لهذا التحويل.')
         return
-    points[str(user1_id)] -= count
-    points[str(user2_id)] += count
+    points[str(user1_id)]["points"] -= count
+    points[str(user2_id)]["points"] += count
     with open("points.json", "w", encoding="utf-8") as f:
         json.dump(points, f, ensure_ascii=False, indent=2)
     user1 = await ABH.get_entity(user1_id)
