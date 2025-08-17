@@ -798,10 +798,11 @@ async def start_with_param(event):
     data = whisper_links.get(whisper_id)
     if not data:
         return
-    if event.sender_id != data['from']:
-    # if event.sender_id != data['to'] and event.sender_id != data['from']:
-        await event.reply("لا يمكنك مشاهدة هذه الهمسة.")
+    if event.sender_id != data['to']:
+        await event.reply("شبيك مستعجل تره كعد يكتبلك الهمسه")
         return
+    if event.sender_id != data['from']:
+        await event.reply("لا يمكنك مشاهدة هذه الهمسة.")
     type = "مشاهده الهمسه"
     await botuse(type)
     sender = await event.get_sender()
