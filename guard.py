@@ -130,7 +130,7 @@ async def monitor_messages(event):
         return
     user_id = event.sender_id
     now = int(time.time())
-    if user_id in restriction_end_times and event.chat_id in restriction_end_times:
+    if event.chat_id in restriction_end_times and user_id in restriction_end_times[event.chat_id]:
         end_time = restriction_end_times[event.chat_id][user_id]
         if now < end_time:
             remaining = end_time - now
