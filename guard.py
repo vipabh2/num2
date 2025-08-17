@@ -24,7 +24,7 @@ async def list_restricted(event):
                 minutes, seconds = divmod(remaining, 60)
                 msg += f"● {name} ↔ `{user_id}`\n⏱️ باقي: {minutes} دقيقة و {seconds} ثانية\n\n"
             else:
-                msg += f"● {name} ↔ `{user_id}`\n⏱️ انتهى التقييد\n\n"
+                del restriction_end_times[user_id]
         except Exception as e:
             msg += f" مستخدم غير معروف — `{user_id}`\n"
             await hint(e)
