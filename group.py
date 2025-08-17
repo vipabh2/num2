@@ -30,7 +30,7 @@ async def theft(e):
     if id in developers:
         await e.reply('ماتكدر تسرق المطور')
         return
-    rp = points[str(id)][str(e.chat_id)]['points']
+    rp = points[str(id)]
     m = await ment(س)
     if not rp > 10000:
         await chs(e, f'عذرا بس {m} فلوسه قليله')
@@ -64,7 +64,7 @@ async def trade(event):
         await event.reply(f"يجب عليك الانتظار {formatted_time} قبل التداول مجددًا.")
         await react(event, '😐')
         return
-    if user_id not in points or gid not in points[user_id]:
+    if user_id not in points:
         await event.reply("ماعندك فلوس 💔.")
         await react(event, '😂')
         return
@@ -478,11 +478,11 @@ async def translation(event):
         await event.reply("يرجى الرد على رسالة تحتوي على النص المراد ترجمته أو كتابة النص بجانب الأمر.")
         
         return
-    detected_language = await translator.detect(original_text)
+    detected_language = translator.detect(original_text)
     if detected_language.lang == "ar": 
-        translated = await translator.translate(original_text, dest="en")
+        translated = translator.translate(original_text, dest="en")
     else: 
-        translated = await translator.translate(original_text, dest="ar")
+        translated = translator.translate(original_text, dest="ar")
     response = (
         f"اللغة المكتشفة: {detected_language.lang}\n"
         f"النص المترجم: `{translated.text}`"
