@@ -237,7 +237,7 @@ async def run_cmd(command: str):
 async def update_repo(event):
     stdout, stderr, code = await run_cmd("git pull")
     if code == 0:
-        await asyncio.sleep(2)
+        await asyncio.sleep(3)
         await event.reply(f" تحديث السورس بنجاح")
         os.execv(sys.executable, [sys.executable, "config.py"])
     else:
