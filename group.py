@@ -68,7 +68,7 @@ async def trade(event):
         await event.reply("ماعندك فلوس 💔.")
         await react(event, '😂')
         return
-    user_points = points[user_id][gid]["points"]
+    user_points = points[user_id]
     if user_points < 1000:
         await event.reply(
             f"ماتكدر تتداول حاليا 💔\n"
