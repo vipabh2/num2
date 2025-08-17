@@ -156,7 +156,6 @@ async def send_money(event):
         return
     user1_id = event.sender_id
     user2_id = reply.sender_id
-    # gid = str(event.chat_id)
     if str(user1_id) not in points:
         await event.reply("ليس لديك نقاط كافية.")
         return
