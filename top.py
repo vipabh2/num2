@@ -15,14 +15,11 @@ def save_points(data, filename="points.json"):
         json.dump(data, file, indent=4)
 points = load_points()
 def add_points(uid, gid, points, amount=0):
-    try:
-        uid = str(uid)
-        if uid not in points:
-            points[uid] = 0
-        points[uid] += amount
-        save_points(points)
-    except Exception as e:
-        print(e)
+    uid = str(uid)
+    if uid not in points:
+        points[uid] = 0
+    points[uid] += amount
+    save_points(points)
 def add_user(uid, gid, name, rose, amount):
     uid, gid = str(uid), str(gid)
     if gid not in rose:
@@ -171,8 +168,8 @@ async def send_money(event):
     if count > sender_points:
         await event.reply('رصيدك لا يكفي لهذا التحويل.')
         return
-    points[user1_id] -= count
-    points[user2_id] += count
+    delpoints(user1_id, event.chat_id, points, count)
+    addpoints(user2_id, event.chat_id, points, count)
     with open("points.json", "w", encoding="utf-8") as f:
         json.dump(points, f, ensure_ascii=False, indent=2)
     user1 = await ABH.get_entity(user1_id)
