@@ -705,9 +705,9 @@ async def publish_to_groups(event):
             else:
                 await ABH.send_message(dialog_id, f"{message_text}")
             sent_count += 1
-        except Exception as e:
-            await alert(f"⚠️ فشل الإرسال إلى {dialog_id} : {str(e)}")
+        except:
             remove_user(dialog_id)
+            return
     await event.reply(f"✅ تم إرسال التنبيه إلى {sent_count} مجموعة.")
 whispers_file = 'whispers.json'
 sent_log_file = 'sent_whispers.json'
@@ -820,6 +820,7 @@ async def start_with_param(event):
                 file=original.media,
                 caption=original.text if original.text else None
             )
+        print(original.media)
     elif 'text' in data:
         await event.reply(data['text'])
     else:
@@ -856,6 +857,7 @@ async def forward_whisper(event):
         whisper_links[whisper_id]['from_user_chat_id'] = sender_id
     elif msg.text:
         whisper_links[whisper_id]['text'] = msg.text
+    save_whispers()
     save_whispers()
     if msg.media:
         await event.reply("تم إرسال همسة ميديا بنجاح.")
