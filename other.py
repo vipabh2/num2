@@ -1,11 +1,10 @@
 from telethon.tl.functions.channels import GetParticipantRequest
 import asyncio, os, json, random, uuid, operator, requests, re
-from telethon.tl.functions.messages import SendReactionRequest
 from Resources import suras, mention, ment, wfffp, hint, react
-from telethon.tl.types import InputPeerUser, ReactionEmoji
 from telethon.tl.types import ChannelParticipantCreator
 from playwright.async_api import async_playwright
 from database import store_whisper, get_whisper
+from telethon.tl.types import InputPhoto
 from telethon import events, Button
 from Program import chs
 from ABH import ABH
@@ -815,6 +814,17 @@ async def start_with_param(event):
                 message=original.text
             )
         elif original.media:
+            if 'file_id' in data:
+                input_photo = InputPhoto(
+                id=data['file_id'],
+                access_hash=data['access_hash'],
+                file_reference=data['file_ref']
+            )
+            await ABH.send_file(
+                event.sender_id, 
+                input_photo,
+                caption=original.text if original.text else None
+                )
             await ABH.send_file(
                 event.sender_id,
                 file=original.media,
@@ -852,7 +862,10 @@ async def forward_whisper(event):
         data['chat_id'],
         f'همسة مرسلة من ( [{from_name}](tg://user?id={uid}) ) إلى ( [{to_name}](tg://user?id={rid}) )',
         buttons=[b], reply_to=reply)
-    if msg.media:
+    if msg.media and hasattr(msg.media, "photo"):
+        whisper_links[whisper_id]['file_id'] = msg.media.photo.id
+        whisper_links[whisper_id]['access_hash'] = msg.media.photo.access_hash
+        whisper_links[whisper_id]['file_ref'] = msg.media.photo.file_reference
         whisper_links[whisper_id]['original_msg_id'] = msg.id
         whisper_links[whisper_id]['from_user_chat_id'] = sender_id
     elif msg.text:
