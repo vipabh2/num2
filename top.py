@@ -1,6 +1,8 @@
-from ABH import ABH, events
+from telethon import events, Button
+from num2words import num2words
 from Resources import hint
 from other import botuse
+from ABH import ABH
 import json
 wfffp = 1910015590
 lit = [6498922948, 7176263278, 6520830528, 49820009, 1910015590]
@@ -116,12 +118,13 @@ async def m(event):
     type = "ثروتي"
     await botuse(type)
     uid = str(event.sender_id)
-    gid = str(event.chat_id)
+    b = Button.inline("اضغط هنا لعرضها رقم", b='moneymuch')
     if uid in points:
-        m = points[uid]
+        m = points[uid] 
     else:
         m = 0
-    await event.reply(f'فلوسك ↢ ( `{m}` )')
+    arabic_text = num2words(m, lang='ar')
+    await event.reply(f'فلوسك ↢ ( `{arabic_text}` )', buttons=b)
 @ABH.on(events.NewMessage(pattern='ثروته|الثروه'))
 async def replym(event):
     if not event.is_group:
@@ -131,11 +134,13 @@ async def replym(event):
     r = await event.get_reply_message()
     uid = str(r.sender_id)
     gid = str(event.chat_id)
+    b = Button.inline("اضغط هنا لعرضها رقم", b='moneymuch')
     if uid in points:
         m = points[uid]
     else:
         m = 0
-    await event.reply(f'فلوسه ↢ ( `{m}` )')
+    arabic_text = num2words(m, lang='ar')
+    await event.reply(f'فلوسه ↢ ( `{arabic_text}` )', buttons=b)
 @ABH.on(events.NewMessage(pattern=r'^حول (\d+(\.\d+)?)'))
 async def send_money(event):
     if not event.is_group:
