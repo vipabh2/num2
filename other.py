@@ -1,10 +1,10 @@
+import asyncio, os, json, random, uuid, operator, requests, base64, re
 from telethon.tl.functions.channels import GetParticipantRequest
-import asyncio, os, json, random, uuid, operator, requests, re
 from Resources import suras, mention, ment, wfffp, hint, react
 from telethon.tl.types import ChannelParticipantCreator
+from telethon.tl.types import InputPhoto, InputDocument
 from playwright.async_api import async_playwright
 from database import store_whisper, get_whisper
-from telethon.tl.types import InputPhoto
 from telethon import events, Button
 from Program import chs
 from ABH import ABH
@@ -757,9 +757,7 @@ async def handle_whisper(event):
         return
     to_user = await reply.get_sender()
     from_user = await event.get_sender()
-    rid = to_user.id
     name = from_user.first_name
-    to_name = to_user.first_name
     whisper_id = str(uuid.uuid4())[:6]
     whisper_links[whisper_id] = {
         "from": sender_id,
@@ -807,22 +805,47 @@ async def start_with_param(event):
     sender = await event.get_sender()
     if 'original_msg_id' in data and 'from_user_chat_id' in data:
         original = await ABH.get_messages(data['from_user_chat_id'], ids=data['original_msg_id'])
-        if original.text:
-            await ABH.send_message(
-                event.sender_id,
-                message=original.text
-            )
-        elif original.media:
+        if original.text and not original.media:
+            await ABH.send_message(event.sender_id, message=original.text)
+        elif original.media and 'file_id' in data:
+            file_ref_bytes = base64.b64decode(data['file_ref'].encode("utf-8"))
+            if data.get("media_type") == "photo":
+                input_media = InputPhoto(
+                    id=data['file_id'],
+                    access_hash=data['access_hash'],
+                    file_reference=file_ref_bytes
+                )
+            else:
+                input_media = InputDocument(
+                    id=data['file_id'],
+                    access_hash=data['access_hash'],
+                    file_reference=file_ref_bytes
+                )
             await ABH.send_file(
                 event.sender_id,
-                file=original.media,
-                caption=original.text if original.text else None
+                file=input_media,
+                caption=original.text or None
             )
     elif 'text' in data:
         await event.reply(data['text'])
-    else:
-        await event.reply(f"أهلاً {sender.first_name}، ارسل نص الهمسة أو ميديا.")
-    user_sessions[event.sender_id] = whisper_id
+    # if 'original_msg_id' in data and 'from_user_chat_id' in data:
+    #     original = await ABH.get_messages(data['from_user_chat_id'], ids=data['original_msg_id'])
+    #     if original.text:
+    #         await ABH.send_message(
+    #             event.sender_id,
+    #             message=original.text
+    #         )
+    #     elif original.media:
+    #         await ABH.send_file(
+    #             event.sender_id,
+    #             file=original.media,
+    #             caption=original.text if original.text else None
+    #         )
+    # elif 'text' in data:
+    #     await event.reply(data['text'])
+    # else:
+    #     await event.reply(f"أهلاً {sender.first_name}، ارسل نص الهمسة أو ميديا.")
+    # user_sessions[event.sender_id] = whisper_id
 @ABH.on(events.NewMessage(incoming=True))
 async def forward_whisper(event):
     global l, m2
@@ -838,6 +861,18 @@ async def forward_whisper(event):
     if not data:
         return
     msg = event.message
+    if hasattr(msg.media, "photo") and msg.media.photo:
+        whisper_links[whisper_id]['media_type'] = "photo"
+        whisper_links[whisper_id]['file_id'] = msg.media.photo.id
+        whisper_links[whisper_id]['access_hash'] = msg.media.photo.access_hash
+        whisper_links[whisper_id]['file_ref'] = base64.b64encode(msg.media.photo.file_reference).decode("utf-8")
+    elif hasattr(msg.media, "document") and msg.media.document:
+        whisper_links[whisper_id]['media_type'] = "document"
+        whisper_links[whisper_id]['file_id'] = msg.media.document.id
+        whisper_links[whisper_id]['access_hash'] = msg.media.document.access_hash
+        whisper_links[whisper_id]['file_ref'] = base64.b64encode(msg.media.document.file_reference).decode("utf-8")
+    whisper_links[whisper_id]['original_msg_id'] = msg.id
+    whisper_links[whisper_id]['from_user_chat_id'] = sender_id
     b = Button.url("فتح الهمسة", url=f"https://t.me/{(await ABH.get_me()).username}?start={whisper_id}")
     uid = data.get("from", "x04ou")
     rid = data.get("to", "x04ou")
