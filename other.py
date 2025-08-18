@@ -1,5 +1,5 @@
+import asyncio, os, json, random, uuid, operator, requests, re, base64
 from telethon.tl.functions.channels import GetParticipantRequest
-import asyncio, os, json, random, uuid, operator, requests, re
 from Resources import suras, mention, ment, wfffp, hint, react
 from telethon.tl.types import ChannelParticipantCreator
 from playwright.async_api import async_playwright
@@ -813,24 +813,18 @@ async def start_with_param(event):
                 event.sender_id,
                 message=original.text
             )
-        elif original.media:
-            if 'file_id' in data:
-                input_photo = InputPhoto(
-                id=data['file_id'],
-                access_hash=data['access_hash'],
-                file_reference=data['file_ref']
-            )
-            await ABH.send_file(
-                event.sender_id, 
-                input_photo,
-                caption=original.text if original.text else None
-                )
-            await ABH.send_file(
-                event.sender_id,
-                file=original.media,
-                caption=original.text if original.text else None
-            )
-        print(original.media)
+    elif original.media and 'file_id' in data:
+        file_ref_bytes = base64.b64decode(data['file_ref'].encode("utf-8"))
+        input_photo = InputPhoto(
+            id=data['file_id'],
+            access_hash=data['access_hash'],
+            file_reference=file_ref_bytes
+        )
+        await ABH.send_file(
+            event.sender_id,
+            file=input_photo,
+            caption=original.text or None
+        )
     elif 'text' in data:
         await event.reply(data['text'])
     else:
@@ -865,7 +859,7 @@ async def forward_whisper(event):
     if msg.media and hasattr(msg.media, "photo"):
         whisper_links[whisper_id]['file_id'] = msg.media.photo.id
         whisper_links[whisper_id]['access_hash'] = msg.media.photo.access_hash
-        whisper_links[whisper_id]['file_ref'] = msg.media.photo.file_reference
+        whisper_links[whisper_id]['file_ref'] = base64.b64encode(msg.media.photo.file_reference).decode("utf-8")
         whisper_links[whisper_id]['original_msg_id'] = msg.id
         whisper_links[whisper_id]['from_user_chat_id'] = sender_id
     elif msg.text:
