@@ -1,5 +1,5 @@
-import asyncio, os, json, random, uuid, operator, requests, re, base64
 from telethon.tl.functions.channels import GetParticipantRequest
+import asyncio, os, json, random, uuid, operator, requests, re
 from Resources import suras, mention, ment, wfffp, hint, react
 from telethon.tl.types import ChannelParticipantCreator
 from playwright.async_api import async_playwright
@@ -793,52 +793,49 @@ async def delwhisper(e):
         await e.edit('تم حذف جلسة الهمسة', buttons=b)
 @ABH.on(events.NewMessage(pattern=r'/start (\w+)'))
 async def start_with_param(event):
-    try:
-        whisper_id = event.pattern_match.group(1)
-        data = whisper_links.get(whisper_id)
-        if not data:
-            return
-        # if event.sender_id != data['to']:
-        #     await event.reply("عذرا الهمسه ما تخصك!")
-        #     return
-        if event.sender_id != data['from']:
-            await event.reply("لا يمكنك مشاهدة هذه الهمسة.")
-            return
-        type = "مشاهده الهمسه"
-        await botuse(type)
-        sender = await event.get_sender()
-        if 'original_msg_id' in data and 'from_user_chat_id' in data:
-            original = await ABH.get_messages(data['from_user_chat_id'], ids=data['original_msg_id'])
-            if original.text:
-                await ABH.send_message(
-                    event.sender_id,
-                    message=original.text
+    whisper_id = event.pattern_match.group(1)
+    data = whisper_links.get(whisper_id)
+    if not data:
+        return
+    # if event.sender_id != data['to']:
+    #     await event.reply("عذرا الهمسه ما تخصك!")
+    #     return
+    if event.sender_id != data['from']:
+        await event.reply("لا يمكنك مشاهدة هذه الهمسة.")
+        return
+    type = "مشاهده الهمسه"
+    await botuse(type)
+    sender = await event.get_sender()
+    if 'original_msg_id' in data and 'from_user_chat_id' in data:
+        original = await ABH.get_messages(data['from_user_chat_id'], ids=data['original_msg_id'])
+        if original.text:
+            await ABH.send_message(
+                event.sender_id,
+                message=original.text
+            )
+        elif original.media:
+            if 'file_id' in data:
+                input_photo = InputPhoto(
+                id=data['file_id'],
+                access_hash=data['access_hash'],
+                file_reference=data['file_ref']
+            )
+            await ABH.send_file(
+                event.sender_id, 
+                input_photo
                 )
-            elif original.media:
-                if 'file_id' in data:
-                    input_photo = InputPhoto(
-                    id=data['file_id'],
-                    access_hash=data['access_hash'],
-                    file_reference=data['file_ref']
-                )
-                await ABH.send_file(
-                    event.sender_id, 
-                    input_photo,
-                    caption=original.text if original.text else None
-                    )
-                await ABH.send_file(
-                    event.sender_id,
-                    file=original.media,
-                    caption=original.text if original.text else None
-                )
-            print(original.media)
-        elif 'text' in data:
-            await event.reply(data['text'])
-        else:
-            await event.reply(f"أهلاً {sender.first_name}، ارسل نص الهمسة أو ميديا.")
-        user_sessions[event.sender_id] = whisper_id
-    except Exception as e:
-        await reply(f'{e}')
+                caption=original.text if original.text else None
+            await ABH.send_file(
+                event.sender_id,
+                file=original.media,
+                caption=original.text if original.text else None
+            )
+        print(original.media)
+    elif 'text' in data:
+        await event.reply(data['text'])
+    else:
+        await event.reply(f"أهلاً {sender.first_name}، ارسل نص الهمسة أو ميديا.")
+    user_sessions[event.sender_id] = whisper_id
 @ABH.on(events.NewMessage(incoming=True))
 async def forward_whisper(event):
     global l, m2
@@ -868,7 +865,7 @@ async def forward_whisper(event):
     if msg.media and hasattr(msg.media, "photo"):
         whisper_links[whisper_id]['file_id'] = msg.media.photo.id
         whisper_links[whisper_id]['access_hash'] = msg.media.photo.access_hash
-        whisper_links[whisper_id]['file_ref'] = base64.b64encode(msg.media.photo.file_reference).decode("utf-8")
+        whisper_links[whisper_id]['file_ref'] = msg.media.photo.file_reference
         whisper_links[whisper_id]['original_msg_id'] = msg.id
         whisper_links[whisper_id]['from_user_chat_id'] = sender_id
     elif msg.text:
