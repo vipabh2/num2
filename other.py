@@ -813,23 +813,23 @@ async def start_with_param(event):
                 event.sender_id,
                 message=original.text
             )
-    elif original.media and 'file_id' in data:
-        file_ref_bytes = base64.b64decode(data['file_ref'].encode("utf-8"))
-        input_photo = InputPhoto(
-            id=data['file_id'],
-            access_hash=data['access_hash'],
-            file_reference=file_ref_bytes
-        )
-        await ABH.send_file(
-            event.sender_id,
-            file=input_photo,
-            caption=original.text or None
-        )
-    elif 'text' in data:
-        await event.reply(data['text'])
-    else:
-        await event.reply(f"أهلاً {sender.first_name}، ارسل نص الهمسة أو ميديا.")
-    user_sessions[event.sender_id] = whisper_id
+        elif original.media and 'file_id' in data:
+            file_ref_bytes = base64.b64decode(data['file_ref'].encode("utf-8"))
+            input_photo = InputPhoto(
+                id=data['file_id'],
+                access_hash=data['access_hash'],
+                file_reference=file_ref_bytes
+            )
+            await ABH.send_file(
+                event.sender_id,
+                file=input_photo,
+                caption=original.text or None
+            )
+        elif 'text' in data:
+            await event.reply(data['text'])
+        else:
+            await event.reply(f"أهلاً {sender.first_name}، ارسل نص الهمسة أو ميديا.")
+        user_sessions[event.sender_id] = whisper_id
 @ABH.on(events.NewMessage(incoming=True))
 async def forward_whisper(event):
     global l, m2
