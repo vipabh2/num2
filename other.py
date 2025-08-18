@@ -766,8 +766,7 @@ async def handle_whisper(event):
         "to": reply.sender_id,
         "chat_id": event.chat_id,
         "from_name": from_user.first_name,
-        "to_name": to_user.first_name,
-        "text": None
+        "to_name": to_user.first_name
     }
     save_whispers()
     if sender_id in l and l[sender_id]:
@@ -799,10 +798,10 @@ async def start_with_param(event):
     data = whisper_links.get(whisper_id)
     if not data:
         return
-    if event.sender_id == data['to'] and not data['text']:
-        await event.reply("عذرا الهمسه كعد يكتبوها الك!")
-        return
-    if event.sender_id != data['from'] or not event.sender_id != data['to']:
+    # if event.sender_id != data['to']:
+    #     await event.reply("عذرا الهمسه ما تخصك!")
+    #     return
+    if event.sender_id != data['from']:
         await event.reply("لا يمكنك مشاهدة هذه الهمسة.")
         return
     type = "مشاهده الهمسه"
