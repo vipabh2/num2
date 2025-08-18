@@ -757,7 +757,9 @@ async def handle_whisper(event):
         return
     to_user = await reply.get_sender()
     from_user = await event.get_sender()
+    rid = to_user.id
     name = from_user.first_name
+    to_name = to_user.first_name
     whisper_id = str(uuid.uuid4())[:6]
     whisper_links[whisper_id] = {
         "from": sender_id,
@@ -797,10 +799,7 @@ async def start_with_param(event):
     data = whisper_links.get(whisper_id)
     if not data:
         return
-    # if event.sender_id != data['to']:
-    #     await event.reply("عذرا الهمسه ما تخصك!")
-    #     return
-    if event.sender_id != data['from']:
+    if event.sender_id != data['to'] and event.sender_id != data['from']:
         await event.reply("لا يمكنك مشاهدة هذه الهمسة.")
         return
     type = "مشاهده الهمسه"
@@ -814,24 +813,11 @@ async def start_with_param(event):
                 message=original.text
             )
         elif original.media:
-            if 'file_id' in data:
-                input_photo = InputPhoto(
-                id=data['file_id'],
-                access_hash=data['access_hash'],
-                file_reference=data['file_ref']
-            )
-            await ABH.send_file(
-                event.sender_id, 
-                input_photo
-                
-                )
-
             await ABH.send_file(
                 event.sender_id,
                 file=original.media,
                 caption=original.text if original.text else None
             )
-        print(original.media)
     elif 'text' in data:
         await event.reply(data['text'])
     else:
@@ -863,15 +849,11 @@ async def forward_whisper(event):
         data['chat_id'],
         f'همسة مرسلة من ( [{from_name}](tg://user?id={uid}) ) إلى ( [{to_name}](tg://user?id={rid}) )',
         buttons=[b], reply_to=reply)
-    if msg.media and hasattr(msg.media, "photo"):
-        whisper_links[whisper_id]['file_id'] = msg.media.photo.id
-        whisper_links[whisper_id]['access_hash'] = msg.media.photo.access_hash
-        whisper_links[whisper_id]['file_ref'] = msg.media.photo.file_reference
+    if msg.media:
         whisper_links[whisper_id]['original_msg_id'] = msg.id
         whisper_links[whisper_id]['from_user_chat_id'] = sender_id
     elif msg.text:
         whisper_links[whisper_id]['text'] = msg.text
-    save_whispers()
     save_whispers()
     if msg.media:
         await event.reply("تم إرسال همسة ميديا بنجاح.")
