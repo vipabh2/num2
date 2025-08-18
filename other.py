@@ -801,7 +801,7 @@ async def start_with_param(event):
     if event.sender_id == data['to'] and not data['text']:
         await event.reply("عذرا الهمسه كعد يكتبوها الك!")
         return
-    if event.sender_id != data['from']:
+    if event.sender_id != data['from'] or not event.sender_id != data['to']:
         await event.reply("لا يمكنك مشاهدة هذه الهمسة.")
         return
     type = "مشاهده الهمسه"
