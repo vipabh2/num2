@@ -71,8 +71,8 @@ async def show_money(event):
   return
  uid=str(event.sender_id)
  gid=str(event.chat_id)
- if uid in points and gid in points[uid]:
-  user_points=points[uid][gid]["points"]
+ if uid in points:
+  user_points=points[uid]
   await event.answer(f"فلوسك {user_points} دينار",alert=True)
  else:
   await event.answer("ليس لديك نقاط.",alert=True)
@@ -82,8 +82,8 @@ async def show_money(event):
         return
     uid = str(event.sender_id)
     gid = str(event.chat_id)
-    if uid in points and gid in points[uid]:
-        user_points = points[uid][gid]["points"]
+    if uid in points:
+        user_points = points[uid]
         await event.answer(f"فلوسك {user_points} دينار", alert=True)
     else:
         await event.answer("ليس لديك نقاط.", alert=True)
