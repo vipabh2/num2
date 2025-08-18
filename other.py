@@ -766,7 +766,8 @@ async def handle_whisper(event):
         "to": reply.sender_id,
         "chat_id": event.chat_id,
         "from_name": from_user.first_name,
-        "to_name": to_user.first_name
+        "to_name": to_user.first_name,
+        "text": None
     }
     save_whispers()
     if sender_id in l and l[sender_id]:
