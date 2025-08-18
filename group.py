@@ -341,7 +341,7 @@ async def monitor_messages(event):
     uid = str(event.sender_id)  
     if gid in data and uid in data[gid]:
         info = data[gid][uid]
-        text = info.get('text', '')
+        text = info.get('text', '🌚')
         count = info.get('count', 0)
         if text and count > 0:
             await react(event, text)
