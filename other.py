@@ -4,7 +4,7 @@ from Resources import suras, mention, ment, wfffp, hint, react
 from telethon.tl.types import ChannelParticipantCreator
 from playwright.async_api import async_playwright
 from database import store_whisper, get_whisper
-from telethon.tl.types import InputPhoto, InputDocument
+from telethon.tl.types import InputPhoto
 from telethon import events, Button
 from Program import chs
 from ABH import ABH
@@ -797,6 +797,9 @@ async def start_with_param(event):
     data = whisper_links.get(whisper_id)
     if not data:
         return
+    # if event.sender_id != data['to']:
+    #     await event.reply("عذرا الهمسه ما تخصك!")
+    #     return
     if event.sender_id != data['from']:
         await event.reply("لا يمكنك مشاهدة هذه الهمسة.")
         return
@@ -805,31 +808,33 @@ async def start_with_param(event):
     sender = await event.get_sender()
     if 'original_msg_id' in data and 'from_user_chat_id' in data:
         original = await ABH.get_messages(data['from_user_chat_id'], ids=data['original_msg_id'])
-        if original.text and not original.media:
-            await ABH.send_message(event.sender_id, message=original.text)
-        elif original.media and 'file_id' in data:
-            file_ref_bytes = base64.b64decode(data['file_ref'].encode("utf-8"))
-            if data.get("media_type") == "photo":
-                input_media = InputPhoto(
-                    id=data['file_id'],
-                    access_hash=data['access_hash'],
-                    file_reference=file_ref_bytes
-                )
-            else:
-                input_media = InputDocument(
-                    id=data['file_id'],
-                    access_hash=data['access_hash'],
-                    file_reference=file_ref_bytes
+        if original.text:
+            await ABH.send_message(
+                event.sender_id,
+                message=original.text
+            )
+        elif original.media:
+            if 'file_id' in data:
+                input_photo = InputPhoto(
+                id=data['file_id'],
+                access_hash=data['access_hash'],
+                file_reference=data['file_ref']
+            )
+            await ABH.send_file(
+                event.sender_id, 
+                input_photo,
+                caption=original.text if original.text else None
                 )
             await ABH.send_file(
                 event.sender_id,
-                file=input_media,
-                caption=original.text or None
+                file=original.media,
+                caption=original.text if original.text else None
             )
-        elif 'text' in data:
-            await event.reply(data['text'])
-        else:
-            await event.reply(f"أهلاً {sender.first_name}، ارسل نص الهمسة أو ميديا.")
+        print(original.media)
+    elif 'text' in data:
+        await event.reply(data['text'])
+    else:
+        await event.reply(f"أهلاً {sender.first_name}، ارسل نص الهمسة أو ميديا.")
     user_sessions[event.sender_id] = whisper_id
 @ABH.on(events.NewMessage(incoming=True))
 async def forward_whisper(event):
