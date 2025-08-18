@@ -821,11 +821,6 @@ async def start_with_param(event):
                 file_reference=data['file_ref']
             )
             await ABH.send_file(
-                event.sender_id, 
-                input_photo,
-                caption=original.text if original.text else None
-                )
-            await ABH.send_file(
                 event.sender_id,
                 file=original.media,
                 caption=original.text if original.text else None
