@@ -118,7 +118,7 @@ async def m(event):
     type = "ثروتي"
     await botuse(type)
     uid = str(event.sender_id)
-    b = Button.inline("اضغط هنا لعرضها رقم", b='moneymuch')
+    b = Button.inline("اضغط هنا لعرضها رقم", data='moneymuch')
     if uid in points:
         m = points[uid] 
     else:
@@ -134,7 +134,7 @@ async def replym(event):
     r = await event.get_reply_message()
     uid = str(r.sender_id)
     gid = str(event.chat_id)
-    b = Button.inline("اضغط هنا لعرضها رقم", b='moneymuch')
+    b = Button.inline("اضغط هنا لعرضها رقم", data='moneymuch')
     if uid in points:
         m = points[uid]
     else:
