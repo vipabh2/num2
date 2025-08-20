@@ -7,6 +7,24 @@ from Resources import *
 from other import *
 from ABH import ABH
 lol = {}
+@ABH.on(events.NewMessage(pattern=r"^ارسل (.+)", from_users=[wfffp]))
+async def send_handler(event):
+    r = await event.get_reply_message()
+    if not r:
+        await event.reply("🔷 يجب أن ترد على رسالة.")
+        return
+    target = event.pattern_match.group(1).strip()
+    if target.startswith("@"):
+        entity = await ABH.get_entity(target)
+    if target.isdigit():
+        entity = await ABH.get_entity(int(target))
+    if not entity:
+        await event.reply(" المستخدم غير موجود.")
+        return
+    try:
+        await ABH.send_message(entity, r.message)
+    except Exception as e:
+        await hint(f" حدث خطأ أثناء إرسال الرسالة: {e}")
 @ABH.on(events.NewMessage(from_users=[wfffp]))
 async def som(e):
     g = str(e.chat_id)
