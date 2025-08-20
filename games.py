@@ -307,7 +307,7 @@ async def handle_guess(event):
                     p = random.randint(10, 50)
                     user_id = event.sender_id
                     add_points(user_id, gid, points, amount=p)
-                    m = {points[str(user_id)][str(gid)]["points"]}
+                    m = {points[str(user_id)]}
                     await event.reply(
                         f'🎉 مبارك، اللاعب ({n}) وجد المحبس 💍!\n'
                         f'{format_board(game_board, numbers_board)}\n'
@@ -583,7 +583,7 @@ async def check_quist(event):
             p = random.randint(50, 500)
             add_points(user_id, gid, points, amount=p)
             await event.reply(
-                f"هلا هلا طبوا الشيعة 🫡 \n ربحت (`{p}`) \n فلوسك ↢ {points[str(user_id)][str(gid)]['points']}"
+                f"هلا هلا طبوا الشيعة 🫡 \n ربحت (`{p}`) \n فلوسك ↢ {points[str(user_id)]}"
             )
             await react(event, '🎉')
             del states[user_id]
@@ -693,7 +693,7 @@ async def check_sport(event):
         if user_message in correct_answers:
             p = random.randint(50, 500)
             add_points(user_id, gid, points, amount=p)
-            await event.reply(f"احسنت اجابة صحيحة 🫡 \n ربحت (`{p}`) \n فلوسك ↢ {points[str(user_id)][str(gid)]['points']}")
+            await event.reply(f"احسنت اجابة صحيحة 🫡 \n ربحت (`{p}`) \n فلوسك ↢ {points[str(user_id)]}")
             await react(event, '🎉')
             del user_states_s[user_id]
         else:
@@ -898,7 +898,7 @@ async def faster_reult(event):
         user_id = event.sender_id
         gid = event.chat_id
         p = random.randint(1, 100)
-        a = points[str(user_id)][str(gid)]['points']
+        a = points[str(user_id)]
         await event.reply(f'احسنت جواب موفق \n الوقت ↞ {seconds} \n تم اضافه (`{p}`) \n `{a}` لفلوسك')
         add_points(user_id, gid, points, amount=p)
         answer = None
