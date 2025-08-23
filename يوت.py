@@ -6,7 +6,7 @@ from Program import r, chs
 from Resources import hint
 import os, asyncio, json
 from ABH import ABH
-actions = ['يوتيوب', 'تقييد', 'ردود', 'تنظيف']
+actions = ['يوتيوب', 'تقييد', 'ردود', 'تنظيف', 'العاب']
 @ABH.on(events.NewMessage(pattern=r'^ال(\w+)\s+(تفعيل|تعطيل)$'))
 async def toggle_feature(event):
     if not is_assistant(event.chat_id, event.sender_id):
@@ -15,7 +15,13 @@ async def toggle_feature(event):
     feature, action = event.pattern_match.groups()
     if feature not in actions:
         return
-    lock_key = f"lock:{event.chat_id}:{feature}"    
+    if r.get(f"lock:{event.chat_id}:{feature}") == "True" and action == "تفعيل":
+        await chs(event, f'ال{feature} مفعل بالفعل')
+        return
+    elif r.get(f"lock:{event.chat_id}:{feature}") == "False" and action == "تعطيل":
+        await chs(event, f'ال{feature} معطل بالفعل')
+        return
+    lock_key = f"lock:{event.chat_id}:{feature}"
     if action == "تفعيل":
         r.set(lock_key, "True")
         await chs(event, f'تم تفعيل ال{feature}  تدلل حبيبي')
