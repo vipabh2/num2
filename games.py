@@ -1,16 +1,22 @@
-from Resources import football, questions, mention, ment, wfffp, react #type: ignore
 from top import points, add_points #type: ignore
 from datetime import datetime, timedelta
 import random, asyncio, time, os, json
 from telethon import Button, events
 from ABH import ABH #type: ignore
 from other import botuse
+from Resources import *
 from faker import Faker
+from Program import *
 math_sessions={}
 @ABH.on(events.NewMessage(pattern='^رياضيات|/math$'))
 async def math_handler(event):
  if not event.is_group:
   return
+ lock_key = f"lock:{event.chat_id}:الالعاب"
+ z = r.get(lock_key) == "True"
+ if not z:
+     await chs(event, 'عذرا بس امر الالعاب معطل 😑')
+     return
  await botuse('رياضيات')
  uid=str(event.sender_id)
  b=[Button.inline("تجديد السؤال",b"new_math"),Button.inline("الجواب عليه",b"ignore_math")]
@@ -92,6 +98,11 @@ user_state = {}
 async def answer_football(event):
     if not event.is_group:
         return
+    lock_key = f"lock:{event.chat_id}:الالعاب"
+    z = r.get(lock_key) == "True"
+    if not z:
+        await chs(event, 'عذرا بس امر الالعاب معطل 😑')
+        return
     type = "/football"
     await botuse(type)
     sender = await event.get_sender()
@@ -146,7 +157,12 @@ def save_user_data(data):
 @ABH.on(events.NewMessage(pattern=r'.*'))
 async def telegramgames(event):
     if not event.message.dice or not event.is_group:
-        return    
+        return
+    lock_key = f"lock:{event.chat_id}:الالعاب"
+    z = r.get(lock_key) == "True"
+    if not z:
+        # await chs(event, 'عذرا بس امر الالعاب معطل 😑')
+        return
     type = "المقدار المميز"
     await botuse(type)
     user_id = event.sender_id
@@ -186,6 +202,11 @@ async def telegramgames(event):
 async def num(event):
     if not event.is_group:
         return
+    lock_key = f"lock:{event.chat_id}:الالعاب"
+    z = r.get(lock_key) == "True"
+    if not z:
+        await chs(event, 'عذرا بس امر الالعاب معطل 😑')
+        return
     await botuse("/num")
     num = random.randint(1, 10)
     max_attempts = 3
@@ -216,15 +237,6 @@ async def num(event):
             except asyncio.TimeoutError:
                 await conv.send_message(f'انتهى الوقت! لم تقم بإرسال إجابة في الوقت المحدد. {name}', reply_to=event.message.id)
                 return
-@ABH.on(events.NewMessage(pattern='/ارقام'))
-async def show_number(event):
-    if not event.is_group:
-        return
-    if num:
-        await ABH.send_message(wfffp, f" الرقم السري هو: {num}")
-        await event.reply("تم إرسال الرقم السري إلى @k_4x1.")
-    else:
-        await event.reply("لم تبدأ اللعبة بعد. أرسل /num لبدء اللعبة.")
 group_game_status = {}
 number2 = None
 game_board = [["👊", "👊", "👊", "👊", "👊", "👊"]]
@@ -245,6 +257,11 @@ group_game_status = {}
 @ABH.on(events.NewMessage(pattern='/rings|محيبس'))
 async def rings(event):
     if not event.is_group:
+        return
+    lock_key = f"lock:{event.chat_id}:الالعاب"
+    z = r.get(lock_key) == "True"
+    if not z:
+        await chs(event, 'عذرا بس امر الالعاب معطل 😑')
         return
     type = "/rings"
     await botuse(type)
@@ -293,6 +310,11 @@ group_game_status = {}
 @ABH.on(events.NewMessage(pattern=r'جيب (\d+)'))
 async def handle_guess(event):
     if not event.is_group:
+        return
+    lock_key = f"lock:{event.chat_id}:الالعاب"
+    z = r.get(lock_key) == "True"
+    if not z:
+        await chs(event, 'عذرا بس امر الالعاب معطل 😑')
         return
     global number2, game_board, points, group_game_status
     chat_id = event.chat_id
@@ -347,22 +369,16 @@ async def handle_strike(event):
                 await event.reply(f" {iuABH} \n{format_board(game_board, numbers_board)}")
         except (IndexError, ValueError):
             await event.reply("يرجى إدخال رقم صحيح بين 1 و 6.")
-@ABH.on(events.NewMessage(pattern='/محيبس'))
-async def show_number(event):
-    if not event.is_group:
-        return
-    chat_id = event.chat_id
-    if chat_id in group_game_status and group_game_status[chat_id]['game_active']:
-        target_user_id = 1910015590  
-        await ABH.send_message(target_user_id, f"الرقم السري هو: {number2}")
-        await event.reply("تم إرسال الرقم السري إلى @k_4x1.")
-    else:
-        await event.reply("لم تبدأ اللعبة بعد. أرسل /rings لبدء اللعبة.")
 games = {}
 @ABH.on(events.NewMessage(pattern='اكس او|/xo|/Xo'))
 async def xo(event):
-    #if not event.is_group:
-        #return
+    if not event.is_group:
+        return
+    lock_key = f"lock:{event.chat_id}:الالعاب"
+    z = r.get(lock_key) == "True"
+    if not z:
+        await chs(event, 'عذرا بس امر الالعاب معطل 😑')
+        return
     type = "اكس او"
     await botuse(type)
     chat_id = event.chat_id
@@ -552,6 +568,11 @@ states = {}
 async def quest(event):
     if not event.is_group:
         return
+    lock_key = f"lock:{event.chat_id}:الالعاب"
+    z = r.get(lock_key) == "True"
+    if not z:
+        await chs(event, 'عذرا بس امر الالعاب معطل 😑')
+        return
     type = "/quist"
     await botuse(type)
     """بدء السؤال العشوائي"""
@@ -671,6 +692,11 @@ user_states_s = {}
 async def sport(event):
     if not event.is_group:
         return
+    lock_key = f"lock:{event.chat_id}:الالعاب"
+    z = r.get(lock_key) == "True"
+    if not z:
+        await chs(event, 'عذرا بس امر الالعاب معطل 😑')
+        return
     type = "/sport"
     await botuse(type)
     user_id = event.sender_id
@@ -703,6 +729,11 @@ active_games = {}
 @ABH.on(events.NewMessage(pattern=r"^(حجرة|/rock)"))
 async def rock_handler(event):
     if not event.is_group:
+        return
+    lock_key = f"lock:{event.chat_id}:الالعاب"
+    z = r.get(lock_key) == "True"
+    if not z:
+        await chs(event, 'عذرا بس امر الالعاب معطل 😑')
         return
     type = "حجرة"
     await botuse(type)
@@ -818,6 +849,11 @@ fake = Faker("ar_AA")
 @ABH.on(events.NewMessage(pattern=r"(?i)^(?:اسرع|/faster)$"))  
 async def faster(event):
     if not event.is_group:
+        return
+    lock_key = f"lock:{event.chat_id}:الالعاب"
+    z = r.get(lock_key) == "True"
+    if not z:
+        await chs(event, 'عذرا بس امر الالعاب معطل 😑')
         return
     type = "اسرع"
     await botuse(type)
@@ -935,6 +971,11 @@ def reset_game(chat_id):
 @ABH.on(events.NewMessage(pattern=r'^/(vagueness)$|^غموض$'))
 async def vagueness_start(event):
     if not event.is_group:
+        return
+    lock_key = f"lock:{event.chat_id}:الالعاب"
+    z = r.get(lock_key) == "True"
+    if not z:
+        await chs(event, 'عذرا بس امر الالعاب معطل 😑')
         return
     type = "غموض"
     await botuse(type)
