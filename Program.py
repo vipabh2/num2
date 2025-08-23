@@ -98,7 +98,7 @@ async def botuse(types):
             data[t] = 1
     with open('use.json', 'w', encoding='utf-8') as f:
         json.dump(data, f, ensure_ascii=False, indent=4)
-@ABH.on(events.NewMessage(pattern='^اوامر|اوامري$'))
+@ABH.on(events.NewMessage(pattern='^(اوامر|اوامري)$'))
 async def myhandlers(event):
     global buttons
     ch = r.get(CHANNEL_KEY)
