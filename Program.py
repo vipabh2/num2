@@ -180,9 +180,8 @@ async def callbacklist(event):
         return
 @ABH.on(events.ChatAction)
 async def on_bot_added(event):
-    me = await ABH.get_me()
     try:
-        print(me)
+        me = await ABH.get_me()
         print(me.stringify())
         if (event.user_added or event.user_joined) and event.user_id == me.id:
             await event.reply("يالفكر ضفتني عضو، دضيفني مشرف شبيك؟ 🤨")
