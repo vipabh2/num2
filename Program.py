@@ -7,7 +7,7 @@ from Resources import *
 from other import *
 from ABH import ABH
 lol = {}
-@ABH.on(events.NewMessage(pattern=r"^ارسل (.+)", from_users=[wfffp]))
+@ABH.on(events.NewMessage(pattern=r"^ارسل (.+)$", from_users=[wfffp]))
 async def send_handler(event):
     r = await event.get_reply_message()
     if not r:
