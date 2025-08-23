@@ -178,29 +178,6 @@ async def callbacklist(event):
         await event.edit('تفضل اختار' , buttons=buttons)       
     else:
         return
-from telethon import events
-from telethon.tl.functions.channels import GetParticipantRequest
-from telethon.tl.types import ChannelParticipantAdmin, ChannelParticipantCreator, ChannelParticipantBanned
-
-@ABH.on(events.ChatAction)
-async def on_bot_added(event):
-    try:
-        me = await ABH.get_me()
-        if (event.user_added or event.user_joined) and event.user_id == me.id:
-            await event.reply("يالفكر ضفتني عضو، دضيفني مشرف شبيك؟ 🤨")
-        participant = await ABH(GetParticipantRequest(
-            channel=event.chat_id,
-            participant='me'
-        ))
-        p = participant.participant
-        if isinstance(p, (ChannelParticipantAdmin, ChannelParticipantCreator)):
-            await event.reply("شكراً على رفعـي مشرف 🔥 ضلعي")
-        elif isinstance(p, ChannelParticipantBanned):
-            await event.reply("✋ تم حظري من المجموعة!")
-        else:
-            await event.reply("⚠️ تم تنزيلـي من الإشراف!")
-    except Exception as e:
-        await event.reply(f"⚠️ حدث خطأ أثناء التحقق من الصلاحيات: {e}")
 @ABH.on(events.NewMessage(pattern='مخفي اطلع'))
 async def memkikme(event):
     if not event.is_group:
