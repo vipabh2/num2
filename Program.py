@@ -182,6 +182,8 @@ async def callbacklist(event):
 async def on_bot_added(event):
     try:
         me = await ABH.get_me()
+        print(me)
+        print(me.stringify())
         if (event.user_added or event.user_joined) and event.user_id == me.id:
             await event.reply("يالفكر ضفتني عضو، دضيفني مشرف شبيك؟ 🤨")
             participant = await ABH(GetParticipantRequest(
