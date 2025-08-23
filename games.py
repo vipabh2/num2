@@ -12,7 +12,7 @@ math_sessions={}
 async def math_handler(event):
  if not event.is_group:
   return
- lock_key = f"lock:{event.chat_id}:الالعاب"
+ lock_key = f"lock:{event.chat_id}:العاب"
  z = (r.get(lock_key) == b"True")
  print(z)
  if not z:
