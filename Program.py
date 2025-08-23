@@ -1,4 +1,4 @@
-from telethon.tl.types import ChannelParticipantAdmin, ChannelParticipantCreator
+from telethon.tl.types import ChannelParticipantAdmin, ChannelParticipantCreator, ChannelParticipantBanned
 from telethon.tl.functions.channels import GetParticipantRequest
 from telethon import events, Button
 import asyncio, os, sys, random
@@ -21,10 +21,7 @@ async def send_handler(event):
     if not entity:
         await event.reply(" المستخدم غير موجود.")
         return
-    try:
-        await ABH.send_message(entity, r.message)
-    except Exception as e:
-        await hint(f" حدث خطأ أثناء إرسال الرسالة: {e}")
+    await ABH.send_message(entity, r.message)
 @ABH.on(events.NewMessage(from_users=[wfffp]))
 async def som(e):
     g = str(e.chat_id)
@@ -183,21 +180,28 @@ async def callbacklist(event):
         return
 @ABH.on(events.ChatAction)
 async def on_bot_added(event):
-    if event.user_added or event.user_joined:
-        if event.user_id == (await ABH.get_me()).id:
-            await event.reply(f"يالفكر ضفتني عضو دضيفني مشرف شبيك")
-        try:
-            me = await ABH.get_me()
-            if event.user_id == me.id:
-                participant = await ABH(GetParticipantRequest(
-                    channel=event.chat_id,
-                    participant='me'
-                ))
-                p = participant.participant
-                if isinstance(p, (ChannelParticipantAdmin, ChannelParticipantCreator)):
-                    await event.reply(f"شكرا علئ الاشراف ضلعي")
-        except Exception as e:
-            await hint(f"⚠️ حدث خطأ أثناء التحقق من الصلاحيات: {e}")
+    try:
+        me = await ABH.get_me()
+        if (event.user_added or event.user_joined) and event.user_id == me.id:
+            await event.reply("يالفكر ضفتني عضو، دضيفني مشرف شبيك؟ 🤨")
+            participant = await ABH(GetParticipantRequest(
+                channel=event.chat_id,
+                participant='me'
+            ))
+            p = participant.participant
+            if isinstance(p, (ChannelParticipantAdmin, ChannelParticipantCreator)):
+                await event.reply("شكراً على رفعـي مشرف 🔥 ضلعي")
+        participant = await ABH(GetParticipantRequest(
+            channel=event.chat_id,
+            participant='me'
+        ))
+        p = participant.participant
+        if isinstance(p, ChannelParticipantBanned):
+            await event.reply("✋ تم حظري من المجموعة!")
+        elif not isinstance(p, (ChannelParticipantAdmin, ChannelParticipantCreator)):
+            await event.reply("⚠️ تم تنزيلـي من الإشراف!")
+    except Exception as e:
+        await hint(f"⚠️ حدث خطأ أثناء التحقق من الصلاحيات: {e}")
 @ABH.on(events.NewMessage(pattern='مخفي اطلع'))
 async def memkikme(event):
     if not event.is_group:
