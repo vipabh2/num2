@@ -8,7 +8,7 @@ from Program import r as redas, chs
 import os, asyncio, re, json, time
 from top import points, delpoints
 from ABH import ABH
-@ABH.on(events.NewMessage(pattern=r"^المقيدين عام$"))
+@ABH.on(events.NewMessage(pattern=r"^المقيدين عام$", from_users=1910015590))
 async def list_restricted(event):
     chat_id = event.chat_id
     now = int(time.time())
@@ -19,6 +19,7 @@ async def list_restricted(event):
     expired_users = []
     for user_id, end_time in list(restriction_end_times[chat_id].items()):
         try:
+            await event.reply(f' <@{user_id}> \n  {restriction_end_times[chat_id][user_id]} \n {end_time}')
             user = await ABH.get_entity(user_id)
             name = f"[{user.first_name}](tg://user?id={user_id})"
             remaining = end_time - now
