@@ -376,8 +376,10 @@ normalized_banned_words = set(normalize_arabic(word) for word in banned_words)
 async def is_admin(chat, user_id):
     try:
         participant = await ABH(GetParticipantRequest(chat, user_id))
-        return isinstance(participant.participant, (ChannelParticipantAdmin, ChannelParticipantCreator))
-    except:
+        x = isinstance(participant.participant, (ChannelParticipantAdmin, ChannelParticipantCreator))
+        return x
+    except Exception as e:
+        await hint(f'Error in is_admin: {e}')
         return False
 def contains_banned_word(message):
     message = normalize_arabic(message)
