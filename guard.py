@@ -478,7 +478,8 @@ async def warn_user(event):
         return await event.reply("يجب الرد على رسالة العضو الذي تريد تحذيره.")
     target_id = r.sender_id
     if not is_admin(chat_id, target_id) or not is_assistant(chat_id, target_id):
-        return await event.reply("لا يمكنك تحذير المشرفين أو المساعدين.")
+        await event.reply("لا يمكنك تحذير المشرفين أو المساعدين.")
+        return
     await event.delete()
     await r.delete()
     w = add_warning(target_id, chat_id)
