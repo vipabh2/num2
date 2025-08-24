@@ -30,9 +30,8 @@ async def list_restricted(event):
         except Exception as e:
             msg += f"مستخدم غير معروف — `{user_id}`\n"
             await hint(e)
-    for user_id in expired_users:
-        del restriction_end_times[chat_id][user_id]
-    if msg.strip() == "📋 قائمة المقيدين عام:":
+        # del restriction_end_times[chat_id][user_id]
+    if msg == "📋 قائمة المقيدين عام:":
         msg = "✅ لا يوجد حالياً أي مستخدم مقيد."
     await event.reply(msg, link_preview=False)
 async def notAssistantres(event):
