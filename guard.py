@@ -12,7 +12,7 @@ from ABH import ABH
 async def list_restricted(event):
     chat_id = event.chat_id
     now = int(time.time())
-    if chat_id not in restriction_end_times or not restriction_end_times[chat_id]:
+    if bool(restriction_end_times.get(chat_id)):
         await event.reply("لا يوجد أي مستخدم مقيد حالياً.")
         return
     msg = "📋 قائمة المقيدين عام:\n\n"
