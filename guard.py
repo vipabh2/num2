@@ -19,7 +19,6 @@ async def list_restricted(event):
     expired_users = []
     for user_id, end_time in list(restriction_end_times[chat_id].items()):
         try:
-            await event.reply(f' <@{user_id}> \n  {restriction_end_times[chat_id][user_id]} \n {end_time}')
             user = await ABH.get_entity(user_id)
             name = f"[{user.first_name}](tg://user?id={user_id})"
             remaining = end_time - now
@@ -107,14 +106,16 @@ async def restrict_user(event):
     except:
         return
     now = int(time.time())
-    restriction_duration = 20 * 60
+    restriction_duration = 30
+    # restriction_duration = 20 * 60
     user_to_restrict = await r.get_sender()
     user_id = user_to_restrict.id
     rights = ChatBannedRights(
         until_date=now + restriction_duration,
         send_messages=True
     )
-    restriction_end_times.setdefault(event.chat_id, {})[user_id] = now + restriction_duration
+    # restriction_end_times.setdefault(event.chat_id, {})[user_id] = now + restriction_duration
+    restriction_end_times.setdefault(event.chat_id, {})[user_id] = 30
     try:
         await ABH(EditBannedRequest(channel=chat, participant=user_id, banned_rights=rights))
         type = "تقييد عام"
