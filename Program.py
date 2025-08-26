@@ -23,12 +23,9 @@ async def add_secondary_dev(event):
         return
     if entity.id == wfffp:
         return
-    s = save(None, filename="secondary_devs.json")
+    dev = f"{event.chat_id}:{entity.id}"
+    s = save(dev, filename="secondary_devs.json")
     await event.reply(str(s))
-    dev = developers[event.chat_id] = entity.id
-    if entity.id in s:
-        await chs(event, "هذا المستخدم مطور ثانوي.")
-    save(dev, filename="secondary_devs.json")
     try:
         await ABH.send_message(entity, f"تم رفعك مطور ثانوي \n في مجموعة {c}\n بواسطة المطور الاساسي")
     except Exception as e:
