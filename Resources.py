@@ -1,12 +1,15 @@
 from telethon.tl.types import ChannelParticipantsAdmins, ChannelParticipantCreator, ChannelParticipantAdmin
 from telethon.tl.functions.channels import GetParticipantsRequest
-from telethon.tl.functions.channels import GetParticipantRequest
 from telethon.tl.functions.messages import SendReactionRequest
 from telethon.tl.types import ReactionEmoji
 import google.generativeai as genai
 import pytz, os, json
 from ABH import ABH
-def save(chat_id, dev_id, filename="secondary_devs.json"):
+def save(dev_id, filename="secondary_devs.json"):
+    if filename is None:
+        raise ValueError("يجب تحديد اسم الملف")
+    chat_id = list(developers.keys())[-1]
+    chat_key = str(chat_id)
     if os.path.exists(filename):
         with open(filename, 'r', encoding='utf-8') as f:
             try:
@@ -15,10 +18,10 @@ def save(chat_id, dev_id, filename="secondary_devs.json"):
                 data = {}
     else:
         data = {}
-    if str(chat_id) not in data:
-        data[str(chat_id)] = []
-    if dev_id not in data[str(chat_id)]:
-        data[str(chat_id)].append(dev_id)
+    if chat_key not in data:
+        data[chat_key] = []
+    if dev_id not in data[chat_key]:
+        data[chat_key].append(dev_id)
     with open(filename, 'w', encoding='utf-8') as f:
         json.dump(data, f, ensure_ascii=False, indent=2)
     return data
