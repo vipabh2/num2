@@ -5,6 +5,7 @@ from telethon.tl.types import ReactionEmoji
 import google.generativeai as genai
 import pytz, os, json
 from ABH import ABH
+developers = {}
 def save(dev_id, filename="secondary_devs.json"):
     if filename is None:
         raise ValueError("يجب تحديد اسم الملف")
