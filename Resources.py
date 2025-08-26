@@ -7,10 +7,13 @@ import pytz, os, json
 from ABH import ABH
 developers = {}
 def save(dev_id, filename="secondary_devs.json"):
+    if not dev_id:
+        return
+    x = dev_id.split(':')
+    if len(x) == 2:
+        chat_id, id = x
     if filename is None:
-        raise ValueError("يجب تحديد اسم الملف")
-    chat_id = list(developers.keys())[-1]
-    chat_key = str(chat_id)
+        return
     if os.path.exists(filename):
         with open(filename, 'r', encoding='utf-8') as f:
             try:
@@ -19,10 +22,10 @@ def save(dev_id, filename="secondary_devs.json"):
                 data = {}
     else:
         data = {}
-    if chat_key not in data:
-        data[chat_key] = []
-    if dev_id not in data[chat_key]:
-        data[chat_key].append(dev_id)
+    if chat_id not in data:
+        data[chat_id] = []
+    if chat_id not in data[chat_id]:
+        data[chat_id].append(id)
     with open(filename, 'w', encoding='utf-8') as f:
         json.dump(data, f, ensure_ascii=False, indent=2)
     return data
