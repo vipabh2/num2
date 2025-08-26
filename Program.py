@@ -4,25 +4,23 @@ import json, redis, subprocess
 from Resources import *
 from other import *
 from ABH import ABH
-@ABH.on(events.NewMessage(pattern=r"^رفع مطور ثانوي (.+)$", from_users=[wfffp]))
+@ABH.on(events.NewMessage(pattern=r"^رفع مطور ثانوي(?:\s+(.+))?$", from_users=[wfffp]))
 async def add_secondary_dev(event):
     c = event.chat_title
-    target = event.pattern_match.group(1)
-    if target.startswith("@"):
-        entity = await ABH.get_entity(target)
-    if target.isdigit():
-        entity = await ABH.get_entity(target)
-        r = await event.get_reply_message()
-        if r and target:
-            await chs(event,"عزيزي ابن هاشم لازم تسوي اما بالرد اما بالايدي او اليوزر")
-            return
-        if r and not target:
-            entity = await ABH.get_entity(r.sender_id)
-            return
+    arg = event.pattern_match.group(1)
+    entity = None
+    reply = await event.get_reply_message()
+    if reply and not arg:
+        entity = await ABH.get_entity(reply.sender_id)
+    elif arg and arg.startswith("@"):
+        entity = await ABH.get_entity(arg)
+    elif arg and arg.isdigit():
+        entity = await ABH.get_entity(int(arg))
     if not entity:
-        await event.reply(" المستخدم غير موجود.")
+        await chs(event, "عزيزي ابن هاشم لازم ترفع بالرد أو باليوزر أو الآيدي.")
         return
     if entity.id == wfffp:
+        await chs(event, "ما تگدر ترفع نفسك 🌚")
         return
     save(entity.id, filename="secondary_devs.json")
     try:
@@ -30,7 +28,7 @@ async def add_secondary_dev(event):
     except Exception as e:
         await hint(f"حدث خطأ أثناء إرسال الرسالة للمطورالثاني {entity.id} {e}")
     m = await ment(entity)
-    await chs(event, f"تم رفع {m} كمطور ثانوي بنجاح.")
+    await chs(event, f"تم رفع {m} كمطور ثانوي بنجاح ✅")
 @ABH.on(events.NewMessage(pattern=r"^ارسل (.+)$", from_users=[wfffp]))
 async def send_handler(event):
     r = await event.get_reply_message()
