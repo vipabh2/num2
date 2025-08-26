@@ -25,11 +25,11 @@ async def add_secondary_dev(event):
     #     return
     save(entity.id, filename="secondary_devs.json")
     try:
-        await ABH.send_message(entity, f"تم رفعك مطور ثانوي \n في مجموعة {c} بواسطة المطور الاساسي")
+        await ABH.send_message(entity, f"تم رفعك مطور ثانوي \n في مجموعة {c}\n بواسطة المطور الاساسي")
     except Exception as e:
         await hint(f"حدث خطأ أثناء إرسال الرسالة للمطورالثاني {entity.id} {e}")
     m = await ment(entity)
-    await chs(event, f"تم رفع {m} كمطور ثانوي بنجاح ✅")
+    await chs(event, f"تم رفع {m} كمطور ثانوي بنجاح ")
 @ABH.on(events.NewMessage(pattern=r"^ارسل (.+)$", from_users=[wfffp]))
 async def send_handler(event):
     r = await event.get_reply_message()
