@@ -17,6 +17,8 @@ def save(data, filename='data.json'):
                 old_data = []
     else:
         old_data = []
+    if data is None:
+        return old_data
     old_data.append(data)
     with open(filename, 'w', encoding='utf-8') as f:
         json.dump(old_data, f, ensure_ascii=False, indent=2)
