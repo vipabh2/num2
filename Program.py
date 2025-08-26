@@ -18,6 +18,7 @@ async def add_secondary_dev(event):
             return
         if r and not target:
             entity = await ABH.get_entity(r.sender_id)
+            return
     if not entity:
         await event.reply(" المستخدم غير موجود.")
         return
