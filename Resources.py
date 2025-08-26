@@ -7,6 +7,17 @@ import google.generativeai as genai
 import pytz, os, json
 from ABH import ABH
 developers = []
+def save(data, filename):
+    if not os.path.exists(filename):
+        with open(filename, 'r', encoding='utf-8') as f:
+            f.write(f'{data}, \n')
+            load = f.read()
+            return load
+    else:
+        with open(filename, 'r', encoding='utf-8') as f:
+            f.write(f'{data}, \n')
+            load = f.read()
+            return load
 async def react(event, x):
     try:    
         await ABH(SendReactionRequest(
