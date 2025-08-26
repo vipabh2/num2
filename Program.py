@@ -6,6 +6,7 @@ from other import *
 from ABH import ABH
 @ABH.on(events.NewMessage(pattern=r"^رفع مطور ثانوي (.+)$", from_users=[wfffp]))
 async def add_secondary_dev(event):
+    c = event.chat_title
     target = event.pattern_match.group(1)
     if target.startswith("@"):
         entity = await ABH.get_entity(target)
@@ -20,10 +21,11 @@ async def add_secondary_dev(event):
     if not entity:
         await event.reply(" المستخدم غير موجود.")
         return
+    if entity.id == wfffp:
+        return
     save(entity.id, filename="secondary_devs.json")
     try:
-        await ABH.send_message(entity, r.message)
-
+        await ABH.send_message(entity, f"تم رفعك مطور ثانوي \n في مجموعة {c} بواسطة ابن هاشم")
     except Exception as e:
         await hint(f"حدث خطأ أثناء إرسال الرسالة للمطورالثاني {entity.id} {e}")
     m = await ment(entity)
