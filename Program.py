@@ -20,9 +20,8 @@ async def add_secondary_dev(event):
     if not entity:
         await chs(event, "عزيزي ابن هاشم لازم ترفع بالرد أو باليوزر أو الآيدي.")
         return
-    # if entity.id == wfffp:
-    #     await chs(event, "ما تگدر ترفع نفسك 🌚")
-    #     return
+    if entity.id == wfffp:
+        return
     save(entity.id, filename="secondary_devs.json")
     try:
         await ABH.send_message(entity, f"تم رفعك مطور ثانوي \n في مجموعة {c}\n بواسطة المطور الاساسي")
