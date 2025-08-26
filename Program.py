@@ -4,6 +4,7 @@ import json, redis, subprocess
 from Resources import *
 from other import *
 from ABH import ABH
+developers = {}
 @ABH.on(events.NewMessage(pattern=r"^رفع مطور ثانوي(?:\s+(.+))?$", from_users=[wfffp]))
 async def add_secondary_dev(event):
     chat = await event.get_chat()
@@ -22,7 +23,12 @@ async def add_secondary_dev(event):
         return
     if entity.id == wfffp:
         return
-    save(entity.id, filename="secondary_devs.json")
+    s = save(None, filename="secondary_devs.json")
+    await event.reply(str(s))
+    dev = developers[event.chat_id] = entity.id
+    if entity.id in s:
+        await chs(event, "هذا المستخدم مطور ثانوي.")
+    save(dev, filename="secondary_devs.json")
     try:
         await ABH.send_message(entity, f"تم رفعك مطور ثانوي \n في مجموعة {c}\n بواسطة المطور الاساسي")
     except Exception as e:
