@@ -7,7 +7,7 @@ import google.generativeai as genai
 import pytz, os, json
 from ABH import ABH
 developers = []
-def save(data, filename):
+def save(filename, data):
     if not os.path.exists(filename):
         with open(filename, 'r', encoding='utf-8') as f:
             f.write(f'{data}, \n')
