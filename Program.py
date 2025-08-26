@@ -6,7 +6,8 @@ from other import *
 from ABH import ABH
 @ABH.on(events.NewMessage(pattern=r"^رفع مطور ثانوي(?:\s+(.+))?$", from_users=[wfffp]))
 async def add_secondary_dev(event):
-    c = event.chat_title
+    chat = await event.get_chat()
+    c = chat.title if hasattr(chat, "title") else "خاص"
     arg = event.pattern_match.group(1)
     entity = None
     reply = await event.get_reply_message()
@@ -19,12 +20,12 @@ async def add_secondary_dev(event):
     if not entity:
         await chs(event, "عزيزي ابن هاشم لازم ترفع بالرد أو باليوزر أو الآيدي.")
         return
-    if entity.id == wfffp:
-        await chs(event, "ما تگدر ترفع نفسك 🌚")
-        return
+    # if entity.id == wfffp:
+    #     await chs(event, "ما تگدر ترفع نفسك 🌚")
+    #     return
     save(entity.id, filename="secondary_devs.json")
     try:
-        await ABH.send_message(entity, f"تم رفعك مطور ثانوي \n في مجموعة {c} بواسطة ابن هاشم")
+        await ABH.send_message(entity, f"تم رفعك مطور ثانوي \n في مجموعة {c} بواسطة المطور الاساسي")
     except Exception as e:
         await hint(f"حدث خطأ أثناء إرسال الرسالة للمطورالثاني {entity.id} {e}")
     m = await ment(entity)
