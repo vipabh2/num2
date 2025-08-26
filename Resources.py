@@ -6,23 +6,22 @@ from telethon.tl.types import ReactionEmoji
 import google.generativeai as genai
 import pytz, os, json
 from ABH import ABH
-def save(data, filename='data.json'):
-    if filename is None:
-        raise ValueError("يجب تحديد اسم الملف")
+def save(chat_id, dev_id, filename="secondary_devs.json"):
     if os.path.exists(filename):
         with open(filename, 'r', encoding='utf-8') as f:
             try:
-                old_data = json.load(f)
+                data = json.load(f)
             except json.JSONDecodeError:
-                old_data = []
+                data = {}
     else:
-        old_data = []
-    if data is None:
-        return old_data
-    old_data.append(data)
+        data = {}
+    if str(chat_id) not in data:
+        data[str(chat_id)] = []
+    if dev_id not in data[str(chat_id)]:
+        data[str(chat_id)].append(dev_id)
     with open(filename, 'w', encoding='utf-8') as f:
-        json.dump(old_data, f, ensure_ascii=False, indent=2)
-    return old_data
+        json.dump(data, f, ensure_ascii=False, indent=2)
+    return data
 async def react(event, x):
     try:    
         await ABH(SendReactionRequest(
