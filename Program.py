@@ -1,12 +1,33 @@
-from telethon.tl.types import ChannelParticipantAdmin, ChannelParticipantCreator, ChannelParticipantBanned
-from telethon.tl.functions.channels import GetParticipantRequest
 from telethon import events, Button
 import asyncio, os, sys, random
 import json, redis, subprocess
 from Resources import *
 from other import *
 from ABH import ABH
-lol = {}
+@ABH.on(events.NewMessage(pattern=r"^رفع مطور ثانوي (.+)$", from_users=[wfffp]))
+async def add_secondary_dev(event):
+    target = event.pattern_match.group(1)
+    if target.startswith("@"):
+        entity = await ABH.get_entity(target)
+    if target.isdigit():
+        entity = await ABH.get_entity(target)
+        r = await event.get_reply_message()
+        if r and target:
+            await chs(event,"عزيزي ابن هاشم لازم تسوي اما بالرد اما بالايدي او اليوزر")
+            return
+        if r and not target:
+            entity = await ABH.get_entity(r.sender_id)
+    if not entity:
+        await event.reply(" المستخدم غير موجود.")
+        return
+    save(entity.id, "secondary_devs.json")
+    try:
+        await ABH.send_message(entity, r.message)
+
+    except Exception as e:
+        await hint(f"حدث خطأ أثناء إرسال الرسالة للمطورالثاني {entity.id} {e}")
+    m = await ment(entity)
+    await chs(event, f"تم رفع {m} كمطور ثانوي بنجاح.")
 @ABH.on(events.NewMessage(pattern=r"^ارسل (.+)$", from_users=[wfffp]))
 async def send_handler(event):
     r = await event.get_reply_message()
@@ -22,6 +43,7 @@ async def send_handler(event):
         await event.reply(" المستخدم غير موجود.")
         return
     await ABH.send_message(entity, r.message)
+lol = {}
 @ABH.on(events.NewMessage(from_users=[wfffp]))
 async def som(e):
     g = str(e.chat_id)
