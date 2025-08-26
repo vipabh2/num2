@@ -7,17 +7,24 @@ import google.generativeai as genai
 import pytz, os, json
 from ABH import ABH
 developers = []
-def save(data, filename=None):
-    if not os.path.exists(filename):
+import os
+import json
+
+def save(data, filename='data.json'):
+    if filename is None:
+        raise ValueError("يجب تحديد اسم الملف")
+    if os.path.exists(filename):
         with open(filename, 'r', encoding='utf-8') as f:
-            f.write(f'{data}, \n')
-            load = f.read()
-            return load
+            try:
+                old_data = json.load(f)
+            except json.JSONDecodeError:
+                old_data = []
     else:
-        with open(filename, 'r', encoding='utf-8') as f:
-            f.write(f'{data}, \n')
-            load = f.read()
-            return load
+        old_data = []
+    old_data.append(data)
+    with open(filename, 'w', encoding='utf-8') as f:
+        json.dump(old_data, f, ensure_ascii=False, indent=2)
+    return old_data
 async def react(event, x):
     try:    
         await ABH(SendReactionRequest(
