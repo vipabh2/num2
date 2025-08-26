@@ -20,7 +20,7 @@ async def add_secondary_dev(event):
     if not entity:
         await event.reply(" المستخدم غير موجود.")
         return
-    save(entity.id, "secondary_devs.json")
+    save(entity.id, filename="secondary_devs.json")
     try:
         await ABH.send_message(entity, r.message)
 
