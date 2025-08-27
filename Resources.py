@@ -75,6 +75,22 @@ async def can_add_admins(chat, user_id):
         return False
     except:
         return False
+async def can_ban_users(chat, user_id):
+    try:
+        result = await ABH(GetParticipantRequest(
+            channel=chat,
+            participant=user_id
+        ))
+        role = result.participant
+        if isinstance(role, ChannelParticipantCreator):
+            return True
+        if isinstance(role, ChannelParticipantAdmin):
+            rights = role.admin_rights
+            if rights and rights.ban_users:
+                return True
+        return False
+    except:
+        return False
 async def get_owner(event):
     if not event.is_group:
         return None   
