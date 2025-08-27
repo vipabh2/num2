@@ -7,11 +7,11 @@ import pytz, os, json
 from ABH import ABH
 developers = {}
 def save(dev_id, filename="secondary_devs.json"):
-    if not dev_id:
+    if dev_id and ":" in dev_id:
+        x = dev_id.split(':')
+        if len(x) == 2:
+            chat_id, id = x
         return
-    x = dev_id.split(':')
-    if len(x) == 2:
-        chat_id, id = x
     if filename is None:
         return
     if os.path.exists(filename):
@@ -21,7 +21,7 @@ def save(dev_id, filename="secondary_devs.json"):
             except json.JSONDecodeError:
                 data = {}
     else:
-        data = {}
+            data = {}
     if chat_id not in data:
         data[chat_id] = []
     if chat_id not in data[chat_id]:
