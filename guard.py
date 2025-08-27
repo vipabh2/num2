@@ -12,9 +12,9 @@ from ABH import ABH
 async def delres(e):
     id = e.chat_id
     if not (
-        await is_owner(e.chat_id, id) 
-        or await can_ban_users(e.chat_id, id) 
-        or id in save(None, "secondary_devs.json")
+        await is_owner(e.chat_id, id)
+        # or await can_ban_users(e.chat_id, id) 
+        # or id in save(None, "secondary_devs.json")
     ):
         await e.reply("ليس لديك صلاحيات كافية.")
         return
