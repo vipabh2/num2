@@ -8,7 +8,7 @@ import os, asyncio, re, json, time
 from top import points, delpoints
 from Resources import *
 from ABH import ABH
-@ABH.on(events.NewMessage(pattern="الغاء تقييد عام", from_users=[wfffp]))
+@ABH.on(events.NewMessage(pattern="الغاء تقييد عام"))
 async def delres(e):
     r = await e.get_reply_message()
     if not r or not r.sender_id:
@@ -31,8 +31,8 @@ async def delres(e):
 async def list_restricted(event):
     chat_id = event.chat_id
     now = int(time.time())
-    if bool(restriction_end_times.get(chat_id)):
-        await event.reply("لا يوجد أي مستخدم مقيد حالياً.")
+    if not restriction_end_times.get(chat_id):
+        await event.reply("✅ لا يوجد حالياً أي مستخدم مقيد.")
         return
     msg = "📋 قائمة المقيدين عام:\n\n"
     expired_users = []
@@ -49,8 +49,9 @@ async def list_restricted(event):
         except Exception as e:
             msg += f"مستخدم غير معروف — `{user_id}`\n"
             await hint(e)
-        # del restriction_end_times[chat_id][user_id]
-    if msg == "📋 قائمة المقيدين عام:":
+    for user_id in expired_users:
+        restriction_end_times[chat_id].pop(user_id, None)
+    if msg.strip() == "📋 قائمة المقيدين عام:":
         msg = "✅ لا يوجد حالياً أي مستخدم مقيد."
     await event.reply(msg, link_preview=False)
 async def notAssistantres(event):
