@@ -6,12 +6,7 @@ import google.generativeai as genai
 import pytz, os, json
 from ABH import ABH
 developers = {}
-def save(dev_id, filename="secondary_devs.json"):
-    if dev_id and ":" in dev_id:
-        x = dev_id.split(':')
-        if len(x) == 2:
-            chat_id, id = x
-        return
+def save(dev_id=None, filename="secondary_devs.json"):
     if filename is None:
         return
     if os.path.exists(filename):
@@ -21,11 +16,19 @@ def save(dev_id, filename="secondary_devs.json"):
             except json.JSONDecodeError:
                 data = {}
     else:
-            data = {}
+        data = {}
+    if dev_id is None:
+        return data
+    if ":" not in dev_id:
+        return data
+    parts = dev_id.split(":", 1)
+    if len(parts) != 2:
+        return data
+    chat_id, dev_id_num = parts
     if chat_id not in data:
         data[chat_id] = []
-    if chat_id not in data[chat_id]:
-        data[chat_id].append(id)
+    if dev_id_num not in data[chat_id]:
+        data[chat_id].append(dev_id_num)
     with open(filename, 'w', encoding='utf-8') as f:
         json.dump(data, f, ensure_ascii=False, indent=2)
     return data
