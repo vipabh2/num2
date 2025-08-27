@@ -14,7 +14,7 @@ async def delres(e):
         r = await e.get_reply_message()
         if r and r.sender_id:
             del restriction_end_times[e.chat_id][r.sender_id]
-            await ABH(EditBannedRequest(e.chat_id, e.sender_id, ChatBannedRights(until_date=None)))
+            await ABH(EditBannedRequest(e.chat_id, r.sender_id, ChatBannedRights(until_date=None)))
             # m = await ment(r)
             m = "x"
             await e.reply(f"تم الغاء التقييد العام عن {m}")
