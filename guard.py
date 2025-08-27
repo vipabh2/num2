@@ -11,11 +11,11 @@ from ABH import ABH
 @ABH.on(events.NewMessage(pattern="الغاء تقييد عام"))
 async def delres(e):
     id = e.sender_id
+    x = save(None, filename="secondary_devs.json")
     a = await is_owner(e.chat_id, id)
     z = await can_ban_users(e.chat_id, id)
     s = save(None, "secondary_devs.json")
-    k = e.chat_id in s and id in s[e.chat_id]
-
+    k = str(e.chat_id) in s and str(id) in s[str(e.chat_id)]
     print(f'{a} - {z} - {k}')
     if not (
         a
