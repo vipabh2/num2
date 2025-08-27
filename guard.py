@@ -11,7 +11,11 @@ from ABH import ABH
 @ABH.on(events.NewMessage(pattern="الغاء تقييد عام"))
 async def delres(e):
     id = e.chat_id
-    if not await is_owner(e.chat_id, id) or not await can_ban_users(e.chat_id, id) or not id in save(None, "secondary_devs.json"):
+    if not (
+        await is_owner(e.chat_id, id) 
+        or await can_ban_users(e.chat_id, id) 
+        or id in save(None, "secondary_devs.json")
+    ):
         await e.reply("ليس لديك صلاحيات كافية.")
         return
     r = await e.get_reply_message()
