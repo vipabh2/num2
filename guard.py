@@ -10,7 +10,7 @@ from Resources import *
 from ABH import ABH
 @ABH.on(events.NewMessage(pattern="الغاء تقييد عام"))
 async def delres(e):
-    id = str(e.sender_id)
+    id = e.sender_id
     a = await is_owner(e.chat_id, id)
     z = await can_ban_users(e.chat_id, id)
     k = id in save(None, "secondary_devs.json")
