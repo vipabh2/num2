@@ -24,8 +24,10 @@ async def add_secondary_dev(event):
     if entity.id == wfffp:
         return
     x = save(None, filename="secondary_devs.json")
-    if event.chat_id in x and str(entity.id) in x[event.chat_id]:
-        await chs(event, "عزيزي ابن هاشم انت مطور ثانوي بالفعل.")
+    chat_id = str(event.chat_id)
+    user_id = str(entity.id)
+    if chat_id in x and user_id in x[chat_id]:
+        await chs(event, "عزيزي ابن هاشم هذا مطور ثانوي بالفعل.")
         return
     dev = f"{event.chat_id}:{entity.id}"
     save(dev, filename="secondary_devs.json")
