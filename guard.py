@@ -1,8 +1,6 @@
 from telethon.tl.types import ChannelParticipantCreator, ChannelParticipantAdmin, ChatBannedRights
 from telethon.tl.functions.channels import EditBannedRequest, GetParticipantRequest
-from telethon.tl.types import ChannelParticipantBanned, ChannelParticipantRestricted
-from telethon.tl.functions.channels import GetParticipantRequest
-from telethon.tl.types import ChatBannedRights, MessageEntityUrl
+from telethon.tl.types import ChannelParticipantBanned, ChatBannedRights, MessageEntityUrl
 from other import is_assistant, botuse, is_owner
 from telethon import events, Button
 from Program import r as redas, chs
@@ -13,17 +11,22 @@ from ABH import ABH
 @ABH.on(events.NewMessage(pattern="الغاء تقييد عام", from_users=[wfffp]))
 async def delres(e):
     r = await e.get_reply_message()
+    if not r or not r.sender_id:
+        await e.reply("الرجاء الرد على رسالة المستخدم المراد إلغاء تقييده.")
+        return    
     participant = await ABH(GetParticipantRequest(e.chat_id, r.sender_id))
-    if not isinstance(participant.participant, (ChannelParticipantBanned, ChannelParticipantRestricted)):
+    if not isinstance(participant.participant, ChannelParticipantBanned):
         await e.reply("المستخدم غير مقيد.")
         return
-    if r and r.sender_id:
-        del restriction_end_times[e.chat_id][r.sender_id]
-        await ABH(EditBannedRequest(e.chat_id, r.sender_id, ChatBannedRights(until_date=None)))
-        x = await r.get_sender()
-        m = await ment(x)
-        await e.reply(f"تم الغاء التقييد العام عن {m}")
-        return
+    del restriction_end_times[e.chat_id][r.sender_id]
+    await ABH(EditBannedRequest(
+        e.chat_id,
+        r.sender_id,
+        ChatBannedRights(until_date=None)
+    ))
+    x = await r.get_sender()
+    m = await ment(x)
+    await e.reply(f"تم إلغاء التقييد العام عن {m}")
 @ABH.on(events.NewMessage(pattern=r"^المقيدين عام$", from_users=1910015590))
 async def list_restricted(event):
     chat_id = event.chat_id
