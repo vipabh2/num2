@@ -294,7 +294,7 @@ async def edited(event):
     )
     report_data[sent_msg.id] = (uid, رابط, mention_text, date_posted, date_edited)
     await asyncio.sleep(60)
-    if uid in whitelist:
+    if not uid in whitelist:
         await sent_msg.delete()
         return
 @ABH.on(events.CallbackQuery(pattern=r'^yes:(\d+)$'))
