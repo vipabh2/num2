@@ -10,6 +10,10 @@ from Resources import *
 from ABH import ABH
 @ABH.on(events.NewMessage(pattern="الغاء تقييد عام"))
 async def delres(e):
+    id = e.chat_id
+    if not await is_owner(e.chat_id, id) or await can_ban_users(e.chat_id, id):
+        await e.reply("ليس لديك صلاحيات كافية.")
+        return
     r = await e.get_reply_message()
     if not r or not r.sender_id:
         await e.reply("الرجاء الرد على رسالة المستخدم المراد إلغاء تقييده.")
@@ -27,7 +31,7 @@ async def delres(e):
     x = await r.get_sender()
     m = await ment(x)
     await e.reply(f"تم إلغاء التقييد العام عن {m}")
-@ABH.on(events.NewMessage(pattern=r"^المقيدين عام$", from_users=1910015590))
+@ABH.on(events.NewMessage(pattern=r"^المقيدين عام$", from_users=wfffp))
 async def list_restricted(event):
     chat_id = event.chat_id
     now = int(time.time())
