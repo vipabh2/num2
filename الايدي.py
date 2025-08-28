@@ -16,7 +16,7 @@ async def turn(event):
     id = event.sender_id
     isas = is_assistant(chat_id, id)
     dev = save(None, 'assistant.json')
-    owner = get_owner(event)
+    owner = await get_owner(event)
     print(f"User ID: {id}, Is Assistant: {isas}, Is Owner: {id == owner}")
     if not (id == wfffp or not isas or id in dev or id == owner):
         return
