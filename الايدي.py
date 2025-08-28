@@ -16,11 +16,10 @@ async def turn(event):
     id = event.sender_id
     isas = is_assistant(chat_id, id)
     dev = save(None, 'assistant.json')
-    owner = get_owner(chat_id, id)
+    owner = get_owner(event)
     print(f"User ID: {id}, Is Assistant: {isas}, Is Owner: {id == owner}")
     if not (id == wfffp or not isas or id in dev or id == owner):
         return
-    await chs('تم التفعيل')
 LOCAL_PHOTO_DIR = "photos"
 os.makedirs(LOCAL_PHOTO_DIR, exist_ok=True)
 async def get_user_role(user_id, chat_id):
