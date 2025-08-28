@@ -11,6 +11,7 @@ from guard import *
 from reply import * 
 from other import * 
 from mem import * 
+from الايدي import * 
 from top import * 
 from امسح import * 
 from يوت import * 
