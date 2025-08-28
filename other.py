@@ -1,10 +1,10 @@
 from telethon.tl.functions.channels import GetParticipantRequest
 import asyncio, os, json, random, uuid, operator, requests, re
-from Resources import suras, mention, ment, wfffp, hint, react
+from Resources import suras, mention, ment, wfffp, hint
 from telethon.tl.types import ChannelParticipantCreator
+from telethon.tl.types import PeerChannel, PeerChat
 from playwright.async_api import async_playwright
 from database import store_whisper, get_whisper
-from telethon.tl.types import InputPhoto
 from telethon import events, Button
 from Program import chs
 from ABH import ABH
@@ -81,10 +81,6 @@ async def whisper_scanmeme(event):
     if r.text and ("همسة" in r.text or "همسه" in r.text):
         x = random.choice([
             "اييييع",
-            "سوينه كروب خاص ممكن دخول؟😅",
-            "لازم نكشفها",
-            "تزنيج دخوووووول ",
-            " شنو هذا؟",
             "عيني السكرينات عندي موجودة \n اي شيء يصير ادزهن",
             "مامي 😭",
             "بموووووت 😭",
@@ -123,104 +119,60 @@ async def is_owner(chat_id, user_id):
         return isinstance(participant.participant, ChannelParticipantCreator)
     except:
         return False
-@ABH.on(events.NewMessage(pattern=r'^رفع معاون(?: (.+))?$'))
+@ABH.on(events.NewMessage(pattern=r'^رفع معاون (.+)$'))
 async def add_assistant(event):
     if not event.is_group:
         return
-    chat_id = str(event.chat_id)
-    user_id = event.sender_id
-    sm = await mention(event)
-    if not (await is_owner(event.chat_id, user_id) or user_id == 1910015590):
-        return await event.reply(f"عذرًا {sm}، هذا الأمر مخصص للمالك فقط.")
-    target_id = None
+    type = "رفع معاون"
+    await botuse(type)
+    id = event.pattern_match.group(1)
     reply = await event.get_reply_message()
-    arg = event.pattern_match.group(1)
-    if reply and arg:
-        return await chs(event, "مافهمت، ترفع المستخدم بالرد لو بالمعرف؟")
-    if reply:
+    chat_id = str(event.chat_id)
+        if not reply:
+            return await event.reply(f"عزيزي {sm}، يجب الرد على رسالة المستخدم الذي تريد إضافته.")
         target_id = reply.sender_id
-        sender = await reply.get_sender()
-        rm = await ment(sender)
-    elif arg:
-        if arg.isdigit():
-            target_id = int(arg)
-            rm = await m(target_id)
-        elif arg.startswith("@"):
-            try:
-                entity = await ABH.get_entity(arg)
-                target_id = entity.id
-                rm = await ment(entity)
-            except:
-                return await event.reply(f"ما اعتقد اكو هيج مستخدم `{arg}`.")
+        data = load_auth()
+        if chat_id not in data:
+            data[chat_id] = []
+        if target_id not in data[chat_id]:
+            data[chat_id].append(target_id)
+            save_auth(data)
+            sender = await reply.get_sender()
+            rm = await ment(sender)
+            await event.reply(f"تم رفع المستخدم {rm} إلى معاون في هذه المجموعة.")
         else:
-            return await event.reply("يرجى إدخال معرف رقمي أو اسم مستخدم صحيح.")
-    else:
-        return await event.reply("يرجى الرد على رسالة المستخدم أو كتابة معرفه.")
-    try:
-        target_id = int(target_id)
-        await ABH.get_entity(target_id)
-    except:
-        return await event.reply(f"ما اعتقد اكو هيج مستخدم.")
-    data = load_auth()
-    if chat_id not in data:
-        data[chat_id] = []
-    if target_id in data[chat_id]:
-        return await event.reply("المستخدم موجود مسبقًا في قائمة المعاونين.")
-    data[chat_id].append(target_id)
-    save_auth(data)
-    await event.reply(f"تم رفع المستخدم {rm} إلى معاون في هذه المجموعة.")
-@ABH.on(events.NewMessage(pattern=r'^تنزيل معاون(?: (.+))?$'))
+            await event.reply(f"المستخدم {rm} موجود مسبقًا في قائمة المعاونين لهذه المجموعة.")
+@ABH.on(events.NewMessage(pattern=r'^تنزيل معاون$'))
 async def remove_assistant(event):
     if not event.is_group:
         return
     type = "تنزيل معاون"
     await botuse(type)
+    sm = await mention(event)
     chat_id = str(event.chat_id)
     user_id = event.sender_id
-    sm = await mention(event)
     if not (await is_owner(event.chat_id, user_id) or user_id == 1910015590):
         return await event.reply(f"عذرًا {sm}، هذا الأمر مخصص للمالك فقط.")
-    try:
-        data = load_auth()
-        if chat_id not in data:
-            data[chat_id] = []
-        reply = await event.get_reply_message()
-        arg = event.pattern_match.group(1)
-        if reply and arg:
-            return await event.reply("مافهمت، تزيل المستخدم بالرد لو بالمعرف؟")
-        if reply:
-            target_id = reply.sender_id
-            sender = await reply.get_sender()
-            rm = await ment(sender)
-        elif arg:
-            if arg.isdigit():
-                target_id = int(arg)
-                rm = await m(target_id)
-            elif arg.startswith("@"):
-                try:
-                    entity = await ABH.get_entity(arg)
-                    target_id = entity.id
-                    rm = await ment(entity)
-                except:
-                    return await event.reply(f"المستخدم {arg} غير موجود.")
-            else:
-                return await event.reply(f"عذرًا {sm}، لم أفهم المستخدم المطلوب.")
-        else:
-            return await event.reply("يرجى الرد على المستخدم أو كتابة معرفه.")
-        target_id = int(target_id)
-        if target_id in data[chat_id]:
-            data[chat_id].remove(target_id)
-            save_auth(data)
-            await event.reply(f"تم إزالة {rm} من قائمة المعاونين لهذه المجموعة.")
-        else:
-            await event.reply(f"{rm} غير موجود مسبقًا في قائمة المعاونين.")
-    except Exception as e:
-        await hint(event, f"حدث خطأ أثناء تنفيذ الأمر: {e}")
+    reply = await event.get_reply_message()
+    if not reply:
+        return await event.reply(f"عزيزي {sm}، يجب الرد على رسالة المستخدم الذي تريد تنزيله.")
+    target_id = reply.sender_id
+    data = load_auth()
+    e = await reply.get_sender()
+    rm = await ment(e)
+    if chat_id in data and target_id in data[chat_id]:
+        data[chat_id].remove(target_id)
+        save_auth(data)
+        await event.reply(f"تم إزالة {rm} من قائمة المعاونين لهذه المجموعة.")
+    else:
+        await event.reply(f"{rm} غير موجود في قائمة المعاونين لهذه المجموعة.")
 async def m(user_id):
-    user = await ABH.get_entity(user_id)
-    if user.first_name:
-        return f"[{user.first_name}](tg://user?id={user_id})"
-    return f"@{user.username}" if user.username else f"`{user_id}`"
+    try:
+        user = await ABH.get_entity(user_id)
+        name = getattr(user, 'first_name', None) or 'غير معروف'
+        return f"[{name}](tg://user?id={user.id})"
+    except:
+        return f"`{user_id}`"
 @ABH.on(events.NewMessage(pattern='^المعاونين$'))
 async def show_assistants(event):
     type = "المعاونين"
@@ -244,7 +196,7 @@ async def myname(event):
     await botuse(type)
     name = await mention(event)
     await event.reply(name)
-@ABH.on(events.NewMessage(pattern=r"^(اسمه|اسمة)$"))
+@ABH.on(events.NewMessage(pattern="^اسمه|اسمة$"))
 async def hisname(event):
     type = "اسمه"
     await botuse(type)
@@ -262,7 +214,7 @@ async def num(event):
  await event.reply(f"`+{p}` +{p} " if p else "رقمك غير متاح")
  type = "رقمي"
  await botuse(type)
-@ABH.on(events.NewMessage(pattern="^(رقمة|رقمه)$"))
+@ABH.on(events.NewMessage(pattern="^رقمة|رقمه$"))
 async def hisnum(event):
  r=await event.get_reply_message()
  if not r:
@@ -304,7 +256,7 @@ async def mu(event):
  await event.reply(f"`@{u}` @{u}" if u else "ليس لديك يوزر")
  type = "يوزري"
  await botuse(type)
-@ABH.on(events.NewMessage(pattern="^(يوزره|يوزرة|اليوزر)$"))
+@ABH.on(events.NewMessage(pattern="^يوزره|يوزرة|اليوزر$"))
 async def hisu(event):
  type = "يوزره"
  await botuse(type)
@@ -381,7 +333,7 @@ def ask_ai(q):
 async def ai_handler(event):
     user_q = event.pattern_match.group(1).strip()
     x = event.text
-    ignore_phrases = ["مخفي اعفطلة", "مخفي اعفطله", "مخفي قيده", "مخفي قيدة", "مخفي طكة زيج", "مخفي اطلع", "مخفي ضايج", "مخفي ونسني"]
+    ignore_phrases = ["مخفي اعفطلة", "مخفي اعفطله", "مخفي قيده", "مخفي قيدة", "مخفي طكة زيج", "مخفي اطلع"]
     if not user_q or x in ignore_phrases:
         return
     type = "ai"
@@ -389,7 +341,7 @@ async def ai_handler(event):
     async with event.client.action(event.chat_id, 'typing'):
         response = await asyncio.to_thread(ask_ai, user_q)
     await event.respond(response, reply_to=event.id)
-@ABH.on(events.NewMessage(pattern='^اوامر الحظ$'))
+@ABH.on(events.NewMessage(pattern='اوامر الحظ'))
 async def luck_list(event):
     type = "اوامر الحظ"
     await botuse(type)
@@ -463,7 +415,7 @@ c = [
     "ههههههه",
     "😂",
     "يسعدلي مسائك😀"]
-@ABH.on(events.NewMessage(pattern='^(ميم|ميمز)$'))
+@ABH.on(events.NewMessage(pattern='ميم|ميمز'))
 async def meme(event):
     type = "ميم"
     await botuse(type)
@@ -504,13 +456,13 @@ async def Whisper(event):
                         )
                     ]
                 )
-                type = "همسة انلاين"
-                await botuse(type)
             except Exception:
                 return
         else:
             return
         await event.answer([result])
+        type = "همسة انلاين"
+        await botuse(type)
 @ABH.on(events.CallbackQuery)
 async def callback_Whisper(event):
     uid = event.sender_id
@@ -589,7 +541,7 @@ async def take_screenshot(url, device="pc"):
             page = await browser.new_page()
         try:
             await page.goto(url, wait_until="domcontentloaded", timeout=30000)
-            await asyncio.sleep(2)
+            await asyncio.sleep(1)
             screenshot_path = f"screenshot_{device}.png"
             await page.screenshot(path=screenshot_path)
         except Exception as e:
@@ -622,6 +574,9 @@ def remove_user(user_id: int):
     if user_id in alert_ids:
         alert_ids.remove(user_id)
         save_alerts()
+        print(f"تم حذف المستخدم {user_id} من القائمة.")
+    else:
+        print(f"المستخدم {user_id} غير موجود في القائمة.")
 def load_alert():
     if os.path.exists(FILE):
         with open(FILE, "r") as f:
@@ -672,11 +627,14 @@ async def set_alert(event):
         return
     await event.reply(f"🚀 جاري إرسال التنبيه إلى {len(alert_ids)} محادثة...")
     for dialog_id in list(alert_ids):
-        if media:
-            await ABH.send_file(dialog_id, file=media, caption=message_text or "")
-        else:
-            await ABH.send_message(dialog_id, f"{message_text}")
-        remove_user(dialog_id)
+        try:
+            if media:
+                await ABH.send_file(dialog_id, file=media, caption=message_text or "")
+            else:
+                await ABH.send_message(dialog_id, f"{message_text}")
+        except Exception as e:
+            await alert(f" فشل الإرسال إلى {dialog_id}")
+            remove_user(dialog_id)
 @ABH.on(events.NewMessage(pattern=r"^نشر الكروبات$", from_users=[wfffp]))
 async def publish_to_groups(event):
     message_text = None
@@ -692,7 +650,7 @@ async def publish_to_groups(event):
         if event.media:
             media = event.media
     if not message_text and not media:
-        await event.reply(" يرجى الرد على رسالة تحتوي على نص أو ملف بعد كتابة `نشر الكروبات`.")
+        await event.reply("❌ يرجى الرد على رسالة تحتوي على نص أو ملف بعد كتابة `نشر الكروبات`.")
         return
     sent_count = 0
     for dialog_id in list(alert_ids):
@@ -704,9 +662,9 @@ async def publish_to_groups(event):
             else:
                 await ABH.send_message(dialog_id, f"{message_text}")
             sent_count += 1
-        except:
+        except Exception as e:
+            await alert(f"⚠️ فشل الإرسال إلى {dialog_id} : {str(e)}")
             remove_user(dialog_id)
-            return
     await event.reply(f"✅ تم إرسال التنبيه إلى {sent_count} مجموعة.")
 whispers_file = 'whispers.json'
 sent_log_file = 'sent_whispers.json'
@@ -734,7 +692,7 @@ def save_sent_log():
         json.dump(sent_whispers, f, ensure_ascii=False, indent=2)
 user_sessions = {}
 l = {}
-@ABH.on(events.NewMessage(pattern='^اهمس$'))
+@ABH.on(events.NewMessage(pattern='اهمس'))
 async def handle_whisper(event):
     type = "اهمس"
     await botuse(type)
@@ -782,7 +740,7 @@ async def handle_whisper(event):
         return
     button = Button.url("اضغط هنا للبدء", url=f"https://t.me/{(await ABH.get_me()).username}?start={whisper_id}")
     m1 = await event.reply(
-        f'جاري انشاء همسة من ( [{name}](tg://user?id={sender_id}) ) 🙂🙂',
+        f'همسة مرسلة من ( [{name}](tg://user?id={sender_id}) ) إلى ( [{to_name}](tg://user?id={rid}) ) 🙂🙂',
         buttons=[button]
     )
     l[sender_id] = True
