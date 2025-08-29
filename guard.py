@@ -16,7 +16,7 @@ async def delres(e):
     z = await can_ban_users(e.chat_id, id)
     s = save(None, "secondary_devs.json")
     k = str(e.chat_id) in s and str(id) in s[str(e.chat_id)]
-    print(f'{a} - {z} - {k}')
+    await botuse('الغاء تقييد عام')
     if not (
         a
         or z
@@ -48,6 +48,7 @@ async def list_restricted(event):
     if not restriction_end_times.get(chat_id):
         await event.reply("✅ لا يوجد حالياً أي مستخدم مقيد.")
         return
+    await botuse('المقيدين عام')
     msg = "📋 قائمة المقيدين عام:\n\n"
     expired_users = []
     for user_id, end_time in list(restriction_end_times[chat_id].items()):
