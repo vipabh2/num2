@@ -30,17 +30,19 @@ async def theft(e):
     if id == e.sender_id:
         await e.reply('ماتكدر تسرق نفسك')
         return
-    x = save(None, 'secondary_devs.json')
-    print(x)
-    if id in x:
+    s = save(None, 'secondary_devs.json')
+    k = str(e.chat_id) in s and str(id) in s[str(e.chat_id)]
+    if k:
         await e.reply('ماتكدر تسرق المطور')
         return
     rp = points[str(id)]
     if not rp:
         await chs(e, f'عذرا بس {m} فلوسه تقريبا صفر')
+        return
     if not rp > 10000:
         await chs(e, f'عذرا بس {m} فلوسه قليله')
-        
+        return
+    
 USER_DATA_FILE = "trade.json"
 def tlo():
     if os.path.exists(USER_DATA_FILE):
