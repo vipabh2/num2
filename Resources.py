@@ -94,23 +94,21 @@ async def can_ban_users(chat, user_id):
         return False
 async def get_owner(event):
     if not event.is_group:
-        return None   
-    chat = await event.get_chat()
-    if getattr(chat, 'megagroup', False):
-        try:
-            result = await ABH(GetParticipantsRequest(
-                channel=chat,
-                filter=ChannelParticipantsAdmins(),
-                offset=0,
-                limit=100,
-                hash=0
-            ))
-            for participant in result.participants:
-                if isinstance(participant, ChannelParticipantCreator):
-                    user = await ABH.get_entity(participant.user_id)
-                    return user
-        except:
-            return None
+        return None
+    try:
+        result = await ABH(GetParticipantsRequest(
+            channel=await event.get_chat(),
+            filter=ChannelParticipantsAdmins(),
+            offset=0,
+            limit=100,
+            hash=0
+        ))
+        for participant in result.participants:
+            if isinstance(participant, ChannelParticipantCreator):
+                return await ABH.get_entity(participant.user_id)
+    except Exception as e:
+        print(f"Error in get_owner: {e}")
+        return None
     return None
 timezone = pytz.timezone('Asia/Baghdad')
 GEMINI = "AIzaSyA5pzOpKVcMGm6Aek82KoB3Pk94dYg3LX4"
