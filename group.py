@@ -20,7 +20,7 @@ async def theft(e):
         return
     id = r.sender_id
     س = await r.get_sender()
-    if r.bot:
+    if س.bot:
         await e.reply('ماتكدر تسرق من بوت')
         return
     if id == wfffp:
