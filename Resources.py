@@ -2,6 +2,8 @@ from telethon.tl.types import ChannelParticipantsAdmins, ChannelParticipantCreat
 from telethon.tl.functions.channels import GetParticipantRequest
 from telethon.tl.functions.channels import GetParticipantsRequest
 from telethon.tl.functions.messages import SendReactionRequest
+from telethon.tl.functions.messages import GetFullChat
+from telethon.tl.types import ChatParticipantCreator
 from telethon.tl.types import ReactionEmoji
 import google.generativeai as genai
 import pytz, os, json
@@ -92,20 +94,26 @@ async def can_ban_users(chat, user_id):
         return False
     except:
         return False
-async def get_owner(event):
-    if not event.is_group:
-        return None
+async def get_owner(event, client):
     try:
-        result = await ABH(GetParticipantsRequest(
-            channel=event.chat_id,
-            filter=ChannelParticipantsAdmins(),
-            offset=0,
-            limit=100,
-            hash=0
-        ))
-        for participant in result.participants:
-            if isinstance(participant, ChannelParticipantCreator):
-                return await ABH.get_entity(participant.user_id)
+        chat = await event.get_chat()
+        if getattr(chat, 'megagroup', False) or getattr(chat, 'broadcast', False):
+            result = await client(GetParticipantsRequest(
+                channel=await event.get_input_chat(),
+                filter=ChannelParticipantsAdmins(),
+                offset=0,
+                limit=100,
+                hash=0
+            ))
+            for participant in result.participants:
+                if isinstance(participant, ChannelParticipantCreator):
+                    return await client.get_entity(participant.user_id)
+        else:
+            full = await client(GetFullChat(chat.id))
+            if full.full_chat.participants:
+                for participant in full.full_chat.participants.participants:
+                    if isinstance(participant, ChatParticipantCreator):
+                        return await client.get_entity(participant.user_id)
     except Exception as e:
         print(f"Error in get_owner: {e}")
         return None
