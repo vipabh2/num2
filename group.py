@@ -1,6 +1,5 @@
 from telethon.tl.functions.channels import GetParticipantRequest
 from db import save_date, get_saved_date #type: ignore
-from Resources import hint, ment, react, wfffp
 from ABH import ABH, events #type: ignore
 from datetime import datetime, timedelta
 import asyncio, os, json, time, random
@@ -10,31 +9,34 @@ from top import points, delpoints
 from telethon import Button
 from ABH import ABH, events
 from other import botuse
+from Resources import *
 from Program import chs
-@ABH.on(events.NewMessage(pattern='^سرقة|سرقه$'))
+@ABH.on(events.NewMessage(pattern='^سرقة|سرقه|خمط$'))
 async def theft(e):
     r = await e.get_reply_message()
     if not r:
         await react(e, '🤔')
         await e.reply('لازم ترد على رساله حته تخمط من صاحبها')
         return
-    س = await r.get_sender()
     id = r.sender_id
+    س = await r.get_sender()
+    if r.bot:
+        await e.reply('ماتكدر تسرق من بوت')
+        return
     if id == wfffp:
         await e.reply('ماتكدر تسرق المطور الاساسي')
         return
-    id = r.sender_id
-    if id == wfffp:
+    if id == e.sender_id:
         await e.reply('ماتكدر تسرق نفسك')
         return
-    if id in developers:
+    x = save(None, 'secondary_devs.json')
+    if id in x:
         await e.reply('ماتكدر تسرق المطور')
         return
     rp = points[str(id)]
     m = await ment(س)
     if not rp > 10000:
         await chs(e, f'عذرا بس {m} فلوسه قليله')
-
 USER_DATA_FILE = "trade.json"
 def tlo():
     if os.path.exists(USER_DATA_FILE):
