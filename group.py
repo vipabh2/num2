@@ -20,6 +20,7 @@ async def theft(e):
         return
     id = r.sender_id
     س = await r.get_sender()
+    m = await ment(س)
     if س.bot:
         await e.reply('ماتكدر تسرق من بوت')
         return
@@ -36,7 +37,6 @@ async def theft(e):
     rp = points[str(id)]
     if not rp:
         await chs(e, f'عذرا بس {m} فلوسه تقريبا صفر')
-    m = await ment(س)
     if not rp > 10000:
         await chs(e, f'عذرا بس {m} فلوسه قليله')
 USER_DATA_FILE = "trade.json"
