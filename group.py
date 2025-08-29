@@ -31,6 +31,7 @@ async def theft(e):
         await e.reply('ماتكدر تسرق نفسك')
         return
     x = save(None, 'secondary_devs.json')
+    print(x)
     if id in x:
         await e.reply('ماتكدر تسرق المطور')
         return
@@ -39,6 +40,7 @@ async def theft(e):
         await chs(e, f'عذرا بس {m} فلوسه تقريبا صفر')
     if not rp > 10000:
         await chs(e, f'عذرا بس {m} فلوسه قليله')
+        
 USER_DATA_FILE = "trade.json"
 def tlo():
     if os.path.exists(USER_DATA_FILE):
