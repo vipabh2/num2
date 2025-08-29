@@ -2,7 +2,7 @@ from telethon.tl.types import ChannelParticipantsAdmins, ChannelParticipantCreat
 from telethon.tl.functions.channels import GetParticipantRequest
 from telethon.tl.functions.channels import GetParticipantsRequest
 from telethon.tl.functions.messages import SendReactionRequest
-from telethon.tl.functions.messages import GetFullChat
+from telethon.tl.functions.messages import GetFullChatRequest
 from telethon.tl.types import ChatParticipantCreator
 from telethon.tl.types import ReactionEmoji
 import google.generativeai as genai
@@ -94,7 +94,7 @@ async def can_ban_users(chat, user_id):
         return False
     except:
         return False
-async def get_owner(event, client):
+async def get_owner(event, client=ABH):
     try:
         chat = await event.get_chat()
         if getattr(chat, 'megagroup', False) or getattr(chat, 'broadcast', False):
@@ -109,7 +109,7 @@ async def get_owner(event, client):
                 if isinstance(participant, ChannelParticipantCreator):
                     return await client.get_entity(participant.user_id)
         else:
-            full = await client(GetFullChat(chat.id))
+            full = await client(GetFullChatRequest(chat.id))
             if full.full_chat.participants:
                 for participant in full.full_chat.participants.participants:
                     if isinstance(participant, ChatParticipantCreator):
