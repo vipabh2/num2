@@ -17,7 +17,7 @@ async def turn(event):
     isas = is_assistant(chat_id, id)
     dev = save(None, 'assistant.json')
     owner = await get_owner(event)
-    print(f"User ID: {id}, Is Assistant: {isas}, Is Owner: {id == owner}")
+    print(f"User ID: {id}, Is Assistant: {isas}, Is Owner: {wfffp == owner.id} isdev {id in dev}")
     if not (id == wfffp or not isas or id in dev or id == owner):
         return
 LOCAL_PHOTO_DIR = "photos"
