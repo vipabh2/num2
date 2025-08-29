@@ -34,6 +34,8 @@ async def theft(e):
         await e.reply('ماتكدر تسرق المطور')
         return
     rp = points[str(id)]
+    if rp < 1:
+        await chs(e, f'عذرا بس {m} فلوسه تقريبا صفر')
     m = await ment(س)
     if not rp > 10000:
         await chs(e, f'عذرا بس {m} فلوسه قليله')
