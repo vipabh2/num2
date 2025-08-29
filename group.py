@@ -33,7 +33,7 @@ async def theft(e):
     s = save(None, 'secondary_devs.json')
     k = str(e.chat_id) in s and str(id) in s[str(e.chat_id)]
     if k:
-        await e.reply('ماتكدر تسرق المطور')
+        await e.reply('ماتكدر تسرق المطور الثانوي')
         return
     rp = points[str(id)]
     if not rp:
