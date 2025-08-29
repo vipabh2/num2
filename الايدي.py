@@ -69,13 +69,11 @@ async def date(user_id):
             else:
                 return "غير معروف"
 LOCAL_PHOTO_DIR = "/tmp"
-@ABH.on(events.NewMessage(pattern='^(id|اا|افتار)$'))
+@ABH.on(events.NewMessage(pattern='^(id|اا|افتار)$', from_users=wfffp))
 async def hisid(event):
     if not event.is_group:
         return
     chat_id = event.chat_id
-    if not id_status_per_chat.get(chat_id, False):
-        return  
     replied_message = await event.get_reply_message()
     if not replied_message:
         return
@@ -117,13 +115,11 @@ async def hisid(event):
         await msg.delete()
     else:
         await event.respond(message_text, reply_to=event.message.id)
-@ABH.on(events.NewMessage(pattern=r"^(id|ايدي|افتاري|ا|\.)$"))
+@ABH.on(events.NewMessage(pattern=r"^(id|ايدي|افتاري|ا|\.)$", from_users=wfffp))
 async def myid(event):
     if not event.is_group:
         return
     chat_id = event.chat_id
-    if not id_status_per_chat.get(chat_id, False):
-        return
     type = "reply id"
     await botuse(type)
     sender_id = event.sender_id
