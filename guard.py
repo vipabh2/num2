@@ -442,6 +442,24 @@ def add_warning(user_id: int, chat_id: int) -> int:
         save_warns(warns)
     save_warns(warns)
     return current_warns
+def del_warning(user_id: int, chat_id: int) -> None:
+    warns = load_warns()
+    user_id_str = str(user_id)
+    chat_id_str = str(chat_id)
+    if user_id_str in warns and chat_id_str in warns[user_id_str]:
+        w = warns[user_id_str][chat_id_str]
+        if w > 0:
+            warns[user_id_str][chat_id_str] -= 1
+            save_warns(warns)
+            return warns[user_id_str][chat_id_str]
+def zerowarn(user_id: int, chat_id: int) -> None:
+    warns = load_warns()
+    user_id_str = str(user_id)
+    chat_id_str = str(chat_id)
+    if user_id_str in warns and chat_id_str in warns[user_id_str]:
+        warns[user_id_str][chat_id_str] = 0
+        save_warns(warns)
+        return warns[user_id_str][chat_id_str]
 @ABH.on(events.NewMessage)
 async def handler_res(event):
     lock_key = f"lock:{event.chat_id}:تقييد"
@@ -468,12 +486,12 @@ async def handler_res(event):
                     f"""🔒 تم تقييد المستخدم
                 👤 {s}
                 ❗️بسبب تكرار استخدام كلمات محظورة.
-                 سيتم رفع التقييد تلقائيًا بعد 20 دقيقة.
+                 سيتم رفع التقييد تلقائيًا بعد 10 د.
                  عدد التحذيرات: {w} / 3
                 """
             )
             now = int(time.time())
-            restriction_duration = 20 * 60
+            restriction_duration = 600
             restriction_end_times.setdefault(event.chat_id, {})[user_id] = now + restriction_duration
             rights = ChatBannedRights(
                 until_date=now + restriction_duration,
@@ -528,14 +546,16 @@ async def warn_user(event):
     )
     if w == 3:
         now = int(time.time())
-        restriction_duration = 20 * 60
+        restriction_duration = 600
         restriction_end_times.setdefault(event.chat_id, {})[target_id] = now + restriction_duration
         rights = ChatBannedRights(
             until_date=now + restriction_duration,
             send_messages=True
         )     
+        await botuse("تقييد بسبب التحذير")
         await ABH(EditBannedRequest(channel=chat_id, participant=target_id, banned_rights=rights))
         return
+        
 @ABH.on(events.NewMessage(pattern='!تجربة'))
 async def test_broadcast(event):
     chat_id = event.chat_id
