@@ -10,19 +10,23 @@ import google.generativeai as genai
 import pytz, os, json
 from ABH import ABH
 async def try_forward(event, gidvar):
-    if event.message and event.id:
+    reply_msg = await event.get_reply_message()
+    if reply_msg:
         try:
             await ABH.forward_messages(
                 entity=int(gidvar),
-                messages=event.message.id,
-                from_peer=event.chat_id
+                messages=[reply_msg.id],
+                from_peer=reply_msg.chat_id
             )
             return True
         except ChatForwardsRestrictedError:
+            print("Forwarding is restricted in this chat.")
             return False
         except Exception as e:
+            print(f"Forward failed: {e}")
             return False
     else:
+        print("No reply message found.")
         return False
 developers = {}
 def save(dev_id=None, filename="secondary_devs.json"):
