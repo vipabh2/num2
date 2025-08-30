@@ -550,7 +550,7 @@ async def warn_user(event):
     if lc:
         s = await mention(event)
         await ABH.send_message(lc, f"تم تحذير {x} بواسطة {s} \n عدد التحذيرات: {w} / 3 \n سبب التحذير 👇")
-        await try_forward(r, lc)
+        await try_forward(event, lc)
 
     if w == 3:
         now = int(time.time())
