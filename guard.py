@@ -498,8 +498,8 @@ async def handler_res(event):
 async def warn_user(event):
     if not event.is_group:
         return
-    chat_id = event.chat_id
-    user_id = event.sender_id
+    chat_id = str(event.chat_id)
+    user_id = str(event.sender_id)
     if not is_assistant(chat_id, user_id):
         return
     r = await event.get_reply_message()
