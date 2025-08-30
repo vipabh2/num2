@@ -522,6 +522,15 @@ async def warn_user(event):
         f"🆔 الايدي: `{target_id}`\n"
         f"⚠️ عدد التحذيرات: {w} / 3"
     )
+    now = int(time.time())
+    restriction_duration = 20 * 60
+    restriction_end_times[event.chat_id][user_id] = now + restriction_duration
+    rights = ChatBannedRights(
+        until_date=now + restriction_duration,
+        send_messages=True
+    )     
+    await ABH(EditBannedRequest(channel=chat_id, participant=user_id, banned_rights=rights))
+
 @ABH.on(events.NewMessage(pattern='!تجربة'))
 async def test_broadcast(event):
     chat_id = event.chat_id
