@@ -9,7 +9,7 @@ import google.generativeai as genai
 import pytz, os, json
 from ABH import ABH
 async def try_forward(event, gidvar):
-    if event.message and event.message.id:
+    if event.message and event.id:
         try:
             await ABH.forward_messages(
                 entity=int(gidvar),
