@@ -498,8 +498,8 @@ async def handler_res(event):
 async def warn_user(event):
     if not event.is_group:
         return
-    chat_id = str(event.chat_id)
-    user_id = str(event.sender_id)
+    chat_id = event.chat_id
+    user_id = event.sender_id
     if not is_assistant(chat_id, user_id):
         return
     r = await event.get_reply_message()
@@ -513,7 +513,7 @@ async def warn_user(event):
         return
     await event.delete()
     await r.delete()
-    w = add_warning(target_id, chat_id)
+    w = add_warning(str(target_id), str(chat_id))
     p = await r.get_sender()
     x = await ment(p)
     await event.respond(
@@ -522,15 +522,16 @@ async def warn_user(event):
         f"🆔 الايدي: `{target_id}`\n"
         f"⚠️ عدد التحذيرات: {w} / 3"
     )
-    now = int(time.time())
-    restriction_duration = 20 * 60
-    restriction_end_times.setdefault(event.chat_id, {})[user_id] = now + restriction_duration
-    rights = ChatBannedRights(
-        until_date=now + restriction_duration,
-        send_messages=True
-    )     
-    await ABH(EditBannedRequest(channel=chat_id, participant=user_id, banned_rights=rights))
-
+    if w == 3:
+        now = int(time.time())
+        restriction_duration = 20 * 60
+        restriction_end_times.setdefault(event.chat_id, {})[user_id] = now + restriction_duration
+        rights = ChatBannedRights(
+            until_date=now + restriction_duration,
+            send_messages=True
+        )
+        await ABH(EditBannedRequest(channel=str(chat_id), participant=str(user_id), banned_rights=rights))
+        return
 @ABH.on(events.NewMessage(pattern='!تجربة'))
 async def test_broadcast(event):
     chat_id = event.chat_id
