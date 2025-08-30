@@ -515,7 +515,7 @@ async def warn_user(event):
     await r.delete()
     w = add_warning(target_id, chat_id)
     p = await r.get_sender()
-    x = await mention(p)
+    x = await ment(p)
     await event.respond(
         f"🚨 تم تحذير المستخدم:\n"
         f"👤 الاسم: {x}\n"
