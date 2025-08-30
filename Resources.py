@@ -116,7 +116,7 @@ async def get_owner(event, client=ABH):
                     if isinstance(participant, ChatParticipantCreator):
                         return await client.get_entity(participant.user_id)
     except Exception as e:
-        print(f"Error in get_owner: {e}")
+        await hint(f"Error in get_owner: {e}")
         return None
     return None
 timezone = pytz.timezone('Asia/Baghdad')
