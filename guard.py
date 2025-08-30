@@ -529,8 +529,8 @@ async def warn_user(event):
         rights = ChatBannedRights(
             until_date=now + restriction_duration,
             send_messages=True
-        )
-        await ABH(EditBannedRequest(channel=str(chat_id), participant=str(user_id), banned_rights=rights))
+        )     
+        await ABH(EditBannedRequest(channel=chat_id, participant=user_id, banned_rights=rights))
         return
 @ABH.on(events.NewMessage(pattern='!تجربة'))
 async def test_broadcast(event):
