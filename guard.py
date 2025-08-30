@@ -534,6 +534,7 @@ async def warn_user(event):
     if c or a:
         await event.reply("لا يمكنك تحذير المشرفين أو المساعدين.")
         return
+    await try_forward(event, lc)
     await event.delete()
     await r.delete()
     w = add_warning(str(target_id), str(chat_id))
@@ -550,7 +551,6 @@ async def warn_user(event):
     if lc:
         s = await mention(event)
         await ABH.send_message(lc, f"تم تحذير {x} بواسطة {s} \n عدد التحذيرات: {w} / 3 \n سبب التحذير 👇")
-        await try_forward(event, lc)
 
     if w == 3:
         now = int(time.time())
