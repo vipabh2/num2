@@ -1,6 +1,6 @@
 from telethon.tl.types import ChannelParticipantCreator, ChannelParticipantAdmin, ChatBannedRights
-from telethon.tl.functions.channels import EditBannedRequest, GetParticipantRequest
 from telethon.tl.types import ChannelParticipantBanned, ChatBannedRights, MessageEntityUrl
+from telethon.tl.functions.channels import EditBannedRequest, GetParticipantRequest
 from other import is_assistant, botuse, is_owner
 from telethon import events, Button
 from Program import r as redas, chs
@@ -516,6 +516,7 @@ async def handler_res(event):
 async def warn_user(event):
     if not event.is_group:
         return
+    lc = await LC(event.chat_id)
     chat_id = event.chat_id
     user_id = event.sender_id
     x = save(None, filename="secondary_devs.json")
@@ -538,12 +539,19 @@ async def warn_user(event):
     w = add_warning(str(target_id), str(chat_id))
     p = await r.get_sender()
     x = await ment(p)
+    b = [Button.inline("الغاء التحذير", data=f"delwarn:{target_id}:{chat_id}"), Button.inline("تصفير التحذيرات", data=f"zerowarn:{target_id}:{chat_id}")]
     await event.respond(
         f"🚨 تم تحذير المستخدم:\n"
         f"👤 الاسم: {x}\n"
         f"🆔 الايدي: `{target_id}`\n"
-        f"⚠️ عدد التحذيرات: {w} / 3"
+        f"⚠️ عدد التحذيرات: {w} / 3",
+        buttons=b
     )
+    if lc:
+        s = await mention(event)
+        await ABH.send_message(lc, f"تم تحذير {x} بواسطة {s} \n عدد التحذيرات: {w} / 3 \n سبب التحذير 👇")
+        await try_forward(r, lc)
+
     if w == 3:
         now = int(time.time())
         restriction_duration = 600
@@ -555,6 +563,15 @@ async def warn_user(event):
         await botuse("تقييد بسبب التحذير")
         await ABH(EditBannedRequest(channel=chat_id, participant=target_id, banned_rights=rights))
         return
+@ABH.on(events.CallbackQuery(pattern=r'^delwarn:(\d+):(-?\d+)$'))
+async def delete_warning(event):
+    match = event.pattern.match(event.data)
+    if not match:
+        return
+    target_id = int(match.group(1))
+    chat_id = int(match.group(2))
+    del_warning(target_id, chat_id)
+    await event.answer("تم الغاء التحذير.")
 @ABH.on(events.NewMessage(pattern='!تجربة'))
 async def test_broadcast(event):
     chat_id = event.chat_id
