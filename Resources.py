@@ -3,13 +3,14 @@ from telethon.tl.functions.channels import GetParticipantRequest
 from telethon.tl.functions.channels import GetParticipantsRequest
 from telethon.tl.functions.messages import SendReactionRequest
 from telethon.tl.functions.messages import GetFullChatRequest
+from telethon.errors import ChatForwardsRestrictedError
 from telethon.tl.types import ChatParticipantCreator
 from telethon.tl.types import ReactionEmoji
 import google.generativeai as genai
 import pytz, os, json
 from ABH import ABH
 async def try_forward(event, gidvar):
-    if event.message and event.id:
+    if event.message and not event.message.out and event.message.id:
         try:
             await ABH.forward_messages(
                 entity=int(gidvar),
