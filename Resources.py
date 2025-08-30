@@ -8,6 +8,21 @@ from telethon.tl.types import ReactionEmoji
 import google.generativeai as genai
 import pytz, os, json
 from ABH import ABH
+async def try_forward(event, gidvar):
+    if event.message and not event.message.out and event.message.id:
+        try:
+            await ABH.forward_messages(
+                entity=int(gidvar),
+                messages=event.message.id,
+                from_peer=event.chat_id
+            )
+            return True
+        except ChatForwardsRestrictedError:
+            return False
+        except Exception as e:
+            return False
+    else:
+        return False
 developers = {}
 def save(dev_id=None, filename="secondary_devs.json"):
     if filename is None:
