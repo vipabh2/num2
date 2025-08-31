@@ -74,7 +74,16 @@ async def remove_secondary_dev(event):
     except Exception as e:
         await hint(f"حدث خطأ أثناء إرسال الرسالة للمطورالثاني {entity.id} {e}")
     m = await ment(entity)
-    await chs(event, f"تم رفع {m} كمطور ثانوي بنجاح ")
+    await chs(event, f"تم تنزيل {m} من المطورين الثانويين بنجاح.")
+@ABH.on(events.NewMessage(pattern=r"^المطورين الثانويين$", from_users=[wfffp]))
+async def list_secondary_devs(event):
+    x = save(None, filename="secondary_devs.json")
+    chat_id = str(event.chat_id)
+    if chat_id not in x or not x[chat_id]:
+        await chs(event, "لا يوجد مطورين ثانويين في هذه المجموعة.")
+        return
+    devs = [await ment(ABH.get_entity(int(user_id))) for user_id in x[chat_id]]
+    await chs(event, f"المطورين الثانويين في هذه المجموعة:\n" + "\n".join(devs))
 @ABH.on(events.NewMessage(pattern=r"^ارسل (.+)$", from_users=[wfffp]))
 async def send_handler(event):
     r = await event.get_reply_message()
