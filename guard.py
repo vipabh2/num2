@@ -605,4 +605,4 @@ async def my_warnings(event):
     chat_id = str(event.chat_id)
     user_id = str(event.sender_id)
     count = count_warnings(user_id, chat_id)
-    await event.reply(f"عدد تحذيراتك في هذه المجموعة: {count}")
+    await event.reply(f"عدد تحذيراتك {count} / 3")
