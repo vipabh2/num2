@@ -29,8 +29,46 @@ async def add_secondary_dev(event):
     if chat_id in x and user_id in x[chat_id]:
         await chs(event, "عزيزي ابن هاشم هذا مطور ثانوي بالفعل.")
         return
+    if len(x[chat_id]) >= 3:
+        await chs(event, "المجموعه تحتوي على 3 مطوريين اساسيين لا يمكن الرفع.")
+        return
     dev = f"{event.chat_id}:{entity.id}"
     save(dev, filename="secondary_devs.json")
+    try:
+        await ABH.send_message(entity, f"تم رفعك مطور ثانوي \n في مجموعة {c}\n بواسطة المطور الاساسي")
+    except Exception as e:
+        await hint(f"حدث خطأ أثناء إرسال الرسالة للمطورالثاني {entity.id} {e}")
+    m = await ment(entity)
+    await chs(event, f"تم رفع {m} كمطور ثانوي بنجاح ")
+@ABH.on(events.NewMessage(pattern=r"^تنزيل مطور ثانوي(?:\s+(.+))?$", from_users=[wfffp]))
+async def remove_secondary_dev(event):
+    chat = await event.get_chat()
+    c = chat.title if hasattr(chat, "title") else "خاص"
+    arg = event.pattern_match.group(1)
+    entity = None
+    reply = await event.get_reply_message()
+    if reply and not arg:
+        entity = await ABH.get_entity(reply.sender_id)
+    elif arg and arg.startswith("@"):
+        entity = await ABH.get_entity(arg)
+    elif arg and arg.isdigit():
+        entity = await ABH.get_entity(int(arg))
+    if not entity:
+        await chs(event, "عزيزي ابن هاشم لازم ترفع بالرد أو باليوزر أو الآيدي.")
+        return
+    if entity.id == wfffp:
+        return
+    x = save(None, filename="secondary_devs.json")
+    chat_id = str(event.chat_id)
+    user_id = str(entity.id)
+    if chat_id not in x:
+        await chs(event, "عزيزي ابن هاشم المجموعة اصلا مابيها مطورين غيرك.")
+        return
+    if user_id in x[chat_id]:
+        await chs(event, "عزيزي ابن هاشم هذا مو مطور ثانوي.")
+        return
+    dev = f"{event.chat_id}:{entity.id}"
+    delsave(dev, filename="secondary_devs.json")
     try:
         await ABH.send_message(entity, f"تم رفعك مطور ثانوي \n في مجموعة {c}\n بواسطة المطور الاساسي")
     except Exception as e:
