@@ -604,8 +604,5 @@ async def my_warnings(event):
     warnings = load_warns()
     chat_id = str(event.chat_id)
     user_id = str(event.sender_id)
-    if chat_id not in warnings or user_id not in warnings[chat_id]:
-        await event.reply("لا توجد تحذيرات مسجلة لك.")
-        return
-    count = len(warnings[chat_id][user_id])
+    count = count_warnings(user_id, chat_id)
     await event.reply(f"عدد تحذيراتك في هذه المجموعة: {count}")
