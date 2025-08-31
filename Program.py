@@ -137,7 +137,7 @@ async def developer_info(event):
     await ABH.send_file(
         entity=event.chat_id,
         file="links/photo_2025-07-30_02-35-06.jpg",
-        caption='🌚',
+        # caption='🌚',
         buttons=x,
         reply_to = event.id
     )
