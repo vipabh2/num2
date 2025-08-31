@@ -1,3 +1,4 @@
+
 from telethon.tl.functions.channels import GetParticipantRequest
 import asyncio, os, json, random, uuid, operator, requests, re
 from Resources import suras, mention, ment, wfffp, hint
@@ -128,20 +129,21 @@ async def add_assistant(event):
     id = event.pattern_match.group(1)
     reply = await event.get_reply_message()
     chat_id = str(event.chat_id)
+    sm = await mention(event)
     if not reply:
         return await event.reply(f"عزيزي {sm}، يجب الرد على رسالة المستخدم الذي تريد إضافته.")
-        target_id = reply.sender_id
-        data = load_auth()
-        if chat_id not in data:
-            data[chat_id] = []
-        if target_id not in data[chat_id]:
-            data[chat_id].append(target_id)
-            save_auth(data)
-            sender = await reply.get_sender()
-            rm = await ment(sender)
-            await event.reply(f"تم رفع المستخدم {rm} إلى معاون في هذه المجموعة.")
-        else:
-            await event.reply(f"المستخدم {rm} موجود مسبقًا في قائمة المعاونين لهذه المجموعة.")
+    target_id = reply.sender_id
+    data = load_auth()
+    if chat_id not in data:
+        data[chat_id] = []
+    if target_id not in data[chat_id]:
+        data[chat_id].append(target_id)
+        save_auth(data)
+        sender = await reply.get_sender()
+        rm = await ment(sender)
+        await event.reply(f"تم رفع المستخدم {rm} إلى معاون في هذه المجموعة.")
+    else:
+        await event.reply(f"المستخدم {rm} موجود مسبقًا في قائمة المعاونين لهذه المجموعة.")
 @ABH.on(events.NewMessage(pattern=r'^تنزيل معاون$'))
 async def remove_assistant(event):
     if not event.is_group:
