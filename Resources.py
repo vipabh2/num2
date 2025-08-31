@@ -10,25 +10,73 @@ import google.generativeai as genai
 import pytz, os, json
 from ABH import ABH
 async def try_forward(event, gidvar):
-    reply_msg = await event.get_reply_message()
-    if reply_msg:
+    if event.message and event.id:
         try:
             await ABH.forward_messages(
                 entity=int(gidvar),
-                messages=[reply_msg.id],
-                from_peer=reply_msg.chat_id
+                messages=event.message.id,
+                from_peer=event.chat_id
             )
             return True
         except ChatForwardsRestrictedError:
-            print("Forwarding is restricted in this chat.")
             return False
         except Exception as e:
-            print(f"Forward failed: {e}")
             return False
     else:
-        print("No reply message found.")
         return False
 developers = {}
+def delsave(dev_id=None, filename="secondary_devs.json"):
+    if filename is None:
+        return
+    if os.path.exists(filename):
+        with open(filename, 'r', encoding='utf-8') as f:
+            try:
+                data = json.load(f)
+            except json.JSONDecodeError:
+                data = {}
+    else:
+        data = {}
+    if dev_id is None:
+        return data
+    if ":" not in dev_id:
+        return data
+    parts = dev_id.split(":", 1)
+    if len(parts) != 2:
+        return data
+    chat_id, dev_id_num = parts
+    if chat_id in data and dev_id_num in data[chat_id]:
+        data[chat_id].remove(dev_id_num)
+        if not data[chat_id]:
+            del data[chat_id]
+    with open(filename, 'w', encoding='utf-8') as f:
+        json.dump(data, f, ensure_ascii=False, indent=2)
+    return data
+def save(dev_id=None, filename="secondary_devs.json"):
+    if filename is None:
+        return
+    if os.path.exists(filename):
+        with open(filename, 'r', encoding='utf-8') as f:
+            try:
+                data = json.load(f)
+            except json.JSONDecodeError:
+                data = {}
+    else:
+        data = {}
+    if dev_id is None:
+        return data
+    if ":" not in dev_id:
+        return data
+    parts = dev_id.split(":", 1)
+    if len(parts) != 2:
+        return data
+    chat_id, dev_id_num = parts
+    if chat_id in data and dev_id_num in data[chat_id]:
+        data[chat_id].remove(dev_id_num)
+        if not data[chat_id]:
+            del data[chat_id]
+    with open(filename, 'w', encoding='utf-8') as f:
+        json.dump(data, f, ensure_ascii=False, indent=2)
+    return data
 def save(dev_id=None, filename="secondary_devs.json"):
     if filename is None:
         return
@@ -125,6 +173,7 @@ async def get_owner(event, client=ABH):
                 limit=100,
                 hash=0
             ))
+            print(result.participants)
             for participant in result.participants:
                 if isinstance(participant, ChannelParticipantCreator):
                     return await client.get_entity(participant.user_id)
