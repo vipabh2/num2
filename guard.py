@@ -296,7 +296,7 @@ async def edited(event):
     if not uid in whitelist:
         await msg.delete()
         return
-@ABH.on(events.CallbackQuery(pattern=r'^yes:(\d+)$'))
+@ABH.on(events.CallbackQuery(data=b'^yes:(\d+)$'))
 async def yes_callback(event):
     try:
         msg = await event.get_message()
@@ -314,7 +314,7 @@ async def yes_callback(event):
         await event.answer(' تم تسجيل المستخدم كملغّم.')
     except Exception as e:
         await hint(e)
-@ABH.on(events.CallbackQuery(pattern=r'^no:(\d+)$'))
+@ABH.on(events.CallbackQuery(data=b'^no:(\d+)$'))
 async def no_callback(event):
     try:
         msg = await event.get_message()
@@ -563,7 +563,7 @@ async def warn_user(event):
         await botuse("تقييد بسبب التحذير")
         await ABH(EditBannedRequest(channel=chat_id, participant=target_id, banned_rights=rights))
         return
-@ABH.on(events.CallbackQuery(pattern=r'^delwarn:(\d+):(-?\d+)$'))
+@ABH.on(events.CallbackQuery(data=b'^delwarn:(\d+):(-?\d+)$'))
 async def delete_warning(event):
     match = event.pattern.match(event.data)
     if not match:
