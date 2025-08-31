@@ -148,7 +148,6 @@ async def get_owner(event, client=ABH):
                 limit=100,
                 hash=0
             ))
-            print(result.participants)
             for participant in result.participants:
                 if isinstance(participant, ChannelParticipantCreator):
                     return await client.get_entity(participant.user_id)
