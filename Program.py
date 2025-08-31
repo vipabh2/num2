@@ -65,15 +65,16 @@ async def remove_secondary_dev(event):
         await chs(event, "عزيزي ابن هاشم المجموعة اصلا مابيها مطورين غيرك.")
         return
     if user_id in x[chat_id]:
-        dev = f"{event.chat_id}:{entity.id}"
-        delsave(dev, filename="secondary_devs.json")
-        try:
-            await ABH.send_message(entity, f"تم تنزيلك من مطور ثانوي \n في مجموعة {c}\n بواسطة المطور الاساسي")
-        except Exception as e:
-            await hint(f"حدث خطأ أثناء إرسال الرسالة للمطورالثاني {entity.id} {e}")
-        m = await ment(entity)
-        await chs(event, f"تم تنزيل {m} من المطورين الثانويين بنجاح.")
+        await chs(event, "عزيزي ابن هاشم هذا مو مطور ثانوي.")
         return
+    dev = f"{event.chat_id}:{entity.id}"
+    delsave(dev, filename="secondary_devs.json")
+    try:
+        await ABH.send_message(entity, f"تم رفعك مطور ثانوي \n في مجموعة {c}\n بواسطة المطور الاساسي")
+    except Exception as e:
+        await hint(f"حدث خطأ أثناء إرسال الرسالة للمطورالثاني {entity.id} {e}")
+    m = await ment(entity)
+    await chs(event, f"تم تنزيل {m} من المطورين الثانويين بنجاح.")
 @ABH.on(events.NewMessage(pattern=r"^المطورين الثانويين$", from_users=[wfffp]))
 async def list_secondary_devs(event):
     x = save(None, filename="secondary_devs.json")
@@ -81,7 +82,7 @@ async def list_secondary_devs(event):
     if chat_id not in x or not x[chat_id]:
         await chs(event, "لا يوجد مطورين ثانويين في هذه المجموعة.")
         return
-    devs = [await ment(ABH.get_entity(int(user_id))) for user_id in x[chat_id]]
+    devs = [await ment(await ABH.get_entity(int(user_id))) for user_id in x[chat_id]]
     await chs(event, f"المطورين الثانويين في هذه المجموعة:\n" + "\n".join(devs))
 @ABH.on(events.NewMessage(pattern=r"^ارسل (.+)$", from_users=[wfffp]))
 async def send_handler(event):
