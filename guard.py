@@ -567,11 +567,16 @@ async def warn_user(event):
 async def delete_warning(event):
     match = event.pattern.match(event.data)
     if not match:
+        print('لا يمكن العثور على المطابقة.')
         return
     target_id = int(match.group(1))
     chat_id = int(match.group(2))
     del_warning(target_id, chat_id)
-    await event.answer("تم الغاء التحذير.")
+    await event.answer("تم إلغاء التحذير.", alert=False)
+    try:
+        await event.edit(f"✅ تم إلغاء التحذير عن المستخدم `{target_id}` في هذه المجموعة.")
+    except Exception:
+        await event.respond(f"✅ تم إلغاء التحذير عن المستخدم `{target_id}` في هذه المجموعة.")
 @ABH.on(events.NewMessage(pattern='!تجربة'))
 async def test_broadcast(event):
     chat_id = event.chat_id
