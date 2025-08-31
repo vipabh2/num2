@@ -422,44 +422,50 @@ def load_warns():
     if os.path.exists(WARN_FILE):
         with open(WARN_FILE, "r", encoding="utf-8") as f:
             return json.load(f)
-    else:
-        return {}
+    return {}
 def save_warns(warns_data):
     with open(WARN_FILE, "w", encoding="utf-8") as f:
         json.dump(warns_data, f, ensure_ascii=False, indent=2)
 def add_warning(user_id: int, chat_id: int) -> int:
     warns = load_warns()
-    user_id_str = str(user_id)
     chat_id_str = str(chat_id)
-    if user_id_str not in warns:
-        warns[user_id_str] = {}
-    if chat_id_str not in warns[user_id_str]:
-        warns[user_id_str][chat_id_str] = 0
-    warns[user_id_str][chat_id_str] += 1
-    current_warns = warns[user_id_str][chat_id_str]
+    user_id_str = str(user_id)
+    if chat_id_str not in warns:
+        warns[chat_id_str] = {}
+    if user_id_str not in warns[chat_id_str]:
+        warns[chat_id_str][user_id_str] = 0
+    warns[chat_id_str][user_id_str] += 1
+    current_warns = warns[chat_id_str][user_id_str]
     if current_warns >= 3:
-        warns[user_id_str][chat_id_str] = 0
-        save_warns(warns)
+        warns[chat_id_str][user_id_str] = 0
     save_warns(warns)
     return current_warns
-def del_warning(user_id: int, chat_id: int) -> None:
+def del_warning(user_id: int, chat_id: int) -> int:
     warns = load_warns()
-    user_id_str = str(user_id)
     chat_id_str = str(chat_id)
-    if user_id_str in warns and chat_id_str in warns[user_id_str]:
-        w = warns[user_id_str][chat_id_str]
-        if w > 0:
-            warns[user_id_str][chat_id_str] -= 1
+    user_id_str = str(user_id)
+    if chat_id_str in warns and user_id_str in warns[chat_id_str]:
+        if warns[chat_id_str][user_id_str] > 0:
+            warns[chat_id_str][user_id_str] -= 1
             save_warns(warns)
-            return warns[user_id_str][chat_id_str]
-def zerowarn(user_id: int, chat_id: int) -> None:
+            return warns[chat_id_str][user_id_str]
+    return 0
+def zerowarn(user_id: int, chat_id: int) -> int:
     warns = load_warns()
-    user_id_str = str(user_id)
     chat_id_str = str(chat_id)
-    if user_id_str in warns and chat_id_str in warns[user_id_str]:
-        warns[user_id_str][chat_id_str] = 0
+    user_id_str = str(user_id)
+    if chat_id_str in warns and user_id_str in warns[chat_id_str]:
+        warns[chat_id_str][user_id_str] = 0
         save_warns(warns)
-        return warns[user_id_str][chat_id_str]
+        return 0
+    return 0
+def count_warnings(user_id: int, chat_id: int) -> int:
+    warns = load_warns()
+    chat_id_str = str(chat_id)
+    user_id_str = str(user_id)
+    if chat_id_str in warns and user_id_str in warns[chat_id_str]:
+        return warns[chat_id_str][user_id_str]
+    return 0
 @ABH.on(events.NewMessage)
 async def handler_res(event):
     lock_key = f"lock:{event.chat_id}:تقييد"
