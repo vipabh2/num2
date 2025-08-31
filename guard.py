@@ -563,7 +563,7 @@ async def warn_user(event):
         await botuse("تقييد بسبب التحذير")
         await ABH(EditBannedRequest(channel=chat_id, participant=target_id, banned_rights=rights))
         return
-@ABH.on(events.CallbackQuery(data=b'^delwarn:(\d+):(-?\d+)$'))
+@ABH.on(events.CallbackQuery(data=rb'^delwarn:(\d+):(-?\d+)$'))
 async def delete_warning(event):
     match = event.pattern.match(event.data)
     if not match:
@@ -577,20 +577,28 @@ async def delete_warning(event):
         await event.edit(f"✅ تم إلغاء التحذير عن المستخدم `{target_id}` في هذه المجموعة.")
     except Exception:
         await event.respond(f"✅ تم إلغاء التحذير عن المستخدم `{target_id}` في هذه المجموعة.")
-@ABH.on(events.NewMessage(pattern='!تجربة'))
-async def test_broadcast(event):
+@ABH.on(events.CallbackQuery(data=rb'^zerowarn:(\d+):(-?\d+)$'))
+async def zero_warning(event):
+    match = event.pattern.match(event.data)
+    if not match:
+        print('لا يمكن العثور على المطابقة.')
+        return
+    target_id = int(match.group(1))
+    chat_id = int(match.group(2))
+    zerowarn(target_id, chat_id)
+    await event.answer("تم تصفير التحذيرات.", alert=False)
+    try:
+        await event.edit(f"✅ تم تصفير التحذيرات عن المستخدم `{target_id}` في هذه المجموعة.")
+    except Exception:
+        await event.respond(f"✅ تم تصفير التحذيرات عن المستخدم `{target_id}` في هذه المجموعة.")
+@ABH.on(events.NewMessage(pattern='^تحذيراتي$'))
+async def my_warnings(event):
+    if not event.is_group:
+        return
     chat_id = event.chat_id
     user_id = event.sender_id
-    if not is_assistant(chat_id, user_id) or not event.is_group:
+    warnings = load_warns()
+    if chat_id not in warnings or user_id not in warnings[chat_id]:
+        await event.reply("لا توجد تحذيرات مسجلة لك.")
         return
-    type = "تجربة"
-    await botuse(type)
-    hint_channel = await LC(chat_id)
-    if not hint_channel:
-        return await event.reply("↯︙لم يتم تعيين قناة تبليغات لهذه المجموعة بعد. استخدم الأمر 'اضف قناة التبليغات' أولاً.")
-    try:
-        hint_channel_id = int(hint_channel)
-        await ABH.send_message(hint_channel_id, f"هذه رسالة تجربة من المجموعة: {chat_id}")
-        await event.reply("✔︙تم إرسال رسالة التجربة إلى قناة التبليغات بنجاح.")
-    except Exception as e:
-        await event.reply(f"︙حدث خطأ أثناء إرسال الرسالة: {e}")
+    await event.reply(f"تحذيراتك في هذه المجموعة:\n" + "\n".join(warnings[chat_id][user_id]))
