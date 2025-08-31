@@ -63,7 +63,7 @@ async def check_math_answer(event):
    add_points(eventuid,str(event.chat_id),points,amount=x)
   else:
    await event.reply(f"غلط , الاجابة هيه {math_sessions[eventuid]}")
-   await react(event, '😂')
+   await react(event, '😁')
   del math_sessions[eventuid]
 @ABH.on(events.CallbackQuery(data=b'moneymuch'))
 async def show_money(event):
