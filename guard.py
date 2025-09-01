@@ -551,6 +551,7 @@ async def warn_user(event):
         f"⚠️ عدد التحذيرات: {w} / 3",
         buttons=b
     )
+    await botuse("تحذير مستخدمين")
     if lc:
         s = await mention(event)
         await ABH.send_message(lc, f"تم تحذير {x} بواسطة {s} \n عدد التحذيرات: {w} / 3 \n سبب التحذير 👇")
