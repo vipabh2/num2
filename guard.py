@@ -555,9 +555,12 @@ async def warn_user(event):
         s = await mention(event)
         await ABH.send_message(lc, f"تم تحذير {x} بواسطة {s} \n عدد التحذيرات: {w} / 3 \n سبب التحذير 👇")
         await try_forward(event, lc)
+        await event.delete()
+        await r.delete()
         return
-    await event.delete()
-    await r.delete()
+    else:
+        await event.delete()
+        await r.delete()
     if w == 3:
         now = int(time.time())
         restriction_duration = 600
