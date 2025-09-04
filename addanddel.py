@@ -63,7 +63,7 @@ async def change_own_rank(event):
             rank=new_rank
         ))
         await chs(event, f"تم تغيير لقبك الى `{new_rank}`")
-        await react(event, "🤝")
+        await react(event, "👍")
     except Exception as e:
         await ABH.send_message(wfffp, f"خطأ عند تعديل اللقب: {e}")
         await chs(event, "والله مابيه حيل اعذرني يخوي")
