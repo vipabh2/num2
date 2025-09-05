@@ -1,12 +1,12 @@
 from telethon import events
 from ABH import ABH
 commands = {
-    'رفع مطور ثانوي': 'promote_secondary_dev',
-    'تنزيل مطور ثانوي': 'remove_secondary_dev',
-    'المطوريين الثانويين': 'list_secondary_devs',
-    'ارسل': 'send_handler',
-    'اوامري': 'myhandlers',
-    'الاوامر': 'myhandlers',
+    'رفع مطور ثانوي': 'promote_secondary_dev(event)',
+    'تنزيل مطور ثانوي': 'remove_secondary_dev(event)',
+    'المطوريين الثانويين': 'list_secondary_devs(event)',
+    'ارسل': 'send_handler(event)',
+    'اوامري': 'myhandlers(event)',
+    'الاوامر': 'myhandlers(event)',
     'تفاعل البوت': 'stats_handler',
     'تغيير لقبي': 'change_own_rank',
 }
