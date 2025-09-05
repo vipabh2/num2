@@ -50,8 +50,9 @@ async def handle_shortening_or_command(event):
     for cmd, handler_name in commands.items():
         if text.startswith(cmd):
             func = globals().get(handler_name)
+            print(func)
             if func:
-                await func(event)
+                func
             else:
                 await event.reply(f"⚠️ الهاندلر {handler_name} غير معرف بعد.")
             break
