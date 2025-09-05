@@ -1,12 +1,12 @@
 from telethon import events
 from ABH import ABH
 commands = {
-    'رفع مطور ثانوي': 'promote_secondary_dev(event)',
-    'تنزيل مطور ثانوي': 'remove_secondary_dev(event)',
-    'المطوريين الثانويين': 'list_secondary_devs(event)',
-    'ارسل': 'send_handler(event)',
-    'اوامري': 'myhandlers(event)',
-    'الاوامر': 'myhandlers(event)',
+    'رفع مطور ثانوي': 'promote_secondary_dev',
+    'تنزيل مطور ثانوي': 'remove_secondary_dev',
+    'المطوريين الثانويين': 'list_secondary_devs',
+    'ارسل': 'send_handler',
+    'اوامري': 'myhandlers',
+    'الاوامر': 'myhandlers',
     'تفاعل البوت': 'stats_handler',
     'تغيير لقبي': 'change_own_rank',
 }
@@ -32,7 +32,10 @@ async def handle_shortening_or_command(event):
         if step == 1:
             old_command = text
             if old_command in commands:
-                shorten_session[chat_id][user_id] = {'step': 2, 'old_command': old_command}
+                shorten_session[chat_id][user_id] = {
+                    'step': 2,
+                    'old_command': old_command
+                }
                 await event.reply(f'تم العثور على الامر "{old_command}". الآن ارسل الامر المختصر الجديد.')
             else:
                 await event.reply(f'الامر "{old_command}" غير موجود في قائمة الاوامر.')
@@ -50,9 +53,8 @@ async def handle_shortening_or_command(event):
     for cmd, handler_name in commands.items():
         if text.startswith(cmd):
             func = globals().get(handler_name)
-            print(func)
             if func:
-                func
+                await func(event)
             else:
                 await event.reply(f"⚠️ الهاندلر {handler_name} غير معرف بعد.")
             break
