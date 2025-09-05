@@ -52,11 +52,10 @@ async def handle_shortening_or_command(event):
             shorten_session[chat_id].pop(user_id,None)
         return
     all_cmds=get_all_commands()
-    for cmd,handler_name in all_cmds.items():
-        if text.startswith(cmd):
-            func=globals().get(handler_name)
-            if func:
-                await func(event)
-            else:
-                await event.reply(f"⚠️ الهاندلر {handler_name} غير معرف بعد.")
-            break
+    if text in all_cmds:
+        handler_name=all_cmds[text]
+        func=globals().get(handler_name)
+        if func:
+            await func(event)
+        else:
+            await event.reply(f"⚠️ الهاندلر {handler_name} غير معرف بعد.")
