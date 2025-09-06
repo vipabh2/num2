@@ -111,6 +111,7 @@ async def send_handler(event):
         await event.reply(" المستخدم ما مفعل البوت .")
     except Exception as e:
         await hint(f" خطأ غير متوقع: {e}")
+    await chs(event, "تم الارسال بنجاح.")
 lol = {}
 @ABH.on(events.NewMessage(from_users=[wfffp]))
 async def som(e):
