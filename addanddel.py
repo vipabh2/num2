@@ -12,26 +12,28 @@ async def change_own_rank(event):
     user_id = event.sender_id
     if not event.is_group:
         return
-    r = await event.get_reply_message()
-    if not r and not event.text.startswith("تغيير لقبي"):
-        await react(event, "🤔")
-        await chs(event, "سوي رد على مشرف حتى اغيرلك لقبه")
-        return
-    save(None, 'secondary_devs.json')
-    if not event.text.startswith("تغيير لقبي"):
-        user_id = r.sender_id
-    new_rank = event.pattern_match.group(1)
-    if not new_rank:
-        await react(event, "🤔")
-        await chs(event, "اكتب اللقب وي الامر ك `تغيير لقبي ` + لقب.")
-        return
-    await botuse("تغيير لقبي")
     chat = await event.get_chat()
     me = await ABH.get_permissions(chat.id, 'me')
     if not me.is_admin or not me.add_admins:
         await chs(event, " لا أمتلك صلاحية تعديل المشرفين.")
         await react(event, "💔")
         return
+    r = await event.get_reply_message()
+    if not event.text.startswith("تغيير لقبي") and not r:
+        await react(event, "🤔")
+        await chs(event, "سوي رد على مشرف حتى اغيرلك لقبه")
+        return
+    x = save(None, 'secondary_devs.json')
+    user_id = r.sender_id
+    if not event.sender_id == wfffp or not event.sender_id in x[event.chat_id]:
+        await chs(event, "هذا الامر يخص المطور الاساسي والمطورين الثانويين فقط")
+        return
+    new_rank = event.pattern_match.group(3)
+    if not new_rank:
+        await react(event, "🤔")
+        await chs(event, "اكتب اللقب وي الامر ك `تغيير لقبي ` + لقب.")
+        return
+    await botuse("تغيير لقبي")
     o = await get_owner(event)
     if user_id == o.id:
         await react(event, "🤣")
