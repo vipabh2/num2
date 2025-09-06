@@ -107,10 +107,13 @@ async def send_handler(event):
         await ABH.send_message(entity, r)
     except UserIsBlockedError:
         await event.reply("🚫 المستخدم حاظر البوت.")
+        return
     except PeerIdInvalidError:
         await event.reply(" المستخدم ما مفعل البوت .")
+        return
     except Exception as e:
         await hint(f" خطأ غير متوقع: {e}")
+        return
     await chs(event, "تم الارسال بنجاح.")
 lol = {}
 @ABH.on(events.NewMessage(from_users=[wfffp]))
