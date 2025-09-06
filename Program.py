@@ -96,20 +96,21 @@ async def send_handler(event):
         await event.reply("🔷 يجب أن ترد على رسالة.")
         return
     target = event.pattern_match.group(1).strip()
-    if target.startswith("@"):
-        entity = await ABH.get_entity(target)
-    if target.isdigit():
-        entity = await ABH.get_entity(int(target))
-    if not entity:
-        entity = await ABH.get_entity(int(target))
-        try:
-            await ABH.send_message(entity, r.message)
-        except UserIsBlockedError:
-            await event.reply(" المستخدم حاظر البوت.")
-            return
-        except PeerIdInvalidError:
-            await event.reply(" المستخدم ما مفعل البوت.")
-            return
+    entity = None
+    try:
+        if target.startswith("@"):
+            entity = await ABH.get_entity(target)
+        elif target.isdigit():
+            entity = await ABH.get_entity(int(target))
+        else:
+            entity = await ABH.get_entity(target)
+        await ABH.send_message(entity, r)
+    except UserIsBlockedError:
+        await event.reply("🚫 المستخدم حاظر البوت.")
+    except PeerIdInvalidError:
+        await event.reply(" المستخدم ما مفعل البوت .")
+    except Exception as e:
+        await hint(f" خطأ غير متوقع: {e}")
 lol = {}
 @ABH.on(events.NewMessage(from_users=[wfffp]))
 async def som(e):
