@@ -7,17 +7,24 @@ from guard import is_admin
 from other import botuse #type: ignore
 from Program import chs #type: ignore
 from ABH import ABH #type: ignore
-@ABH.on(events.NewMessage(pattern=r"^تغيير لقبي\s*(.*)$"))
+@ABH.on(events.NewMessage(pattern=r"^(تغيير لقبي|تغيير لقب(?:ه|ها|ة))\s*(.*)$"))
 async def change_own_rank(event):
+    user_id = event.sender_id
     if not event.is_group:
         return
+    r = await event.get_reply_message()
+    if not r and not event.text.startswith("تغيير لقبي"):
+        await react(event, "🤔")
+        await chs(event, "سوي رد على مشرف حتى اغيرلك لقبه")
+        return
+    if not event.text.startswith("تغيير لقبي"):
+        user_id = r.sener_id
     new_rank = event.pattern_match.group(1)
     if not new_rank:
         await react(event, "🤔")
         await chs(event, "اكتب اللقب وي الامر ك `تغيير لقبي ` + لقب.")
         return
     await botuse("تغيير لقبي")
-    user_id = event.sender_id
     chat = await event.get_chat()
     me = await ABH.get_permissions(chat.id, 'me')
     if not me.is_admin or not me.add_admins:
