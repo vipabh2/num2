@@ -89,7 +89,8 @@ async def list_secondary_devs(event):
 async def send_handler(event):
     x = save(None, filename="secondary_devs.json")
     chat_id = str(event.chat_id)
-    if event.sender_id != wfffp or (chat_id not in x or str(event.sender_id) not in x[chat_id]):
+    # if event.sender_id != wfffp or (chat_id not in x or str(event.sender_id) not in x[chat_id]):
+    if event.sender_id != wfffp:
         return
     r = await event.get_reply_message()
     if not r:
