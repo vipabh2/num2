@@ -1,307 +1,903 @@
-from telethon.tl.types import ChannelParticipantAdmin, ChannelParticipantCreator, ChatAdminRights
-from telethon.tl.functions.channels import GetParticipantRequest, EditAdminRequest
-from top import points, add_user, save_points#type: ignore
-from other import botuse #type: ignore
-from Program import chs #type: ignore
-from telethon import events, Button
-from ABH import ABH #type: ignore
-from guard import is_admin
-from Resources import *
-@ABH.on(events.NewMessage(pattern=r"^(تغيير لقبي|تغيير لقب(?:ه|ها|ة))\s*(.*)$"))
-async def change_own_rank(event):
-    user_id = event.sender_id
-    if not event.is_group:
+from telethon.tl.types import ChannelParticipantsAdmins, ChannelParticipantCreator, ChannelParticipantAdmin
+from telethon.tl.functions.channels import GetParticipantRequest
+from telethon.tl.functions.channels import GetParticipantsRequest
+from telethon.tl.functions.messages import SendReactionRequest
+from telethon.tl.functions.messages import GetFullChatRequest
+from telethon.errors import ChatForwardsRestrictedError
+from telethon.tl.types import ChatParticipantCreator
+from telethon.tl.types import ReactionEmoji
+import google.generativeai as genai
+import pytz, os, json
+from ABH import ABH
+async def try_forward(event, gidvar):
+    if event.message and event.id:
+        r = await event.get_reply_message()
+        try:
+            await ABH.forward_messages(
+                entity=int(gidvar),
+                messages=r.id,
+                from_peer=r.chat_id
+    )
+            return True
+        except ChatForwardsRestrictedError:
+            return False
+        except Exception as e:
+            return False
+    else:
+        return False
+developers = {}
+def delsave(dev_id=None, filename="secondary_devs.json"):
+    if filename is None:
         return
-    chat = await event.get_chat()
-    me = await ABH.get_permissions(chat.id, 'me')
-    if not me.is_admin or not me.add_admins:
-        await chs(event, " لا أمتلك صلاحية تعديل المشرفين.")
-        await react(event, "💔")
+    if os.path.exists(filename):
+        with open(filename, 'r', encoding='utf-8') as f:
+            try:
+                data = json.load(f)
+            except json.JSONDecodeError:
+                data = {}
+    else:
+        data = {}
+    if dev_id is None:
+        return data
+    if ":" not in dev_id:
+        return data
+    parts = dev_id.split(":", 1)
+    if len(parts) != 2:
+        return data
+    chat_id, dev_id_num = parts
+    if chat_id in data and dev_id_num in data[chat_id]:
+        data[chat_id].remove(dev_id_num)
+        if not data[chat_id]:
+            del data[chat_id]
+    with open(filename, 'w', encoding='utf-8') as f:
+        json.dump(data, f, ensure_ascii=False, indent=2)
+    return data
+def save(dev_id=None, filename="secondary_devs.json"):
+    if filename is None:
         return
-    r = await event.get_reply_message()
-    if not event.text.startswith("تغيير لقبي") and not r:
-        await react(event, "🤔")
-        await chs(event, "سوي رد على مشرف حتى اغيرلك لقبه")
-        return
-    x = save(None, 'secondary_devs.json')
-    user_id = r.sender_id
-    if not event.sender_id == wfffp or not event.sender_id in x[event.chat_id]:
-        await chs(event, "هذا الامر يخص المطور الاساسي والمطورين الثانويين فقط")
-        return
-    new_rank = event.pattern_match.group(1)
-    if not new_rank:
-        await react(event, "🤔")
-        await chs(event, "اكتب اللقب وي الامر ك `تغيير لقبي ` + لقب.")
-        return
-    await botuse("تغيير لقبي")
-    o = await get_owner(event)
-    if user_id == o.id:
-        await react(event, "🤣")
-        await event.reply('هاي عود انت المالك')
-        return
-    x = await ABH.get_me()
-    result = await ABH(GetParticipantRequest(channel=chat.id, participant=user_id))
-    if isinstance(result.participant, ChannelParticipantAdmin):
-        if result.participant.promoted_by != x.id:
-            user = await ABH.get_entity(result.participant.promoted_by)
-            menti = await ment(user)
-            await chs(event, f"خلي {menti} يعدل لقبك لدوخني توكل")
-            await react(event, "🤣")
-            return
-    if len(new_rank) > 14:
-        await chs(event, "اللقب لازم يكون اقل من 14 حرف.")
-        await react(event, "👍")
-        return
-    try:
-        pp = await ABH(GetParticipantRequest(chat.id, user_id))
-        participant = pp.participant
-    except Exception as e:
-        await ABH.send_message(wfffp, f"خطأ في جلب بيانات المستخدم: {e}")
-        await event.reply(f"والله مابيه حيل اعذرني يخوي")
-        await react(event, "💔")
-        return
-    if not isinstance(participant, (ChannelParticipantAdmin, ChannelParticipantCreator)):
-        await chs(event, "يالفقير لازم تكون مشرف بالاول علمود اغيرلك لقب🙄🙄.")
-        await react(event, "🤣")
-        return
-    admin_right = participant.admin_rights
-    try:
-        await ABH(EditAdminRequest(
-            channel=chat.id,
-            user_id=user_id,
-            admin_rights=admin_right,
-            rank=new_rank
+    if os.path.exists(filename):
+        with open(filename, 'r', encoding='utf-8') as f:
+            try:
+                data = json.load(f)
+            except json.JSONDecodeError:
+                data = {}
+    else:
+        data = {}
+    if dev_id is None:
+        return data
+    if ":" not in dev_id:
+        return data
+    parts = dev_id.split(":", 1)
+    if len(parts) != 2:
+        return data
+    chat_id, dev_id_num = parts
+    if chat_id not in data:
+        data[chat_id] = []
+    if dev_id_num not in data[chat_id]:
+        data[chat_id].append(dev_id_num)
+    with open(filename, 'w', encoding='utf-8') as f:
+        json.dump(data, f, ensure_ascii=False, indent=2)
+    return data
+async def react(event, x):
+    try:    
+        await ABH(SendReactionRequest(
+            peer=event.chat_id,
+            msg_id=event.id,
+            reaction=[ReactionEmoji(emoticon=f'{x}')],
+            big=True
         ))
-        await chs(event, f"تم تغيير اللقب الى `{new_rank}`")
-        await react(event, "👍")
     except Exception as e:
-        await ABH.send_message(wfffp, f"خطأ عند تعديل اللقب: {e}")
-        await chs(event, "والله مابيه حيل اعذرني يخوي")
-        await react(event, "💔")
-promot = {}
-session = {}
-@ABH.on(events.NewMessage(pattern='^ترقية$'))
-async def promoteADMIN(event):
-    if not event.is_group:
-        return
-    chat = await event.get_chat()
-    user_id = event.sender_id
-    me = await ABH.get_permissions(chat.id, 'me')
-    if not me.is_admin or not me.add_admins:
-        await chs(event, " لا أمتلك صلاحية تعديل المشرفين.")
-        await react(event, "💔")
-        return
-    type = "ترقية"
-    await botuse(type)
-    isc = await can_add_admins(chat, user_id)
-    o = await get_owner(event)
-    uid = event.sender_id
-    if uid != o.id and uid != 1910015590 and not isc:
-        await chs(event, 'الامر يخص المالك فقط وبعض المشرفين')
-        await react(event, "💔")
-        return
-    r = await event.get_reply_message()
-    if not r:
-        await chs(event, 'لازم تسوي رد لشخص علمود ارفعه')
-        await react(event, "🤔")
-        return
-    chat_id = event.chat_id
-    if chat_id not in promot:
-        promot[chat_id] = {}
-    if chat_id not in session:
-        session[chat_id] = {}
-    session[chat_id].update({'pid': user_id, 'top': r.sender_id})
-    target_user_id = r.sender_id
-    promot[chat_id][target_user_id] = {
-        'rights': {
-            'change_info': False,
-            'delete_messages': False,
-            'ban_users': False,
-            'invite_users': False,
-            'pin_messages': False,
-            'add_admins': False,
-            'manage_call': False,
-        },
-        'initiator': event.sender_id,
-        'top_msg': r.id
-    }
-    isp = await is_admin(chat, target_user_id)
-    if isp:
-        await react(event, "🤔")
-        c = 'المستخدم مشرف ومرفوع من قبل'
-        await ABH.send_file(
-            entity=event.chat_id,
-            file='https://t.me/recoursec/16',
-            caption=c,
-            reply_to=event.id
-        )
-        return
-    buttons = [
-        [Button.inline('تغيير معلومات', data='change_info'), Button.inline('حذف رسائل', data='delete_messages')],
-        [Button.inline('حظر المستخدمين', data='ban_users'), Button.inline('دعوة', data='invite_users')],
-        [Button.inline('الاتصال', data='manage_call'), Button.inline('اضافة مشرفين', data='add_admins')],
-        [Button.inline('تثبيت رسائل', data='pin_messages')],
-        [Button.inline('تم', data='done')]
-        ]
-    c = 'يتم رفع المستخدم مشرف \n يرجى تحديد الصلاحيات'
-    await ABH.send_file(
-        entity=event.chat_id,
-        file='https://t.me/VIPABH/1219',
-        caption=c,
-        reply_to=event.id,
-        buttons=buttons)
-@ABH.on(events.CallbackQuery)
-async def promoti(event):
-    data = event.data.decode('utf-8')
-    if data == 'empty':
-        await event.answer('الفارغ مو الزر , انت لا ضغطت', alert=True)
-    chat_id = event.chat_id
-    if chat_id not in session or not session[chat_id]:
-        return
-    initiator_id = session[chat_id]['pid']
-    target_user_id = session[chat_id]['top']
-    if event.sender_id != initiator_id:
-        await event.answer('ما تكدر تعدل شيء هنا', alert=True)
-        return
-    if chat_id not in promot or target_user_id not in promot[chat_id]:
-        return
-    rights = promot[chat_id][target_user_id]['rights']
-    if data == 'done':
-        await event.answer(' تم تنفيذ الترقية', alert=False)
-        await event.edit('تم رفع المستخدم بنجاح \n لتغيير اللقب ارسل ```تغيير لقبي ``` + لقب معين ')
-        admin_rights = ChatAdminRights(
-            change_info=rights.get('change_info', False),
-            delete_messages=rights.get('delete_messages', False),
-            ban_users=rights.get('ban_users', False),
-            invite_users=rights.get('invite_users', False),
-            pin_messages=rights.get('pin_messages', False),
-            add_admins=rights.get('add_admins', False),
-            manage_call=rights.get('manage_call', False),
-            manage_topics = False,
-            anonymous = False,
-            post_stories = True,
-            edit_stories = True,
-            delete_stories =  True
-        )
-        c = 'مشرف'
-        await ABH(EditAdminRequest(event.chat_id, target_user_id, admin_rights, rank=c))
-        del session[chat_id]
-        del promot[chat_id][target_user_id]
-        return
-    if data not in rights:
-        return
-    rights[data] = True
-    await event.answer(f' تم تفعيل: {data}', alert=False)
-@ABH.on(events.NewMessage(pattern=r'رفع سمب(?:\s+(\d+))?'))
-async def promote_handler(event):
-    if not event.is_group:
-        return
-    type = "رفع سمب"
-    await botuse(type)
-    message = await event.get_reply_message()
-    if not message or not message.sender:
-        await event.reply("يجب الرد على شخص حتى ترفعه.")
-        await react(event, "🤔")
-        return
-    match = event.pattern_match
-    amount = int(match.group(1)) if match.group(1) else 1001
-    uid = str(event.sender_id)
-    target_id = str(message.sender_id)
-    giver_name = await mention(event)
-    if target_id == 1910015590:
-        await event.reply(f'جاري رفع {giver_name} سمب')
-    receiver_name = message.sender.first_name or "مجهول"
-    gid = str(event.chat_id)
-    add_user(target_id, gid, receiver_name, points, 0)
-    add_user(uid, gid, giver_name, points, 0)
-    if points[gid][target_id].get("status") == "مرفوع":
-        await event.reply(f"{receiver_name} مرفوع من قبل.")
-        return
-    if amount < 1000:
-        await event.reply("أقل مبلغ مسموح للرفع هو 1000.")
-        await react(event, "🤣")
-        return
-    giver_money = points[uid][gid]['points']
-    if giver_money < 1000:
-        await event.reply(f" رصيدك {giver_money}، والحد الأدنى للرفع هو 10.")
-        await react(event, "🤣")
-        return
-    if giver_money < amount:
-        await event.reply(f" رصيدك لا يكفي. تحاول ترفع بـ {amount} فلوس ورصيدك فقط {giver_money}.")
-        await react(event, "🤣")
-        return
-    points[uid][gid]['points'] = giver_money - amount
-    points[gid][target_id]["status"] = "مرفوع"
-    points[gid][target_id]["giver"] = uid
-    points[gid][target_id]["promote_value"] = amount
-    save_points(points)
-    await event.reply(f" تم رفع {receiver_name} مقابل {amount} فلوس")
-    await react(event, "👍")
-@ABH.on(events.NewMessage(pattern='تنزيل سمب'))
-async def demote_handler(event):
-    if not event.is_group:
-        return
-    type = "تنزيل سمب"
-    await botuse(type)
-    message = await event.get_reply_message()
-    if not message or not message.sender:
-        await event.reply("متكدر تنزل العدم , سوي رد على شخص")
-        await react(event, "🤔")
-        return
-    gid = str(event.chat_id)
-    sender_id = str(event.sender_id)
-    target_id = str(message.sender_id)
-    target_name = message.sender.first_name or "مجهول"
-    add_user(target_id, gid, target_name, points, 0)
-    add_user(sender_id, gid, event.sender.first_name, points, 0)
-    if points[gid].get(target_id, {}).get("status") != "مرفوع":
-        await event.reply("المستخدم هاذ ما مرفوع من قبل😐")
-        return
-    giver_id = points[gid][target_id].get("giver")
-    executor_money = points[sender_id][gid]['points']
-    promote_value = points[gid][target_id].get("promote_value", 313)
-    amount = int(promote_value * (1.5 if sender_id == giver_id else 2))
-    if executor_money < amount:
-        await event.reply(f"ما تگدر تنزله لأن رصيدك {executor_money}، والكلفة المطلوبة {amount}")
-        await react(event, "💔")
-        return
-    points[sender_id][gid]['points'] -= amount
-    del points[gid][target_id]
-    if not points[gid]:
-        del points[gid]
-    save_points(points)
-    r = await event.get_reply_message()
-    await event.reply(f"تم تنزيل {r.sender.first_name}  من السمبية")
-    await react(event, "👍")
-@ABH.on(events.NewMessage(pattern='السمبات'))
-async def show_handler(event):
-    if not event.is_group:
-        return
-    type = "السمبات"
-    await botuse(type)
-    chat_id = str(event.chat_id)
-    if chat_id not in points or not points[chat_id]:
-        await event.reply("ماكو سمبات هنا بالمجموعة")
-        await react(event, "👍")
-        return
-    response = "قائمة السمبات👇\n"
-    removed_users = []
-    for uid in list(points[chat_id].keys()):
-        data = points[chat_id][uid]
-        if data.get("status") == "مرفوع":
-            status_icon = "👌"
-            response += f"{status_icon} [{data['name']}](tg://user?id={uid}) ⇜ {data.get('promote_value', 0)}\n"
+        await ABH(SendReactionRequest(
+            peer=event.chat_id,
+            msg_id=event.message.id,
+            reaction=[ReactionEmoji(emoticon=f'{x}')],
+            big=True
+        ))        
+def adj(filename: str, data: dict):
+    if os.path.exists(filename):
+        with open(filename, 'r', encoding='utf-8') as f:
+            try:
+                existing_data = json.load(f)
+            except json.JSONDecodeError:
+                existing_data = {}
+    else:
+        existing_data = {}
+    existing_data.update(data)
+    with open(filename, 'w', encoding='utf-8') as f:
+        json.dump(existing_data, f, ensure_ascii=False, indent=2)
+async def can_add_admins(chat, user_id):
+    try:
+        result = await ABH(GetParticipantRequest(
+            channel=chat,
+            participant=user_id
+        ))
+        role = result.participant
+        if isinstance(role, ChannelParticipantCreator):
+            return True
+        if isinstance(role, ChannelParticipantAdmin):
+            rights = role.admin_rights
+            if rights and rights.add_admins:
+                return True
+        return False
+    except:
+        return False
+async def can_ban_users(chat, user_id):
+    try:
+        result = await ABH(GetParticipantRequest(
+            channel=chat,
+            participant=user_id
+        ))
+        role = result.participant
+        if isinstance(role, ChannelParticipantCreator):
+            return True
+        if isinstance(role, ChannelParticipantAdmin):
+            rights = role.admin_rights
+            if rights and rights.ban_users:
+                return True
+        return False
+    except:
+        return False
+async def get_owner(event, client=ABH):
+    try:
+        chat = await event.get_chat()
+        if getattr(chat, 'megagroup', False) or getattr(chat, 'broadcast', False):
+            result = await client(GetParticipantsRequest(
+                channel=await event.get_input_chat(),
+                filter=ChannelParticipantsAdmins(),
+                offset=0,
+                limit=100,
+                hash=0
+            ))
+            for participant in result.participants:
+                if isinstance(participant, ChannelParticipantCreator):
+                    return await client.get_entity(participant.user_id)
         else:
-            removed_users.append(uid)
-    for uid in removed_users:
-        if points[chat_id].get(uid) and points[chat_id][uid].get("status") != "مرفوع":
-            del points[chat_id][uid]
-    save_points(points)
-    await event.reply(response if response.strip() != "قائمة السمبات👇" else "ماكو وردات مرفوعين بالمجموعة", parse_mode="Markdown")
-@ABH.on(events.NewMessage(pattern='اوامر الرفع'))
-async def promot_list(event):
-    if not event.is_group:
-        return
-    type = "اوامر الرفع"
-    await botuse(type)
-    await event.reply('**اوامر الرفع كالاتي** \n `رفع سمب` + عدد فلوس \n لرفع الشخص في قائمة `السمبات` \n `تنزيل سمب` \n حتى ترفع لازم يكون رصيدك 1000 والتنزيل يُضرب المبلغ *1.5 \n * `اوامر الالعاب`\n `رفع معاون` بالرد \n حتى ترفع الشخص معاون \n `تنزيل معاون` بالرد \n حتى تنزل الشخص من المعاونين \n `المعاونين` حتى تشوف قائمة المعاونين بالمجموعة \n `رفع معاون` بالرد على مستخدم \n راح ينرفع المستخدم داخل البوت\n \n `المعاونين` علمود تشوف المرفوعين  \n `ترقية` حتى ترفعه مشرف بالمجموعة')
+            full = await client(GetFullChatRequest(chat.id))
+            if full.full_chat.participants:
+                for participant in full.full_chat.participants.participants:
+                    if isinstance(participant, ChatParticipantCreator):
+                        return await client.get_entity(participant.user_id)
+    except Exception as e:
+        await hint(f"Error in get_owner: {e}")
+        return None
+    return None
+timezone = pytz.timezone('Asia/Baghdad')
+GEMINI = "AIzaSyA5pzOpKVcMGm6Aek82KoB3Pk94dYg3LX4"
+genai.configure(api_key=GEMINI)
+model = genai.GenerativeModel("gemini-1.5-flash")
+group = -1001784332159
+hint_gid = -1002168230471
+bot = "Anymous"
+wfffp = 1910015590
+async def hint(e):
+    await ABH.send_message(wfffp, str(e))
+async def mention(event):
+    name = getattr(event.sender, 'first_name', None) or 'غير معروف'
+    user_id = event.sender_id
+    return f"[{name}](tg://user?id={user_id})"
+async def ment(sender):
+    name = sender.first_name
+    user_id = sender.id
+    return f"[{name}](tg://user?id={user_id})"
+football = [
+        {
+            "answer": "الميعوف",
+            "caption": "شنو اسم الاعب ؟",
+            "photo": "https://t.me/c/2219196756/21013"
+        },
+        {
+            "answer": "سالم الدوسري",
+            "caption": "شنو اسم الاعب ؟",
+            "photo": "https://t.me/LANBOT2/54"
+        },
+        {
+            "answer": "العويس",
+            "caption": "شنو اسم الاعب ؟",
+            "photo": "https://t.me/LANBOT2/56"
+        },
+        {
+            "answer": "علي البليهي",
+            "caption": "شنو اسم الاعب ؟",
+            "photo": "https://t.me/LANBOT2/58"
+        },
+        {
+            "answer": "جحفلي",
+            "caption": "شنو اسم الاعب ؟",
+            "photo": "https://t.me/LANBOT2/60"
+        },
+        {
+            "answer": "الشلهوب",
+            "caption": "شنو اسم الاعب ؟",
+            "photo": "https://t.me/LANBOT2/62"
+        },
+        {
+            "answer": "محمد البريك",
+            "caption": "شنو اسم الاعب ؟",
+            "photo": "https://t.me/LANBOT2/64"
+        },
+        {
+            "answer": "سعود",
+            "caption": "شنو اسم الاعب ؟",
+            "photo": "https://t.me/LANBOT2/66"
+        },
+        {
+            "answer": "ياسر الشهراني",
+            "caption": "شنو اسم الاعب ؟",
+            "photo": "https://t.me/LANBOT2/70"
+        },
+        {
+            "answer": ["كريستيانو رونالدو", 'رونالدو'],
+            "caption": "شنو اسم الاعب ؟",
+            "photo": "https://t.me/LANBOT2/72"
+        },
+        {
+            "answer": ["امبابي", 'مبابي', 'كيليان مبابي'],
+            "caption": "شنو اسم الاعب ؟",
+            "photo": "https://t.me/LANBOT2/74"
+        },
+        {
+            "answer": "مودريتش",
+            "caption": "شنو اسم الاعب ؟",
+            "photo": "https://t.me/LANBOT2/76"
+        },
+        {
+            "answer": ["بنزيما", "كريم بنزيما"],
+            "caption": "شنو اسم الاعب ؟",
+            "photo": "https://t.me/LANBOT2/78"
+        },
+        {
+            "answer": "نيمار",
+            "caption": "شنو اسم الاعب ؟",
+            "photo": "https://t.me/LANBOT2/80"
+        },
+        {
+            "answer": ["ميسي", 'ليونيل ميسي'],
+            "caption": "شنو اسم الاعب ؟",
+            "photo": "https://t.me/LANBOT2/82"
+        },
+        {
+            "answer": ["راموس", 'سيرخيو راموس', 'سيرخيوس راموس'],
+            "caption": "شنو اسم الاعب ؟",
+            "photo": "https://t.me/LANBOT2/84"
+        },
+        {
+            "answer": "اشرف حكيمي",
+            "caption": "شنو اسم الاعب ؟",
+            "photo": "https://t.me/LANBOT2/86"
+        },
+        {
+            "answer": "ماركينيوس",
+            "caption": "شنو اسم الاعب ؟",
+            "photo": "https://t.me/LANBOT2/88"
+        },
+        {
+            "answer": "محمد صلاح",
+            "caption": "شنو اسم الاعب ؟",
+            "photo": "https://t.me/LANBOT2/90"
+        },
+        {
+            "answer": "هازارد",
+            "caption": "شنو اسم الاعب ؟",
+            "photo": "https://t.me/LANBOT2/92"
+        },
+        {
+            "answer": "مالديني",
+            "caption": "شنو اسم الاعب ؟",
+            "photo": "https://t.me/LANBOT2/94"
+        },
+        {
+            "answer": "انيستا",
+            "caption": "شنو اسم الاعب ؟",
+            "photo": "https://t.me/LANBOT2/96"
+        },
+        {
+            "answer": "تشافي",
+            "caption": "شنو اسم الاعب ؟",
+            "photo": "https://t.me/LANBOT2/98"
+        },
+        {
+            "answer": ["بيكيه", 'جيرارد بيكيه'],
+            "caption": "شنو اسم الاعب ؟",
+            "photo": "https://t.me/LANBOT2/100"
+        },
+        {
+            "answer": ["بيل", 'غارث بيل'],
+            "caption": "شنو اسم الاعب ؟",
+            "photo": "https://t.me/LANBOT2/102"
+        },
+        {
+            "answer": "1995",
+            "caption": "الصوره هذي في اي عام ؟",
+            "photo": "https://t.me/LANBOT2/104"
+        },
+        {
+            "answer": "1997",
+            "caption": "الصوره هذي في اي عام ؟",
+            "photo": "https://t.me/LANBOT2/106"
+        },
+        {
+            "answer": "1998",
+            "caption": "الصوره هذي في اي عام ؟",
+            "photo": "https://t.me/LANBOT2/108"
+        },
+        {
+            "answer": "1999",
+            "caption": "الصوره هذي في اي عام ؟",
+            "photo": "https://t.me/LANBOT2/110"
+        },
+        {
+            "answer": "2002",
+            "caption": "الصوره هذي في اي عام ؟",
+            "photo": "https://t.me/LANBOT2/112"
+        },
+        {
+            "answer": "2005",
+            "caption": "الصوره هذي في اي عام ؟",
+            "photo": "https://t.me/LANBOT2/114"
+        },
+        {
+            "answer": "2007",
+            "caption": "الصوره هذي في اي عام ؟",
+            "photo": "https://t.me/LANBOT2/116"
+        },
+        {
+            "answer": "2008",
+            "caption": "الصوره هذي في اي عام ؟",
+            "photo": "https://t.me/LANBOT2/118"
+        },
+        {
+            "answer": "2009",
+            "caption": "الصوره هذي في اي عام ؟",
+            "photo": "https://t.me/LANBOT2/120"
+        },
+        {
+            "answer": "2000",
+            "caption": "الصوره هذي في اي عام ؟",
+            "photo": "https://t.me/LANBOT2/122"
+        },
+        {
+            "answer": "انشيلوتي",
+            "caption": "شنو اسم المدرب ؟",
+            "photo": "https://t.me/LANBOT2/124"
+        },
+        {
+            "answer": "مورينيو",
+            "caption": "شنو اسم المدرب ؟",
+            "photo": "https://t.me/LANBOT2/126"
+        },
+        {
+            "answer": "بيب غوارديولا",
+            "caption": "شنو اسم المدرب ؟",
+            "photo": "https://t.me/LANBOT2/128"
+        },
+        {
+            "answer": "هيرفي رينارد",
+            "caption": "شنو اسم المدرب ؟",
+            "photo": "https://t.me/LANBOT2/130"
+        },
+        {
+            "answer": "زيدان",
+            "caption": "شنو اسم المدرب ؟",
+            "photo": "https://t.me/LANBOT2/132"
+        }
+]
+questions = [
+    "شلون تعمل هالشي؟",
+    "شلون تقضي وقتك بالفراغ؟",
+    "شلون تتحكم بالضغط؟",
+    "شلون تكون صبور؟",
+    "شلون تحافظ على التركيز؟",
+    "شلون تكون قوي نفسياً؟",
+    "شلون تسيطر على الغضب؟",
+    "شلون تدير وقتك بشكل فعال؟",
+    "شلون تكون ناجح في حياتك المهنية؟",
+    "شلون تطور مهاراتك الشخصية؟",
+    "شلون تدير الضغوطات في العمل؟",
+    "شلون تدير الامور المالية؟",
+    "شلون تتعلم لغة جديدة؟",
+    "شلون تكون مبدع في عملك؟",
+    "شلون تطور علاقاتك الاجتماعية؟",
+    "شلون تتغلب على التحديات؟",
+    "شلون تنظم حياتك بشكل منظم؟",
+    "شلون تحافظ على صحتك؟",
+    "شلون تحمي نفسك من الإجهاد؟",
+    "شلون تعتني بنفسك بشكل جيد؟",
+    "شلون تكون متفائل في الحياة؟",
+    "شلون تدير الوقت بين العمل والحياة الشخصية؟",
+    "شلون تتعامل مع الشكوك والتوتر؟",
+    "شلون تعطي قيمة لوقتك؟",
+    "شلون تدير التوتر في العلاقات العائلية؟",
+    "شلون تتعلم من الاخطاء؟",
+    "شلون تدير الصعوبات في الحياة؟",
+    "شلون تكون منظم في حياتك اليومية؟",
+    "شلون تحسن من تركيزك وانتباهك؟",
+    "شلون تطور مهاراتك الشخصية والاجتماعية؟",
+    "شلون تدير العمل في فريق؟",
+    "شلون تحسن من قدراتك التواصلية؟",
+    "شلون تكون منظم في الدراسة؟",
+    "شلون تكون فعال في استخدام التكنولوجيا؟",
+    "شلون تحافظ على توازنك بين العمل والحياة الشخصية؟",
+    "شلون تتعلم مهارات جديدة بسرعة؟",
+    "شلون تكون ملهماً للآخرين؟",
+    "شلون تدير الخلافات في العمل؟",
+    "شلون تكون مؤثراً في العروض التقديمية؟",
+    "شلون تحسن من قدراتك التفكير الإبداعي؟",
+    "شلون تطور قدراتك القيادية؟",
+    "شلون تكون متفائل في ظروف صعبة؟",
+    "شلون تدير التحولات في الحياة؟",
+    "شلون تتعلم من النجاحات والإخفاقات؟",
+    "شلون تكون مستعداً للتغيير؟",
+    "شلون تستمتع بالحياة؟",
+    "شلون تكون إنساناً محبوباً ومحترماً؟",
+    "شلون تتعلم من خبرات الآخرين؟",
+    "شلون تطور مهاراتك في التعلم الذاتي؟",
+    "شلون تحسن من قدراتك على اتخاذ القرارات؟",
+    "شلون تكون مبادراً في العمل؟",
+    "شلون تطور مهاراتك في حل المشكلات؟",
+    "شلون تستفيد من النقد البناء؟",
+    "شلون تطور ثقتك بالنفس؟",
+    "شلون تتعامل مع التغييرات في العمل؟",
+    "شلون تطور مهاراتك في التعاون والعمل الجماعي؟",
+    "شلون تتعامل مع الضغوطات في الحياة؟",
+    "شلونك؟",
+    "شنو اسمك؟",
+    "شنو جنسيتك؟",
+    "شنو عمرك؟",
+    "شنو لونك المفضل؟",
+    "شنو طبخة تحبها اكثر؟",
+    "شنو هوايتك المفضلة؟",
+    "شنو مكان سفرة اللي تحلم تروحله؟",
+    "شنو نوع السيارة اللي تفضلها؟",
+    "شنو نوع الموسيقى اللي تحب تستمع لها؟",
+    "شنو تحب تسوي في وقت الفراغ؟",
+    "شنو اكلتك المفضلة في الفطور؟",
+    "شنو اكلتك المفضلة في الغدا؟",
+    "شنو اكلتك المفضلة في العشا؟",
+    "شنو نوع الشاي اللي تحب تشربه؟",
+    "شنو نوع القهوة اللي تحب تشربها؟",
+    "شنو اكثر شيء مميز في ثقافة العراق؟",
+    "شنو نوع الافلام اللي تحب تشوفها؟",
+    "شنو البلدة العربية اللي تفضل تزورها؟",
+    "شنو نوع الهدية اللي تحب تتلقاها؟",
+    "شنو اهم شيء بالنسبة إليك في الصداقة؟",
+    "شنو الشيء اللي تشوفه عند العراقيين بشكل خاص؟",
+    "شنو الاكلة العراقية المفضلة عندك؟",
+    "شنو نوع الرياضة اللي تحب تمارسها؟",
+    "شنو مكان العراقي اللي تحب تزوره في العراق؟",
+    "شنو اكثر شيء تحبه في الطبيعة؟",
+    "شنو اللون اللي يحبه العراقيين كثير؟",
+    "شنو الشيء اللي يستفزك بسرعة؟",
+    "شنو الشيء اللي يخليك تفرح؟",
+    "شنو الشيء اللي تحس إنه اكثر شيء يعبر عن الهوية العراقية؟",
+    "شنو نوع الهاتف اللي تستخدمه؟",
+    "شنو الشيء اللي تحس فيه إنه مفقود في المجتمع العراقي؟",
+    "شنو اكثر مكان تحب تزوره في العراق؟",
+    "شنو النصيحة اللي تحب تعطيها لشخص صغير؟",
+    "شنو الشيء اللي يخليك تشعر بالراحة والهدوء؟",
+    "شنو الشيء اللي تحب تسويه بالعطلة؟",
+    "شنو الحيوان اللي تحبه اكثر؟",
+    "شنو الشيء اللي تحب تهديه لشخص عزيز عليك؟",
+    "شنو الشيء اللي تحس بإنجاز كبير إذا قمت به؟",
+    "شنو اكثر موقع التواصل الاجتماعي اللي تستخدمه؟",
+    "شنو الشيء اللي يحبه العراقيين في الاعياد والمناسبات؟",
+    "شنو الشيء اللي تحب تشوفه في العراق مطور ومتطور؟",
+    "شنو الشيء اللي تحب تشاركه مع الآخرين بشكل كبير؟",
+    "شنو اكثر موسم تحبه في العراق؟",
+    "شنو الشيء اللي تتمنى تغيره في العراق؟",
+    "شنو الشيء اللي تحب تستثمر فيه وقتك وجهدك؟",
+    "شنو الشيء اللي يميز العراق والعراقيين برايك؟",
+    "شنو نوع الفن اللي تحب تستمتع به؟",
+    "شنو الشيء اللي تحب تتعلمه في المستقبل؟",
+    "شنو اكثر شيء تحبه في الشتاء؟",
+    "شنو الشيء اللي يرفع معنوياتك بشكل سريع؟",
+    "شنو الشيء اللي تحب تهديه لنفسك؟",
+    "شنو الشيء اللي تتمنى تحققه في حياتك؟",
+     "منو افضل صديق عندك؟",
+    "منو شخصيتك المفضلة في الافلام؟",
+    "منو الشخص اللي تحب تسافر معه؟",
+    "منو الشخص اللي بتستشيره في قراراتك؟",
+    "منو اكثر شخص تحب تشوفه كل يوم؟",
+    "منو اكثر شخص غريب بتعرفه؟",
+    "منو الشخص اللي تحب تحجي معه لساعات؟",
+    "منو اكثر شخص قدوة بحياتك؟",
+    "منو الشخص اللي تثق فيه بشكل كامل؟",
+    "منو اكثر شخص ملهم في حياتك؟",
+    "منو الشخص اللي تتمنى تشوفه اليوم؟",
+    "منو الشخص اللي تحب تكون جارك؟",
+    "منو الشخص اللي بتتحدث معه كل يوم؟",
+    "منو الشخص اللي بتشتاقله كثير؟",
+    "منو الشخص اللي بتعتمد عليه في الصعوبات؟",
+    "منو الشخص اللي تحب تشاركه اسرارك؟",
+    "منو الشخص اللي بتقدر قيمته في حياتك؟",
+    "منو الشخص اللي تحب تطلب منه المشورة؟",
+    "منو الشخص اللي تحب تكون معه في المشاكل؟",
+    "منو الشخص اللي بتحسه اكثر شخص يفهمك؟",
+    "منو الشخص اللي تحب تحتفل معه في الاعياد؟",
+    "منو الشخص اللي تتوقعه اكثر شخص بيرحل عنك؟",
+    "منو الشخص اللي تحب تشترك معه في الهوايات؟",
+    "منو الشخص اللي تحب تشوفه بعد غياب طويل؟",
+    "منو الشخص اللي تتمنى تقدمله هدية مميزة؟",
+    "منو الشخص اللي تحب تذهب معه في رحلة استكشافية؟",
+    "منو الشخص اللي تحب تحجي معه عن مشاكلك العاطفية؟",
+    "منو الشخص اللي تتمنى تكون له نفس قدراتك ومهاراتك؟",
+    "منو الشخص اللي تحب تقابله وتشتغل معه في المستقبل؟",
+    "منو الشخص اللي تحب تحتفل معه بنجاحك وإنجازاتك؟",
+    "منو الشخص اللي بتتذكره بكل سعادة عندما تراجع صورك القديمة؟",
+    "منو الشخص اللي تحب تشاركه تجاربك ومغامراتك في الحياة؟",
+    "منو الشخص اللي تحب تسمع نصائحه وتطبقها في حياتك؟",
+    "منو الشخص اللي تحب تشوفه ضحكته بين الفينة والاخرى؟",
+    "منو الشخص اللي تعتبره اكثر شخص يدعمك ويحفزك على تحقيق اهدافك؟",
+    "منو الشخص اللي تحب تشوفه محقق نجاحاته ومستقبله المشرق؟",
+    "منو الشخص اللي تحب تشكره على وجوده في حياتك ودعمه المستمر؟",
+    "منو الشخص اللي تحب تقدمله هدية تذكارية لتخليك تذكره للابد؟",
+    "منو الشخص اللي تحب تشكره على دعمه الكبير لك في مشوارك الدراسي؟",
+    "منو الشخص اللي تتمنى تعرفه في المستقبل وتصير صداقتكم مميزة؟",
+    "منو الشخص اللي تحب تشاركه لحظات الفرح والسعادة في حياتك؟",
+    "منو الشخص اللي تعتبره اكثر شخص يستحق منك كل الحب والاحترام؟",
+    "منو الشخص اللي تحب تشاركه اسرارك وتحجي له كل شيء بدون تردد؟",
+    "منو الشخص اللي تتمنى تحضر معه حفلة موسيقية لفرقتك المفضلة؟",
+    "منو الشخص اللي تحب تتنافس معه في لعبة او رياضة تحبها؟",
+    "منو الشخص اللي تحب تشوفه مبتسماً ومتفائلاً في الحياة؟",
+    "شوكت تفتح المحل؟",
+    "شوكت بتروح على العمل؟",
+    "شوكت تكون مستعد للمقابلة؟",
+    "شوكت بتنوم بالليل؟",
+    "شوكت بتصحى بالصبح؟",
+    "شوكت بتسافر؟",
+    "شوكت بتعود من العمل؟",
+    "شوكت بتعمل رياضة؟",
+    "شوكت بتذاكر للامتحان؟",
+    "شوكت بتنظف البيت؟",
+    "شوكت بتقرا الكتاب؟",
+    "شوكت تكون فاضي للتسوق؟",
+    "شوكت بتنطر الباص؟",
+    "شوكت بتعود من السفر؟",
+    "شوكت بتشتري الهدية؟",
+    "شوكت بتتقابل مع صديقك؟",
+    "شوكت بتحضر الحفلة؟",
+    "شوكت بتتعشى؟",
+    "شوكت بتتناول الفطور؟",
+    "شوكت بتسافر في العطلة؟",
+    "شوكت بترجع للمنزل؟",
+    "شوكت تخلص المشروع؟",
+    "شوكت بتتخرج من الجامعة؟",
+    "شوكت بتبدا العمل؟",
+    "شوكت بتفتح المحل؟",
+    "شوكت تنتهي الدورة التدريبية؟",
+    "شوكت بتتزوج؟",
+    "شوكت بترتب الغرفة؟",
+    "شوكت تتعلم الموسيقى؟",
+    "شوكت بترتب الوثائق؟",
+    "شوكت بتسجل في النادي الرياضي؟",
+    "شوكت تستلم الطلبية؟",
+    "شوكت بتشوف الطبيب؟",
+    "شوكت بتتناول الغداء؟",
+    "شوكت تكون مستعد للسفر؟",
+    "شوكت بتكمل المشروع؟",
+    "شوكت تخلص الواجب؟",
+    "شوكت تحصل على النتيجة؟",
+    "شوكت تتعلم اللغة الجديدة؟",
+    "شوكت بتحضر المؤتمر؟",
+    "شوكت بتنهي الكتاب؟",
+    "شوكت بتفتح المطعم؟",
+    "شوكت بتسافر في الإجازة؟",
+    "شوكت بتبدا التدريب؟",
+    "شوكت تخلص المشروع الفني؟",
+    "شوكت تنتهي الجلسة؟",
+    "شوكت تتعلم الطبخ؟",
+    "شوكت تستلم الشهادة؟",
+    "شوكت بتبدا الرحلة؟",
+    "شوكت بتنهي الاعمال المنزلية؟",
+    "شوكت تكون فاضي للقراءة؟",
+    "شوكت تستلم السيارة الجديدة؟",
+    "شوكت بتتناول العشاء؟",
+    "وين رايح؟",
+    "وين تسكن؟",
+    "وين بتشتغل؟",
+    "وين بتروح في ايام العطلة؟",
+    "وين تحب تسافر في العطلات؟",
+    "وين تحب تروح مع الاصدقاء؟",
+    "وين تكون في الساعة الثامنة صباحاً؟",
+    "وين تكون في الساعة العاشرة مساءً؟",
+    "وين تحب تتناول الإفطار؟",
+    "وين تحب تتسوق؟",
+    "وين تحب تتناول العشاء؟",
+    "وين تكون في الساعة الثانية ظهراً؟",
+    "وين تحب تمضي امسياتك؟",
+    "وين تحب تقضي ايام العطلة؟",
+    "وين تحب تزور المعالم السياحية؟",
+    "وين تحب تشتري الهدايا؟",
+    "وين تحب تتمرن وتمارس الرياضة؟",
+    "وين تحب تذهب للتسوق؟",
+    "وين تحب تقضي وقتك مع العائلة؟",
+    "وين تكون في الساعة الخامسة مساءً؟"
+]
+CHANNEL = 'theholyqouran'
+suras = {
+    ('سورة الفاتحة',): '1',
+    ('سورة البقرة',): '2',
+    ('سورة آل عمران', 'سورة ال عمران'): '3',
+    ('سورة النساء',): '4',
+    ('سورة المائده', 'سورة المائدة'): '5',
+    ('سورة الأنعام', 'سورة الانعام'): '6',
+    ('سورة الأعراف', 'سورة الاعراف'): '7',
+    ('سورة الأنفال', 'سورة الانفال'): '8',
+    ('سورة التوبة',): '9',
+    ('سورة يونس',): '10',
+    ('سورة هود',): '11',
+    ('سورة يوسف',): '12',
+    ('سورة الرعد',): '13',
+    ('سورة ابراهيم', 'سورة إبراهيم'): '14',
+    ('سورة الحجر',): '15',
+    ('سورة النحل',): '16',
+    ('سورة الاسراء', 'سورة الإسراء'): '17',
+    ('سورة الكهف',): '18',
+    ('سورة مريم',): '19',
+    ('سورة طه',): '20',
+    ('سورة الانبياء', 'سورة الأنبياء'): '21',
+    ('سورة الحج',): '22',
+    ('سورة المؤمنون', 'سورة المومنون'): '23',
+    ('سورة الفرقان',): '24',
+    ('سورة النور',): '25',
+    ('سورة الشعراء',): '26',
+    ('سورة العنكبوت',): '27',
+    ('سورة النمل',): '28',
+    ('سورة القصص',): '29',
+    ('سورة الروم',): '30',
+    ('سورة لقمان',): '31',
+    ('سورة السجدة',): '32',
+    ('سورة الأحزاب', 'سورة الاحزاب'): '33',
+    ('سورة سبأ', 'سورة سبا'): '34',
+    ('سورة فاطر',): '35',
+    ('سورة يس',): '36',
+    ('سورة الصافات',): '37',
+    ('سورة ص',): '38',
+    ('سورة الزمر',): '39',
+    ('سورة غافر',): '40',
+    ('سورة فصلت',): '41',
+    ('سورة الشورى',): '42',
+    ('سورة الزخرف',): '43',
+    ('سورة الدخان',): '44',
+    ('سورة الجاثية',): '45',
+    ('سورة الاحقاف', 'سورة الأحقاف'): '46',
+    ('سورة الفتح',): '47',
+    ('سورة محمد',): '48',
+    ('سورة الحجرات',): '49',
+    ('سورة الذاريات',): '50',
+    ('سورة ق',): '51',
+    ('سورة النجم',): '52',
+    ('سورة الطور',): '53',
+    ('سورة القمر',): '54',
+    ('سورة الرحمن',): '55',
+    ('سورة الواقعة',): '56',
+    ('سورة الحديد',): '57',
+    ('سورة المجادلة',): '58',
+    ('سورة الحشر',): '59',
+    ('سورة الممتحنة',): '60',
+    ('سورة الصف',): '61',
+    ('سورة الجمعة',): '62',
+    ('سورة المنافقون',): '63',
+    ('سورة التغابن',): '64',
+    ('سورة الطلاق',): '65',
+    ('سورة التحريم',): '66',
+    ('سورة الملك',): '67',
+    ('سورة القلم',): '68',
+    ('سورة الحاقة',): '69',
+    ('سورة المعارج',): '70',
+    ('سورة نوح',): '71',
+    ('سورة الجن',): '72',
+    ('سورة المزمل',): '73',
+    ('سورة المدثر',): '74',
+    ('سورة القيامة',): '75',
+    ('سورة الإنسان', 'سورة الانسان'): '76',
+    ('سورة المرسلات',): '77',
+    ('سورة النبا', 'سورة النبأ'): '80',
+    ('سورة النازعات',): '78',
+    ('سورة عبس',): '79',
+    ('سورة التكوير',): '81',
+    ('سورة الانفطار', 'سورة الإنفطار'): '82',
+    ('سورة المطففين',): '83',
+    ('سورة الانشقاق',): '84',
+    ('سورة البروج',): '85',
+    ('سورة الطارق',): '86',
+    ('سورة الاعلى', 'سورة الأعلى'): '87',
+    ('سورة الغاشية',): '88',
+    ('سورة الفجر',): '89',
+    ('سورة البلد',): '90',
+    ('سورة الشمس',): '91',
+    ('سورة الليل',): '92',
+    ('سورة الضحى',): '93',
+    ('سورة الشرح',): '94',
+    ('سورة التين',): '96',
+    ('سورة العلق',): '95',
+    ('سورة القدر',): '97',
+    ('سورة البينة',): '98',
+    ('سورة الزلزلة',): '99',
+    ('سورة العاديات',): '100',
+    ('سورة القارعة',): '101',
+    ('سورة التكاثر',): '102',
+    ('سورة العصر',): '103',
+    ('سورة الهمزة',): '104',
+    ('سورة الفيل',): '105',
+    ('سورة قريش',): '106',
+    ('سورة الماعون',): '107',
+    ('سورة الكوثر',): '108',
+    ('سورة الكافرون',): '109',
+    ('سورة النصر',): '110',
+    ('سورة المسد',): '111',
+    ('سورة الاخلاص', 'سورة الإخلاص'): '112',
+    ('سورة الفلق',): '113',
+    ('سورة الناس',): '114',
+}
+x_ar = {
+    '🇦🇫': 'افغانستان',
+    '🇦🇱': 'البانيا',
+    '🇩🇿': 'الجزائر',
+    '🇦🇸': 'ساموا الامريكيا',
+    '🇦🇩': 'اندورا',
+    '🇦🇴': 'انغولا',
+    '🇦🇮': 'انغويلا',
+    '🇦🇶': 'القارة القطبية الجنوبية',
+    '🇦🇬': 'انتيغوا وبربودا',
+    '🇦🇷': 'الارجنتين',
+    '🇦🇲': 'ارمينيا',
+    '🇦🇼': 'اوربا',
+    '🇦🇺': 'استراليا',
+    '🇦🇹': 'النمسا',
+    '🇦🇿': 'اذربيجان',
+    '🇧🇸': 'جزر الباهاما',
+    '🇧🇭': 'البحرين',
+    '🇧🇩': 'بنغلاديش',
+    '🇧🇧': 'باربادوس',
+    '🇧🇾': 'بيلاروس',
+    '🇧🇪': 'بلجيكا',
+    '🇧🇿': 'بليز',
+    '🇧🇯': 'بنين',
+    '🇧🇲': 'برمودا',
+    '🇧🇹': 'بوتان',
+    '🇧🇴': 'بوليفيا',
+    '🇧🇦': 'البوسنة والهرسك',
+    '🇧🇼': 'بوتسوانا',
+    '🇧🇷': 'البرازيل',
+    '🇧🇳': 'بروناي',
+    '🇧🇬': 'بلغاريا',
+    '🇧🇫': 'بوركينا فاسو',
+    '🇧🇮': 'بوروندي',
+    '🇰🇭': 'كمبوديا',
+    '🇨🇲': 'الكاميرون',
+    '🇨🇦': 'كندا',
+    '🇨🇻': 'الراس الاخضر',
+    '🇰🇾': 'جزر كايمان',
+    '🇨🇫': 'جمهورية افريقيا الوسطى',
+    '🇹🇩': 'تشاد',
+    '🇨🇱': 'تشيلي',
+    '🇨🇳': 'الصين',
+    '🇨🇴': 'كولومبيا',
+    '🇰🇲': 'جزر القمر',
+    '🇨🇬': 'الكونغو',
+    '🇨🇩': 'جمهورية الكونغو الديمقراطية',
+    '🇨🇷': 'كوستاريكا',
+    '🇭🇷': 'كرواتيا',
+    '🇨🇺': 'كوبا',
+    '🇨🇾': 'قبرص',
+    '🇨🇿': 'التشيك',
+    '🇩🇰': 'الدنمارك',
+    '🇩🇯': 'جيبوتي',
+    '🇩🇴': 'جمهورية الدومينيكان',
+    '🇪🇨': 'الاكوادور',
+    '🇪🇬': 'مصر',
+    '🇸🇻': 'السلفادور',
+    '🇪🇷': 'اريتريا',
+    '🇪🇪': 'استونيا',
+    '🇪🇹': 'اثيوبيا',
+    '🇫🇯': 'فيجي',
+    '🇫🇮': 'فنلندا',
+    '🇫🇷': 'فرنسا',
+    '🇬🇦': 'الغابون',
+    '🇬🇲': 'غامبيا',
+    '🇩🇪': 'المانيا',
+    '🇬🇭': 'غانا',
+    '🇬🇷': 'اليونان',
+    '🇬🇹': 'غواتيمالا',
+    '🇬🇳': 'غينيا',
+    '🇬🇼': 'غينيا بيساو',
+    '🇭🇳': 'هندوراس',
+    '🇭🇺': 'المجر',
+    '🇮🇸': 'ايسلاندا',
+    '🇮🇳': 'الهند',
+    '🇮🇩': 'اندونوسيا',
+    '🇮🇷': 'ايران',
+    '🇮🇶': 'العراق',
+    '🇮🇪': 'ايرلندا',
+    '🇮🇱': 'اسرائيل',
+    '🇮🇹': 'ايطاليا',
+    '🇯🇲': 'جامايكا',
+    '🇯🇵': 'اليابان',
+    '🇯🇴': 'الاردن',
+    '🇰🇿': 'كازاخستان',
+    '🇰🇪': 'كينيا',
+    '🇰🇼': 'الكويت',
+    '🇰🇬': 'قرغيزستان',
+    '🇱🇦': 'لاوس',
+    '🇱🇻': 'لاتفيا',
+    '🇱🇧': 'لبنان',
+    '🇱🇸': 'ليسوتو',
+    '🇱🇷': 'ليبيريا',
+    '🇱🇾': 'ليبيا',
+    '🇱🇹': 'ليتوانيا',
+    '🇱🇺': 'لوكسمبورغ',
+    '🇲🇰': 'مقدونيا الشمالية',
+    '🇲🇬': 'مدغشقر',
+    '🇲🇼': 'ملاوي',
+    '🇲🇾': 'ماليزيا',
+    '🇲🇻': 'المالديف',
+    '🇲🇱': 'مالي',
+    '🇲🇹': 'مالطا',
+    '🇲🇷': 'موريتانيا',
+    '🇲🇺': 'موريشيوس',
+    '🇲🇽': 'المكسيك',
+    '🇫🇲': 'ميكرونيزيا',
+    '🇲🇩': 'مولدوفا',
+    '🇲🇨': 'موناكو',
+    '🇲🇳': 'منغوليا',
+    '🇲🇪': 'الجبل الاسود',
+    '🇲🇦': 'المغرب',
+    '🇲🇿': 'موزمبيق',
+    '🇳🇦': 'ناميبيا',
+    '🇳🇵': 'نيبال',
+    '🇳🇱': 'هولندا',
+    '🇳🇿': 'نيوزيلندا',
+    '🇳🇮': 'نيكاراغوا',
+    '🇳🇪': 'النيجر',
+    '🇳🇬': 'نيجيريا',
+    '🇰🇵': 'كوريا الشمالية',
+    '🇳🇴': 'النرويج',
+    '🇴🇲': 'عمان',
+    '🇵🇰': 'باكستان',
+    '🇵🇦': 'بنما',
+    '🇵🇬': 'بابوا غينيا الجديدة',
+    '🇵🇾': 'باراغواي',
+    '🇵🇪': 'بيرو',
+    '🇵🇭': 'الفلبين',
+    '🇵🇱': 'بولندا',
+    '🇵🇹': 'البرتغال',
+    '🇶🇦': 'قطر',
+    '🇷🇴': 'رومانيا',
+    '🇷🇺': 'روسيا',
+    '🇷🇼': 'رواندا',
+    '🇸🇦': 'السعودية',
+    '🇸🇳': 'السنغال',
+    '🇷🇸': 'صربيا',
+    '🇸🇬': 'سنغافورة',
+    '🇸🇰': 'سلوفاكيا',
+    '🇸🇮': 'سلوفينيا',
+    '🇿🇦': 'جنوب افريقيا',
+    '🇰🇷': 'كوريا الجنوبية',
+    '🇪🇸': 'اسبانيا',
+    '🇱🇰': 'سريلانكا',
+    '🇸🇩': 'السودان',
+    '🇸🇷': 'سورينام',
+    '🇸🇪': 'السويد',
+    '🇨🇭': 'سويسرا',
+    '🇸🇾': 'سوريا',
+    '🇹🇯': 'طاجيكستان',
+    '🇹🇿': 'تنزانيا',
+    '🇹🇭': 'تايلاند',
+    '🇹🇱': 'تيمور الشرقية',
+    '🇹🇬': 'توغو',
+    '🇹🇴': 'تونغا',
+    '🇹🇳': 'تونس',
+    '🇹🇷': 'تركيا',
+    '🇹🇲': 'تركمانستان',
+    '🇺🇬': 'اوغندا',
+    '🇺🇦': 'اوكرانيا',
+    '🇦🇪': 'الامارات',
+    '🇬🇧': 'المملكة المتحدة',
+    '🇺🇸': 'الولايات المتحدة',
+    '🇺🇾': 'اوروغواي',
+    '🇺🇿': 'اوزباكستان',
+    '🇻🇳': 'فيتنام',
+    '🇾🇪': 'اليمن',
+    '🇿🇲': 'زامبيا',
+    '🇿🇼': 'زيمبابوي',
+}
