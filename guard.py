@@ -528,7 +528,7 @@ async def warn_user(event):
     x = save(None, filename="secondary_devs.json")
     a = await is_owner(event.chat_id, user_id)
     if event.sender_id != wfffp and (str(event.chat_id) not in x or str(event.sender_id) not in x[str(event.chat_id)]) and not a and not is_assistant(chat_id, user_id):
-        await chs(event, 'شني خالي كبينه انت مو معاون')
+        await chs(event, 'شني خالي كبينه انت مو ')
         return
     r = await event.get_reply_message()
     if not r:
