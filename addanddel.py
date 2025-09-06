@@ -19,13 +19,13 @@ async def change_own_rank(event):
         await react(event, "💔")
         return
     r = await event.get_reply_message()
-    if not event.text.startswith("تغيير لقبي") and not r:
+    if not event.text.startswith("تغيير لقبي") or not r:
         await react(event, "🤔")
         await chs(event, "سوي رد على مشرف حتى اغيرلك لقبه")
         return
-    x = save(None, 'secondary_devs.json')
     user_id = r.sender_id
-    if not event.sender_id == wfffp or not event.sender_id in x[event.chat_id]:
+    x = save(None, 'secondary_devs.json')
+    if not event.sender_id == wfffp  or event.chat_id not in x or event.sender_id not in x[event.chat_id]:
         await chs(event, "هذا الامر يخص المطور الاساسي والمطورين الثانويين فقط")
         return
     new_rank = event.pattern_match.group(3)
