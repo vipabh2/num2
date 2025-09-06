@@ -48,7 +48,7 @@ async def change_own_rank(event):
         if result.participant.promoted_by != x.id:
             user = await ABH.get_entity(result.participant.promoted_by)
             menti = await ment(user)
-            await chs(event, f"خلي {menti} يعدل لقبك لدوخني توكل")
+            await chs(event, f"خلي {menti} يعدل اللقب لدوخني توكل")
             await react(event, "🤣")
             return
     if len(new_rank) > 14:
@@ -64,7 +64,7 @@ async def change_own_rank(event):
         await react(event, "💔")
         return
     if not isinstance(participant, (ChannelParticipantAdmin, ChannelParticipantCreator)):
-        await chs(event, "يالفقير لازم تكون مشرف بالاول علمود اغيرلك لقب🙄🙄.")
+        await chs(event, "يالفقير لازم يكون مشرف بالاول علمود اغيرلك لقب🙄🙄.")
         await react(event, "🤣")
         return
     admin_right = participant.admin_rights
@@ -75,7 +75,7 @@ async def change_own_rank(event):
             admin_rights=admin_right,
             rank=new_rank
         ))
-        await chs(event, f"تم تغيير لقبك الى `{new_rank}`")
+        await chs(event, f"تم تغيير اللقب الى `{new_rank}`")
         await react(event, "👍")
     except Exception as e:
         await ABH.send_message(wfffp, f"خطأ عند تعديل اللقب: {e}")
