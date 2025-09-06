@@ -28,7 +28,9 @@ async def change_own_rank(event):
             return
         user_id = r.sender_id
     x = save(None, 'secondary_devs.json')
-    if not event.sender_id == wfffp or (str(event.chat_id) not in x or str(event.sender_id) not in x[str(event.chat_id)]):
+    if not event.sender_id == wfffp:
+    # if not event.sender_id == wfffp and (str(event.chat_id) not in x or str(event.sender_id) not in x[str(event.chat_id)]):
+    # if not event.sender_id == wfffp and (str(event.chat_id) not in x or str(event.sender_id) not in x[str(event.chat_id)]):
         await chs(event, "هذا الامر يخص المطور الاساسي والمطورين الثانويين فقط")
         return
     new_rank = event.pattern_match.group(3)
