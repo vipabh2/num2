@@ -561,17 +561,21 @@ async def warn_user(event):
     else:
         await event.delete()
         await r.delete()
-    if w > 2:
-        now = int(time.time())
-        restriction_duration = 600
-        restriction_end_times.setdefault(event.chat_id, {})[target_id] = now + restriction_duration
-        rights = ChatBannedRights(
-            until_date=now + restriction_duration,
-            send_messages=True
-        )     
-        await botuse("تقييد بسبب التحذير")
-        await ABH(EditBannedRequest(channel=chat_id, participant=target_id, banned_rights=rights))
-        return
+        try:
+            if w == 3:
+                now = int(time.time())
+                restriction_duration = 600
+                restriction_end_times.setdefault(event.chat_id, {})[target_id] = now + restriction_duration
+                rights = ChatBannedRights(
+                    until_date=now + restriction_duration,
+                    send_messages=True
+                )
+                await botuse("تقييد بسبب التحذير")
+                await ABH(EditBannedRequest(channel=chat_id, participant=target_id, banned_rights=rights))
+                return
+        except Exception as e:
+            await hint(e)
+            return
 @ABH.on(events.CallbackQuery(data=rb'^delwarn:(\d+):(-?\d+)$'))
 async def delete_warning(event):
     match = event.pattern.match(event.data)
