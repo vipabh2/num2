@@ -1,12 +1,12 @@
 from telethon.tl.types import ChannelParticipantAdmin, ChannelParticipantCreator, ChatAdminRights
-from Resources import get_owner, react, mention, can_add_admins, ment, wfffp #type: ignore
 from telethon.tl.functions.channels import GetParticipantRequest, EditAdminRequest
 from top import points, add_user, save_points#type: ignore
-from telethon import events, Button
-from guard import is_admin
 from other import botuse #type: ignore
 from Program import chs #type: ignore
+from telethon import events, Button
 from ABH import ABH #type: ignore
+from guard import is_admin
+from Resources import *
 @ABH.on(events.NewMessage(pattern=r"^(تغيير لقبي|تغيير لقب(?:ه|ها|ة))\s*(.*)$"))
 async def change_own_rank(event):
     user_id = event.sender_id
@@ -17,8 +17,9 @@ async def change_own_rank(event):
         await react(event, "🤔")
         await chs(event, "سوي رد على مشرف حتى اغيرلك لقبه")
         return
+    save(None, 'secondary_devs.json')
     if not event.text.startswith("تغيير لقبي"):
-        user_id = r.sener_id
+        user_id = r.sender_id
     new_rank = event.pattern_match.group(1)
     if not new_rank:
         await react(event, "🤔")
