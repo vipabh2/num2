@@ -99,7 +99,8 @@ async def promoteADMIN(event):
     isc = await can_add_admins(chat, user_id)
     o = await get_owner(event)
     uid = event.sender_id
-    if uid != o.id and uid != 1910015590 and not isc:
+    x = save(None, 'secondary_devs.json')
+    if uid != o.id and uid != 1910015590 and not isc and (event.chat_id not in x or uid not in x[event.chat_id]):
         await chs(event, 'الامر يخص المالك فقط وبعض المشرفين')
         await react(event, "💔")
         return
