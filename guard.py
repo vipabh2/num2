@@ -574,7 +574,8 @@ async def warn_user(event):
         await r.delete()
 @ABH.on(events.CallbackQuery(data=rb'^delwarn:(\d+):(-?\d+)$'))
 async def delete_warning(event):
-    match = event.pattern.match(event.data)
+    data = event.data.decode('utf-8')
+    match = event.pattern.match(data)
     if not match:
         await event.edit('لا يمكن العثور على المطابقة.')
         return
