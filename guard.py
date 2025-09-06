@@ -527,8 +527,7 @@ async def warn_user(event):
     user_id = event.sender_id
     x = save(None, filename="secondary_devs.json")
     a = await is_owner(event.chat_id, user_id)
-    s = save(None, "secondary_devs.json")
-    if not (a or chat_id in s and user_id in s[chat_id] or is_assistant(chat_id, user_id)):
+    if not (a and str(event.chat_id) not in x or str(event.sender_id) not in x[str(event.chat_id)]) and not is_assistant(chat_id, user_id):
         await chs(event, 'لا يمكنك التحذير , ماعندك صلاحية ')
         return
     r = await event.get_reply_message()
