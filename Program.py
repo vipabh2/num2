@@ -88,7 +88,8 @@ async def list_secondary_devs(event):
 @ABH.on(events.NewMessage(pattern=r"^ارسل (.+)$"))
 async def send_handler(event):
     x = save(None, filename="secondary_devs.json")
-    if event.sender_id != wfffp and (str(event.chat_id) not in x or str(event.sender_id) not in x[str(event.chat_id)]):
+    if event.sender_id != wfffp and (
+        str(event.chat_id) not in x or str(event.sender_id) not in x[str(event.chat_id)]):
         return
     r = await event.get_reply_message()
     if not r:
