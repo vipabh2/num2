@@ -104,7 +104,7 @@ async def promoteADMIN(event):
         await chs(event, 'الامر يخص المالك فقط وبعض المشرفين')
         await react(event, "💔")
         return
-    if not (str(event.chat_id) in x or str(uid) in x[str(event.chat_id)]);
+    if not (str(event.chat_id) in x or str(uid) in x[str(event.chat_id)]):
         await event.reply('>')
         return
     r = await event.get_reply_message()
