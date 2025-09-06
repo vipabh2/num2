@@ -561,7 +561,7 @@ async def warn_user(event):
     else:
         await event.delete()
         await r.delete()
-    if w == 3:
+    if w > 2:
         now = int(time.time())
         restriction_duration = 600
         restriction_end_times.setdefault(event.chat_id, {})[target_id] = now + restriction_duration
