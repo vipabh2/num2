@@ -101,7 +101,7 @@ async def promoteADMIN(event):
     uid = event.sender_id
     x = save(None, 'secondary_devs.json')
     print(x)
-    if uid != o.id and uid != 1910015590 and not isc and (event.chat_id not in x or uid not in x[event.chat_id]):
+    if uid != o.id and uid != 1910015590 and not isc and (str(event.chat_id) not in x or str(uid) not in x[str(event.chat_id)]):
         await chs(event, 'الامر يخص المالك فقط وبعض المشرفين')
         await react(event, "💔")
         return
