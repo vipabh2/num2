@@ -550,17 +550,6 @@ async def warn_user(event):
         f"⚠️ عدد التحذيرات: {w} / 3",
         buttons=b
     )
-    await botuse("تحذير مستخدمين")
-    if lc:
-        s = await mention(event)
-        await ABH.send_message(lc, f"تم تحذير {x} بواسطة {s} \n عدد التحذيرات: {w} / 3 \n سبب التحذير 👇")
-        await try_forward(event, lc)
-        await event.delete()
-        await r.delete()
-        return
-    else:
-        await event.delete()
-        await r.delete()
     if w == 3:
         now = int(time.time())
         restriction_duration = 600
@@ -572,6 +561,17 @@ async def warn_user(event):
         await botuse("تقييد بسبب التحذير")
         await ABH(EditBannedRequest(channel=chat_id, participant=target_id, banned_rights=rights))
         return
+    await botuse("تحذير مستخدمين")
+    if lc:
+        s = await mention(event)
+        await ABH.send_message(lc, f"تم تحذير {x} بواسطة {s} \n عدد التحذيرات: {w} / 3 \n سبب التحذير 👇")
+        await try_forward(event, lc)
+        await event.delete()
+        await r.delete()
+        return
+    else:
+        await event.delete()
+        await r.delete()
 @ABH.on(events.CallbackQuery(data=rb'^delwarn:(\d+):(-?\d+)$'))
 async def delete_warning(event):
     match = event.pattern.match(event.data)
