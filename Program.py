@@ -1,3 +1,4 @@
+from telethon.errors import UserIsBlockedError, PeerIdInvalidError
 from telethon import events, Button
 import asyncio, os, sys, random
 import json, redis, subprocess
@@ -84,8 +85,12 @@ async def list_secondary_devs(event):
         return
     devs = [await ment(await ABH.get_entity(int(user_id))) for user_id in x[chat_id]]
     await chs(event, f"المطورين الثانويين في هذه المجموعة:\n" + "\n".join(devs))
-@ABH.on(events.NewMessage(pattern=r"^ارسل (.+)$", from_users=[wfffp]))
+@ABH.on(events.NewMessage(pattern=r"^ارسل (.+)$"))
 async def send_handler(event):
+    x = save(None, filename="secondary_devs.json")
+    chat_id = str(event.chat_id)
+    if event.sender_id != wfffp and (chat_id not in x or str(event.sender_id) not in x[chat_id]):
+        return
     r = await event.get_reply_message()
     if not r:
         await event.reply("🔷 يجب أن ترد على رسالة.")
@@ -96,9 +101,15 @@ async def send_handler(event):
     if target.isdigit():
         entity = await ABH.get_entity(int(target))
     if not entity:
-        await event.reply(" المستخدم غير موجود.")
-        return
-    await ABH.send_message(entity, r.message)
+        entity = await ABH.get_entity(int(target))
+        try:
+            await ABH.send_message(entity, r.message)
+        except UserIsBlockedError:
+            await event.reply(" المستخدم حاظر البوت.")
+            return
+        except PeerIdInvalidError:
+            await event.reply(" المستخدم ما مفعل البوت.")
+            return
 lol = {}
 @ABH.on(events.NewMessage(from_users=[wfffp]))
 async def som(e):
