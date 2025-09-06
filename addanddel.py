@@ -33,7 +33,7 @@ async def change_own_rank(event):
     # if not event.sender_id == wfffp and (str(event.chat_id) not in x or str(event.sender_id) not in x[str(event.chat_id)]):
         await chs(event, "هذا الامر يخص المطور الاساسي والمطورين الثانويين فقط")
         return
-    new_rank = event.pattern_match.group(3)
+    new_rank = event.pattern_match.group(2)
     if not new_rank:
         await react(event, "🤔")
         await chs(event, "اكتب اللقب وي الامر ك `تغيير لقبي ` + لقب.")
