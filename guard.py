@@ -576,7 +576,7 @@ async def warn_user(event):
 async def delete_warning(event):
     match = event.pattern.match(event.data)
     if not match:
-        print('لا يمكن العثور على المطابقة.')
+        await event.edit('لا يمكن العثور على المطابقة.')
         return
     target_id = int(match.group(1))
     chat_id = int(match.group(2))
