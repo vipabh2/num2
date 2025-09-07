@@ -1,11 +1,11 @@
 from telethon import events, Button
 from num2words import num2words
-from Resources import hint
 from other import botuse
+from Resources import *
 from ABH import ABH
 import json
 wfffp = 1910015590
-lit = [6498922948, 7176263278, 6520830528, 49820009, 1910015590]
+lit = [6498922948, 7176263278, 6520830528, 49820009]
 def load_points(filename="points.json"):
     try:
         with open(filename, "r") as file:
@@ -62,53 +62,58 @@ async def add_money(event):
         return
     type = "اضف فلوس"
     await botuse(type)
-    uid = event.sender_id
     r = await event.get_reply_message()
-    if r.sender_id in lit and not uid != wfffp: 
+    uid = event.sender_id
+    x = save(None, 'secondary_devs.json')
+    chat = str(event.chat_id)
+    if not (wfffp == uid or uid in lit or chat in x and str(uid) in x[chat]):
+        return
+    if r.sender_id == event.sender_id:
         await event.reply("هههههه")
         return
-    if uid in lit:
-        p = int(event.pattern_match.group(1))
-        gid = event.chat_id
-        user_id = r.sender_id
-        add_points(user_id, gid, points, amount=p)
-        await event.reply(f"تم اضافة {p} دينار ل {r.sender.first_name}")
+    p = int(event.pattern_match.group(1))
+    gid = event.chat_id
+    user_id = r.sender_id
+    add_points(user_id, gid, points, amount=p)
+    await event.reply(f"تم اضافة {p} دينار ل {r.sender.first_name}")
 @ABH.on(events.NewMessage(pattern=r'^حذف فلوس (\d+)$'))
 async def add_money(event):
     if not event.is_group:
         return
     type = "حذف فلوس"
+    r = await event.get_reply_message()
     await botuse(type)
     uid = event.sender_id
-    r = await event.get_reply_message()
-    if r.sender_id in lit and uid != wfffp: 
+    x = save(None, 'secondary_devs.json')
+    chat = str(event.chat_id)
+    if not (wfffp == uid or uid in lit or chat in x and str(uid) in x[chat]):
+        return
+    if r.sender_id == event.sender_id:
         await event.reply("هههههه")
         return
-    if uid in lit:
-        p = int(event.pattern_match.group(1))
-        gid = event.chat_id
-        user_id = r.sender_id
-        delpoints(user_id, gid, points, amount=p)
-        await event.reply(f"تم حذف {p} دينار ل {r.sender.first_name}")
+    p = int(event.pattern_match.group(1))
+    gid = event.chat_id
+    user_id = r.sender_id
+    delpoints(user_id, gid, points, amount=p)
+    await event.reply(f"تم حذف {p} دينار ل {r.sender.first_name}")
 @ABH.on(events.NewMessage(pattern=r'^تصفير$'))
 async def add_money(event):
     if not event.is_group:
         return
     type = "تصفير"
     await botuse(type)
-    id = event.sender_id
-    r = await event.get_reply_message()
-    if r.sender_id in lit: 
+    uid = event.sender_id
+    x = save(None, 'secondary_devs.json')
+    chat = str(event.chat_id)
+    if not (wfffp == uid or uid in lit or chat in x and str(uid) in x[chat]):
+        return
+    if r.sender_id == event.sender_id:
         await event.reply("هههههه")
         return
-    gid = event.chat_id
-    if not r:
-        await event.reply("يجب الرد على رسالة المستخدم الذي تريد تصفير نقاطه.")
-        return
+    r = await event.get_reply_message()
     uid = str(r.sender_id)
     gid = str(event.chat_id)
-    if uid in points:
-        p = points[uid].get('points', 0)
+    p = points[uid].get('points', 0)
     delpoints(str(uid), str(gid), points, amount=int(p))
     await event.reply(f"تم حذف {p} دينار لـ {r.sender.first_name}")
 @ABH.on(events.NewMessage(pattern='ثروتي'))
@@ -124,7 +129,7 @@ async def m(event):
     else:
         m = 0
     arabic_text = num2words(m, lang='ar')
-    await event.reply(f'فلوسك ↢ ( `{arabic_text}` )', buttons=b)
+    await event.reply(f'فلوسك ↢ {m} \n ( `{arabic_text}` )', buttons=b)
 @ABH.on(events.NewMessage(pattern='ثروته|الثروه'))
 async def replym(event):
     if not event.is_group:
@@ -140,7 +145,7 @@ async def replym(event):
     else:
         m = 0
     arabic_text = num2words(m, lang='ar')
-    await event.reply(f'فلوسه ↢ ( `{arabic_text}` )', buttons=b)
+    await event.reply(f'فلوسه ↢ {m} \n ( `{arabic_text}` )', buttons=b)
 @ABH.on(events.NewMessage(pattern=r'^حول (\d+(\.\d+)?)'))
 async def send_money(event):
     if not event.is_group:
