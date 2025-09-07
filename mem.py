@@ -12,7 +12,7 @@ async def reply_abh(event):
     uid = event.sender_id
     x = save(None, 'secondary_devs.json')
     chat = str(event.chat_id)
-    if replied_message and replied_message.sender_id == wfffp or not chat in x and str(uid) in x[chat]:
+    if replied_message and replied_message.sender_id == wfffp and not chat in x and str(uid) in x[chat]:
         await event.reply("الزيج اللك مو للمطور😡")
         return
     if replied_message:
