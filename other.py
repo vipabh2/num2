@@ -408,7 +408,7 @@ operations = {
     "*": operator.mul,
     "/": operator.truediv
 }
-@ABH.on(events.NewMessage(pattern=r'^(اقرأ|اقرا| كم الرقم) ?(.+)'))
+@ABH.on(events.NewMessage(pattern=r'^(اقرأ|اقرا|كم الرقم) ?(.+)'))
 async def read_number(event):
     if not event.is_group:
         return
