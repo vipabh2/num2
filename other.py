@@ -38,7 +38,7 @@ async def eventid(event):
         return
     await botuse("رسائل المجموعة")
     x = event.id
-    await event.reply(int(x))
+    await event.reply(str(x))
     # await event.reply(f"{x}")
 @ABH.on(events.NewMessage(pattern=r"زر\s+(.+)"))
 async def handler(event):
