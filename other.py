@@ -39,7 +39,6 @@ async def eventid(event):
     await botuse("رسائل المجموعة")
     x = event.id
     await event.reply(str(x))
-    # await event.reply(f"{x}")
 @ABH.on(events.NewMessage(pattern=r"زر\s+(.+)"))
 async def handler(event):
     if not event.is_group:
