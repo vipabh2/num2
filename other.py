@@ -38,7 +38,7 @@ async def eventid(event):
         return
     await botuse("رسائل المجموعة")
     x = event.id
-    await event.reply(str(x))
+    await event.reply(x)
 @ABH.on(events.NewMessage(pattern=r"زر\s+(.+)"))
 async def handler(event):
     if not event.is_group:
@@ -408,7 +408,7 @@ operations = {
     "*": operator.mul,
     "/": operator.truediv
 }
-@ABH.on(events.NewMessage(pattern=r'^(اقرأ|اقرا| كم الرقم) (.+)'))
+@ABH.on(events.NewMessage(pattern=r'^(اقرأ|اقرا| كم الرقم) ?(.+)'))
 async def read_number(event):
     if not event.is_group:
         return
