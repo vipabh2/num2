@@ -45,6 +45,7 @@ async def show_rich(event):
     if not points:
         await event.reply("لا توجد بيانات ثروة حالياً.")
         return
+    print(sorted_points)
     sorted_points = sorted(points.items(), key=lambda x: x[1], reverse=True)
     top_rich = sorted_points[:10]
     message = "أغنى الأشخاص:\n\n"
