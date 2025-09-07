@@ -35,7 +35,7 @@ async def theft(e):
     if k:
         await e.reply('ماتكدر تسرق المطور الثانوي')
         return
-    rp = points[str(id)]
+    rp = points(id)
     if not rp:
         await chs(e, f'عذرا بس {m} فلوسه تقريبا صفر')
         return
