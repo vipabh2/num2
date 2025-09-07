@@ -1,11 +1,11 @@
 from telethon.tl.functions.channels import GetParticipantRequest
 from db import save_date, get_saved_date #type: ignore
+from top import points, delpoints, add_points
 from ABH import ABH, events #type: ignore
 from datetime import datetime, timedelta
 import asyncio, os, json, time, random
 from hijri_converter import Gregorian
 from googletrans import Translator
-from top import points, delpoints
 from telethon import Button
 from ABH import ABH, events
 from other import botuse
@@ -42,7 +42,11 @@ async def theft(e):
     if not rp > 10000:
         await chs(e, f'عذرا بس {m} فلوسه قليله')
         return
-    
+    await botuse('سرقة')
+    p = random.choice([7000, 8000, 9000, 10000])
+    delpoints(id, e.chat_id, points, p)
+    add_points(e.sender_id, e.chat_id, points, p)
+    await chs(e, f'تم سرقة {p} من {m} بنجاح 🎉')
 USER_DATA_FILE = "trade.json"
 def tlo():
     if os.path.exists(USER_DATA_FILE):
