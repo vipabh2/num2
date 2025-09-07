@@ -5,7 +5,7 @@ from Resources import *
 from ABH import ABH
 import json
 wfffp = 1910015590
-lit = [6498922948, 7176263278, 6520830528, 49820009, 7734766747]
+lit = [6498922948, 7176263278, 6520830528, 49820009]
 def load_points(filename="points.json"):
     try:
         with open(filename, "r") as file:
@@ -68,7 +68,7 @@ async def add_money(event):
     chat = str(event.chat_id)
     if not (wfffp == uid or uid in lit or chat in x and str(uid) in x[chat]):
         return
-    if r.sender_id == event.sender_id:
+    if (r.sender_id == event.sender_id and uid != wfffp):
         await event.reply("هههههه")
         return
     p = int(event.pattern_match.group(1))
@@ -88,7 +88,7 @@ async def add_money(event):
     chat = str(event.chat_id)
     if not (wfffp == uid or uid in lit or chat in x and str(uid) in x[chat]):
         return
-    if r.sender_id == event.sender_id:
+    if (r.sender_id == event.sender_id and uid != wfffp):
         await event.reply("هههههه")
         return
     p = int(event.pattern_match.group(1))
@@ -107,7 +107,7 @@ async def add_money(event):
     chat = str(event.chat_id)
     if not (wfffp == uid or uid in lit or chat in x and str(uid) in x[chat]):
         return
-    if r.sender_id == event.sender_id:
+    if (r.sender_id == event.sender_id and uid != wfffp):
         await event.reply("هههههه")
         return
     r = await event.get_reply_message()
