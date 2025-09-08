@@ -589,6 +589,10 @@ async def screen_shot(event):
         else:
             await event.reply("ماكو رابط أو يوزر مرتبط بحسابك 🚫")
             return
+        try:
+            os.remove(screenshot_path)
+        except:
+            pass
     if any(banned in url.lower() for banned in BANNED_SITES):
         await event.reply("🚫 هذا الموقع محظور!\nجرب تتواصل مع المطور @k_4x1")
         return
@@ -601,9 +605,9 @@ async def screen_shot(event):
             screenshot_paths.append(screenshot_path)
     if screenshot_paths:
         await event.reply(f"تم التقاط لقطات الشاشة للأجهزة: **PC، Android**", file=screenshot_paths)
+        os.remove(screenshot_path)
         await asyncio.sleep(60)
         await event.delete()
-        os.remove(screenshot_path)
     else:
         await event.reply("فشل التقاط لقطة الشاشة، تأكد من صحة الرابط أو جرب مجددًا.")
 FILE = "dialogs.json"
