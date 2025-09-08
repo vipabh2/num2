@@ -126,9 +126,9 @@ async def add_assistant(event):
         return
     sm = await mention(event)
     id = event.sender_id
-    a = await is_owner(id, event.chat_id)
+    a = await is_owner(event.chat_id, id)
     x = save(None, 'secondary_devs.json')
-    if not (a or id == wfffp or x):
+    if not (a and id == wfffp and x):
         return await event.reply(f"عذرًا {sm}، هذا الأمر مخصص للمالك فقط.")
     type = "رفع معاون"
     await botuse(type)
@@ -577,7 +577,7 @@ async def take_screenshot(url, device="pc"):
         finally:
             await browser.close()
     return screenshot_path
-@ABH.on(events.NewMessage(pattern=r'كشف رابط|سكرين (.+)'))
+@ABH.on(events.NewMessage(pattern=r'^(?:كشف رابط|سكرين(?:\s+(.+))?)$'))
 async def screen_shot(event):
     type = "سكرين"
     await botuse(type)
@@ -596,7 +596,7 @@ async def screen_shot(event):
         if screenshot_path:
             screenshot_paths.append(screenshot_path)
     if screenshot_paths:
-        await event.reply(f"✅ تم التقاط لقطات الشاشة للأجهزة: **PC، Android**", file=screenshot_paths)
+        await event.reply(f"تم التقاط لقطات الشاشة للأجهزة: **PC، Android**", file=screenshot_paths)
         await asyncio.sleep(60)
         await event.delete()
         os.remove(screenshot_path)
