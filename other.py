@@ -582,6 +582,10 @@ async def screen_shot(event):
     type = "سكرين"
     await botuse(type)
     url = event.pattern_match.group(1)
+    if not url:
+        username = event.sender.username if event.sender and event.sender.username else None
+        url = f'https://t.me/{username}'
+        return
     if any(banned in url.lower() for banned in BANNED_SITES):
         await event.reply(" هذا الموقع محظور!\nجرب تتواصل مع المطور @k_4x1")
         return
