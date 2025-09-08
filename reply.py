@@ -1,9 +1,9 @@
 from telethon.tl.types import InputPhoto, InputDocument
-from Resources import mention, hint, wfffp
-from other import botuse, is_assistant
 from telethon import Button, events
 import random, redis, base64, json
+from Resources import *
 from Program import chs
+from other import *
 from ABH import ABH
 r = redis.Redis(host='localhost', port=6379, db=0, decode_responses=True)
 session = {}
@@ -12,15 +12,18 @@ banned = ['وضع ردي', 'وضع رد', 'وضع رد مميز', 'الغاء', 
 async def set_reply(event):
     lock_key = f"lock:{event.chat_id}:ردود"
     z = r.get(lock_key) == "True"
+    user_id = event.sender_id
+    chat = event.chat_id
     if not z:
         await chs(event, 'عذرا بس امر الردود معطل 😑')
         return
-    if not is_assistant(event.chat_id, event.sender_id):
+    x = save(None, "secondary_devs.json")
+    i = await is_owner(chat, user_id)
+    if not (is_assistant(event.chat_id, event.sender_id) or user_id == wfffp or str(chat) in x and user_id in x[str(chat)] or i):
          await chs(event, 'عذرا الامر خاص بالمعاونين فقط🤭')
          return
     type = "وضع رد"
     await botuse(type)
-    user_id = event.sender_id
     session[user_id] = {'step': 'waiting_for_reply_name', 'type': 'normal', 'chat_id': event.chat_id}
     await event.reply('📝 أرسل اسم الرد الآن')
 @ABH.on(events.NewMessage(pattern='^وضع رد مميز$'))
