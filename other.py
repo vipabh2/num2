@@ -1,3 +1,4 @@
+from Resources import username as us, suras, hint, ment, save, wfffp, mention
 from telethon.tl.functions.channels import GetParticipantRequest
 import asyncio, os, json, random, uuid, operator, requests, re
 from telethon.tl.types import ChannelParticipantCreator
@@ -5,7 +6,6 @@ from playwright.async_api import async_playwright
 from database import store_whisper, get_whisper
 from telethon import events, Button
 from num2words import num2words
-from Resources import *
 from Program import chs
 from ABH import ABH
 def is_assistant(chat_id, user_id):
@@ -583,7 +583,7 @@ async def screen_shot(event):
     await botuse(type)
     url = event.pattern_match.group(1)
     if not url:
-        username = await username(event)
+        username = await us(event)
         if username:
             url = f'https://t.me/{username}'
         else:
