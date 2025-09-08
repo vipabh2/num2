@@ -584,15 +584,19 @@ async def screen_shot(event):
     url = event.pattern_match.group(1)
     if not url:
         username = event.sender.username if event.sender and event.sender.username else None
-        url = f'https://t.me/{username}'
-        return
+        if username:
+            url = f'https://t.me/{username}'
+        else:
+            await event.reply("ماكو رابط أو يوزر مرتبط بحسابك 🚫")
+            return
     if any(banned in url.lower() for banned in BANNED_SITES):
-        await event.reply(" هذا الموقع محظور!\nجرب تتواصل مع المطور @k_4x1")
+        await event.reply("🚫 هذا الموقع محظور!\nجرب تتواصل مع المطور @k_4x1")
         return
     devices = ['pc', 'android']
     screenshot_paths = []
     for device in devices:
         screenshot_path = await take_screenshot(url, device)
+        screenshot_paths.append(screenshot_path)
         if screenshot_path:
             screenshot_paths.append(screenshot_path)
     if screenshot_paths:
