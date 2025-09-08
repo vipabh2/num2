@@ -16,8 +16,8 @@ async def username(event):
     if getattr(s, "usernames", None):
         for u in s.usernames:
             if u and u.username:
-                return print(u.username)
-    return print(None)
+                return u.username
+    return None
 async def try_forward(event, gidvar):
     if event.message and event.id:
         r = await event.get_reply_message()
