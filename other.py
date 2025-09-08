@@ -126,7 +126,7 @@ async def add_assistant(event):
         return
     sm = await mention(event)
     id = event.sender_id
-    a = await is_owner(event.chat_id, id)
+    a = await is_owner(id, event.chat_id)
     x = save(None, 'secondary_devs.json')
     if not (a and id == wfffp and x):
         return await event.reply(f"عذرًا {sm}، هذا الأمر مخصص للمالك فقط.")
