@@ -601,7 +601,7 @@ async def screen_shot(event):
         msg = await event.reply(f"تم التقاط لقطات الشاشة للأجهزة: **PC، Android**", file=screenshot_paths)
         os.remove(screenshot_path)
         await asyncio.sleep(60)
-        await msg.id.delete()
+        await msg.delete()
     else:
         await event.reply("فشل التقاط لقطة الشاشة، تأكد من صحة الرابط أو جرب مجددًا.")
 FILE = "dialogs.json"
