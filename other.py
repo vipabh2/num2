@@ -583,7 +583,7 @@ async def screen_shot(event):
     await botuse(type)
     url = event.pattern_match.group(1)
     if not url:
-        username = event.sender.username if event.sender and event.sender.username else None
+        username = await username(event)
         if username:
             url = f'https://t.me/{username}'
         else:
