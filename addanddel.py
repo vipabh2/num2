@@ -28,7 +28,7 @@ async def change_own_rank(event):
             return
         user_id = r.sender_id
     x = save(None, 'secondary_devs.json')
-    aw = await get_owner(event.sender_id, event.chat_id)
+    aw = await is_owner(event.sender_id, event.chat_id)
     if event.sender_id != wfffp and aw and (str(event.chat_id) not in x or str(event.sender_id) not in x[str(event.chat_id)]):
         await chs(event, "هذا الامر يخص المطور الاساسي والمطورين الثانويين فقط")
         return
