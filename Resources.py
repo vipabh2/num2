@@ -9,6 +9,15 @@ from telethon.tl.types import ReactionEmoji
 import google.generativeai as genai
 import pytz, os, json
 from ABH import ABH
+async def username(event):
+    if event.sender and event.sender.username:
+        return event.sender.username
+    s = await event.get_sender()
+    if getattr(s, "usernames", None):
+        for u in s.usernames:
+            if u and u.username:
+                return print(u.username)
+    return print(None)
 async def try_forward(event, gidvar):
     if event.message and event.id:
         r = await event.get_reply_message()
