@@ -128,7 +128,7 @@ async def add_assistant(event):
     id = event.sender_id
     a = await is_owner(id, event.chat_id)
     x = save(None, 'secondary_devs.json')
-    if not (a and id == wfffp and x):
+    if not (a or id == wfffp or x):
         return await event.reply(f"عذرًا {sm}، هذا الأمر مخصص للمالك فقط.")
     type = "رفع معاون"
     await botuse(type)
