@@ -9,6 +9,7 @@ from ABH import ABH
 developers = {}
 @ABH.on(events.NewMessage(pattern='^مخفي غادر$'))
 async def logout(e):
+    await botuse('مخفي غادر')
     uid = e.sender_id
     if uid == wfffp:
        await e.reply('تدلل يالزعيم')
