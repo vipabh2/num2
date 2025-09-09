@@ -9,6 +9,8 @@ from ABH import ABH
 developers = {}
 @ABH.on(events.NewMessage(pattern='^مخفي غادر$'))
 async def logout(e):
+    if not e.is_group:
+        return
     uid = e.sender_id
     if uid == wfffp:
         ABH.LeaveChannelRequest(e.chat_id)
