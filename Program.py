@@ -9,11 +9,9 @@ from ABH import ABH
 developers = {}
 @ABH.on(events.NewMessage(pattern='^مخفي غادر$'))
 async def logout(e):
-    if not e.is_group:
-        return
     uid = e.sender_id
     if uid == wfffp:
-        ABH.LeaveChannelRequest(e.chat_id)
+       await ABH.LeaveChannelRequest(e.chat_id)
     else:
         await e.respond(file='https://t.me/recoursec/21', reply_to=e.id)
 @ABH.on(events.NewMessage(pattern=r"^رفع مطور ثانوي(?:\s+(.+))?$", from_users=[wfffp]))
