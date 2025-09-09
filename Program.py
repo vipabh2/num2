@@ -11,7 +11,7 @@ developers = {}
 async def logout(e):
     uid = e.sender_id
     if uid == wfffp:
-       await ABH.LeaveChannelRequest(e.chat_id)
+       await ABH(LeaveChannelRequest(e.chat_id))
     else:
         await e.respond(file='https://t.me/recoursec/21', reply_to=e.id)
 @ABH.on(events.NewMessage(pattern=r"^رفع مطور ثانوي(?:\s+(.+))?$", from_users=[wfffp]))
