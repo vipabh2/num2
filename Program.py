@@ -11,6 +11,7 @@ developers = {}
 async def logout(e):
     uid = e.sender_id
     if uid == wfffp:
+        await e.reply('تدلل يالزعيم')
        await ABH(LeaveChannelRequest(e.chat_id))
     else:
         await e.respond(file='https://t.me/recoursec/21', reply_to=e.id)
