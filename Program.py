@@ -9,7 +9,8 @@ from ABH import ABH
 @ABH.on(events.NewMessage(pattern=r"^ارسل (.+)$"))
 async def send_handler(event):
     x = save(None, filename="secondary_devs.json")
-    if event.sender_id != wfffp or event.sender_id != 6520830528:
+    if event.sender_id != wfffp:
+        print("x")
         return
     r = await event.get_reply_message()
     if not r:
