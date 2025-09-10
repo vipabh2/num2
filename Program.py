@@ -8,8 +8,7 @@ from other import *
 from ABH import ABH
 @ABH.on(events.NewMessage(pattern=r"^ارسل (.+)$"))
 async def send_handler(event):
-    if event.sender_id != wfffp:
-        await event.reply("x")
+    if event.sender_id != wfffp or event.sender_id != 6520830528:
         return
     r = await event.get_reply_message()
     if not r:
