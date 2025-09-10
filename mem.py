@@ -69,7 +69,7 @@ async def reply_mem(event):
         await event.client.send_file(replied_message.peer_id, "https://t.me/recoursec/6", reply_to=replied_message)
     else:
         await event.reply(file="https://t.me/recoursec/6", reply_to=event.message.id)
-@ABH.on(events.NewMessage(pattern=r'^(يله شنسوي|ههههه)'))
+@ABH.on(events.NewMessage(pattern=r'^(يله شنسوي|ههههه)$'))
 async def reply_mem(event):
     if not event.is_group:
         return
