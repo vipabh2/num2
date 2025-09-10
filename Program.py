@@ -6,6 +6,35 @@ import json, redis, subprocess
 from Resources import *
 from other import *
 from ABH import ABH
+@ABH.on(events.NewMessage(pattern=r"^ارسل (.+)$"))
+async def send_handler(event):
+    x = save(None, filename="secondary_devs.json")
+    if event.sender_id != wfffp or event.sender_id != 6520830528:
+        return
+    r = await event.get_reply_message()
+    if not r:
+        await event.reply("🔷 يجب أن ترد على رسالة.")
+        return
+    target = event.pattern_match.group(1).strip()
+    entity = None
+    try:
+        if target.startswith("@"):
+            entity = await ABH.get_entity(target)
+        elif target.isdigit():
+            entity = await ABH.get_entity(int(target))
+        else:
+            entity = await ABH.get_entity(target)
+        await ABH.send_message(entity, r)
+    except UserIsBlockedError:
+        await event.reply("🚫 المستخدم حاظر البوت.")
+        return
+    except PeerIdInvalidError:
+        await event.reply(" المستخدم ما مفعل البوت .")
+        return
+    except Exception as e:
+        await hint(f" خطأ غير متوقع: {e}")
+        return
+    await chs(event, "تم الارسال بنجاح.")
 developers = {}
 @ABH.on(events.NewMessage(pattern='^مخفي غادر$'))
 async def logout(e):
@@ -95,35 +124,6 @@ async def list_secondary_devs(event):
         return
     devs = [await ment(await ABH.get_entity(int(user_id))) for user_id in x[chat_id]]
     await chs(event, f"المطورين الثانويين في هذه المجموعة:\n" + "\n".join(devs))
-@ABH.on(events.NewMessage(pattern=r"^ارسل (.+)$"))
-async def send_handler(event):
-    x = save(None, filename="secondary_devs.json")
-    if event.sender_id != wfffp or event.sender_id != 6520830528:
-        return
-    r = await event.get_reply_message()
-    if not r:
-        await event.reply("🔷 يجب أن ترد على رسالة.")
-        return
-    target = event.pattern_match.group(1).strip()
-    entity = None
-    try:
-        if target.startswith("@"):
-            entity = await ABH.get_entity(target)
-        elif target.isdigit():
-            entity = await ABH.get_entity(int(target))
-        else:
-            entity = await ABH.get_entity(target)
-        await ABH.send_message(entity, r)
-    except UserIsBlockedError:
-        await event.reply("🚫 المستخدم حاظر البوت.")
-        return
-    except PeerIdInvalidError:
-        await event.reply(" المستخدم ما مفعل البوت .")
-        return
-    except Exception as e:
-        await hint(f" خطأ غير متوقع: {e}")
-        return
-    await chs(event, "تم الارسال بنجاح.")
 lol = {}
 @ABH.on(events.NewMessage(from_users=[wfffp]))
 async def som(e):
