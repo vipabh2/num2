@@ -6,9 +6,11 @@ import json, redis, subprocess
 from Resources import *
 from other import *
 from ABH import ABH
+xxx = [wfffp, 6520830528]
 @ABH.on(events.NewMessage(pattern=r"^ارسل (.+)$"))
 async def send_handler(event):
-    if event.sender_id != wfffp or event.sender_id != 6520830528:
+    x = event.sender_id
+    if x not in xxx:
         return
     r = await event.get_reply_message()
     if not r:
