@@ -83,7 +83,7 @@ async def notAssistantres(event):
         return await event.reply("يجب الرد على رسالة العضو الذي تريد تقييده.")    
     rs = await r.get_sender()
     target_name = await ment(rs)
-    user_points = points.get(str(user_id), {}).get(str(chat_id), {}).get("points", 0)
+    user_points = points[user_id]
     if user_points < 1000000:
         return await event.reply("عزيزي الفقير , لازم ثروتك اكثر من مليون دينار.")
     try:
