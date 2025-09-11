@@ -111,7 +111,7 @@ async def notAssistantres(event):
     caption = f"تم تقييد {target_name} لمدة 30 ثانية. \n بطلب من {sender_name} \n\n **ملاحظة:** تم خصم 1000000 دينار من ثروتك."
     await ABH.send_file(chat_id, "https://t.me/VIPABH/592", caption=caption)
 restriction_end_times = {}
-@ABH.on(events.NewMessage(pattern='^تقييد عام|مخفي قيده|تقييد ميم|مخفي قيدة
+@ABH.on(events.NewMessage(pattern='^تقييد عام|مخفي قيده|تقييد ميم|مخفي قيدة"))
 async def restrict_user(event):
     if not event.is_group:
         return
@@ -123,7 +123,8 @@ async def restrict_user(event):
     chat = await event.get_chat()
     chat_id = str(event.chat_id)
     user_id = event.sender_id
-    if not is_assistant(chat_id, user_id):
+    text = event.text
+    if not is_assistant(chat_id, user_id) or text == "تقييد ميم":
         await notAssistantres(event)
         # await chs(event, 'شني خالي كبينه انت مو معاون')
         return
