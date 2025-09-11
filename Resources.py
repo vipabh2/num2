@@ -87,21 +87,20 @@ def save(dev_id=None, filename="secondary_devs.json"):
     with open(filename, 'w', encoding='utf-8') as f:
         json.dump(data, f, ensure_ascii=False, indent=2)
     return data
-import os
-import json
-
-def saveadmin(data, time):
+def saveadmin(data=None, time=None):
     if not os.path.exists('adminwarn.json'):
         with open('adminwarn.json', 'w', encoding='utf-8') as f:
             json.dump({}, f, ensure_ascii=False, indent=4)
     with open('adminwarn.json', 'r', encoding='utf-8') as f:
         store = json.load(f)
+    if data is None or time is None:
+        return store
     if ":" not in data:
         return store
-    chat, id = data.split(":", 1)
+    chat, user_id = data.split(":", 1)
     if chat not in store:
         store[chat] = {}
-    store[chat][id] = time
+    store[chat][user_id] = time
     with open('adminwarn.json', 'w', encoding='utf-8') as f:
         json.dump(store, f, ensure_ascii=False, indent=4)
     return store
