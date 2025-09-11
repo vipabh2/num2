@@ -87,6 +87,24 @@ def save(dev_id=None, filename="secondary_devs.json"):
     with open(filename, 'w', encoding='utf-8') as f:
         json.dump(data, f, ensure_ascii=False, indent=2)
     return data
+import os
+import json
+
+def saveadmin(data, time):
+    if not os.path.exists('adminwarn.json'):
+        with open('adminwarn.json', 'w', encoding='utf-8') as f:
+            json.dump({}, f, ensure_ascii=False, indent=4)
+    with open('adminwarn.json', 'r', encoding='utf-8') as f:
+        store = json.load(f)
+    if ":" not in data:
+        return store
+    chat, id = data.split(":", 1)
+    if chat not in store:
+        store[chat] = {}
+    store[chat][id] = time
+    with open('adminwarn.json', 'w', encoding='utf-8') as f:
+        json.dump(store, f, ensure_ascii=False, indent=4)
+    return store
 async def react(event, x):
     try:    
         await ABH(SendReactionRequest(
@@ -101,7 +119,7 @@ async def react(event, x):
             msg_id=event.message.id,
             reaction=[ReactionEmoji(emoticon=f'{x}')],
             big=True
-        ))        
+        ))
 def adj(filename: str, data: dict):
     if os.path.exists(filename):
         with open(filename, 'r', encoding='utf-8') as f:
