@@ -12,7 +12,7 @@ from ABH import ABH
 async def link(e):
     chat = e.chat_id
     id = e.id
-    c = chat.replace('-100', '')
+    c = str(chat).replace('-100', '')
     x = f'https://t.me/c/{c}/{id}'
     chat = await e.get_chat()
     name = getattr(chat, "title", "محادثة خاصة")
