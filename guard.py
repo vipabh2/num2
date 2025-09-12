@@ -410,8 +410,7 @@ async def is_admin(chat, user_id):
         participant = await ABH(GetParticipantRequest(chat, user_id))
         x = isinstance(participant.participant, (ChannelParticipantAdmin, ChannelParticipantCreator))
         return x
-    except Exception as e:
-        await hint(f'Error in is_admin: {e}')
+    except:
         return False
 def contains_banned_word(message):
     message = normalize_arabic(message)
@@ -475,7 +474,7 @@ async def handler_res(event):
     x = redas.get(lock_key) == "True"
     if not event.is_group or not event.raw_text or not x:
         return
-    message_text = event.raw_text.strip()
+    message_text = event.raw_text
     x = contains_banned_word(message_text)
     user_id = event.sender_id
     chat = event.chat_id
@@ -548,7 +547,7 @@ async def warn_user(event):
         f"⚠️ عدد التحذيرات: {w} / 3",
         buttons=b
     )
-    if w == 3:
+    if w == 3 and not await is_admin(chat_id, user_id):
         now = int(time.time())
         restriction_duration = 20
         restriction_end_times.setdefault(event.chat_id, {})[target_id] = now + restriction_duration
