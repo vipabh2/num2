@@ -471,17 +471,17 @@ def count_warnings(user_id: int, chat_id: int) -> int:
     return 0
 @ABH.on(events.NewMessage)
 async def handler_res(event):
+    message_text = event.raw_text
     user_id = event.sender_id
     chat = event.chat_id
-    if not event.is_group or not event.raw_text or not x:
-        return
-    if event.chat_id in restriction_end_times and user_id in restriction_end_times[event.chat_id]:
+    if chat in restriction_end_times and user_id in restriction_end_times[chat]:
         await event.delete()
         return
     lock_key = f"lock:{event.chat_id}:تقييد"
     x = redas.get(lock_key) == "True"
-    message_text = event.raw_text
     x = contains_banned_word(message_text)
+    if not event.is_group or not event.raw_text or not x:
+        return
     if x:
         if await is_admin(chat, user_id):
             await event.delete()
