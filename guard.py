@@ -547,7 +547,7 @@ async def warn_user(event):
         f"⚠️ عدد التحذيرات: {w} / 3",
         buttons=b
     )
-    if w == 3 and not await is_admin(chat_id, user_id):
+    if w == 3 and await is_admin(chat_id, user_id):
         now = int(time.time())
         restriction_duration = 20
         restriction_end_times.setdefault(event.chat_id, {})[target_id] = now + restriction_duration
