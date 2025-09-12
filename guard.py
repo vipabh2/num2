@@ -551,9 +551,11 @@ async def warn_user(event):
         f"⚠️ عدد التحذيرات: {w} / 3",
         buttons=b
     )
+    now = int(time.time())
+    restriction_duration = 20
     if w == 3 and await is_admin(chat_id, user_id):
-        now = int(time.time())
-        restriction_duration = 20
+        restriction_end_times.setdefault(event.chat_id, {})[target_id] = now + restriction_duration
+    else:
         restriction_end_times.setdefault(event.chat_id, {})[target_id] = now + restriction_duration
         rights = ChatBannedRights(
             until_date=now + restriction_duration,
