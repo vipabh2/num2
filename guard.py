@@ -553,6 +553,8 @@ async def warn_user(event):
     )
     now = int(time.time())
     restriction_duration = 20
+    await event.delete()
+    await r.delete()
     if w == 3 and await is_admin(chat_id, user_id):
         restriction_end_times.setdefault(event.chat_id, {})[target_id] = now + restriction_duration
     else:
@@ -569,9 +571,4 @@ async def warn_user(event):
         s = await mention(event)
         await ABH.send_message(lc, f"تم تحذير {x} بواسطة {s} \n عدد التحذيرات: {w} / 3 \n سبب التحذير 👇")
         await try_forward(event, lc)
-        await event.delete()
-        await r.delete()
         return
-    else:
-        await event.delete()
-        await r.delete()
