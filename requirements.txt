@@ -12,3 +12,4 @@ Faker>=18.9.0
 hijri-converter>=2.2.4
 yt-dlp>=2025.7.6
 aiohttp
+num2words
