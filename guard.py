@@ -40,7 +40,7 @@ async def delres(e):
     x = await r.get_sender()
     m = await ment(x)
     await e.reply(f"تم إلغاء التقييد العام عن {m}")
-@ABH.on(events.NewMessage(pattern=r"^المقيدين عام$", from_users=wfffp))
+@ABH.on(events.NewMessage(pattern=r"^المقيدين عام$"))
 async def list_restricted(event):
     chat_id = event.chat_id
     now = int(time.time())
@@ -107,8 +107,8 @@ async def notAssistantres(event):
         await hint(e)
     await botuse("تقييد ميم")
     sender_name = await ment(sender)
-    delpoints(event.sender_id, chat_id, points, 1000000)
-    caption = f"تم تقييد {target_name} لمدة 30 ثانية. \n بطلب من {sender_name} \n\n **ملاحظة:** تم خصم 1000000 دينار من ثروتك."
+    delpoints(event.sender_id, chat_id, points, 10000000)
+    caption = f"تم تقييد {target_name} لمدة 30 ثانية. \n بطلب من {sender_name} \n\n **ملاحظة:** تم خصم 10000000 دينار من ثروتك."
     await ABH.send_file(chat_id, "https://t.me/VIPABH/592", caption=caption)
 restriction_end_times = {}
 @ABH.on(events.NewMessage(pattern=r'^(تقييد عام|مخفي قيده|تقييد ميم|مخفي قيدة)'))
@@ -136,7 +136,8 @@ async def restrict_user(event):
     try:
         participant = await ABH(GetParticipantRequest(channel=chat, participant=sender.id))
         if isinstance(participant.participant, (ChannelParticipantCreator, ChannelParticipantAdmin)):
-            return await event.reply(f"لا يمكنك تقييد {name} لانه مشرف ")
+            
+            return
     except:
         return
     now = int(time.time())
@@ -470,14 +471,17 @@ def count_warnings(user_id: int, chat_id: int) -> int:
     return 0
 @ABH.on(events.NewMessage)
 async def handler_res(event):
-    lock_key = f"lock:{event.chat_id}:تقييد"
-    x = redas.get(lock_key) == "True"
-    if not event.is_group or not event.raw_text or not x:
-        return
-    message_text = event.raw_text
-    x = contains_banned_word(message_text)
     user_id = event.sender_id
     chat = event.chat_id
+    if not event.is_group or not event.raw_text or not x:
+        return
+    if event.chat_id in restriction_end_times and user_id in restriction_end_times[event.chat_id]:
+        await event.delete()
+        return
+    lock_key = f"lock:{event.chat_id}:تقييد"
+    x = redas.get(lock_key) == "True"
+    message_text = event.raw_text
+    x = contains_banned_word(message_text)
     if x:
         if await is_admin(chat, user_id):
             await event.delete()
@@ -530,7 +534,7 @@ async def warn_user(event):
     x = save(None, filename="secondary_devs.json")
     a = await is_owner(event.chat_id, user_id)
     if event.sender_id != wfffp and (str(event.chat_id) not in x or str(event.sender_id) not in x[str(event.chat_id)]) and not a and not is_assistant(chat_id, user_id):
-        await chs(event, 'شني خالي كبينه انت مو ')
+        await chs(event, 'شني خالي كبينه ')
         return
     r = await event.get_reply_message()
     if not r:
