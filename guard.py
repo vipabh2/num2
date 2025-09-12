@@ -533,7 +533,7 @@ async def warn_user(event):
     user_id = event.sender_id
     x = save(None, filename="secondary_devs.json")
     a = await is_owner(event.chat_id, user_id)
-    if event.sender_id != wfffp and (str(event.chat_id) not in x or str(event.sender_id) not in x[str(event.chat_id)]) and not a and not is_assistant(chat_id, user_id):
+    if user_id != wfffp and (str(event.chat_id) not in x or str(user_id) not in x[str(chat_id)]) and not a and not is_assistant(chat_id, user_id):
         await chs(event, 'شني خالي كبينه ')
         return
     r = await event.get_reply_message()
@@ -551,13 +551,13 @@ async def warn_user(event):
         f"⚠️ عدد التحذيرات: {w} / 3",
         buttons=b
     )
-    now = int(time.time())
     restriction_duration = 20
     await event.delete()
     await r.delete()
     if w == 3 and await is_admin(chat_id, user_id):
+        now = int(time.time())
         restriction_end_times.setdefault(event.chat_id, {})[target_id] = now + restriction_duration
-    else:
+    elif w == 3 and not await is_admin(chat_id, user_id):
         restriction_end_times.setdefault(event.chat_id, {})[target_id] = now + restriction_duration
         rights = ChatBannedRights(
             until_date=now + restriction_duration,
