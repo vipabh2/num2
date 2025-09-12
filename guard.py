@@ -554,10 +554,10 @@ async def warn_user(event):
     restriction_duration = 60
     await event.delete()
     await r.delete()
-    if w == 3 and await is_admin(chat_id, user_id):
+    if w == 3 and await is_admin(chat_id, target_id):
         now = int(time.time())
         restriction_end_times.setdefault(event.chat_id, {})[target_id] = now + restriction_duration
-    elif w == 3 and not await is_admin(chat_id, user_id):
+    elif w == 3 and not await is_admin(chat_id, target_id):
         try:
             rights = ChatBannedRights(
                 until_date=now + restriction_duration,
