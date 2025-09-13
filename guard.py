@@ -489,8 +489,8 @@ async def handler_res(event):
     if not event.is_group or not event.raw_text or not x:
         return
     if x:
-        x = await event.get_sender()
-        ء = await ment(x)
+        xx = await event.get_sender()
+        ء = await ment(xx)
         await botuse('تحذير بسبب الفشار')
         w = add_warning(user_id, chat)
         l = await link(event)
