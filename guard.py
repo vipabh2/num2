@@ -485,9 +485,10 @@ async def handler_res(event):
         return
     lock_key = f"lock:{event.chat_id}:تقييد"
     x = redas.get(lock_key) == "True"
-    x = contains_banned_word(message_text)
     if not event.is_group or not event.raw_text or not x:
         return
+    x = contains_banned_word(message_text)
+    b = [Button.inline(f'delwarn:{chat}|{user_id}'), Button.inline(f'zerowarn:{chat}|{user_id}')]
     if x:
         xx = await event.get_sender()
         ء = await ment(xx)
@@ -524,15 +525,22 @@ async def handler_res(event):
                     )
                 return
         else:
+            await event.respond(
+                f'''
+                تم تحذير {ء} ~ {user_id} بسبب ارسال كلمة محظورة
+                ''', 
+                buttons=b
+            )
             await send(
                 event,
                 f"""كلمة محظورة!
                 👤 من: {ء}
                 🆔 ايديه: `{user_id}`
-                ❗ الكلمة المحظورة: `{x}`
+                ❗ الكلمة المحظورة: ~`{x}`~
                 تم حذف الرسالة وتحذيره.
                 عدد التحذيرات: ( {w} / 3 )
-                """
+                """, 
+                parse_mode='markdown_v2'
             )
 @ABH.on(events.NewMessage(pattern='^تحذير$'))
 async def warn_user(event):
