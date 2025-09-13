@@ -494,8 +494,11 @@ async def handler_res(event):
         xx = await event.get_sender()
         ء = await ment(xx)
         await botuse('تحذير بسبب الفشار')
-        w = add_warning(user_id, chat)
         l = await link(event)
+        if is_assistant(chat, user_id):
+            await send(event, f'المعاون {x} ~ `{user_id}` ارسل كلمة ممنوعه \n الكلمة:{x} \n الرابط: {l}')
+            return
+        w = add_warning(user_id, chat)
         await event.delete()
         now = int(time.time())
         restriction_duration = 600
