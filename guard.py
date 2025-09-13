@@ -469,6 +469,12 @@ def count_warnings(user_id: int, chat_id: int) -> int:
     if chat_id_str in warns and user_id_str in warns[chat_id_str]:
         return warns[chat_id_str][user_id_str]
     return 0
+async def send(e, m):
+    c = e.chat_id
+    l = await LC(c)
+    if not l:
+        return
+    await ABH.send_message(l, m)
 @ABH.on(events.NewMessage)
 async def handler_res(event):
     message_text = event.raw_text
@@ -477,58 +483,56 @@ async def handler_res(event):
     if chat in restriction_end_times and user_id in restriction_end_times[chat]:
         await event.delete()
         return
-    hint_channel = await LC(chat)
     lock_key = f"lock:{event.chat_id}:تقييد"
     x = redas.get(lock_key) == "True"
     x = contains_banned_word(message_text)
     if not event.is_group or not event.raw_text or not x:
         return
     if x:
-        if await is_admin(chat, user_id):
-            await event.delete()
-            w = add_warning(user_id, chat)
-            if w == 3:
-                x = await event.get_sender()
-                ء = await ment(x)
-                await event.delete()
-                now = int(time.time())
-                restriction_duration = 600
-                restriction_end_times.setdefault(event.chat_id, {})[user_id] = now + restriction_duration
-                await event.respond(f"تم كتم المستخدم {ء} `{user_id}` \n بسبب تكرار ارسال الكلمات المحظوره")
-            if hint_channel:
-                l = await link(event)
-                await ABH.send_message(hint_channel, f'تم كتم المستخدم {ء} \n ارسل كلمة محظورة وتم كتمه \n رابط الرسالة: {l}')
-                return
-        await botuse("تحذير مستخدمين")
-        s = await mention(event)
+        x = await event.get_sender()
+        ء = await ment(x)
+        await botuse('تحذير بسبب الفشار')
+        w = add_warning(user_id, chat)
+        l = await link(event)
+        await event.delete()
+        now = int(time.time())
+        restriction_duration = 600
         if w == 3:
-            if hint_channel:
-                await ABH.send_message(
-                    int(hint_channel),
-                    f"""🔒 تم تقييد المستخدم
-                👤 {s}
-                ❗️بسبب تكرار استخدام كلمات محظورة.
-                 سيتم رفع التقييد تلقائيًا بعد 10 د.
-                """
-            )
-            rights = ChatBannedRights(
-                until_date=now + restriction_duration,
-                send_messages=True
-            )     
-            await ABH(EditBannedRequest(channel=chat, participant=user_id, banned_rights=rights))
-        else:
-            await ABH.send_message(
-                int(hint_channel),
-                f"""كلمة محظورة!
-            👤 من: {s}
+            if await is_admin(chat, user_id):
+                restriction_end_times.setdefault(event.chat_id, {})[user_id] = now + restriction_duration
+                await event.respond(f"تم كتم المشرف {ء} `{user_id}` \n بسبب تكرار ارسال الكلمات المحظوره")
+                await send(
+                    event,
+                    f"""
+                    تم كتم {ء} ~ `{user_id}` بسبب كثره المخالفات
+                    ارسل: ~{x}~
+                    الرابط: {l}
+                    """, 
+                    parse_mode='markdown_v2'
+                    )
+                return
+            else:
+                await event.respond(f"تم تقييد العضو {ء} `{user_id}` \n بسبب تكرار ارسال الكلمات المحظوره")
+                await send(
+                    event,
+                    f"""
+                    تم كتم {ء} ~ `{user_id}` بسبب كثره المخالفات
+                    ارسل: ~{x}~
+                    الرابط: {l}
+                    """, 
+                    parse_mode='markdown_v2'
+                    )
+                return
+        await send(
+            event,
+            f"""كلمة محظورة!
+            👤 من: {ء}
             🆔 ايديه: `{user_id}`
             ❗ الكلمة المحظورة: `{x}`
-             تم حذف الرسالة وتحذيره.
-             عدد التحذيرات: {w} / 3
+            تم حذف الرسالة وتحذيره.
+            عدد التحذيرات: ( {w} / 3 )
             """
-            )
-            type = "تقييد بسبب الفشار"
-            await botuse(type)
+        )
 @ABH.on(events.NewMessage(pattern='^تحذير$'))
 async def warn_user(event):
     if not event.is_group:
