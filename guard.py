@@ -471,7 +471,7 @@ def count_warnings(user_id: int, chat_id: int) -> int:
     return 0
 async def send(e, m):
     c = e.chat_id
-    l = await LC(str(c))
+    l = await LC(c)
     if not l:
         return
     await ABH.send_message(l, m)
@@ -489,6 +489,7 @@ async def handler_res(event):
         return
     x = contains_banned_word(message_text)
     b = [Button.inline(f'الغاء التحذير', data=f'delwarn:{chat}|{user_id}'), Button.inline('تصفير التحذيرات', data=f'zerowarn:{chat}|{user_id}')]
+    الغاء = Button.inline('الغاء_التقييد', data=f'unres:{chat}|{user_id}')
     if x:
         xx = await event.get_sender()
         ء = await ment(xx)
@@ -501,7 +502,7 @@ async def handler_res(event):
         if w == 3:
             if await is_admin(chat, user_id):
                 restriction_end_times.setdefault(event.chat_id, {})[user_id] = now + restriction_duration
-                await event.respond(f"تم كتم المشرف {ء} `{user_id}` \n بسبب تكرار ارسال الكلمات المحظوره")
+                await event.respond(f"تم كتم المشرف {ء} `{user_id}` \n بسبب تكرار ارسال الكلمات المحظوره", buttons=الغاء)
                 await send(
                     event,
                     f"""
@@ -513,7 +514,7 @@ async def handler_res(event):
                     )
                 return
             else:
-                await event.respond(f"تم تقييد العضو {ء} `{user_id}` \n بسبب تكرار ارسال الكلمات المحظوره")
+                await event.respond(f"تم تقييد العضو {ء} `{user_id}` \n بسبب تكرار ارسال الكلمات المحظوره", buttons=الغاء)
                 await send(
                     event,
                     f"""
