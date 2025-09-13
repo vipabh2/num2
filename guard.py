@@ -472,7 +472,6 @@ def count_warnings(user_id: int, chat_id: int) -> int:
 async def send(e, m):
     c = e.chat_id
     l = await LC(str(c))
-    print(l)
     if not l:
         return
     await ABH.send_message(int(l), m)
@@ -524,16 +523,17 @@ async def handler_res(event):
                     parse_mode='markdown_v2'
                     )
                 return
-        await send(
-            event,
-            f"""كلمة محظورة!
-            👤 من: {ء}
-            🆔 ايديه: `{user_id}`
-            ❗ الكلمة المحظورة: `{x}`
-            تم حذف الرسالة وتحذيره.
-            عدد التحذيرات: ( {w} / 3 )
-            """
-        )
+        else:
+            await send(
+                event,
+                f"""كلمة محظورة!
+                👤 من: {ء}
+                🆔 ايديه: `{user_id}`
+                ❗ الكلمة المحظورة: `{x}`
+                تم حذف الرسالة وتحذيره.
+                عدد التحذيرات: ( {w} / 3 )
+                """
+            )
 @ABH.on(events.NewMessage(pattern='^تحذير$'))
 async def warn_user(event):
     if not event.is_group:
