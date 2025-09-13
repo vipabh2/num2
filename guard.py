@@ -474,7 +474,7 @@ async def send(e, m):
     l = await LC(str(c))
     if not l:
         return
-    await ABH.send_message(int(l), m)
+    await ABH.send_message(l, m)
 @ABH.on(events.NewMessage)
 async def handler_res(event):
     message_text = event.raw_text
@@ -527,7 +527,7 @@ async def handler_res(event):
         else:
             await event.respond(
                 f'''
-                تم تحذير {ء} ~ {user_id} بسبب ارسال كلمة محظورة
+                تم تحذير {ء} ~ `{user_id}` بسبب ارسال كلمة محظورة
                 ''', 
                 buttons=b
             )
