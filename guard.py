@@ -471,7 +471,7 @@ def count_warnings(user_id: int, chat_id: int) -> int:
     return 0
 async def send(e, m):
     c = e.chat_id
-    l = await LC(c)
+    l = await LC(str(c))
     if not l:
         return
     await ABH.send_message(l, m)
@@ -489,7 +489,7 @@ async def handler_res(event):
         return
     x = contains_banned_word(message_text)
     b = [Button.inline(f'الغاء التحذير', data=f'delwarn:{chat}|{user_id}'), Button.inline('تصفير التحذيرات', data=f'zerowarn:{chat}|{user_id}')]
-    الغاء = Button.inline('الغاء_التقييد', data=f'unres:{chat}|{user_id}')
+    الغاء = Button.inline('الغاء التقييد', data=f'unres:{chat}|{user_id}')
     if x:
         xx = await event.get_sender()
         ء = await ment(xx)
