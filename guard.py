@@ -477,6 +477,7 @@ async def handler_res(event):
     if chat in restriction_end_times and user_id in restriction_end_times[chat]:
         await event.delete()
         return
+    hint_channel = await LC(chat)
     lock_key = f"lock:{event.chat_id}:تقييد"
     x = redas.get(lock_key) == "True"
     x = contains_banned_word(message_text)
@@ -484,19 +485,22 @@ async def handler_res(event):
         return
     if x:
         if await is_admin(chat, user_id):
-            x = await event.get_sender()
-            ء = await ment(x)
             await event.delete()
-            now = int(time.time())
-            restriction_duration = 600
-            restriction_end_times.setdefault(event.chat_id, {})[user_id] = now + restriction_duration
-            await event.respond(f"تم كتم المستخدم {ء} `{user_id} \n بسبب تكرار ارسال الكلمات المحظوره`")
-            return
-        await event.delete()
-        w = add_warning(user_id, chat)
+            w = add_warning(user_id, chat)
+            if w == 3:
+                x = await event.get_sender()
+                ء = await ment(x)
+                await event.delete()
+                now = int(time.time())
+                restriction_duration = 600
+                restriction_end_times.setdefault(event.chat_id, {})[user_id] = now + restriction_duration
+                await event.respond(f"تم كتم المستخدم {ء} `{user_id}` \n بسبب تكرار ارسال الكلمات المحظوره")
+            if hint_channel:
+                l = await link(event)
+                await ABH.send_message(hint_channel, f'تم كتم المستخدم {ء} \n ارسل كلمة محظورة وتم كتمه \n رابط الرسالة: {l}')
+                return
         await botuse("تحذير مستخدمين")
         s = await mention(event)
-        hint_channel = await LC(chat)
         if w == 3:
             if hint_channel:
                 await ABH.send_message(
