@@ -510,7 +510,7 @@ async def handler_res(event):
                     ارسل: ~{x}~
                     الرابط: {l}
                     """, 
-                    parse_mode='markdown_v2'
+                    
                     )
                 return
             else:
@@ -522,7 +522,7 @@ async def handler_res(event):
                     ارسل: ~{x}~
                     الرابط: {l}
                     """, 
-                    parse_mode='markdown_v2'
+                    
                     )
                 return
         else:
@@ -541,7 +541,7 @@ async def handler_res(event):
                 تم حذف الرسالة وتحذيره.
                 عدد التحذيرات: ( {w} / 3 )
                 """, 
-                parse_mode='markdown_v2'
+                
             )
 @ABH.on(events.NewMessage(pattern='^تحذير$'))
 async def warn_user(event):
