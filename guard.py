@@ -475,7 +475,7 @@ async def send(e, m):
     print(l)
     if not l:
         return
-    await ABH.send_message(l, m)
+    await ABH.send_message(int(l), m)
 @ABH.on(events.NewMessage)
 async def handler_res(event):
     message_text = event.raw_text
