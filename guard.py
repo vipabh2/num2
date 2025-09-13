@@ -472,6 +472,7 @@ def count_warnings(user_id: int, chat_id: int) -> int:
 async def send(e, m):
     c = e.chat_id
     l = await LC(str(c))
+    print(l)
     if not l:
         return
     await ABH.send_message(l, m)
