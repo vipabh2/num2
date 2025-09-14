@@ -496,8 +496,8 @@ async def handler_res(event):
     if not x:
         return
     await botuse('تحذير بسبب الفشار')
-    await event.reply(assis)
     assis = is_assistant(chat, user_id)
+    await event.reply(assis)
     if assis:
         await event.delete()
         await send(event, f'المعاون {x} ~ `{user_id}` ارسل كلمة ممنوعه \n الكلمة:{x} \n الرابط: {l}')
