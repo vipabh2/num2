@@ -490,13 +490,15 @@ async def handler_res(event):
     x = contains_banned_word(message_text)
     b = [Button.inline(f'الغاء التحذير', data=f'delwarn:{chat}|{user_id}'), Button.inline('تصفير التحذيرات', data=f'zerowarn:{chat}|{user_id}')]
     الغاء = Button.inline('الغاء التقييد', data=f'unres:{chat}|{user_id}')
-    xx = await event.ge_sender()
+    xx = await event.get_sender()
     ء = await ment(xx)
     l = await link(event)
     if not x:
         return
     await botuse('تحذير بسبب الفشار')
-    if is_assistant(chat, user_id):
+    await event.reply(assis)
+    assis = is_assistant(chat, user_id)
+    if assis:
         await event.delete()
         await send(event, f'المعاون {x} ~ `{user_id}` ارسل كلمة ممنوعه \n الكلمة:{x} \n الرابط: {l}')
         return
