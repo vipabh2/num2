@@ -8,8 +8,19 @@ from telethon.tl.types import ChatParticipantCreator
 from telethon.tl.types import ReactionEmoji
 import google.generativeai as genai
 import pytz, os, json
-from guard import LC
 from ABH import ABH
+async def LC(group_id: int) -> int | None:
+    async with config_lock:
+        if os.path.exists(CONFIG_FILE):
+            try:
+                with open(CONFIG_FILE, "r", encoding="utf-8") as f:
+                    config = json.load(f)
+            except json.JSONDecodeError:
+                return None
+            group_config = config.get(str(group_id))
+            if group_config and "hint_gid" in group_config:
+                return int(group_config["hint_gid"])
+        return None
 async def link(e):
     chat = e.chat_id
     id = e.id
