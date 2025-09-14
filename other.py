@@ -1,891 +1,603 @@
-from telethon.tl.functions.channels import GetParticipantRequest
-import asyncio, os, json, random, uuid, operator, requests, re
-from Resources import suras, mention, ment, wfffp, hint
-from telethon.tl.types import ChannelParticipantCreator
-from telethon.tl.types import PeerChannel, PeerChat
-from playwright.async_api import async_playwright
-from database import store_whisper, get_whisper
+from telethon.tl.types import ChannelParticipantCreator, ChannelParticipantAdmin, ChatBannedRights
+from telethon.tl.types import ChannelParticipantBanned, ChatBannedRights, MessageEntityUrl
+from telethon.tl.functions.channels import EditBannedRequest, GetParticipantRequest
+from other import is_assistant, botuse, is_owner
 from telethon import events, Button
-from Program import chs
+from Program import r as redas, chs
+import os, asyncio, re, json, time
+from top import points, delpoints
+from Resources import *
 from ABH import ABH
-def is_assistant(chat_id, user_id):
-    data = load_auth()
-    assistants = data.get(str(chat_id), [])
-    return user_id in assistants
-async def creat_useFILE():
-    if not os.path.exists('use.json'):
-        with open('use.json', 'w', encoding='utf-8') as f:
-            json.dump({}, f, ensure_ascii=False, indent=4)
-async def botuse(types):
-    await creat_useFILE()
-    if isinstance(types, str):
-        types = [types]
-    with open('use.json', 'r', encoding='utf-8') as f:
-        try:
-            data = json.load(f)
-        except json.JSONDecodeError:
-            data = {}
-    for t in types:
-        if t in data:
-            data[t] += 1
-        else:
-            data[t] = 1
-    with open('use.json', 'w', encoding='utf-8') as f:
-        json.dump(data, f, ensure_ascii=False, indent=4)
-@ABH.on(events.NewMessage(pattern='^رسائل المجموعة$'))
-async def eventid(event):
-    if not event.is_group:
+@ABH.on(events.NewMessage(pattern="الغاء تقييد عام"))
+async def delres(e):
+    id = e.sender_id
+    x = save(None, filename="secondary_devs.json")
+    a = await is_owner(e.chat_id, id)
+    z = await can_ban_users(e.chat_id, id)
+    s = save(None, "secondary_devs.json")
+    k = str(e.chat_id) in s and str(id) in s[str(e.chat_id)]
+    if not (
+        a
+        or z
+        or k
+    ):
+        await e.reply("ليس لديك صلاحيات كافية.")
         return
-    x = event.id
-    await event.reply(f"`{x}`")
-@ABH.on(events.NewMessage(pattern=r"زر\s+(.+)"))
-async def handler(event):
-    if not event.is_group:
+    r = await e.get_reply_message()
+    if not r or not r.sender_id:
+        await e.reply("الرجاء الرد على رسالة المستخدم المراد إلغاء تقييده.")
+        return    
+    participant = await ABH(GetParticipantRequest(e.chat_id, r.sender_id))
+    if not isinstance(participant.participant, ChannelParticipantBanned):
+        await e.reply("المستخدم غير مقيد.")
         return
-    type = "زر"
-    await botuse(type)
-    if not event.is_reply:
-        return await event.reply("يجب الرد على رسالة تحتوي على كابشن.")
-    reply_msg = await event.get_reply_message()
-    caption = reply_msg.text or getattr(reply_msg, 'message', None)
-    if not caption:
-        return await event.reply("الرسالة التي رددت عليها لا تحتوي على كابشن نصي.")
-    full_text = event.pattern_match.group(1).strip()
-    items = [item.strip() for item in full_text.split("|") if "\\" in item]
-    if not items:
-        return await event.reply("تأكد من كتابة الأزرار بصيغة: `اسم الزر \\ الرابط`")
-    buttons, row = [], []
-    for item in items:
+    del restriction_end_times[e.chat_id][r.sender_id]
+    await ABH(EditBannedRequest(
+        e.chat_id,
+        r.sender_id,
+        ChatBannedRights(until_date=None)
+    ))
+    x = await r.get_sender()
+    m = await ment(x)
+    await e.reply(f"تم إلغاء التقييد العام عن {m}")
+@ABH.on(events.NewMessage(pattern=r"^المقيدين عام$"))
+async def list_restricted(event):
+    chat_id = event.chat_id
+    now = int(time.time())
+    if not restriction_end_times.get(chat_id):
+        await event.reply(" لا يوجد حالياً أي مستخدم مقيد.")
+        return
+    msg = "📋 قائمة المقيدين عام:\n\n"
+    expired_users = []
+    for user_id, end_time in list(restriction_end_times[chat_id].items()):
         try:
-            label, url = map(str.strip, item.split("\\", 1))
-            row.append(Button.url(label, url))
+            user = await ABH.get_entity(user_id)
+            name = f"[{user.first_name}](tg://user?id={user_id})"
+            remaining = end_time - now
+            if remaining > 0:
+                minutes, seconds = divmod(remaining, 60)
+                msg += f"● {name} ↔ `{user_id}`\n⏱️ باقي: {minutes} دقيقة و {seconds} ثانية\n\n"
+            else:
+                expired_users.append(user_id)
         except Exception as e:
-            await ABH.send_message(wfffp, f'حدث خطأ في الازرار {e}')
-            continue
-        if len(row) == 2:
-            buttons.append(row)
-            row = []
-    if row:
-        buttons.append(row)
-    await event.respond(message=caption, buttons=buttons)
-@ABH.on(events.NewMessage(pattern="^كشف همسة|كشف همسه$"))
-async def whisper_scanmeme(event):
+            msg += f"مستخدم غير معروف — `{user_id}`\n"
+            await hint(e)
+    for user_id in expired_users:
+        restriction_end_times[chat_id].pop(user_id, None)
+    if msg.strip() == "📋 قائمة المقيدين عام:":
+        msg = "✅ لا يوجد حالياً أي مستخدم مقيد."
+    await event.reply(msg, link_preview=False)
+async def notAssistantres(event):
     if not event.is_group:
         return
-    type = "كشف همسة"
-    await botuse(type)
+    lock_key = f"lock:{event.chat_id}:تقييد"
+    if redas.get(lock_key) != "True":
+        await chs(event, 'التقييد غير مفعل في هذه المجموعه🙄')
+        return
+    chat_id = event.chat_id
+    user_id = event.sender_id
+    sender = await event.get_sender()
+    chat = await event.get_chat()
     r = await event.get_reply_message()
     if not r:
-        await event.reply("لازم تسوي رد على همسة للكشف😎")
-        return
-    if r.text and ("همسة" in r.text or "همسه" in r.text):
-        x = random.choice([
-            "اييييع",
-            "عيني السكرينات عندي موجودة \n اي شيء يصير ادزهن",
-            "مامي 😭",
-            "بموووووت 😭",
-            "المشرفين كلهم فيمبوي والله وكلهم مقدمين تنازلات",
-            "كليلي ميو علمود ارفعج😭",
-            "😭 😭 😭 😭"
-            "🍌🍌",
-            "🤤",
-            "😋😋😋😋",
-            "دروح لا اكفر بربك",
-            "حزبي الله",
-            "البتك مالي",
-            "طيب وش بسوي؟",
-            "تره حته المالك!"
-    ])
-        await event.reply(f"الهمسة 👇\n \n **{x}**")
-    else: 
-        await event.reply("ماكدرت اكشفها💔")
-AUTH_FILE = 'assistant.json'
-if not os.path.exists(AUTH_FILE):
-    with open(AUTH_FILE, 'w') as f:
-        json.dump({}, f)
-def load_auth():
-    with open(AUTH_FILE, 'r') as f:
-        return json.load(f)
-def save_auth(data):
-    with open(AUTH_FILE, 'w') as f:
-        json.dump(data, f)
-def is_assistant(chat_id, user_id):
-    data = load_auth()
-    assistants = data.get(str(chat_id), [])
-    if user_id in assistants:
-        return True
-    return False
-async def is_owner(chat_id, user_id):
+        return await event.reply("يجب الرد على رسالة العضو الذي تريد تقييده.")    
+    rs = await r.get_sender()
+    target_name = await ment(rs)
+    user_points = points[str(user_id)]
+    if user_points < 1000000:
+        return await event.reply("عزيزي الفقير , لازم ثروتك اكثر من مليون دينار.")
     try:
-        participant = await ABH(GetParticipantRequest(channel=chat_id, participant=user_id))
-        return isinstance(participant.participant, ChannelParticipantCreator)
-    except:
-        return False
-@ABH.on(events.NewMessage(pattern=r'^رفع معاون(?: (.+))?$'))
-async def add_assistant(event):
+        participant = await ABH(GetParticipantRequest(channel=chat_id, participant=rs.id))
+        if isinstance(participant.participant, (ChannelParticipantCreator, ChannelParticipantAdmin)):
+            return await event.reply(f"لا يمكنك تقييد {target_name} لأنه مشرف.")
+    except Exception as e:
+        return await hint(e)
+    user_to_restrict = await r.get_sender()
+    user_id = user_to_restrict.id
+    now = int(time.time())
+    restriction_duration = 30
+    rights = ChatBannedRights(
+        until_date=now + restriction_duration,
+        send_messages=True
+    )      
+    try:
+        await ABH(EditBannedRequest(channel=chat, participant=user_id, banned_rights=rights))
+    except Exception as e:
+        await event.reply("ياريت اقيده بس ماكدر 🥲")
+        await hint(e)
+    await botuse("تقييد ميم")
+    sender_name = await ment(sender)
+    delpoints(event.sender_id, chat_id, points, 10000000)
+    caption = f"تم تقييد {target_name} لمدة 30 ثانية. \n بطلب من {sender_name} \n\n **ملاحظة:** تم خصم 10000000 دينار من ثروتك."
+    await ABH.send_file(chat_id, "https://t.me/VIPABH/592", caption=caption)
+restriction_end_times = {}
+@ABH.on(events.NewMessage(pattern=r'^(تقييد عام|مخفي قيده|تقييد ميم|مخفي قيدة)'))
+async def restrict_user(event):
     if not event.is_group:
         return
-    sm = await mention(event)
-    type = "رفع معاون"
-    await botuse(type)
-    target_id = event.pattern_match.group(1)
-    if not target_id:
-        reply = await event.get_reply_message()
-        if not reply:
-            return await event.reply(f"عزيزي {sm}، يجب الرد على رسالة المستخدم الذي تريد إضافته.")
-        target_id = reply.sender_id
-        sender = await reply.get_sender()
-    else:
-        target_id = int(target_id)
-        sender = await ABH.get_entity(target_id)
+    # lock_key = f"lock:{event.chat_id}:تقييد"
+    # x = redas.get(lock_key) == "True"
+    # if not x:
+    #     await chs(event, 'التقييد غير مفعل في هذه المجموعه🙄')
+    #     return
+    chat = await event.get_chat()
     chat_id = str(event.chat_id)
-    rm = await ment(sender)
-    data = load_auth()
-    if chat_id not in data:
-        data[chat_id] = []
-    if target_id not in data[chat_id]:
-        data[chat_id].append(target_id)
-        save_auth(data)
-        await event.reply(f"✅ تم رفع {rm} إلى معاون في هذه المجموعة.")
-    else:
-        await event.reply(f"ℹ️ المستخدم {rm} موجود مسبقًا في قائمة المعاونين لهذه المجموعة.")
-
-@ABH.on(events.NewMessage(pattern=r'^تنزيل معاون$'))
-async def remove_assistant(event):
+    user_id = event.sender_id
+    text = event.text
+    if not is_assistant(chat_id, user_id) or text == "تقييد ميم":
+        await notAssistantres(event)
+        # await chs(event, 'شني خالي كبينه انت مو معاون')
+        return
+    r = await event.get_reply_message()
+    if not r:
+        return await event.reply("يجب الرد على رسالة العضو الذي تريد تقييده.")
+    sender = await r.get_sender()
+    name = await ment(sender)
+    try:
+        participant = await ABH(GetParticipantRequest(channel=chat, participant=sender.id))
+        if isinstance(participant.participant, (ChannelParticipantCreator, ChannelParticipantAdmin)):
+            
+            return
+    except:
+        return
+    now = int(time.time())
+    restriction_duration = 20 * 60
+    user_to_restrict = await r.get_sender()
+    user_id = user_to_restrict.id
+    rights = ChatBannedRights(
+        until_date=now + restriction_duration,
+        send_messages=True
+    )
+    restriction_end_times.setdefault(event.chat_id, {})[user_id] = now + restriction_duration
+    try:
+        await ABH(EditBannedRequest(channel=chat, participant=user_id, banned_rights=rights))
+        type = "تقييد عام"
+        await botuse(type)
+        ء = await r.get_sender()
+        rrr = await ment(ء)
+        c = f"تم تقييد {rrr} لمدة 20 دقيقة."
+        await ABH.send_file(event.chat_id, "https://t.me/VIPABH/592", caption=c)
+        # خلي هنا ارسال رساله بقناة التبليغات
+        await r.delete()
+        await event.delete()
+    except Exception as e:
+        await hint(e)
+        # خلي هنا شرط يتحقق من وجود صلاحيه المسح و شرط عدم وجودها مع تحديد سبب عدم حذف الرساله
+        await event.reply(f" قيدته بس ماكدرت امسح الرساله ")
+@ABH.on(events.NewMessage)
+async def monitor_messages(event):
     if not event.is_group:
         return
     user_id = event.sender_id
-    sm = await mention(event)
-    chat_id = str(event.chat_id)
-    if not (await is_owner(event.chat_id, user_id) or user_id == 1910015590):
-        return await event.reply(f"عذرًا {sm}، هذا الأمر مخصص للمالك فقط.")
-    reply = await event.get_reply_message()
-    if not reply:
-        return await event.reply(f"عزيزي {sm}، يجب الرد على رسالة المستخدم الذي تريد تنزيله.")
-    target_id = reply.sender_id
-    data = load_auth()
-    e = await reply.get_sender()
-    rm = await ment(e)
-    if chat_id in data and target_id in data[chat_id]:
-        data[chat_id].remove(target_id)
-        save_auth(data)
-        await event.reply(f"✅ تم إزالة {rm} من قائمة المعاونين لهذه المجموعة.")
-    else:
-        await event.reply(f"ℹ️ {rm} غير موجود في قائمة المعاونين لهذه المجموعة.")
-    type = "تنزيل معاون"
-    await botuse(type)
-async def m(user_id):
-    try:
-        user = await ABH.get_entity(user_id)
-        name = getattr(user, 'first_name', None) or 'غير معروف'
-        return f"[{name}](tg://user?id={user.id})"
-    except:
-        return f"`{user_id}`"
-@ABH.on(events.NewMessage(pattern='^المعاونين$'))
-async def show_assistants(event):
-    type = "المعاونين"
-    await botuse(type)
-    if not event.is_group:
-        return
-    chat_id = str(event.chat_id)
-    data = load_auth()
-    msg = ''
-    if chat_id in data and data[chat_id]:
-        msg = "📋 **قائمة المعاونين في هذه المجموعة**\n\n"
-        for idx, user_id in enumerate(data[chat_id], start=1):
-            mention_text = await m(user_id)
-            msg += f"{idx:<2} - {mention_text:<30} \n `{user_id}`\n"
-    else:
-        msg += " لا يوجد معاونين حالياً في هذه المجموعة.\n"
-    await event.reply(msg, parse_mode="md")
-@ABH.on(events.NewMessage(pattern="^اسمي$"))
-async def myname(event):
-    type = "اسمي"
-    await botuse(type)
-    name = await mention(event)
-    await event.reply(name)
-@ABH.on(events.NewMessage(pattern="^اسمه|اسمة$"))
-async def hisname(event):
-    type = "اسمه"
-    await botuse(type)
-    r = await event.get_reply_message()
-    if not r:
-        await event.reply("يجب الرد على رسالة المستخدم")
-        return
-    s = await r.get_sender()
-    name = await ment(s)
-    await event.reply(name)
-@ABH.on(events.NewMessage(pattern="^رقمي$"))
-async def num(event):
- s=await event.get_sender()
- p=s.phone if getattr(s,"phone",None) else None
- await event.reply(f"`+{p}` +{p} " if p else "رقمك غير متاح")
- type = "رقمي"
- await botuse(type)
-@ABH.on(events.NewMessage(pattern="^رقمة|رقمه$"))
-async def hisnum(event):
- r=await event.get_reply_message()
- if not r:
-  await event.reply("يجب الرد على رسالة المستخدم")
-  return
- s=await r.get_sender()
- p=s.phone if getattr(s,"phone",None) else None
- await event.reply(f"`+{p}` +{p} " if p else "رقمه غير متاح")
- type = "رقمه"
- await botuse(type)
-@ABH.on(events.NewMessage(pattern="^يوزراتي$"))
-async def uss(event):
- s=await event.get_sender()
- type = "يوزراتي"
- await botuse(type)
- usernames=[x.username for x in s.usernames] if getattr(s,"usernames",None) else []
- if s.username: usernames.insert(0, s.username)
- usernames=list(dict.fromkeys(usernames))
- utext="\n".join(f"@{u}" for u in usernames)
- await event.reply(utext if usernames else "ليس لديك أي يوزرات NFT")
-@ABH.on(events.NewMessage(pattern="^يوزراته$"))
-async def hisuss(event):
- r=await event.get_reply_message()
- if not r:
-  await event.reply("يجب الرد على رسالة المستخدم")
-  return
- s=await r.get_sender()
- usernames=[x.username for x in s.usernames] if getattr(s,"usernames",None) else []
- if s.username: usernames.insert(0, s.username)
- usernames=list(dict.fromkeys(usernames))
- utext="\n".join(f"@{u}" for u in usernames)
- await event.reply(utext if usernames else "ليس لديه أي يوزرات NFT")
- type = "يوزراته"
- await botuse(type)
-@ABH.on(events.NewMessage(pattern="^يوزري$"))
-async def mu(event):
- s=await event.get_sender()
- u=s.username or (list(dict.fromkeys([x.username for x in s.usernames]))[0] if getattr(s,"usernames",None) else None)
- await event.reply(f"`@{u}` @{u}" if u else "ليس لديك يوزر")
- type = "يوزري"
- await botuse(type)
-@ABH.on(events.NewMessage(pattern="^يوزره|يوزرة|اليوزر$"))
-async def hisu(event):
- type = "يوزره"
- await botuse(type)
- r=await event.get_reply_message()
- if not r:
-  await event.reply("يجب الرد على رسالة المستخدم")
-  return
- s=await r.get_sender()
- u=s.username or (list(dict.fromkeys([x.username for x in s.usernames]))[0] if getattr(s,"usernames",None) else None)
- await event.reply(f"`@{u}` @{u}" if u else "ليس لديه يوزر")
- type = "يوزره"
- await botuse(type)
-@ABH.on(events.NewMessage)
-async def quran(event):
-    text = event.raw_text.strip()
-    me = await event.client.get_me()
-    username = me.username
-    c = f'**[Enjoy dear]**(https://t.me/{username })'
-    button = [Button.url("🫀", "https://t.me/x04ou")]
-    if text.lower() in ['قرآن', 'قران']:
-        sura_number = random.randint(1, 114)
-        message = await ABH.get_messages('theholyqouran', ids=sura_number + 1)
-        if message and message.media:
-            await ABH.send_file(
-                event.chat_id,
-                file=message.media,
-                caption=c,
-                buttons=button, 
-                reply_to=event.id
-            )
-            type = "قران"
-            await botuse(type)
-        else:
-            return
-    for names, num in suras.items():
-        if text in names:
-            type = text
-            await botuse(type)
-            link_id = int(num) + 1
-            message = await ABH.get_messages('theholyqouran', ids=link_id)
-            if message and message.media:
-                await ABH.send_file(
-                    event.chat_id,
-                    file=message.media,
-                    caption=c,
-                    buttons=button, 
-                    reply_to=event.id
-                )
-            else:
-                return
-AI_SECRET = "AIChatPowerBrain123@2024"
-def ask_ai(q):
-    url = "https://powerbrainai.com/app/backend/api/api.php"
-    headers = {
-        "User-Agent": "Dart/3.3 (dart:io)",
-        "Accept-Encoding": "gzip",
-        "content-type": "application/json; charset=utf-8"
-    }
-    data = {
-        "action": "send_message",
-        "model": "gpt-4o-mini",
-        "secret_token": AI_SECRET,
-        "messages": [
-            {"role": "system", "content": "ساعد باللهجة العراقية وكن ذكي وودود"},
-            {"role": "user", "content": q}
-        ]
-    }
-    res = requests.post(url, headers=headers, data=json.dumps(data), timeout=20)
-    if res.status_code == 200:
-        return res.json().get("data", "ماكو رد واضح من الذكاء.")
-    else:
-        return "صار خطأ بالسيرفر، جرب بعدين."
-@ABH.on(events.NewMessage(pattern=r"^مخفي\s*(.*)"))
-async def ai_handler(event):
-    user_q = event.pattern_match.group(1).strip()
-    x = event.text
-    ignore_phrases = ["مخفي اعفطلة", "مخفي اعفطله", "مخفي قيده", "مخفي قيدة", "مخفي طكة زيج", "مخفي اطلع", "مخفي غادر"]
-    if not user_q or x in ignore_phrases:
-        return
-    type = "ai"
-    await botuse(type)
-    async with event.client.action(event.chat_id, 'typing'):
-        response = await asyncio.to_thread(ask_ai, user_q)
-    await event.respond(response, reply_to=event.id)
-@ABH.on(events.NewMessage(pattern='اوامر الحظ'))
-async def luck_list(event):
-    type = "اوامر الحظ"
-    await botuse(type)
-    await event.reply('''
-    **اوامر الحظ** كآلاتي
-    `🎲` المقدار المربح = 6
-    `🎯` المقدار المربح = 6
-    `⚽` المقدار المربح = 5
-    `🎳` المقدار المربح = 6
-    `🎰` المقدار المربح = 64
-    المقدار 🎰-64 يعطي من 100000 الئ 1000000 
-    الباقي يعطي 999 للثروة الكلية
-    ''')
-banned_url = [
-    71, 72, 77,
-    79, 80, 81,
-    82, 93, 94,
-    110, 111, 114,
-    115, 121, 131,
-    136, 142, 148,
-    150, 152, 175,
-    194, 212, 230,
-    245, 254, 273,
-    275, 333, 362,
-    363, 364, 365,
-    366, 367, 368,
-    369, 370, 372,
-    ]
-latmiyat_range = range(50, 385)
-async def send_random_latmia(event):
-    chosen = random.choice(list(latmiyat_range))
-    if chosen in banned_url:
-        return await send_random_latmia(event)
-    latmia_url = f"https://t.me/x04ou/{chosen}"
-    Buttons = [Button.url("🫀", "https://t.me/x04ou")]
-    await ABH.send_file(event.chat_id, file=latmia_url, buttons=Buttons, reply_to=event.id,)
-@ABH.on(events.NewMessage(pattern=r"^(لطمية|لطميه)$"))
-async def handle_latmia_command(event):
-    type = "لطمية"
-    await botuse(type)
-    await send_random_latmia(event)
-@ABH.on(events.NewMessage(pattern='عاشوراء'))
-async def ashourau(event):
-    type = "عاشوراء"
-    await botuse(type)
-    pic = "links/abh.jpg"
-    await ABH.send_file(event.chat_id, pic, caption="تقبل الله صالح الأعمال", reply_to=event.message.id)
-operations = {
-    "+": operator.add,
-    "-": operator.sub,
-    "*": operator.mul,
-    "/": operator.truediv
-}
-@ABH.on(events.NewMessage(pattern=r'احسب (\d+)\s*([\+\-\*/÷])\s*(\d+)'))
-async def calc(event):
-    type = "احسب"
-    await botuse(type)
-    try:
-        match = event.pattern_match 
-        a = int(match.group(1))
-        mark = match.group(2)
-        b = int(match.group(3))
-        if mark in operations:
-            result = operations[mark](a, b)
-            await event.respond(f"النتيجة `{result}`", reply_to=event.message.id)
-        else:
-            await event.respond("عملية غير مدعومة!", reply_to=event.message.id)
-    except ZeroDivisionError:
-        await event.respond("خطأ: لا يمكن القسمة على صفر!", reply_to=event.message.id)
-c = [
-    "ههههههه",
-    "😂",
-    "يسعدلي مسائك😀"]
-@ABH.on(events.NewMessage(pattern='ميم|ميمز'))
-async def meme(event):
-    type = "ميم"
-    await botuse(type)
-    rl = random.randint(2, 273)
-    url = f"https://t.me/IUABH/{rl}"
-    cap = random.choice(c)
-    await ABH.send_file(event.chat_id, url, caption=f"{cap}", reply_to=event.id)
-@ABH.on(events.InlineQuery)
-async def Whisper(event):
-    builder = event.builder
-    query = event.text
-    sender = event.sender_id
-    if query.strip():
-        parts = query.split(' ')
-        if len(parts) >= 2:
-            message = ' '.join(parts[:-1])
-            recipient = parts[-1]
+    now = int(time.time())
+    if event.chat_id in restriction_end_times and user_id in restriction_end_times[event.chat_id]:
+        end_time = restriction_end_times[event.chat_id][user_id]
+        if now < end_time:
+            remaining = end_time - now
             try:
-                if recipient.isdigit():
-                    reciver_id = int(recipient)
-                    username = f'ID:{reciver_id}'
-                else:
-                    if not recipient.startswith('@'):
-                        recipient = f'@{recipient}'
-                    reciver = await ABH.get_entity(recipient)
-                    reciver_id = reciver.id
-                    username = recipient
-                whisper_id = str(uuid.uuid4())
-                store_whisper(whisper_id, sender, reciver_id, username, message)
-                result = builder.article(
-                    title='اضغط لإرسال الهمسة',
-                    description=f'إرسال الرسالة إلى {username}',
-                    text=f"همسة سرية إلى \n الله يثخن اللبن عمي 😌 ({username})",
-                    buttons=[
-                        Button.inline(
-                            text='🫵🏾 اضغط لعرض الهمسة',
-                            data=f'send:{whisper_id}'
-                        )
-                    ]
+                chat = await event.get_chat()
+                rights = ChatBannedRights(
+                    until_date=now + remaining,
+                    send_messages=True
                 )
-            except Exception:
-                return
-        else:
-            return
-        await event.answer([result])
-        type = "همسة انلاين"
-        await botuse(type)
-@ABH.on(events.CallbackQuery)
-async def callback_Whisper(event):
-    uid = event.sender_id
-    data = event.data.decode('utf-8')
-    if data.startswith('send:'):
-        whisper_id = data.split(':')[1]
-        whisper = get_whisper(whisper_id)
-        if whisper and uid == whisper.sender_id or uid == whisper.reciver_id:
-            await event.answer(f"{whisper.message}", alert=True)
-        else:
-            await event.answer("عزيزي الحشري، هذه الهمسة ليست موجهة إليك!", alert=True)
-            return
-        b = [Button.inline("حذف الهمسة", data=f'delete:{whisper_id}'),
-            Button.inline("رؤية الهمسة", data=f'view:{whisper_id}')]
-        msg = f"""
-    الهمسة تم رؤيتها من ( {whisper.username} ) عزيزي المرسل هل تريد حذفها؟
-    """
-        if uid == whisper.reciver_id:
-            await event.edit(msg, buttons=b)
-        else:
-            return
-@ABH.on(events.CallbackQuery(data=re.compile(rb"^delete:(.+)")))
-async def delete_whisper(event):
-    match = re.match(rb"^delete:(.+)", event.data)
-    if not match:
-        await event.answer("طلب غير صالح", alert=True)
-        return
-    whisper_id = match.group(1).decode()
-    whisper = get_whisper(whisper_id)
-    uid = event.sender_id
-    if uid != whisper.sender_id:
-        await event.answer("لا يمكنك حذف همسة ليست لك")
-        return
-    x = "how_can_i_whisper"
-    b = Button.url("كيف اهمس", url=f"https://t.me/{(await ABH.get_me()).username}?start={x}")
-    if not whisper:
-        await event.answer(" تم حذف الهمسة مسبقًا أو غير موجودة.", alert=True)
-        return
-    await event.edit("🗑️ تم حذف الهمسة بنجاح", buttons=b)
-@ABH.on(events.CallbackQuery(data=re.compile(rb"^view:(.+)")))
-async def show_whisper(event):
-    match = re.match(rb"^view:(.+)", event.data)
-    if not match:
-        await event.answer("طلب غير صالح", alert=True)
-        return
-    whisper_id = match.group(1).decode()
-    whisper = get_whisper(whisper_id)
-    if not whisper:
-        return
-    uid = event.sender_id
-    if uid == whisper.sender_id or uid == whisper.reciver_id:
-        await event.answer(whisper.message, alert=True)
-        return
-BANNED_SITES = [
-    "porn", "xvideos", "xnxx", "redtube", "xhamster",
-    "brazzers", "youjizz", "spankbang", "erotic", "sex"
-]
-DEVICES = {
-    "pc": {"width": 1920, "height": 1080, "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"},
-    "android": "Galaxy S5"
-}
-async def take_screenshot(url, device="pc"):
-    async with async_playwright() as p:
-        browser = await p.chromium.launch(headless=True)
-        if device in DEVICES:
-            if isinstance(DEVICES[device], str):
-                device_preset = p.devices[DEVICES[device]]
-                context = await browser.new_context(**device_preset)
-            else:
-                context = await browser.new_context(
-                    user_agent=DEVICES[device]["user_agent"],
-                    viewport={"width": DEVICES[device]["width"], "height": DEVICES[device]["height"]}
-                )
-            page = await context.new_page()
-        else:
-            page = await browser.new_page()
+                await event.delete()
+                await ABH(EditBannedRequest(channel=chat, participant=user_id, banned_rights=rights))
+                rrr = await mention(event)
+                c = f"تم اعاده تقييد {rrr} لمدة ** {remaining//60} دقيقة و {remaining%60} ثانية.**"
+                await ABH.send_file(event.chat_id, "https://t.me/recoursec/15", caption=c)
+                type = "تقييد مستخدمين"
+                await botuse(type)
+            except:
+                pass
+WHITELIST_FILE = "whitelist.json"
+whitelist_lock = asyncio.Lock()
+async def ads(group_id: int, user_id: int) -> None:
+    async with whitelist_lock:
+        data = {}
+        if os.path.exists(WHITELIST_FILE):
+            try:
+                with open(WHITELIST_FILE, "r", encoding="utf-8") as f:
+                    data = json.load(f)
+            except json.JSONDecodeError:
+                data = {}
+        group_key = str(group_id)
+        group_list = data.get(group_key, [])
+        if user_id not in group_list:
+            group_list.append(user_id)
+            data[group_key] = group_list
+            with open(WHITELIST_FILE, "w", encoding="utf-8") as f:
+                json.dump(data, f, ensure_ascii=False, indent=4)
+async def lw(group_id: int) -> list[int]:
+    async with whitelist_lock:
+        if not os.path.exists(WHITELIST_FILE):
+            return []
         try:
-            await page.goto(url, wait_until="domcontentloaded", timeout=30000)
-            await asyncio.sleep(1)
-            screenshot_path = f"screenshot_{device}.png"
-            await page.screenshot(path=screenshot_path)
-        except Exception as e:
-            screenshot_path = None
-        finally:
-            await browser.close()
-    return screenshot_path
-@ABH.on(events.NewMessage(pattern=r'كشف رابط|سكرين (.+)'))
-async def screen_shot(event):
-    type = "سكرين"
-    await botuse(type)
-    url = event.pattern_match.group(1)
-    if any(banned in url.lower() for banned in BANNED_SITES):
-        await event.reply(" هذا الموقع محظور!\nجرب تتواصل مع المطور @k_4x1")
-        return
-    devices = ['pc', 'android']
-    screenshot_paths = []
-    for device in devices:
-        screenshot_path = await take_screenshot(url, device)
-        if screenshot_path:
-            screenshot_paths.append(screenshot_path)
-    if screenshot_paths:
-        await event.reply(f"✅ تم التقاط لقطات الشاشة للأجهزة: **PC، Android**", file=screenshot_paths)
-        await asyncio.sleep(60)
-        await event.delete()
-    else:
-        await event.reply("فشل التقاط لقطة الشاشة، تأكد من صحة الرابط أو جرب مجددًا.")
-FILE = "dialogs.json"
-def remove_user(user_id: int):
-    if user_id in alert_ids:
-        alert_ids.remove(user_id)
-        save_alerts()
-        print(f"تم حذف المستخدم {user_id} من القائمة.")
-    else:
-        print(f"المستخدم {user_id} غير موجود في القائمة.")
-def load_alert():
-    if os.path.exists(FILE):
-        with open(FILE, "r") as f:
-            return set(json.load(f))
-    return set()
-def save_alerts():
-    with open(FILE, "w") as f:
-        json.dump(list(alert_ids), f)
-alert_ids = load_alert()
-async def alert(message):
-    try:
-        await ABH.send_message(wfffp, message)
-    except:
-        return
-@ABH.on(events.NewMessage)
-async def add_toalert(event):
-    uid = None
-    n = None
-    if event.is_group:
-        uid = event.chat_id
-        n = event.chat.title or 'بدون اسم'
-    elif event.is_private:
-        uid = event.sender_id
-        sender = await event.get_sender()
-        n = await ment(sender)
-    if  uid and uid not in alert_ids:
-        alert_ids.add(uid)
-        save_alerts()
-@ABH.on(events.NewMessage(pattern="احصاء", from_users=[wfffp]))
-async def showlenalert(event):
-    await event.reply(str(len(alert_ids)))
-@ABH.on(events.NewMessage(pattern="^نشر$", from_users=[wfffp]))
-async def set_alert(event):
-    message_text = None
-    media = None
-    if event.reply_to_msg_id:
-        replied_msg = await event.get_reply_message()
-        message_text = replied_msg.text
-        media = replied_msg.media
-    else:
-        command_parts = event.raw_text.split(maxsplit=1)
-        if len(command_parts) > 1:
-            message_text = command_parts[1]
-        if event.media:
-            media = event.media
-    if not message_text and not media:
-        await event.reply("يرجى الرد على رسالة تحتوي على ملف أو كتابة نص مع مرفق بعد `/alert`.")
-        return
-    await event.reply(f"🚀 جاري إرسال التنبيه إلى {len(alert_ids)} محادثة...")
-    for dialog_id in list(alert_ids):
-        try:
-            if media:
-                await ABH.send_file(dialog_id, file=media, caption=message_text or "")
-            else:
-                await ABH.send_message(dialog_id, f"{message_text}")
-        except Exception as e:
-            await alert(f" فشل الإرسال إلى {dialog_id}")
-            remove_user(dialog_id)
-@ABH.on(events.NewMessage(pattern=r"^نشر الكروبات$", from_users=[wfffp]))
-async def publish_to_groups(event):
-    message_text = None
-    media = None
-    if event.reply_to_msg_id:
-        replied_msg = await event.get_reply_message()
-        message_text = replied_msg.text
-        media = replied_msg.media
-    else:
-        command_parts = event.raw_text.split(maxsplit=1)
-        if len(command_parts) > 1:
-            message_text = command_parts[1]
-        if event.media:
-            media = event.media
-    if not message_text and not media:
-        await event.reply("❌ يرجى الرد على رسالة تحتوي على نص أو ملف بعد كتابة `نشر الكروبات`.")
-        return
-    sent_count = 0
-    for dialog_id in list(alert_ids):
-        try:
-            if not str(dialog_id).startswith("-100"):
-                continue
-            if media:
-                await ABH.send_file(dialog_id, file=media, caption=message_text or "")
-            else:
-                await ABH.send_message(dialog_id, f"{message_text}")
-            sent_count += 1
-        except Exception as e:
-            await alert(f"⚠️ فشل الإرسال إلى {dialog_id} : {str(e)}")
-            remove_user(dialog_id)
-    await event.reply(f"✅ تم إرسال التنبيه إلى {sent_count} مجموعة.")
-whispers_file = 'whispers.json'
-sent_log_file = 'sent_whispers.json'
-if os.path.exists(whispers_file):
-    try:
-        with open(whispers_file, 'r') as f:
-            whisper_links = json.load(f)
-    except json.JSONDecodeError:
-        whisper_links = {}
-else:
-    whisper_links = {}
-if os.path.exists(sent_log_file):
-    try:
-        with open(sent_log_file, 'r') as f:
-            sent_whispers = json.load(f)
-    except json.JSONDecodeError:
-        sent_whispers = []
-else:
-    sent_whispers = []
-def save_whispers():
-    with open(whispers_file, 'w') as f:
-        json.dump(whisper_links, f)
-def save_sent_log():
-    with open(sent_log_file, 'w') as f:
-        json.dump(sent_whispers, f, ensure_ascii=False, indent=2)
-user_sessions = {}
-l = {}
-@ABH.on(events.NewMessage(pattern='اهمس'))
-async def handle_whisper(event):
-    type = "اهمس"
-    await botuse(type)
-    global l, m1, reply
-    sender_id = event.sender_id
-    reply = await event.get_reply_message()
-    if not reply:
-        await event.reply("صديقي الامر هاذ ميشتغل اذا مو رد")
-        return
-    sender = await reply.get_sender()
-    if getattr(sender, "bot", False):
-        await chs(event, 'عزيزي تسوي همسه ل بوت انت شكد حديقه')
-        return
-    if reply.sender_id == sender_id:
-        await event.reply("شني خالي تسوي همسه لنفسك")
-        return
-    anymous = await event.client.get_me()
-    if reply.sender_id == anymous.id:
-        await event.reply("تسويلي همسه 😁؟")
-        return
-    to_user = await reply.get_sender()
-    from_user = await event.get_sender()
-    rid = to_user.id
-    name = from_user.first_name
-    to_name = to_user.first_name
-    whisper_id = str(uuid.uuid4())[:6]
-    whisper_links[whisper_id] = {
-        "from": sender_id,
-        "r": reply.id,
-        "to": reply.sender_id,
-        "chat_id": event.chat_id,
-        "from_name": from_user.first_name,
-        "to_name": to_user.first_name
-    }
-    save_whispers()
-    if sender_id in l and l[sender_id]:
-        button = [
-            Button.url("اكمال الهمسة", url=f"https://t.me/{(await ABH.get_me()).username}?start={whisper_id}"), 
-            Button.inline("حذف الهمسة", data='del')
-                  ]
-        await event.reply(
-            "هيييي ماتكدر تسوي همستين بوقت واحد \n **اختر احد الازرار🙂**",
-        buttons=[button]
-        )
-        return
-    button = Button.url("اضغط هنا للبدء", url=f"https://t.me/{(await ABH.get_me()).username}?start={whisper_id}")
-    m1 = await event.reply(
-        f'همسة مرسلة من ( [{name}](tg://user?id={sender_id}) ) إلى ( [{to_name}](tg://user?id={rid}) ) 🙂🙂',
-        buttons=[button]
-    )
-    l[sender_id] = True
-@ABH.on(events.CallbackQuery(data='del'))
-async def delwhisper(e):
-    sender_id = e.sender_id
-    if l[sender_id]:
-        l[sender_id] = False
-        b = Button.url("كيف اهمس", url=f"https://t.me/{(await ABH.get_me()).username}?start=how_can_i_whisper")
-        await e.edit('تم حذف جلسة الهمسة', buttons=b)
-@ABH.on(events.NewMessage(pattern=r'/start (\w+)'))
-async def start_with_param(event):
-    whisper_id = event.pattern_match.group(1)
-    data = whisper_links.get(whisper_id)
-    if not data:
-        return
-    if event.sender_id != data['to'] and event.sender_id != data['from']:
-        await event.reply("لا يمكنك مشاهدة هذه الهمسة.")
-        return
-    type = "مشاهده الهمسه"
-    await botuse(type)
-    sender = await event.get_sender()
-    if 'original_msg_id' in data and 'from_user_chat_id' in data:
-        original = await ABH.get_messages(data['from_user_chat_id'], ids=data['original_msg_id'])
-        if original.text:
-            await ABH.send_message(
-                event.sender_id,
-                message=original.text
-            )
-        elif original.media:
-            await ABH.send_file(
-                event.sender_id,
-                file=original.media,
-                caption=original.text if original.text else None
-            )
-    elif 'text' in data:
-        await event.reply(data['text'])
-    else:
-        await event.reply(f"أهلاً {sender.first_name}، ارسل نص الهمسة أو ميديا.")
-    user_sessions[event.sender_id] = whisper_id
-@ABH.on(events.NewMessage(incoming=True))
-async def forward_whisper(event):
-    global l, m2
-    if not event.is_private or (event.text and event.text.startswith('/')):
-        return
-    sender_id = event.sender_id
-    if sender_id not in l or not l[sender_id]:
-        return
-    whisper_id = user_sessions.get(sender_id)
-    if not whisper_id:
-        return
-    data = whisper_links.get(whisper_id)
-    if not data:
+            with open(WHITELIST_FILE, "r", encoding="utf-8") as f:
+                data = json.load(f)
+        except json.JSONDecodeError:
+            return []
+        return data.get(str(group_id), [])
+CONFIG_FILE = "vars.json"
+config_lock = asyncio.Lock()
+async def configc(group_id: int, hint_cid: int) -> None:
+    async with config_lock:
+        config = {}
+        if os.path.exists(CONFIG_FILE):
+            try:
+                with open(CONFIG_FILE, "r", encoding="utf-8") as f:
+                    config = json.load(f)
+            except json.JSONDecodeError:
+                config = {}
+        config[str(group_id)] = {"hint_gid": int(hint_cid)}
+        with open(CONFIG_FILE, "w", encoding="utf-8") as f:
+            json.dump(config, f, ensure_ascii=False, indent=4)
+async def LC(group_id: int) -> int | None:
+    async with config_lock:
+        if os.path.exists(CONFIG_FILE):
+            try:
+                with open(CONFIG_FILE, "r", encoding="utf-8") as f:
+                    config = json.load(f)
+            except json.JSONDecodeError:
+                return None
+            group_config = config.get(str(group_id))
+            if group_config and "hint_gid" in group_config:
+                return int(group_config["hint_gid"])
+        return None
+report_data = {}
+@ABH.on(events.MessageEdited)
+async def edited(event):
+    if not event.is_group or not event.message.edit_date:
         return
     msg = event.message
-    b = Button.url("فتح الهمسة", url=f"https://t.me/{(await ABH.get_me()).username}?start={whisper_id}")
-    uid = data.get("from", "x04ou")
-    rid = data.get("to", "x04ou")
-    reply = data.get("r", "None")
-    from_name = data.get("from_name", "مجهول")
-    to_name = data.get("to_name", "مجهول")
-    await m1.delete()
-    m2 = await ABH.send_message(
-        data['chat_id'],
-        f'همسة مرسلة من ( [{from_name}](tg://user?id={uid}) ) إلى ( [{to_name}](tg://user?id={rid}) )',
-        buttons=[b], reply_to=reply)
-    if msg.media:
-        whisper_links[whisper_id]['original_msg_id'] = msg.id
-        whisper_links[whisper_id]['from_user_chat_id'] = sender_id
-    elif msg.text:
-        whisper_links[whisper_id]['text'] = msg.text
-    save_whispers()
-    if msg.media:
-        await event.reply("تم إرسال همسة ميديا بنجاح.")
-    else:
-        await event.reply("تم إرسال همسة بنجاح.")
-    sender = await event.get_sender()
-    sent_whispers.append({
-        "event_id": event.id,
-        "sender_id": sender.id,
-        "sender_name": sender.first_name,
-        "to_id": data["to"],
-        "uuid": whisper_id
-    })
-    save_sent_log()
-    l[sender_id] = False
-@ABH.on(events.NewMessage)
-async def top(event):
-    if event.text == "اوامر التوب":
-        await event.reply('**اوامر التوب كآلاتي** \n * `توب اليومي` | `المتفاعلين` \n ل اظهار توب اكثر 10 اشخاص تفاعل \n `رسائلي` ل اظهار رسائلك من بدايه اليوم \n `رسائلة`  ل اظهار رسائل الشخص من بداية اليوم')
-    elif event.text == 'اوامر التقييد':
-        await event.reply('**امر التقييد كآلاتي** \n التقييد يعمل تلقائي مع البوت يعمل كلمة بذيئة او بذيئئة او بذيئ\ه \n كل انواع الكلام البذيئ ممنوع✌')
-    elif event.text == 'اوامر الالعاب':
-        await event.reply('**اوامر الالعاب كآلاتي** \n *امر `/num` يختار البوت رقم من 10 وانت تحزره لديك 3 محاولات \n *امر `/rings` *امر محيبس البوت يختار رقم وانت تحزره عن طريق جيب + رقم اليد ```اذا كتبت طك + رقم اليد كان فيه خاتم تخسر😁``` \n *امر `/xo` يعمل في المجموعات مع الاعبين يمكنك تحدي الاعبين بنفس التكتيك \n امر `/quist` يسأل اسئلة دينية وينتظر اجابتك ```البوت غير مناسب للبعض 😀``` \n *امر `/faster` يعمل في المجموعات وينتظر الاعبين ل اكتشاف اسرع من يكتب الكلمة التي يطلبها البوت')
-    elif event.text == 'اوامر الترجمة':
-        await event.reply('**اوامر الترجمة كآلاتي** \n *امر `ترجمة` \n يعمل مع الامر او بالرد ك ```ترجمة be how you are be , you are from dust```')
-    elif event.text == 'اوامر الايدي':
-        await event.reply('**اوامر الايدي كآلاتي** \n *امر `كشف ايدي 1910015590`\n  يعمل رابط ل حساب الايدي يمكنك من خلاله تدخل اليه')
-    elif event.text == 'اوامر الكشف':
-        await event.reply('**اوامر الكشف كآلاتي** \n *امر `سكرين`| `كشف رابط https://t.me/K_4x1` \n يعمل سكرين للرابط ليكشفه اذا كان ملغم ام رابط طبيعي ')
-    elif event.text == 'اوامر الحسبان':
-        await event.reply('**اوامر الحسبان كآلاتي** \n *امر `/dates` يحسب لك كم باقي على رجب | شعبان |رمضان | محرم او تاريخ خاص فيك')
-    elif event.text == 'اوامر الميمز':
-        await event.reply('**اوامر الميمز كآلاتي** \n *امر `مخفي طكة زيج` \n بالرد ليرسل بصمه زيج للرساله المردود عليها \n `هاي بعد` ارسال فيديو للتعبير عن عدم فهمك لكلام الشخص \n `ميعرف` ارسال فيديو يعبر عن فهمك لموضوع عكس الشخص المقابل \n `استرجل`')
-x = "how_can_i_whisper"
-@ABH.on(events.NewMessage(pattern="/start(?: (.+))?"))
-async def how_to_whisper(event):
-    b = [Button.url("همسة ميديا", url=f"https://t.me/{(await ABH.get_me()).username}?start=whisper_id"),
-         Button.url("همسة نص", url=f"https://t.me/{(await ABH.get_me()).username}?start=whisper_media")]
-    parm = event.pattern_match.group(1)
-    if not parm:
+    chat_id = event.chat_id
+    has_media = msg.media
+    has_document = msg.document
+    chat_dest = await LC(chat_id)
+    if not chat_dest:
         return
-    if parm == x:
-        url = 'https://files.catbox.moe/7lnpz4.jpg'
-        c = '**اوامر الهمسة** \n همسة نص , ايدي او يوزر \n همسة ميديا او نص بالرد فقط'
-        await ABH.send_file(
-            event.chat_id,
-            file=url,
-            caption=c,
-            buttons=b, 
-            reply_to=event.id
+    has_url = any(isinstance(entity, MessageEntityUrl) for entity in (msg.entities or []))
+    if not (has_media or has_document or has_url):
+        return
+    uid = event.sender_id
+    perms = await ABH.get_permissions(chat_id, uid)
+    if perms.is_admin:
+        return
+    whitelist = await lw(chat_id)
+    if event.sender_id in whitelist:
+        return
+    chat_obj = await event.get_chat()
+    mention_text = await mention(event)
+    if getattr(chat_obj, "username", None):
+        رابط = f"https://t.me/{chat_obj.username}/{event.id}"
+    else:
+        clean_id = str(chat_obj.id).replace("-100", "")
+        رابط = f"https://t.me/c/{clean_id}/{event.id}"
+    buttons = [
+        [
+            Button.inline(' نعم', data=f"yes:{uid}"),
+            Button.inline(' لا', data=f"no:{uid}")
+        ]
+    ]
+    date_posted = event.message.date.strftime('%Y-%m-%d %H:%M')
+    date_edited = event.message.edit_date.strftime('%Y-%m-%d %H:%M')
+    await ABH.send_message(
+        int(chat_dest),
+        f"""تم تعديل رسالة مشتبه بها:
+المستخدم: {mention_text}  
+[رابط الرسالة]({رابط})  
+معرفه: `{uid}`
+هل تعتقد أن هذه الرسالة تحتوي على تلغيم؟  
+تاريخ النشر - {date_posted}
+تاريخ التعديل - {date_edited}
+""",
+        buttons=buttons,
+        link_preview=True
     )
-    elif parm == "whisper_id":
-        url = 'https://t.me/recoursec/11'
-        c = '😏'
-        await ABH.send_file(
-            event.chat_id,
-            file=url,
-            caption=c,
-            reply_to=event.id
+    report_data[msg.id] = (uid, رابط, mention_text, date_posted, date_edited)
+    await asyncio.sleep(60)
+    if not uid in whitelist:
+        await msg.delete()
+        return
+@ABH.on(events.CallbackQuery(data=rb'^yes:(\d+)$'))
+async def yes_callback(event):
+    try:
+        msg = await event.get_message()
+        uid, الرابط, mention_text, date_posted, date_edited = report_data.get(msg.id, (None, None, None, None, None))
+        if uid and الرابط and mention_text:
+            m = await mention(event)
+            await event.edit(
+                f"""تم تأكيد أن المستخدم {mention_text} ملغم.
+                [رابط الرسالة]({الرابط})
+                معرفه: `{uid}`
+                تاريخ النشر - {date_posted}
+                تاريخ التعديل - {date_edited}
+                بواسطه {m}
+    """)
+        await event.answer(' تم تسجيل المستخدم كملغّم.')
+    except Exception as e:
+        await hint(e)
+@ABH.on(events.CallbackQuery(data=rb'^no:(\d+)$'))
+async def no_callback(event):
+    try:
+        msg = await event.get_message()
+        uid, الرابط, mention_text, date_posted, date_edited = report_data.get(msg.id, (None, None, None, None, None))
+        if uid and الرابط and mention_text:
+            m = await mention(event)
+            await event.edit(
+                f"""تم تجاهل التبليغ عن المستخدم {mention_text}.
+                [رابط الرسالة]({الرابط})
+                ايديه `{uid}`
+                تاريخ النشر - {date_posted}
+                تاريخ التعديل - {date_edited}
+                بواسطه {m}
+    """)
+        await event.answer(f" تم تجاهل التبليغ عن المستخدم {uid}")
+        await ads(group, uid)
+    except Exception as e:
+        await hint(e)
+@ABH.on(events.NewMessage(pattern='اضف قناة التبليغات'))
+async def add_hintchannel(event):
+    chat_id = event.chat_id
+    user_id = event.sender_id
+    if not (await is_owner(chat_id, user_id) or user_id == 1910015590 or not event.is_group or is_assistant(chat_id, user_id)):
+        return
+    s = await event.get_sender()
+    type = "اضافة قناة التبليغات"
+    await botuse(type)
+    if not event.is_group:
+        return await event.reply("↯︙يجب تنفيذ هذا الأمر داخل مجموعة.")
+    r = await event.get_reply_message()
+    if not r:
+        return await event.reply("↯︙يجب الرد على رسالة تحتوي على معرف القناة مثل -100xxxxxxxxxx")
+    cid_text = r.raw_text.strip()
+    if cid_text.startswith("-100") and cid_text[4:].isdigit():
+        await configc(chat_id, cid_text)
+        await event.reply(f"︙تم حفظ قناة التبليغات لهذه المجموعة")
+        n = await ment(s)
+        await ABH.send_message(int(cid_text), f'تم تعيين المحادثة الحاليه سجل ل بوت مخفي بواسطة ( {n} ) \n ايديه `{user_id}`')
+    else:
+        await event.reply("︙المعرف غير صالح، تأكد أنه يبدأ بـ -100 ويتكون من أرقام فقط.")
+@ABH.on(events.NewMessage(pattern='اعرض قناة التبليغات'))
+async def show_hintchannel(event):
+    chat_id = event.chat_id
+    user_id = event.sender_id
+    if not (await is_owner(chat_id, user_id) or user_id == 1910015590 or not event.is_group or is_assistant(chat_id, user_id)):
+        return
+    type = "عرض قناة التبليغات"
+    await botuse(type)
+    chat_id = event.chat_id
+    c = await LC(chat_id)
+    if c:
+        await event.reply(f"︙قناة التبليغات لهذه المجموعة هي:\n`{c}`")
+    else:
+        await event.reply("︙لم يتم تعيين قناة تبليغات لهذه المجموعة بعد.")
+banned_words = [
+    "كس امك", "طيز", "طيزك", "فرخ", "كواد", "اخلكحبة", "اينيج", "بربوك", "زب", "انيجمك", "الكواد",
+    "الفرخ", "تيز", "كسم", "سكسي", "كحاب", "مناويج", "منيوج", "عيورة","انزع", "انزعي", "خرب الله",
+    "احط رجلي", "عاهرات", "عواهر", "عاهره", "عاهرة", "ناكك", "اشتعل دينه", "احترك دينك", "الجبة",
+    "فريخ", "فريخة", "فريخه", "فرخي", "قضيب", "مايا", "ماية", "مايه", "بكسمك", "تيل بيك", "كومبي",
+    "طيزها", "عيري", "خرب الله", "العير", "بعيري", "كحبه", "برابيك", "نيجني", "العريض", "الجبه",
+    "تيز", "التيز", "الديوث", "كسمج", "بلبولك", "صدرج", "كسعرضك" , "الخنيث", "انزعو", "انزعوا",
+    "كمبي", "كوم بي", "قوم بي", "قم بي", "قوم به", "كومت", "قومت", "الطيازه", "دوده", 'دودة',
+    "ارقة جاي", "انيجك", "نيجك", "كحبة", "ابن الكحبة", "ابن الكحبه", "تنيج", "كسين", "مدوده",
+    "خرب بربك", "خربربج", "خربربها", "خرب بربها", "خرب بربة", "خرب بربكم", "كومبي", "مدودة",
+    "نيچني", "نودز", "نتلاوط", "لواط", "لوطي", "فروخ", "منيوك", "خربدينه", "خربدينك", "مدود",
+    "عيورتكم", "انيجة", "انيچة", "انيجه", "انيچه", "أناج", "اناج", "انيج", "أنيج", 
+    "بكسختك", "🍑", "نغل", "نغولة", "نغوله", "ينغل", "كس", "عير", "كسمك", "كسختك", 
+    "اتنيج", "ينيج", "طيرك", "ارقه جاي", "يموط", "تموط", "موطلي", "اموط", "بورن", 
+    "خربدينة", "خربدينج", "خربدينكم", "خربدينها", "خربربه", "خربربة", "خربربك", 
+    "خرب دينه", "كسك", "كسه", "كسة", "اكحاب", "أكحاب", "زنا", "كوم بي", "كمبي", 
+]
+def normalize_arabic(text):
+    text = re.sub(r'[\u064B-\u0652\u0640]', '', text)
+    replace_map = {
+        'أ': 'ا',
+        'إ': 'ا',
+        'آ': 'ا',
+        'ى': 'ي',
+        'ؤ': 'و',
+        'ئ': 'ي',
+        'ة': 'ه',
+        'ى': '',
+        'ـ': '',
+    }
+    for src, target in replace_map.items():
+        text = text.replace(src, target)    
+    text = re.sub(r'(.)\1+', r'\1', text)    
+    return text
+normalized_banned_words = set(normalize_arabic(word) for word in banned_words)
+async def is_admin(chat, user_id):
+    try:
+        participant = await ABH(GetParticipantRequest(chat, user_id))
+        x = isinstance(participant.participant, (ChannelParticipantAdmin, ChannelParticipantCreator))
+        return x
+    except:
+        return False
+def contains_banned_word(message):
+    message = normalize_arabic(message)
+    words = message.split()
+    for word in words:
+        if word in normalized_banned_words:
+            return word
+    return None
+WARN_FILE = "warns.json"
+def load_warns():
+    if os.path.exists(WARN_FILE):
+        with open(WARN_FILE, "r", encoding="utf-8") as f:
+            return json.load(f)
+    return {}
+def save_warns(warns_data):
+    with open(WARN_FILE, "w", encoding="utf-8") as f:
+        json.dump(warns_data, f, ensure_ascii=False, indent=2)
+def add_warning(user_id: int, chat_id: int) -> int:
+    warns = load_warns()
+    chat_id_str = str(chat_id)
+    user_id_str = str(user_id)
+    if chat_id_str not in warns:
+        warns[chat_id_str] = {}
+    if user_id_str not in warns[chat_id_str]:
+        warns[chat_id_str][user_id_str] = 0
+    warns[chat_id_str][user_id_str] += 1
+    current_warns = warns[chat_id_str][user_id_str]
+    if current_warns >= 3:
+        warns[chat_id_str][user_id_str] = 0
+    save_warns(warns)
+    return current_warns
+def del_warning(user_id: int, chat_id: int) -> int:
+    warns = load_warns()
+    chat_id_str = str(chat_id)
+    user_id_str = str(user_id)
+    if chat_id_str in warns and user_id_str in warns[chat_id_str]:
+        if warns[chat_id_str][user_id_str] > 0:
+            warns[chat_id_str][user_id_str] -= 1
+            save_warns(warns)
+            return warns[chat_id_str][user_id_str]
+    return 0
+def zerowarn(user_id: int, chat_id: int) -> int:
+    warns = load_warns()
+    chat_id_str = str(chat_id)
+    user_id_str = str(user_id)
+    if chat_id_str in warns and user_id_str in warns[chat_id_str]:
+        warns[chat_id_str][user_id_str] = 0
+        save_warns(warns)
+        return 0
+    return 0
+def count_warnings(user_id: int, chat_id: int) -> int:
+    warns = load_warns()
+    chat_id_str = str(chat_id)
+    user_id_str = str(user_id)
+    if chat_id_str in warns and user_id_str in warns[chat_id_str]:
+        return warns[chat_id_str][user_id_str]
+    return 0
+async def send(e, m):
+    c = e.chat_id
+    l = await LC(str(c))
+    if not l:
+        return
+    await ABH.send_message(l, m)
+@ABH.on(events.NewMessage)
+async def handler_res(event):
+    message_text = event.raw_text
+    user_id = event.sender_id
+    chat = event.chat_id
+    if chat in restriction_end_times and user_id in restriction_end_times[chat]:
+        await event.delete()
+        return
+    lock_key = f"lock:{event.chat_id}:تقييد"
+    x = redas.get(lock_key) == "True"
+    if not event.is_group or not event.raw_text or not x:
+        return
+    x = contains_banned_word(message_text)
+    b = [Button.inline(f'الغاء التحذير', data=f'delwarn:{chat}|{user_id}'), Button.inline('تصفير التحذيرات', data=f'zerowarn:{chat}|{user_id}')]
+    الغاء = Button.inline('الغاء التقييد', data=f'unres:{chat}|{user_id}')
+    xx = await event.ge_sender()
+    ء = await ment(xx)
+    l = await link(event)
+    if not x:
+        return
+    await botuse('تحذير بسبب الفشار')
+    await event.reply(assis)
+    assis = is_assistant(chat, user_id)
+    if assis:
+        await event.delete()
+        await send(event, f'المعاون {x} ~ `{user_id}` ارسل كلمة ممنوعه \n الكلمة:{x} \n الرابط: {l}')
+        return
+    w = add_warning(user_id, chat)
+    await event.delete()
+    now = int(time.time())
+    restriction_duration = 600
+    if w == 3:
+        if await is_admin(chat, user_id):
+            restriction_end_times.setdefault(event.chat_id, {})[user_id] = now + restriction_duration
+            await event.respond(f"تم كتم المشرف {ء} `{user_id}` \n بسبب تكرار ارسال الكلمات المحظوره", buttons=الغاء)
+            await send(
+                event,
+                f"""
+                تم كتم {ء}  `{user_id}` بسبب كثره المخالفات
+                ارسل: {x}
+                الرابط: {l}
+                """,
+                )
+            return
+        else:
+            await event.respond(f"تم تقييد العضو {ء} `{user_id}` \n بسبب تكرار ارسال الكلمات المحظوره", buttons=الغاء)
+            await send(
+                event,
+                f"""
+                تم كتم {ء}  `{user_id}` بسبب كثره المخالفات
+                ارسل: {x}
+                الرابط: {l}
+                """, 
+                
+                )
+            return
+    else:
+        await event.respond(
+            f'''
+            تم تحذير {ء}  `{user_id}` بسبب ارسال كلمة محظورة
+            ''', 
+            buttons=b
         )
-    elif parm == "whisper_media":
-        url = 'https://t.me/recoursec/12'
-        c = '😏'
-        await ABH.send_file(
-            event.chat_id,
-            file=url,
-            caption=c,
-            reply_to=event.id
+        await send(
+            event,
+            f"""كلمة محظورة!
+            👤 من: {ء}
+            🆔 ايديه: `{user_id}`
+            ❗ الكلمة المحظورة: `{x}`
+            تم حذف الرسالة وتحذيره.
+            عدد التحذيرات: ( {w} / 3 )
+            """, 
+            
         )
+@ABH.on(events.NewMessage(pattern='^تحذير$'))
+async def warn_user(event):
+    if not event.is_group:
+        return
+    lc = await LC(event.chat_id)
+    chat_id = event.chat_id
+    user_id = event.sender_id
+    x = save(None, filename="secondary_devs.json")
+    a = await is_owner(event.chat_id, user_id)
+    if user_id != wfffp and (str(event.chat_id) not in x or str(user_id) not in x[str(chat_id)]) and not a and not is_assistant(chat_id, user_id):
+        await chs(event, 'شني خالي كبينه ')
+        return
+    r = await event.get_reply_message()
+    if not r:
+        return await event.reply("يجب الرد على رسالة العضو الذي تريد تحذيره.")
+    target_id = r.sender_id
+    w = add_warning(str(target_id), str(chat_id))
+    p = await r.get_sender()
+    x = await ment(p)
+    b = [Button.inline("الغاء التحذير", data=f"delwarn:{target_id}:{chat_id}"), Button.inline("تصفير التحذيرات", data=f"zerowarn:{target_id}:{chat_id}")]
+    l = await link(event)
+    await event.respond(
+        f'تم تحذير المستخدم {x} ( `target_id` ) \n تحذيراته صارت ( 3/{w} )',
+        buttons=b
+    )
+    restriction_duration = 900
+    await event.delete()
+    await r.delete()
+    if w == 3 and await is_admin(chat_id, target_id):
+        now = int(time.time())
+        restriction_end_times.setdefault(event.chat_id, {})[target_id] = now + restriction_duration
+    elif w == 3 and not await is_admin(chat_id, target_id):
+        now = int(time.time())
+        rights = ChatBannedRights(
+            until_date=now + restriction_duration,
+            send_messages=True)
+        await ABH(EditBannedRequest(channel=chat_id, participant=target_id, banned_rights=rights))
+        restriction_end_times.setdefault(event.chat_id, {})[target_id] = now + restriction_duration
+        return
+    await botuse("تحذير مستخدمين")
+    if lc:
+        s = await mention(event)
+        await ABH.send_message(
+            lc, 
+            f"🚨 تم تحذير المستخدم:\n"
+            f"👤 الاسم: {x}\n"
+            f"🆔 الايدي: `{target_id}`\n"
+            f"⚠️ عدد التحذيرات: {w} / 3"
+            f"رابط الرسالة: {l}",
+        )
+        await try_forward(event, lc)
+        return
