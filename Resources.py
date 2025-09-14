@@ -8,6 +8,7 @@ from telethon.tl.types import ChatParticipantCreator
 from telethon.tl.types import ReactionEmoji
 import google.generativeai as genai
 import pytz, os, json
+from guard import LC
 from ABH import ABH
 async def link(e):
     chat = e.chat_id
@@ -26,21 +27,19 @@ async def username(event):
             if u and u.username:
                 return u.username
     return None
-async def try_forward(event, gidvar):
-    if event.message and event.id:
-        r = await event.get_reply_message()
-        try:
-            await ABH.forward_messages(
-                entity=int(gidvar),
-                messages=r.id,
-                from_peer=r.chat_id
-    )
-            return True
-        except ChatForwardsRestrictedError:
-            return False
-        except Exception as e:
-            return False
-    else:
+async def try_forward(event):
+    gidvar = await LC(event.chat_id)
+    r = await event.get_reply_message()
+    try:
+        await ABH.forward_messages(
+            entity=int(gidvar),
+            messages=r.id,
+            from_peer=r.chat_id
+)
+        return True
+    except ChatForwardsRestrictedError:
+        return False
+    except:
         return False
 developers = {}
 def delsave(dev_id=None, filename="secondary_devs.json"):
