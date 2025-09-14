@@ -501,7 +501,7 @@ async def handler_res(event):
         await event.delete()
         await send(
             event, 
-            f'المعاون: {ء} ~ `{user_id}`\nارسل كلمة ممنوعة: {x}\nالرابط: {l}'
+            f'المعاون: {ء} ~ `{user_id}`\nارسل كلمة ممنوعة: `{x}`\nالرابط: {l}'
             )
         return
     w = add_warning(user_id, chat)
@@ -521,11 +521,7 @@ async def handler_res(event):
             await event.respond(f"تم تقييد العضو {ء} `{user_id}` \n بسبب تكرار ارسال الكلمات المحظوره", buttons=الغاء)
             await send(
                 event,
-                f"""
-                تم كتم {ء}  `{user_id}` بسبب كثره المخالفات
-                ارسل: {x}
-                الرابط: {l}
-                """,  
+                f"تم كتم {ء}  `{user_id}` بسبب كثره المخالفات\nارسل: {x}\nالرابط: {l}",  
                 )
             return
     else:
@@ -544,7 +540,6 @@ async def handler_res(event):
             تم حذف الرسالة وتحذيره.
             عدد التحذيرات: ( {w} / 3 )
             """, 
-            
         )
 @ABH.on(events.NewMessage(pattern='^تحذير$'))
 async def warn_user(event):
