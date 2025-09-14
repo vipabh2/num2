@@ -571,12 +571,12 @@ async def warn_user(event):
     r = await event.get_reply_message()
     if not r:
         return await event.reply("يجب الرد على رسالة العضو الذي تريد تحذيره.")
+    if is_assistant(chat_id, target_id) and is_assistant(chat_id, user_id):
+        await chs(event, 'غراب يكول لغراب وجهك اسود')
+        return
     target_id = r.sender_id
     if await is_assistant(chat_id, target_id):
         await chs(event, 'هييييييه متكدر تحذر المعاون')
-        return
-    if await is_assistant(chat_id, target_id) and await is_assistant(chat_id, user_id):
-        await chs(event, 'غراب يكول لغراب وجهك اسود')
         return
     w = add_warning(str(target_id), str(chat_id))
     p = await r.get_sender()
