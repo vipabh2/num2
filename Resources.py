@@ -7,8 +7,82 @@ from telethon.errors import ChatForwardsRestrictedError
 from telethon.tl.types import ChatParticipantCreator
 from telethon.tl.types import ReactionEmoji
 import google.generativeai as genai
-import pytz, os, json
+import pytz, os, json, asyncio
 from ABH import ABH
+WHITELIST_FILE = "whitelist.json"
+whitelist_lock = asyncio.Lock()
+async def ads(group_id: int, user_id: int) -> None:
+    async with whitelist_lock:
+        data = {}
+        if os.path.exists(WHITELIST_FILE):
+            try:
+                with open(WHITELIST_FILE, "r", encoding="utf-8") as f:
+                    data = json.load(f)
+            except json.JSONDecodeError:
+                data = {}
+        group_key = str(group_id)
+        group_list = data.get(group_key, [])
+        if user_id not in group_list:
+            group_list.append(user_id)
+            data[group_key] = group_list
+            with open(WHITELIST_FILE, "w", encoding="utf-8") as f:
+                json.dump(data, f, ensure_ascii=False, indent=4)
+async def lw(group_id: int) -> list[int]:
+    async with whitelist_lock:
+        if not os.path.exists(WHITELIST_FILE):
+            return []
+        try:
+            with open(WHITELIST_FILE, "r", encoding="utf-8") as f:
+                data = json.load(f)
+        except json.JSONDecodeError:
+            return []
+        return data.get(str(group_id), [])
+CONFIG_FILE = "vars.json"
+config_lock = asyncio.Lock()
+async def configc(group_id: int, hint_cid: int) -> None:
+    async with config_lock:
+        config = {}
+        if os.path.exists(CONFIG_FILE):
+            try:
+                with open(CONFIG_FILE, "r", encoding="utf-8") as f:
+                    config = json.load(f)
+            except json.JSONDecodeError:
+                config = {}
+        config[str(group_id)] = {"hint_gid": int(hint_cid)}
+        with open(CONFIG_FILE, "w", encoding="utf-8") as f:
+            json.dump(config, f, ensure_ascii=False, indent=4)
+async def LC(group_id: int) -> int | None:
+    async with config_lock:
+        if os.path.exists(CONFIG_FILE):
+            try:
+                with open(CONFIG_FILE, "r", encoding="utf-8") as f:
+                    config = json.load(f)
+            except json.JSONDecodeError:
+                return None
+            group_config = config.get(str(group_id))
+            if group_config and "hint_gid" in group_config:
+                return int(group_config["hint_gid"])
+        return None
+async def LC(group_id: int) -> int | None:
+    async with config_lock:
+        if os.path.exists(CONFIG_FILE):
+            try:
+                with open(CONFIG_FILE, "r", encoding="utf-8") as f:
+                    config = json.load(f)
+            except json.JSONDecodeError:
+                return None
+            group_config = config.get(str(group_id))
+            if group_config and "hint_gid" in group_config:
+                return int(group_config["hint_gid"])
+        return None
+async def link(e):
+    chat = e.chat_id
+    id = e.id
+    c = str(chat).replace('-100', '')
+    x = f'https://t.me/c/{c}/{id}'
+    chat = await e.get_chat()
+    name = getattr(chat, "title", "محادثة خاصة")
+    return f"[{name}]({x})"
 async def username(event):
     if event.sender and event.sender.username:
         return event.sender.username
@@ -18,21 +92,19 @@ async def username(event):
             if u and u.username:
                 return u.username
     return None
-async def try_forward(event, gidvar):
-    if event.message and event.id:
-        r = await event.get_reply_message()
-        try:
-            await ABH.forward_messages(
-                entity=int(gidvar),
-                messages=r.id,
-                from_peer=r.chat_id
-    )
-            return True
-        except ChatForwardsRestrictedError:
-            return False
-        except Exception as e:
-            return False
-    else:
+async def try_forward(event):
+    gidvar = await LC(event.chat_id)
+    r = await event.get_reply_message()
+    try:
+        await ABH.forward_messages(
+            entity=int(gidvar),
+            messages=r.id,
+            from_peer=r.chat_id
+)
+        return True
+    except ChatForwardsRestrictedError:
+        return False
+    except:
         return False
 developers = {}
 def delsave(dev_id=None, filename="secondary_devs.json"):
@@ -87,23 +159,6 @@ def save(dev_id=None, filename="secondary_devs.json"):
     with open(filename, 'w', encoding='utf-8') as f:
         json.dump(data, f, ensure_ascii=False, indent=2)
     return data
-def saveadmin(data=None, time=None):
-    if not os.path.exists('adminwarn.json'):
-        with open('adminwarn.json', 'w', encoding='utf-8') as f:
-            json.dump({}, f, ensure_ascii=False, indent=4)
-    with open('adminwarn.json', 'r', encoding='utf-8') as f:
-        store = json.load(f)
-    if data is None or time is None:
-        return store
-    if ":" not in data:
-        return store
-    chat, user_id = data.split(":", 1)
-    if chat not in store:
-        store[chat] = {}
-    store[chat][user_id] = time
-    with open('adminwarn.json', 'w', encoding='utf-8') as f:
-        json.dump(store, f, ensure_ascii=False, indent=4)
-    return store
 async def react(event, x):
     try:    
         await ABH(SendReactionRequest(
@@ -118,7 +173,7 @@ async def react(event, x):
             msg_id=event.message.id,
             reaction=[ReactionEmoji(emoticon=f'{x}')],
             big=True
-        ))
+        ))        
 def adj(filename: str, data: dict):
     if os.path.exists(filename):
         with open(filename, 'r', encoding='utf-8') as f:
