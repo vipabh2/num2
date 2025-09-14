@@ -498,12 +498,16 @@ async def handler_res(event):
     await botuse('تحذير بسبب الفشار')
     assis = is_assistant(chat, user_id)
     if assis:
-        try:
-            await event.delete()
-            await send(event, f'المعاون {x} ~ `{user_id}` ارسل كلمة ممنوعه \n الكلمة:{x} \n الرابط: {l}')
-            return
-        except Exception as e:
-            await event.reply(f'{e}')
+        await event.delete()
+        await send(
+            event, 
+            f'''
+            المعاون: {ء} ~ `{user_id}`
+            ارسل كلمة ممنوعة: {x}
+            الرابط: {l}
+            '''
+            )
+        return
     w = add_warning(user_id, chat)
     await event.delete()
     now = int(time.time())
