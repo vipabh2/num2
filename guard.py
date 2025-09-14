@@ -500,9 +500,12 @@ async def handler_res(event):
     if assis:
         await event.delete()
         await send(
-            event, 
-            f'المعاون: {ء} ~ `{user_id}`\nارسل كلمة ممنوعة: `{x}`\nالرابط: {l}'
-            )
+            event,
+            f"⚠️ تم رصد مخالفة:\n"
+            f"👤 المعاون: {ء} │ 🆔 `{user_id}`\n"
+            f"📝 الكلمة الممنوعة: `{x}`\n"
+            f"🔗 الرابط: {l}"
+        )
         return
     w = add_warning(user_id, chat)
     await event.delete()
@@ -511,11 +514,14 @@ async def handler_res(event):
     if w == 3:
         if await is_admin(chat, user_id):
             restriction_end_times.setdefault(event.chat_id, {})[user_id] = now + restriction_duration
-            await event.respond(f"تم كتم المشرف {ء} `{user_id}` \n بسبب تكرار ارسال الكلمات المحظوره", buttons=الغاء)
+            await event.respond(
+                f"🔇 تم كتم المشرف {ء}\n🆔 المعرف: `{user_id}`\n📑 السبب: تكرار إرسال الكلمات المحظورة.",
+                buttons=الغاء
+                )
             await send(
                 event,
-                f"تم كتم \n {ء}  `{user_id}` بسبب كثره المخالفات\n ارسل: {x}\n الرابط: {l}",
-                )
+                f"🔇 تم كتم العضو:\n👤 {ء} │ 🆔 `{user_id}`\n📑 السبب: كثرة المخالفات\n✉️ أرسل: {x}\n🔗 الرابط: {l}",
+            )
             return
         else:
             rights = ChatBannedRights(
@@ -523,17 +529,20 @@ async def handler_res(event):
             send_messages=True)
             await ABH(EditBannedRequest(channel=chat, participant=event.sender_id, banned_rights=rights))
             restriction_end_times.setdefault(event.chat_id, {})[event.sender_id] = now + restriction_duration
-            await event.respond(f"تم تقييد العضو {ء} `{user_id}` \n بسبب تكرار ارسال الكلمات المحظوره", buttons=الغاء)
+            await event.respond(
+                f"⛔ تم تقييد العضو:\n👤 {ء} │ 🆔 `{user_id}`\n📑 السبب: تكرار إرسال الكلمات المحظورة",
+                buttons=الغاء
+            )
             await send(
                 event,
-                f"تم كتم {ء}  `{user_id}` بسبب كثره المخالفات\nارسل: {x}\nالرابط: {l}",  
-                )
+                f"🔇 تم كتم العضو:\n👤 {ء} │ 🆔 `{user_id}`\n⚠️ السبب: كثرة المخالفات\n📝 أرسل: {x}\n🔗 الرابط: {l}",
+            )
             return
     else:
         await event.respond(
-            f'تم تحذير {ء}  `{user_id}` بسبب ارسال كلمة محظورة \n تحذيراته: ( 3/{w} )', 
+            f"⚠️ تم توجيه تحذير للعضو:\n👤 {ء} │ 🆔 `{user_id}`\n🚫 السبب: إرسال كلمة محظورة\n🔢 عدد التحذيرات: (3/{w})",
             buttons=b
-        )
+            )
         await send(
             event,
             f"""كلمة محظورة!
