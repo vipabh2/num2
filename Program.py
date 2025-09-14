@@ -415,6 +415,8 @@ async def inlineupdate(e):
     q = (e.text or "").strip().lower()
     if q in x:
         try:
+            if e.sender_id != wfffp:
+                return await e.answer([], switch_pm=" أنت غير مخوّل لاستخدام هذا الأمر", switch_pm_param="start")
             stdout, stderr, code = await run_cmd("git pull")
             msg = f"✅ تم تحديث السورس بنجاح\n\n{stdout or 'لا توجد تحديثات'}" if code == 0 else f"❌ حدث خطأ أثناء التحديث:\n\n{stderr}"
         except Exception as ex:
