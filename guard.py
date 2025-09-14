@@ -501,11 +501,7 @@ async def handler_res(event):
         await event.delete()
         await send(
             event, 
-            f'''
-            المعاون: {ء} ~ `{user_id}`
-            ارسل كلمة ممنوعة: {x}
-            الرابط: {l}
-            '''
+            f'المعاون: {ء} ~ `{user_id}`\nارسل كلمة ممنوعة: {x}\nالرابط: {l}'
             )
         return
     w = add_warning(user_id, chat)
