@@ -189,6 +189,60 @@ async def monitor_messages(event):
                 await botuse(type)
             except:
                 pass
+WHITELIST_FILE = "whitelist.json"
+whitelist_lock = asyncio.Lock()
+async def ads(group_id: int, user_id: int) -> None:
+    async with whitelist_lock:
+        data = {}
+        if os.path.exists(WHITELIST_FILE):
+            try:
+                with open(WHITELIST_FILE, "r", encoding="utf-8") as f:
+                    data = json.load(f)
+            except json.JSONDecodeError:
+                data = {}
+        group_key = str(group_id)
+        group_list = data.get(group_key, [])
+        if user_id not in group_list:
+            group_list.append(user_id)
+            data[group_key] = group_list
+            with open(WHITELIST_FILE, "w", encoding="utf-8") as f:
+                json.dump(data, f, ensure_ascii=False, indent=4)
+async def lw(group_id: int) -> list[int]:
+    async with whitelist_lock:
+        if not os.path.exists(WHITELIST_FILE):
+            return []
+        try:
+            with open(WHITELIST_FILE, "r", encoding="utf-8") as f:
+                data = json.load(f)
+        except json.JSONDecodeError:
+            return []
+        return data.get(str(group_id), [])
+CONFIG_FILE = "vars.json"
+config_lock = asyncio.Lock()
+async def configc(group_id: int, hint_cid: int) -> None:
+    async with config_lock:
+        config = {}
+        if os.path.exists(CONFIG_FILE):
+            try:
+                with open(CONFIG_FILE, "r", encoding="utf-8") as f:
+                    config = json.load(f)
+            except json.JSONDecodeError:
+                config = {}
+        config[str(group_id)] = {"hint_gid": int(hint_cid)}
+        with open(CONFIG_FILE, "w", encoding="utf-8") as f:
+            json.dump(config, f, ensure_ascii=False, indent=4)
+async def LC(group_id: int) -> int | None:
+    async with config_lock:
+        if os.path.exists(CONFIG_FILE):
+            try:
+                with open(CONFIG_FILE, "r", encoding="utf-8") as f:
+                    config = json.load(f)
+            except json.JSONDecodeError:
+                return None
+            group_config = config.get(str(group_id))
+            if group_config and "hint_gid" in group_config:
+                return int(group_config["hint_gid"])
+        return None
 report_data = {}
 @ABH.on(events.MessageEdited)
 async def edited(event):
@@ -444,8 +498,6 @@ async def handler_res(event):
     await botuse('تحذير بسبب الفشار')
     assis = is_assistant(chat, user_id)
     if assis:
-        await try_forward(event)
-        await event.delete()
         await send(
             event,
             f"⚠️ تم رصد مخالفة:\n"
@@ -453,10 +505,10 @@ async def handler_res(event):
             f"📝 الكلمة الممنوعة: `{x}`\n"
             f"🔗 الرابط: {l}"
         )
+        await try_forward(event)
+        await event.delete()
         return
     w = add_warning(user_id, chat)
-    await try_forward(event)
-    await event.delete()
     now = int(time.time())
     restriction_duration = 600
     if w == 3:
@@ -502,6 +554,8 @@ async def handler_res(event):
             عدد التحذيرات: ( {w} / 3 )
             """, 
         )
+    await try_forward(event)
+    await event.delete()
 @ABH.on(events.NewMessage(pattern='^تحذير$'))
 async def warn_user(event):
     if not event.is_group:
@@ -534,8 +588,6 @@ async def warn_user(event):
         buttons=b
     )
     restriction_duration = 900
-    await try_forward(event)
-    await event.delete()
     await r.delete()
     if w == 3 and await is_admin(chat_id, target_id):
         now = int(time.time())
@@ -557,3 +609,5 @@ async def warn_user(event):
             f"⚠️ عدد التحذيرات: {w} / 3"
             f"رابط الرسالة: {l}",
         )
+    await try_forward(event)
+    await event.delete()
