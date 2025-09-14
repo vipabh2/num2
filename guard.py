@@ -575,7 +575,7 @@ async def warn_user(event):
     if is_assistant(chat_id, target_id) and is_assistant(chat_id, user_id):
         await chs(event, 'غراب يكول لغراب وجهك اسود')
         return
-    if await is_assistant(chat_id, target_id):
+    if is_assistant(chat_id, target_id):
         await chs(event, 'هييييييه متكدر تحذر المعاون')
         return
     w = add_warning(str(target_id), str(chat_id))
