@@ -112,7 +112,6 @@ def save_auth(data):
 def is_assistant(chat_id, user_id):
     data = load_auth()
     assistants = data.get(str(chat_id), [])
-    print(assistants)
     return user_id in assistants
 async def is_owner(chat_id, user_id):
     try:
