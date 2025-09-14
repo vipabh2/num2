@@ -6,6 +6,61 @@ import json, redis, subprocess
 from Resources import *
 from other import *
 from ABH import ABH
+@ABH.on(events.NewMessage(pattern=r'^ارسل الملفات$', from_users=[1910015590]))
+async def send_all_files(event):
+    try:
+        folder_path = "."
+        files = [f for f in os.listdir(folder_path) if os.path.isfile(os.path.join(folder_path, f))]
+        if not files:
+            await event.reply("❗️لا توجد ملفات متاحة للإرسال في المجلد.")
+            return
+        await event.reply(f"📤 جارٍ إرسال {len(files)} ملفًا، يرجى الانتظار...")
+        for file_name in files:
+            file_path = os.path.join(folder_path, file_name)
+            await ABH.send_file(event.chat_id, file=file_path)
+        await event.reply("✅ تم إرسال جميع الملفات بنجاح.")
+    except Exception as e:
+        await event.reply(f"حدث خطأ أثناء إرسال الملفات: {e}")
+@ABH.on(events.NewMessage(pattern=r'^ارسل ملف (.+)$', from_users=[1910015590]))
+async def send_file(event):
+    type = "ارسال ملف"
+    await botuse(type)
+    file_name = event.pattern_match.group(1)
+    if not os.path.exists(file_name):
+        return await event.reply("❗️الملف غير موجود.")
+    await event.reply("📤 جاري ارسال الملف...")
+    await ABH.send_file(event.chat_id, file=file_name)
+@ABH.on(events.NewMessage(pattern=r'^حذف ملف (.+)$', from_users=[1910015590]))
+async def delete_file(event):
+    type = "حذف ملف"
+    await botuse(type)
+    file_name = event.pattern_match.group(1)
+    if not os.path.exists(file_name):
+        return await event.reply("الملف غير موجود.")
+    os.remove(file_name)
+    await event.reply("✅ تم حذف الملف بنجاح.")
+@ABH.on(events.NewMessage(pattern=r'^الملفات$', from_users=[1910015590]))
+async def list_files(event):
+    type = "قائمة الملفات"
+    await botuse(type)
+    files = os.listdir('.')
+    if not files:
+        return await event.reply("❗️لا توجد ملفات في المجلد الحالي.")
+    file_list = "\n" .join(files)
+    await event.reply(f"📂 قائمة الملفات\n{file_list}")
+@ABH.on(events.NewMessage(pattern='^(عدد الاسطر|العدد)$'))
+async def allline(e):
+    files = os.listdir('.')
+    total_lines = 0
+    for filename in files:
+        if filename.endswith('.py'):  
+            try:
+                with open(filename, 'r', encoding='utf-8') as f:
+                    lines = f.readlines()
+                    total_lines += len(lines)
+            except Exception:
+                pass
+    await e.reply(f"📄 إجمالي عدد الأسطر البوت: {total_lines}")
 xxx = [wfffp, 6520830528]
 @ABH.on(events.NewMessage(pattern=r"^ارسل (.+)$"))
 async def send_handler(event):
