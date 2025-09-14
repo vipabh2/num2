@@ -6,15 +6,6 @@ import json, redis, subprocess
 from Resources import *
 from other import *
 from ABH import ABH
-x = ['up', 'update', 'تحديث']
-@ABH.on(events.InlineQuery)
-async def inlineupdate(e):
-    q = e.text
-    if q in x:
-        update_repo(e)
-        return
-    else: 
-        return
 @ABH.on(events.NewMessage(pattern=r'^ارسل الملفات$', from_users=[1910015590]))
 async def send_all_files(event):
     try:
@@ -399,6 +390,7 @@ async def chs(event, c):
     ch = r.get(CHANNEL_KEY)
     buttons = Button.url('🫆', url=f'https://t.me/{ch}')
     await ABH.send_message(event.chat_id, c, reply_to=event.id, buttons=buttons)
+x = ['up', 'update', 'تحديث']
 async def run_cmd(command: str):
     process = await asyncio.create_subprocess_shell(
         command,
@@ -412,13 +404,28 @@ async def update_repo(event):
     try:
         stdout, stderr, code = await run_cmd("git pull")
         if code == 0:
-            await event.reply(f"✅ تم تحديث السورس بنجاح\n\n{stdout or 'لا توجد تحديثات'}")
-            await event.reply("🔄 إعادة تشغيل البوت لتطبيق التحديثات...")
+            await event.reply(f" تم تحديث السورس بنجاح\n\n{stdout or 'لا توجد تحديثات'}")
             os.execv(sys.executable, [sys.executable, os.path.abspath("config.py")])
         else:
             await hint(f" حدث خطأ أثناء التحديث:\n\n{stderr}")
     except Exception as e:
         await hint(f"⚠️ خطأ غير متوقع:\n\n{e}")
+@ABH.on(events.InlineQuery)
+async def inlineupdate(e):
+    q = (e.text or "").strip().lower()
+    if q in x:
+        try:
+            stdout, stderr, code = await run_cmd("git pull")
+            msg = f"✅ تم تحديث السورس بنجاح\n\n{stdout or 'لا توجد تحديثات'}" if code == 0 else f"❌ حدث خطأ أثناء التحديث:\n\n{stderr}"
+        except Exception as ex:
+            msg = f"⚠️ خطأ غير متوقع:\n\n{ex}"
+        await e.answer([
+            e.builder.article(
+                title="تحديث السورس",
+                description="اضغط لعرض النتيجة",
+                text=msg
+            )
+        ])
 @ABH.on(events.NewMessage(pattern=r'^تعيين القناة (.+)', from_users=[wfffp]))
 async def add_channel(event):
     global CHANNEL_KEY
