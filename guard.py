@@ -617,6 +617,8 @@ async def warn_user(event):
 @ABH.on(events.CallbackQuery)
 async def warnssit(e):
     dd = e.data
+    print(dd)
     d = dd.decode('utf-8') if isinstance(dd, bytes) else dd
+    print(d)
     if d.startswith("zerowarn"):
         await e.edit(".")
