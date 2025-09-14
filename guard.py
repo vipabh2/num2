@@ -528,6 +528,7 @@ async def handler_res(event):
         await event.respond(
             f'''
             تم تحذير {ء}  `{user_id}` بسبب ارسال كلمة محظورة
+            تحذيراته: ( 3/{w} )
             ''', 
             buttons=b
         )
