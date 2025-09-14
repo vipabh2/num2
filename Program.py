@@ -48,18 +48,27 @@ async def list_files(event):
         return await event.reply("❗️لا توجد ملفات في المجلد الحالي.")
     file_list = "\n" .join(files)
     await event.reply(f"📂 قائمة الملفات\n{file_list}")
-@ABH.on(events.NewMessage(pattern='^(عدد الاسطر|العدد)$'))
+@ABH.on(events.NewMessage(pattern='^(عدد الاسطر|العدد|العدد الكلي)$'))
 async def allline(e):
     files = os.listdir('.')
     total_lines = 0
-    for filename in files:
-        if filename.endswith('.py'):  
-            try:
-                with open(filename, 'r', encoding='utf-8') as f:
-                    lines = f.readlines()
-                    total_lines += len(lines)
-            except Exception:
-                pass
+    text = e.text
+    if text == 'العدد الكلي':
+        for filename in files:
+            if os.path.isfile(filename):
+                try:
+                    with open(filename, 'r', encoding='utf-8') as f:
+                        total_lines += sum(1 for _ in f)
+                except Exception:
+                    pass
+    else:
+        for filename in files:
+            if filename.endswith('.py') and os.path.isfile(filename):
+                try:
+                    with open(filename, 'r', encoding='utf-8') as f:
+                        total_lines += sum(1 for _ in f)
+                except Exception:
+                    pass
     await e.reply(f"📄 إجمالي عدد الأسطر البوت: {total_lines}")
 xxx = [wfffp, 6520830528]
 @ABH.on(events.NewMessage(pattern=r"^ارسل (.+)$"))
