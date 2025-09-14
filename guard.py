@@ -601,10 +601,12 @@ async def warn_user(event):
         restriction_end_times.setdefault(event.chat_id, {})[target_id] = now + restriction_duration
         return
     await botuse("تحذير مستخدمين")
+    المحذر= await mention(event)
     await send(
             event, 
-            f"🚨 تم تحذير المستخدم:\n"
-            f"👤 الاسم: {x}\n"
+            f"🚨 #تحذير \n"
+            f"👤 المُحَذِّر: {المحذر}\n"
+            f"👤 المُحَذَّر: {x}\n"
             f"🆔 الايدي: `{target_id}`\n"
             f"⚠️ عدد التحذيرات: {w} / 3"
             f"رابط الرسالة: {l}",
