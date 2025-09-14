@@ -5,7 +5,7 @@ from other import is_assistant, botuse, is_owner
 from telethon import events, Button
 from Program import r as redas, chs
 import os, asyncio, re, json, time
-from top import points, delpoints
+# from top import points, delpoints
 from Resources import *
 from ABH import ABH
 @ABH.on(events.NewMessage(pattern="الغاء تقييد عام"))
