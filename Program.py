@@ -6,6 +6,15 @@ import json, redis, subprocess
 from Resources import *
 from other import *
 from ABH import ABH
+x = ['up', 'update', 'تحديث']
+@ABH.on(events.InlineQuery)
+async def inlineupdate(e):
+    q = e.text
+    if q in x:
+        update_repo(e)
+        return
+    else: 
+        return
 @ABH.on(events.NewMessage(pattern=r'^ارسل الملفات$', from_users=[1910015590]))
 async def send_all_files(event):
     try:
@@ -78,9 +87,8 @@ async def send_handler(event):
         return
     r = await event.get_reply_message()
     if not r:
-        await event.reply("🔷 يجب أن ترد على رسالة.")
         return
-    target = event.pattern_match.group(1).strip()
+    target = event.pattern_match.group(1)
     entity = None
     try:
         if target.startswith("@"):
@@ -401,12 +409,16 @@ async def run_cmd(command: str):
     return stdout.decode().strip(), stderr.decode().strip(), process.returncode
 @ABH.on(events.NewMessage(pattern="^تحديث$", from_users=[wfffp]))
 async def update_repo(event):
-    stdout, stderr, code = await run_cmd("git pull")
-    if code == 0:
-        await event.reply(f" تحديث السورس بنجاح")
-        os.execv(sys.executable, [sys.executable, "config.py"])
-    else:
-        await event.reply(f" حدث خطأ أثناء التحديث:\n\n{stderr}")
+    try:
+        stdout, stderr, code = await run_cmd("git pull")
+        if code == 0:
+            await event.reply(f"✅ تم تحديث السورس بنجاح\n\n{stdout or 'لا توجد تحديثات'}")
+            await event.reply("🔄 إعادة تشغيل البوت لتطبيق التحديثات...")
+            os.execv(sys.executable, [sys.executable, os.path.abspath("config.py")])
+        else:
+            await hint(f" حدث خطأ أثناء التحديث:\n\n{stderr}")
+    except Exception as e:
+        await hint(f"⚠️ خطأ غير متوقع:\n\n{e}")
 @ABH.on(events.NewMessage(pattern=r'^تعيين القناة (.+)', from_users=[wfffp]))
 async def add_channel(event):
     global CHANNEL_KEY
