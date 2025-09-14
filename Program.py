@@ -48,7 +48,7 @@ async def list_files(event):
         return await event.reply("❗️لا توجد ملفات في المجلد الحالي.")
     file_list = "\n" .join(files)
     await event.reply(f"📂 قائمة الملفات\n{file_list}")
-@ABH.on(events.NewMessage(pattern='^(عدد الاسطر|العدد|العدد الكلي)$'))
+@ABH.on(events.NewMessage(pattern='^(عدد الاسطر|العدد|العدد الكلي)$', from_users=[1910015590]))
 async def allline(e):
     files = os.listdir('.')
     total_lines = 0
