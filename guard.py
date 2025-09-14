@@ -514,10 +514,15 @@ async def handler_res(event):
             await event.respond(f"تم كتم المشرف {ء} `{user_id}` \n بسبب تكرار ارسال الكلمات المحظوره", buttons=الغاء)
             await send(
                 event,
-                f"تم كتم {ء}  `{user_id}` بسبب كثره المخالفات\n ارسل: {x}\n الرابط: {l}",
+                f"تم كتم \n {ء}  `{user_id}` بسبب كثره المخالفات\n ارسل: {x}\n الرابط: {l}",
                 )
             return
         else:
+            rights = ChatBannedRights(
+            until_date=now + restriction_duration,
+            send_messages=True)
+            await ABH(EditBannedRequest(channel=chat, participant=event.sender_id, banned_rights=rights))
+            restriction_end_times.setdefault(event.chat_id, {})[event.sender_id] = now + restriction_duration
             await event.respond(f"تم تقييد العضو {ء} `{user_id}` \n بسبب تكرار ارسال الكلمات المحظوره", buttons=الغاء)
             await send(
                 event,
