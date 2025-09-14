@@ -1,14 +1,17 @@
-from telethon.tl.types import ChannelParticipantAdmin, ChannelParticipantCreator
-import asyncio, os, json, random, uuid, operator, requests, aiohttp, re
 from telethon.tl.functions.channels import GetParticipantRequest
-from telethon.tl.functions.users import GetFullUserRequest
-from telethon.tl.types import Channel, ChannelParticipant
+import asyncio, os, json, random, uuid, operator, requests, re
+from Resources import suras, mention, ment, wfffp, hint
+from telethon.tl.types import ChannelParticipantCreator
+from telethon.tl.types import PeerChannel, PeerChat
 from playwright.async_api import async_playwright
 from database import store_whisper, get_whisper
-from Resources import suras, mention, ment, wfffp
 from telethon import events, Button
-from datetime import datetime
+from Program import chs
 from ABH import ABH
+def is_assistant(chat_id, user_id):
+    data = load_auth()
+    assistants = data.get(str(chat_id), [])
+    return user_id in assistants
 async def creat_useFILE():
     if not os.path.exists('use.json'):
         with open('use.json', 'w', encoding='utf-8') as f:
@@ -55,11 +58,9 @@ async def handler(event):
     for item in items:
         try:
             label, url = map(str.strip, item.split("\\", 1))
-            if not re.match(r'^https?://', url):
-                return await event.reply(f"❌ الرابط التالي غير صالح:\n`{url}`\nيجب أن يبدأ بـ http:// أو https://")
             row.append(Button.url(label, url))
         except Exception as e:
-            print(f"خطأ في الزر: {item}, {e}")
+            await ABH.send_message(wfffp, f'حدث خطأ في الازرار {e}')
             continue
         if len(row) == 2:
             buttons.append(row)
@@ -89,184 +90,15 @@ async def whisper_scanmeme(event):
             "🍌🍌",
             "🤤",
             "😋😋😋😋",
+            "دروح لا اكفر بربك",
+            "حزبي الله",
+            "البتك مالي",
+            "طيب وش بسوي؟",
             "تره حته المالك!"
     ])
         await event.reply(f"الهمسة 👇\n \n **{x}**")
     else: 
         await event.reply("ماكدرت اكشفها💔")
-id_status_per_chat = {}
-@ABH.on(events.NewMessage(pattern='الايدي تفعيل'))
-async def turn_on(event):
-    if not event.is_group:
-        return
-    type = "الايدي تفعيل"
-    await botuse(type)
-    uid = event.sender_id
-    chat_id = event.chat_id
-    if uid == wfffp:
-        id_status_per_chat[chat_id] = True
-        await event.reply('تم تفعيل الايدي')
-    else:
-        return
-@ABH.on(events.NewMessage(pattern='الايدي تعطيل'))
-async def turn_off(event):
-    if not event.is_group:
-        return
-    type = "الايدي تعطيل"
-    await botuse(type)
-    uid = event.sender_id
-    chat_id = event.chat_id
-    if uid == wfffp:
-        id_status_per_chat[chat_id] = False
-        await event.reply('تم تعطيل الايدي')
-    else:
-        return
-LOCAL_PHOTO_DIR = "photos"
-os.makedirs(LOCAL_PHOTO_DIR, exist_ok=True)
-async def get_user_role(user_id, chat_id):
-    try:
-        chat = await ABH.get_entity(chat_id)
-        if isinstance(chat, Channel):
-            result = await ABH(GetParticipantRequest(channel=chat, participant=user_id))
-            participant = result.participant
-            if isinstance(participant, ChannelParticipantCreator):
-                return "مالك"
-            elif isinstance(participant, ChannelParticipantAdmin):
-                return "مشرف"
-            elif isinstance(participant, ChannelParticipant):
-                return "عضو"
-            else:
-                return ''
-        else:
-            return ''
-    except Exception:
-        return "🌚"
-async def date(user_id):
-    headers = {
-        'Host': 'restore-access.indream.app',
-        'Connection': 'keep-alive',
-        'x-api-key': 'e758fb28-79be-4d1c-af6b-066633ded128',
-        'Accept': '*/*',
-        'Accept-Language': 'ar',
-        'Content-Type': 'application/x-www-form-urlencoded',
-        'User-Agent': 'Nicegram/101 CFNetwork/1404.0.5 Darwin/22.3.0',
-    }
-    data = '{"telegramId":' + str(user_id) + '}'
-    async with aiohttp.ClientSession() as session:
-        async with session.post('https://restore-access.indream.app/regdate', headers=headers, data=data) as response:
-            if response.status == 200:
-                response_json = await response.json()
-                date_string = response_json['data']['date']
-                try:
-                    if len(date_string.split("-")) == 3:
-                        date_obj = datetime.strptime(date_string, "%Y-%m-%d")
-                        formatted_date = date_obj.strftime("%Y/%m/%d")
-                    else:
-                        date_obj = datetime.strptime(date_string, "%Y-%m")
-                        formatted_date = date_obj.strftime("%Y/%m")
-                    return formatted_date
-                except Exception:
-                    return "تاريخ غير صالح"
-            else:
-                return "غير معروف"
-LOCAL_PHOTO_DIR = "/tmp"
-@ABH.on(events.NewMessage(pattern='^(id|اا|افتار)$'))
-async def hisid(event):
-    if not event.is_group:
-        return
-    type = "ايدي"
-    await botuse(type)
-    chat_id = event.chat_id
-    if not id_status_per_chat.get(chat_id, False):
-        return  
-    replied_message = await event.get_reply_message()
-    if not replied_message:
-        return
-    type = "id"
-    await botuse(type)
-    sender_id = replied_message.sender_id
-    user = await ABH.get_entity(sender_id)
-    user_id = user.id
-    chat_id = event.chat_id
-    phone = user.phone if hasattr(user, 'phone') and user.phone else "👎"
-    premium = "yes" if user.premium else "no"
-    usernames = [f"@{username.username}" for username in user.usernames] if user.usernames else [f"@{user.username}"] if user.username else ["—"]
-    usernames_list = ", ".join(usernames)
-    dates = await date(user_id)
-    states = await get_user_role(user_id, chat_id)
-    FullUser = (await event.client(GetFullUserRequest(user.id))).full_user
-    bio = FullUser.about
-    bio_text = f"\n{bio}" if bio and bio.strip() else ""
-    year = int(dates.split("/")[0])
-    if year < 2016:
-        x = "انت من جماعة الباند؟؟"
-    elif 2016 <= year < 2023:
-        x = "لا بأس"
-    else:
-        x = "جديد"
-    message_text = (
-        f"⌯ اليوزر ⇠ {usernames_list}\n"
-        f"⌯ الرقم  {'+' + phone if phone != '—' else phone}\n"
-        f"⌯ غني ام فقير ⇠ {premium}\n"
-        f"⌯ الانشاء ⇠ {dates} {x}\n"
-        f"⌯ رتبتك بالمجموعة ⇠ {states}"
-        f"{bio_text}"
-    )
-    if user.photo:
-        photo_path = os.path.join(LOCAL_PHOTO_DIR, f"{user_id}.jpg")
-        await ABH.download_profile_photo(user.id, file=photo_path)
-        msg = await ABH.send_file(event.chat_id, photo_path, caption=message_text, force_document=False, reply_to=event.message.id)
-        await asyncio.sleep(60*3)
-        await msg.delete()
-    else:
-        await event.respond(message_text, reply_to=event.message.id)
-@ABH.on(events.NewMessage(pattern=r"^(id|ايدي|افتاري|ا|\.)$"))
-async def myid(event):
-    if not event.is_group:
-        return
-    type = "ايديه"
-    await botuse(type)
-    chat_id = event.chat_id
-    if not id_status_per_chat.get(chat_id, False):
-        return
-    type = "reply id"
-    await botuse(type)
-    sender_id = event.sender_id
-    user = await ABH.get_entity(sender_id)
-    user_id = user.id
-    chat_id = event.chat_id
-    phone = user.phone if hasattr(user, 'phone') and user.phone else "غير متوفر💔"
-    premium = "عنده مميز" if user.premium else "ماعنده مميز"
-    usernames = [f"@{username.username}" for username in user.usernames] if user.usernames else [f"@{user.username}"] if user.username else ["—"]
-    usernames_list = ", ".join(usernames)
-    dates = await date(user_id)
-    states = await get_user_role(user_id, chat_id)
-    FullUser = (await event.client(GetFullUserRequest(user.id))).full_user
-    bio = FullUser.about
-    bio_text = f"\n{bio}" if bio and bio.strip() else ""
-    year = int(dates.split("/")[0])
-    if year < 2016:
-        x = "انت من جماعة الباند؟؟"
-    elif 2016 <= year < 2023:
-        x = "لا بأس"
-    else:
-        x = "جديد"
-    message_text = (
-        f"⌯ اليوزر ⇠ {usernames_list}\n"
-        f"⌯ الرقم  {'+' + phone if phone != '—' else phone}\n"
-        f"⌯ غني ام فقير ⇠ {premium}\n"
-        f"⌯ الانشاء ⇠ {dates} {x}\n"
-        f"⌯ رتبتك بالمجموعة ⇠ {states}"
-        f"{bio_text}"
-    )
-    if user.photo:
-        photo_path = os.path.join(LOCAL_PHOTO_DIR, f"{user_id}.jpg")
-        await ABH.download_profile_photo(user.id, file=photo_path)
-        msg = await ABH.send_file(event.chat_id, photo_path, caption=message_text, force_document=False, reply_to=event.message.id)
-        await asyncio.sleep(60*3)
-        await msg.delete()
-    else:
-        await event.respond(message_text, reply_to=event.message.id)
 AUTH_FILE = 'assistant.json'
 if not os.path.exists(AUTH_FILE):
     with open(AUTH_FILE, 'w') as f:
@@ -280,52 +112,48 @@ def save_auth(data):
 def is_assistant(chat_id, user_id):
     data = load_auth()
     assistants = data.get(str(chat_id), [])
-    if user_id in data:
-        return True
-    return False
+    return user_id in assistants
 async def is_owner(chat_id, user_id):
     try:
         participant = await ABH(GetParticipantRequest(channel=chat_id, participant=user_id))
         return isinstance(participant.participant, ChannelParticipantCreator)
     except:
         return False
-@ABH.on(events.NewMessage(pattern=r'^رفع معاون$'))
+@ABH.on(events.NewMessage(pattern=r'^رفع معاون(?: (.+))?$'))
 async def add_assistant(event):
     if not event.is_group:
         return
-    if not event.is_group:
-        return
+    sm = await mention(event)
     type = "رفع معاون"
     await botuse(type)
-    sm = await mention(event)
+    target_id = event.pattern_match.group(1)
+    if not target_id:
+        reply = await event.get_reply_message()
+        if not reply:
+            return await event.reply(f"عزيزي {sm}، يجب الرد على رسالة المستخدم الذي تريد إضافته.")
+        target_id = reply.sender_id
+        sender = await reply.get_sender()
+    else:
+        target_id = int(target_id)
+        sender = await ABH.get_entity(target_id)
     chat_id = str(event.chat_id)
-    user_id = event.sender_id
-    if not (await is_owner(event.chat_id, user_id) or user_id == 1910015590):
-        return await event.reply(f"عذراً {sm}، هذا الأمر مخصص للمالك فقط.")
-    reply = await event.get_reply_message()
-    if not reply:
-        return await event.reply(f"عزيزي {sm}، يجب الرد على رسالة المستخدم الذي تريد إضافته.")
-    target_id = reply.sender_id
+    rm = await ment(sender)
     data = load_auth()
     if chat_id not in data:
         data[chat_id] = []
     if target_id not in data[chat_id]:
         data[chat_id].append(target_id)
         save_auth(data)
-        sender = await reply.get_sender()
-        rm = await ment(sender)
-        await event.reply(f"تم رفع المستخدم {rm} إلى معاون في هذه المجموعة.")
+        await event.reply(f"✅ تم رفع {rm} إلى معاون في هذه المجموعة.")
     else:
-        await event.reply(f"المستخدم {rm} موجود مسبقًا في قائمة المعاونين لهذه المجموعة.")
+        await event.reply(f"ℹ️ المستخدم {rm} موجود مسبقًا في قائمة المعاونين لهذه المجموعة.")
 @ABH.on(events.NewMessage(pattern=r'^تنزيل معاون$'))
 async def remove_assistant(event):
     if not event.is_group:
         return
-    type = "تنزيل معاون"
-    await botuse(type)
+    user_id = event.sender_id
     sm = await mention(event)
     chat_id = str(event.chat_id)
-    user_id = event.sender_id
     if not (await is_owner(event.chat_id, user_id) or user_id == 1910015590):
         return await event.reply(f"عذرًا {sm}، هذا الأمر مخصص للمالك فقط.")
     reply = await event.get_reply_message()
@@ -338,9 +166,11 @@ async def remove_assistant(event):
     if chat_id in data and target_id in data[chat_id]:
         data[chat_id].remove(target_id)
         save_auth(data)
-        await event.reply(f"تم إزالة {rm} من قائمة المعاونين لهذه المجموعة.")
+        await event.reply(f"✅ تم إزالة {rm} من قائمة المعاونين لهذه المجموعة.")
     else:
-        await event.reply(f"{rm} غير موجود في قائمة المعاونين لهذه المجموعة.")
+        await event.reply(f"ℹ️ {rm} غير موجود في قائمة المعاونين لهذه المجموعة.")
+    type = "تنزيل معاون"
+    await botuse(type)
 async def m(user_id):
     try:
         user = await ABH.get_entity(user_id)
@@ -356,13 +186,14 @@ async def show_assistants(event):
         return
     chat_id = str(event.chat_id)
     data = load_auth()
-    msg = "📋 **قائمة المعاونين في هذه المجموعة**\n\n"
+    msg = ''
     if chat_id in data and data[chat_id]:
+        msg = "📋 **قائمة المعاونين في هذه المجموعة**\n\n"
         for idx, user_id in enumerate(data[chat_id], start=1):
             mention_text = await m(user_id)
             msg += f"{idx:<2} - {mention_text:<30} \n `{user_id}`\n"
     else:
-        msg += "❌ لا يوجد معاونين حالياً في هذه المجموعة.\n"
+        msg += " لا يوجد معاونين حالياً في هذه المجموعة.\n"
     await event.reply(msg, parse_mode="md")
 @ABH.on(events.NewMessage(pattern="^اسمي$"))
 async def myname(event):
@@ -448,8 +279,8 @@ async def quran(event):
     text = event.raw_text.strip()
     me = await event.client.get_me()
     username = me.username
-    c = f'**[Enjoy dear]**(https://t.me/{username})'
-    button = [Button.url("CHANNEL", "https://t.me/x04ou")]
+    c = f'**[Enjoy dear]**(https://t.me/{username })'
+    button = [Button.url("🫀", "https://t.me/x04ou")]
     if text.lower() in ['قرآن', 'قران']:
         sura_number = random.randint(1, 114)
         message = await ABH.get_messages('theholyqouran', ids=sura_number + 1)
@@ -507,7 +338,7 @@ def ask_ai(q):
 async def ai_handler(event):
     user_q = event.pattern_match.group(1).strip()
     x = event.text
-    ignore_phrases = ["مخفي اعفطلة", "مخفي اعفطله", "مخفي قيده", "مخفي قيدة", "مخفي طكة زيج"]
+    ignore_phrases = ["مخفي اعفطلة", "مخفي اعفطله", "مخفي قيده", "مخفي قيدة", "مخفي طكة زيج", "مخفي اطلع", "مخفي غادر"]
     if not user_q or x in ignore_phrases:
         return
     type = "ai"
@@ -526,28 +357,32 @@ async def luck_list(event):
     `⚽` المقدار المربح = 5
     `🎳` المقدار المربح = 6
     `🎰` المقدار المربح = 64
-    المقدار 🎰-64 يعطي من 1000 الئ 3000 
+    المقدار 🎰-64 يعطي من 100000 الئ 1000000 
     الباقي يعطي 999 للثروة الكلية
     ''')
 banned_url = [
-    9,  25, 94, 131, 175,
-    26, 40, 110, 136, 194,
-    71, 72, 111, 142, 212,
-    77, 79, 114, 148, 230,
-    80, 81, 115, 150, 245,
-    82, 93, 121, 152, 254,
-    273, 275
-]
-latmiyat_range = range(50, 315)
+    71, 72, 77,
+    79, 80, 81,
+    82, 93, 94,
+    110, 111, 114,
+    115, 121, 131,
+    136, 142, 148,
+    150, 152, 175,
+    194, 212, 230,
+    245, 254, 273,
+    275, 333, 362,
+    363, 364, 365,
+    366, 367, 368,
+    369, 370, 372,
+    ]
+latmiyat_range = range(50, 385)
 async def send_random_latmia(event):
-    try:
-        chosen = random.choice(list(latmiyat_range))
-        if chosen in banned_url:
-            return await send_random_latmia(event)
-        latmia_url = f"https://t.me/x04ou/{chosen}"
-        await event.reply(file=latmia_url)
-    except Exception as e:
-        await event.reply(f"اعد المحاولة مره اخرى")
+    chosen = random.choice(list(latmiyat_range))
+    if chosen in banned_url:
+        return await send_random_latmia(event)
+    latmia_url = f"https://t.me/x04ou/{chosen}"
+    Buttons = [Button.url("🫀", "https://t.me/x04ou")]
+    await ABH.send_file(event.chat_id, file=latmia_url, buttons=Buttons, reply_to=event.id,)
 @ABH.on(events.NewMessage(pattern=r"^(لطمية|لطميه)$"))
 async def handle_latmia_command(event):
     type = "لطمية"
@@ -711,7 +546,7 @@ async def take_screenshot(url, device="pc"):
             page = await browser.new_page()
         try:
             await page.goto(url, wait_until="domcontentloaded", timeout=30000)
-            await asyncio.sleep(2)
+            await asyncio.sleep(1)
             screenshot_path = f"screenshot_{device}.png"
             await page.screenshot(path=screenshot_path)
         except Exception as e:
@@ -740,7 +575,13 @@ async def screen_shot(event):
     else:
         await event.reply("فشل التقاط لقطة الشاشة، تأكد من صحة الرابط أو جرب مجددًا.")
 FILE = "dialogs.json"
-K_4X1 = 1910015590
+def remove_user(user_id: int):
+    if user_id in alert_ids:
+        alert_ids.remove(user_id)
+        save_alerts()
+        print(f"تم حذف المستخدم {user_id} من القائمة.")
+    else:
+        print(f"المستخدم {user_id} غير موجود في القائمة.")
 def load_alert():
     if os.path.exists(FILE):
         with open(FILE, "r") as f:
@@ -752,27 +593,28 @@ def save_alerts():
 alert_ids = load_alert()
 async def alert(message):
     try:
-        await ABH.send_message(K_4X1, message)
-    except Exception as e:
+        await ABH.send_message(wfffp, message)
+    except:
         return
 @ABH.on(events.NewMessage)
 async def add_toalert(event):
-    global alert_ids
-    chat = await event.get_chat()
-    if chat.id not in alert_ids:
-        try:
-            alert_ids.add(chat.id)
-            save_alerts()
-            chat_name = chat.title if hasattr(chat, 'title') else chat.first_name
-            return
-        except Exception as e:
-            await alert(f"فشل إضافة المحادثة: {chat_name} \n {chat.id} - {e} ")
-@ABH.on(events.NewMessage(pattern="/alert"))
-async def send_alert(event):
-    if event.sender_id != K_4X1:
-        return
-    type = "نشر"
-    await botuse(type)
+    uid = None
+    n = None
+    if event.is_group:
+        uid = event.chat_id
+        n = event.chat.title or 'بدون اسم'
+    elif event.is_private:
+        uid = event.sender_id
+        sender = await event.get_sender()
+        n = await ment(sender)
+    if  uid and uid not in alert_ids:
+        alert_ids.add(uid)
+        save_alerts()
+@ABH.on(events.NewMessage(pattern="احصاء", from_users=[wfffp]))
+async def showlenalert(event):
+    await event.reply(str(len(alert_ids)))
+@ABH.on(events.NewMessage(pattern="^نشر$", from_users=[wfffp]))
+async def set_alert(event):
     message_text = None
     media = None
     if event.reply_to_msg_id:
@@ -789,15 +631,46 @@ async def send_alert(event):
         await event.reply("يرجى الرد على رسالة تحتوي على ملف أو كتابة نص مع مرفق بعد `/alert`.")
         return
     await event.reply(f"🚀 جاري إرسال التنبيه إلى {len(alert_ids)} محادثة...")
-    for dialog_id in alert_ids:
+    for dialog_id in list(alert_ids):
         try:
             if media:
-                await ABH.send_message(dialog_id, file=media, caption=message_text or "")
+                await ABH.send_file(dialog_id, file=media, caption=message_text or "")
             else:
                 await ABH.send_message(dialog_id, f"{message_text}")
         except Exception as e:
-            await alert(f"❌ فشل الإرسال إلى {dialog_id}: {e}")
-    await event.reply("✅ تم إرسال التنبيه لجميع المحادثات!")
+            await alert(f" فشل الإرسال إلى {dialog_id}")
+            remove_user(dialog_id)
+@ABH.on(events.NewMessage(pattern=r"^نشر الكروبات$", from_users=[wfffp]))
+async def publish_to_groups(event):
+    message_text = None
+    media = None
+    if event.reply_to_msg_id:
+        replied_msg = await event.get_reply_message()
+        message_text = replied_msg.text
+        media = replied_msg.media
+    else:
+        command_parts = event.raw_text.split(maxsplit=1)
+        if len(command_parts) > 1:
+            message_text = command_parts[1]
+        if event.media:
+            media = event.media
+    if not message_text and not media:
+        await event.reply("❌ يرجى الرد على رسالة تحتوي على نص أو ملف بعد كتابة `نشر الكروبات`.")
+        return
+    sent_count = 0
+    for dialog_id in list(alert_ids):
+        try:
+            if not str(dialog_id).startswith("-100"):
+                continue
+            if media:
+                await ABH.send_file(dialog_id, file=media, caption=message_text or "")
+            else:
+                await ABH.send_message(dialog_id, f"{message_text}")
+            sent_count += 1
+        except Exception as e:
+            await alert(f"⚠️ فشل الإرسال إلى {dialog_id} : {str(e)}")
+            remove_user(dialog_id)
+    await event.reply(f"✅ تم إرسال التنبيه إلى {sent_count} مجموعة.")
 whispers_file = 'whispers.json'
 sent_log_file = 'sent_whispers.json'
 if os.path.exists(whispers_file):
@@ -830,14 +703,13 @@ async def handle_whisper(event):
     await botuse(type)
     global l, m1, reply
     sender_id = event.sender_id
-    if sender_id in l and l[sender_id]:
-        await event.reply(
-            "هيييي ماتكدر تسوي همستين بوقت واحد \n **جرب تدز نقطة بالخاص**",
-        )
-        return
     reply = await event.get_reply_message()
     if not reply:
         await event.reply("صديقي الامر هاذ ميشتغل اذا مو رد")
+        return
+    sender = await reply.get_sender()
+    if getattr(sender, "bot", False):
+        await chs(event, 'عزيزي تسوي همسه ل بوت انت شكد حديقه')
         return
     if reply.sender_id == sender_id:
         await event.reply("شني خالي تسوي همسه لنفسك")
@@ -854,18 +726,36 @@ async def handle_whisper(event):
     whisper_id = str(uuid.uuid4())[:6]
     whisper_links[whisper_id] = {
         "from": sender_id,
+        "r": reply.id,
         "to": reply.sender_id,
         "chat_id": event.chat_id,
         "from_name": from_user.first_name,
         "to_name": to_user.first_name
     }
     save_whispers()
+    if sender_id in l and l[sender_id]:
+        button = [
+            Button.url("اكمال الهمسة", url=f"https://t.me/{(await ABH.get_me()).username}?start={whisper_id}"), 
+            Button.inline("حذف الهمسة", data='del')
+                  ]
+        await event.reply(
+            "هيييي ماتكدر تسوي همستين بوقت واحد \n **اختر احد الازرار🙂**",
+        buttons=[button]
+        )
+        return
     button = Button.url("اضغط هنا للبدء", url=f"https://t.me/{(await ABH.get_me()).username}?start={whisper_id}")
     m1 = await event.reply(
         f'همسة مرسلة من ( [{name}](tg://user?id={sender_id}) ) إلى ( [{to_name}](tg://user?id={rid}) ) 🙂🙂',
         buttons=[button]
     )
     l[sender_id] = True
+@ABH.on(events.CallbackQuery(data='del'))
+async def delwhisper(e):
+    sender_id = e.sender_id
+    if l[sender_id]:
+        l[sender_id] = False
+        b = Button.url("كيف اهمس", url=f"https://t.me/{(await ABH.get_me()).username}?start=how_can_i_whisper")
+        await e.edit('تم حذف جلسة الهمسة', buttons=b)
 @ABH.on(events.NewMessage(pattern=r'/start (\w+)'))
 async def start_with_param(event):
     whisper_id = event.pattern_match.group(1)
@@ -911,10 +801,10 @@ async def forward_whisper(event):
     if not data:
         return
     msg = event.message
-    reply = await event.get_reply_message()
     b = Button.url("فتح الهمسة", url=f"https://t.me/{(await ABH.get_me()).username}?start={whisper_id}")
     uid = data.get("from", "x04ou")
     rid = data.get("to", "x04ou")
+    reply = data.get("r", "None")
     from_name = data.get("from_name", "مجهول")
     to_name = data.get("to_name", "مجهول")
     await m1.delete()
@@ -942,44 +832,6 @@ async def forward_whisper(event):
     })
     save_sent_log()
     l[sender_id] = False
-@ABH.on(events.NewMessage(pattern=r'^اوامري|اوامر$'))
-async def start(event):
-    type = "اوامري"
-    await botuse(type)
-    global sid
-    sid = event.sender_id
-    buttons = [[
-        Button.url(text="صنعهُ ب حب", url="https://t.me/K_4x1"),
-        Button.url(text="رابط البوت", url="https://t.me/VIPABH_BOT"),        
-        ]]
-    await event.respond(
-        """
-**أوامر البوت المخفي** 卐  
-⌘ `اوامر التوب`  
-   يحسب عدد رسائل مجموعتك.  
-⌘ `اوامر التقييد`  
-   أمر مكافح للكلمات غير اللائقة بنسبة 90%.  
-⌘ `اوامر الالعاب`  
-   ألعاب جديدة بفكرة مميزة ولمسة إبداعية.  
-⌘ `اوامر الترجمة`  
-   يعمل بالرد أو مع الأمر، لكن لا تستخدمه معهما معًا.  
-⌘ `اوامر الايدي`  
-   **أمر مميز** يمكنك من التواصل مع الشخص عبر معرف حسابه.  
-⌘ `اوامر الكشف`  
-   **أمر مميز** يأخذ لقطة شاشة للرابط، وتظهر الروابط الملغمة هنا.  
-⌘ `اوامر الحسبان`  
-   يحسب تواريخ أشهر الصيام والعزاء، أو أي يوم من اختيارك.  
-⌘ `اوامر الميمز`  
-   أوامر مخصصة لإنشاء الميمز بطرق مختلفة.  
-⌘ `اوامر الهمسة`  
-   أمر هزلي وسري لإنشاء همسة باستخدام اليوزر أو المعرف.  
-⌘ `اوامر البحث`  
-   يقوم بالبحث في موقع ويكيبيديا.  
-⌘ `اوامر الصوتيات`  
-   يرسل لك لطمية عشوائية.                 
-⌘ `اوامر الذكاء`  
-   ذكاء اصطناعي مبسط ليس اذكئ شيء.
-""", buttons=buttons, reply_to=event.message.id)
 @ABH.on(events.NewMessage)
 async def top(event):
     if event.text == "اوامر التوب":
@@ -1017,8 +869,8 @@ async def how_to_whisper(event):
             reply_to=event.id
     )
     elif parm == "whisper_id":
-        url = 'https://t.me/recoursec/10'
-        c = '**اوامر الهمسة** \n همسة نص , ايدي او يوزر \n همسة ميديا او نص بالرد فقط'
+        url = 'https://t.me/recoursec/11'
+        c = '😏'
         await ABH.send_file(
             event.chat_id,
             file=url,
@@ -1027,7 +879,7 @@ async def how_to_whisper(event):
         )
     elif parm == "whisper_media":
         url = 'https://t.me/recoursec/12'
-        c = '**اوامر الهمسة** \n همسة نص , ايدي او يوزر \n همسة ميديا او نص بالرد فقط'
+        c = '😏'
         await ABH.send_file(
             event.chat_id,
             file=url,
