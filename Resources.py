@@ -8,16 +8,7 @@ from telethon.tl.types import ChatParticipantCreator
 from telethon.tl.types import ReactionEmoji
 import google.generativeai as genai
 import pytz, os, json
-from guard import LC
 from ABH import ABH
-async def link(e):
-    chat = e.chat_id
-    id = e.id
-    c = str(chat).replace('-100', '')
-    x = f'https://t.me/c/{c}/{id}'
-    chat = await e.get_chat()
-    name = getattr(chat, "title", "محادثة خاصة")
-    return f"[{name}]({x})"
 async def username(event):
     if event.sender and event.sender.username:
         return event.sender.username
@@ -27,19 +18,21 @@ async def username(event):
             if u and u.username:
                 return u.username
     return None
-async def try_forward(event):
-    gidvar = await LC(event.chat_id)
-    r = await event.get_reply_message()
-    try:
-        await ABH.forward_messages(
-            entity=int(gidvar),
-            messages=r.id,
-            from_peer=r.chat_id
-)
-        return True
-    except ChatForwardsRestrictedError:
-        return False
-    except:
+async def try_forward(event, gidvar):
+    if event.message and event.id:
+        r = await event.get_reply_message()
+        try:
+            await ABH.forward_messages(
+                entity=int(gidvar),
+                messages=r.id,
+                from_peer=r.chat_id
+    )
+            return True
+        except ChatForwardsRestrictedError:
+            return False
+        except Exception as e:
+            return False
+    else:
         return False
 developers = {}
 def delsave(dev_id=None, filename="secondary_devs.json"):
@@ -94,6 +87,23 @@ def save(dev_id=None, filename="secondary_devs.json"):
     with open(filename, 'w', encoding='utf-8') as f:
         json.dump(data, f, ensure_ascii=False, indent=2)
     return data
+def saveadmin(data=None, time=None):
+    if not os.path.exists('adminwarn.json'):
+        with open('adminwarn.json', 'w', encoding='utf-8') as f:
+            json.dump({}, f, ensure_ascii=False, indent=4)
+    with open('adminwarn.json', 'r', encoding='utf-8') as f:
+        store = json.load(f)
+    if data is None or time is None:
+        return store
+    if ":" not in data:
+        return store
+    chat, user_id = data.split(":", 1)
+    if chat not in store:
+        store[chat] = {}
+    store[chat][user_id] = time
+    with open('adminwarn.json', 'w', encoding='utf-8') as f:
+        json.dump(store, f, ensure_ascii=False, indent=4)
+    return store
 async def react(event, x):
     try:    
         await ABH(SendReactionRequest(
@@ -108,7 +118,7 @@ async def react(event, x):
             msg_id=event.message.id,
             reaction=[ReactionEmoji(emoticon=f'{x}')],
             big=True
-        ))        
+        ))
 def adj(filename: str, data: dict):
     if os.path.exists(filename):
         with open(filename, 'r', encoding='utf-8') as f:
