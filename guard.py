@@ -493,59 +493,60 @@ async def handler_res(event):
     xx = await event.ge_sender()
     ء = await ment(xx)
     l = await link(event)
-    if x:
-        await botuse('تحذير بسبب الtفشار')
-        if is_assistant(chat, user_id):
-            await event.delete()
-            await send(event, f'المعاون {x} ~ `{user_id}` ارسل كلمة ممنوعه \n الكلمة:{x} \n الرابط: {l}')
-            return
-        w = add_warning(user_id, chat)
+    if not x:
+        return
+    await botuse('تحذير بسبب الفشار')
+    if is_assistant(chat, user_id):
         await event.delete()
-        now = int(time.time())
-        restriction_duration = 600
-        if w == 3:
-            if await is_admin(chat, user_id):
-                restriction_end_times.setdefault(event.chat_id, {})[user_id] = now + restriction_duration
-                await event.respond(f"تم كتم المشرف {ء} `{user_id}` \n بسبب تكرار ارسال الكلمات المحظوره", buttons=الغاء)
-                await send(
-                    event,
-                    f"""
-                    تم كتم {ء}  `{user_id}` بسبب كثره المخالفات
-                    ارسل: {x}
-                    الرابط: {l}
-                    """,
-                    )
-                return
-            else:
-                await event.respond(f"تم تقييد العضو {ء} `{user_id}` \n بسبب تكرار ارسال الكلمات المحظوره", buttons=الغاء)
-                await send(
-                    event,
-                    f"""
-                    تم كتم {ء}  `{user_id}` بسبب كثره المخالفات
-                    ارسل: {x}
-                    الرابط: {l}
-                    """, 
-                    
-                    )
-                return
-        else:
-            await event.respond(
-                f'''
-                تم تحذير {ء}  `{user_id}` بسبب ارسال كلمة محظورة
-                ''', 
-                buttons=b
-            )
+        await send(event, f'المعاون {x} ~ `{user_id}` ارسل كلمة ممنوعه \n الكلمة:{x} \n الرابط: {l}')
+        return
+    w = add_warning(user_id, chat)
+    await event.delete()
+    now = int(time.time())
+    restriction_duration = 600
+    if w == 3:
+        if await is_admin(chat, user_id):
+            restriction_end_times.setdefault(event.chat_id, {})[user_id] = now + restriction_duration
+            await event.respond(f"تم كتم المشرف {ء} `{user_id}` \n بسبب تكرار ارسال الكلمات المحظوره", buttons=الغاء)
             await send(
                 event,
-                f"""كلمة محظورة!
-                👤 من: {ء}
-                🆔 ايديه: `{user_id}`
-                ❗ الكلمة المحظورة: `{x}`
-                تم حذف الرسالة وتحذيره.
-                عدد التحذيرات: ( {w} / 3 )
+                f"""
+                تم كتم {ء}  `{user_id}` بسبب كثره المخالفات
+                ارسل: {x}
+                الرابط: {l}
+                """,
+                )
+            return
+        else:
+            await event.respond(f"تم تقييد العضو {ء} `{user_id}` \n بسبب تكرار ارسال الكلمات المحظوره", buttons=الغاء)
+            await send(
+                event,
+                f"""
+                تم كتم {ء}  `{user_id}` بسبب كثره المخالفات
+                ارسل: {x}
+                الرابط: {l}
                 """, 
                 
-            )
+                )
+            return
+    else:
+        await event.respond(
+            f'''
+            تم تحذير {ء}  `{user_id}` بسبب ارسال كلمة محظورة
+            ''', 
+            buttons=b
+        )
+        await send(
+            event,
+            f"""كلمة محظورة!
+            👤 من: {ء}
+            🆔 ايديه: `{user_id}`
+            ❗ الكلمة المحظورة: `{x}`
+            تم حذف الرسالة وتحذيره.
+            عدد التحذيرات: ( {w} / 3 )
+            """, 
+            
+        )
 @ABH.on(events.NewMessage(pattern='^تحذير$'))
 async def warn_user(event):
     if not event.is_group:
