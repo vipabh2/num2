@@ -614,3 +614,9 @@ async def warn_user(event):
     )
     await try_forward(event)
     await event.delete()
+@ABH.on(events.CallbackQuery)
+async def warnssit(e):
+    dd = e.data
+    d = dd.decode('utf-8') if isinstance(dd, bytes) else dd
+    if d.startswith("zerowarn"):
+        await e.edit(".")
