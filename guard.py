@@ -614,7 +614,7 @@ async def warn_user(event):
     )
     await try_forward(event)
     await event.delete()
-@ABH.on(events.CallbackQuery)
+#@ABH.on(events.CallbackQuery)
 async def warnssit(e):
     dd = e.data
     print(dd)
