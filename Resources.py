@@ -7,7 +7,7 @@ from telethon.errors import ChatForwardsRestrictedError
 from telethon.tl.types import ChatParticipantCreator
 from telethon.tl.types import ReactionEmoji
 import google.generativeai as genai
-import pytz, os, json
+import pytz, os, json, asyncio
 from ABH import ABH
 WHITELIST_FILE = "whitelist.json"
 whitelist_lock = asyncio.Lock()
