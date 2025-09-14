@@ -498,6 +498,7 @@ async def handler_res(event):
     await botuse('تحذير بسبب الفشار')
     assis = is_assistant(chat, user_id)
     if assis:
+        await try_forward(event)
         await event.delete()
         await send(
             event,
@@ -508,6 +509,7 @@ async def handler_res(event):
         )
         return
     w = add_warning(user_id, chat)
+    await try_forward(event)
     await event.delete()
     now = int(time.time())
     restriction_duration = 600
@@ -518,6 +520,7 @@ async def handler_res(event):
                 f"🔇 تم كتم المشرف {ء}\n🆔 الايدي: `{user_id}`\n📑 السبب: تكرار إرسال الكلمات المحظورة.",
                 buttons=الغاء
                 )
+            await try_forward(event)       
             await send(
                 event,
                 f"🔇 تم كتم #المشرف:\n👤 {ء} │ 🆔 `{user_id}`\n📑 السبب: كثرة المخالفات\n✉️ أرسل: {x}\n🔗 الرابط: {l}",
@@ -569,16 +572,23 @@ async def warn_user(event):
     if not r:
         return await event.reply("يجب الرد على رسالة العضو الذي تريد تحذيره.")
     target_id = r.sender_id
+    if await is_assistant(chat_id, target_id):
+        await chs(event, 'هييييييه متكدر تحذر المعاون')
+        return
+    if await is_assistant(chat_id, target_id) and await is_assistant(chat_id, user_id):
+        await chs(event, 'غراب يكول لغراب وجهك اسود')
+        return
     w = add_warning(str(target_id), str(chat_id))
     p = await r.get_sender()
     x = await ment(p)
     b = [Button.inline("الغاء التحذير", data=f"delwarn:{target_id}:{chat_id}"), Button.inline("تصفير التحذيرات", data=f"zerowarn:{target_id}:{chat_id}")]
     l = await link(event)
     await event.respond(
-        f'تم تحذير المستخدم {x} ( `target_id` ) \n تحذيراته صارت ( 3/{w} )',
+        f'تم تحذير المستخدم {x} ( `{target_id}` ) \n تحذيراته صارت ( 3/{w} )',
         buttons=b
     )
     restriction_duration = 900
+    await try_forward(event)
     await event.delete()
     await r.delete()
     if w == 3 and await is_admin(chat_id, target_id):
@@ -593,15 +603,11 @@ async def warn_user(event):
         restriction_end_times.setdefault(event.chat_id, {})[target_id] = now + restriction_duration
         return
     await botuse("تحذير مستخدمين")
-    if lc:
-        s = await mention(event)
-        await ABH.send_message(
-            lc, 
+    await send(
+            event, 
             f"🚨 تم تحذير المستخدم:\n"
             f"👤 الاسم: {x}\n"
             f"🆔 الايدي: `{target_id}`\n"
             f"⚠️ عدد التحذيرات: {w} / 3"
             f"رابط الرسالة: {l}",
         )
-        await try_forward(event, lc)
-        return
