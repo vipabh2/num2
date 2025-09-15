@@ -620,6 +620,7 @@ async def warnssit(e):
     data = e.data.decode('utf-8') if isinstance(e.data, bytes) else e.data
     msg = await e.get_message()
     t = msg.text
+    print(f'{t} \n\n {data}')
     if النوع == "zerowarn":
         await e.edit(f"{t} \n ```تم تصفير التحذيرات```")
         zerowarn(target_id, chat_id)
