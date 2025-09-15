@@ -628,6 +628,7 @@ async def warnssit(e):
 async def showwarns(e):
     t = e.text
     chat = e.chat_id
+    target_id = None
     if t == 'تحذيراتي':
         target_id = e.sender_id
     else:
