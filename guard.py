@@ -631,7 +631,7 @@ async def showwarns(e):
     if t == 'تحذيراتي':
         target_id = e.sender_id
     else:
-        r = await e.get_reply_messag()
+        r = await e.get_reply_message()
         if not r:
             await chs(e, '🤔')
         target_id = r.sender_id
