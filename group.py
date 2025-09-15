@@ -582,13 +582,10 @@ async def my_date(event):
 @ABH.on(events.NewMessage(pattern=r'^(اقرا|اقرأ|كم الرقم|اقرأ الرقم) (\d+)$'))
 async def readnum(e):
     num = e.pattern_match.group(2)
-    if not num:
-        await e.reply('لازم تكتب رقم مع الامر')
-        return
     try:
         number = num2words(int(num), lang='ar')
         await chs(e, f'الرقم {num} يُقرأ كـ:\n{number}')
-    except ValueError:
+    except Exception:
         await e.reply('تأكد تكتب رقم صحيح')
 @ABH.on(events.ChatAction)
 async def actions(e):
