@@ -614,7 +614,7 @@ async def warn_user(event):
     )
     await try_forward(event)
     await event.delete()
-@ABH.on(events.CallbackQuery)
+# @ABH.on(events.CallbackQuery)
 async def warnssit(e):
     النوع, target_id, chat_id = data.split(":")        
     data = e.data.decode('utf-8') if isinstance(e.data, bytes) else e.data
@@ -627,7 +627,7 @@ async def warnssit(e):
 @ABH.on(events.NewMessage(pattern='^(تحذيراتي|تحذيراتة|تحذيراته)$'))
 async def showwarns(e):
     t = e.text
-    chat = e.chat
+    chat = e.chat_id
     if t == 'تحذيراتي':
         target_id = e.sender_id
     else:
