@@ -636,6 +636,7 @@ async def showwarns(e):
             await chs(e, '🤔')
             return
         target_id = r.sender_id
+        print(target_id)
         معاون = is_assistant(chat_id=chat, user_id=target_id)
         if معاون:
             await chs(e, "لك شمعة ماكو تحذيرات")
