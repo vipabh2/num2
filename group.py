@@ -583,18 +583,18 @@ async def my_date(event):
 async def readnum(e):
     num = e.pattern_match.group(2)
     try:
-        number = num2words(int(num), lang='ar')
+        number = num2words(num, lang='ar')
         await chs(e, f'الرقم {num} يُقرأ كـ:\n{number}')
     except Exception as e:
         await hint(f'{e}')
-@ABH.on(events.ChatAction)
-async def actions(e):
-    me = await ABH.get_me()
-    user_id = e.user_id
-    if user_id and user_id != me.id:
-        user = await ABH.get_entity(user_id)
-        if isinstance(user, types.User) and not user.bot:
-            m = await ment(user_id)
-            un = await username(e)
-            await e.reply(f'اهلا {m}, لا تنتظر احد يفتح وياك موضوع \n انت افتح موضوع وأخذ راحتك \n التزم بالقوانين(الكروب للكل) {un}')
-            return
+# @ABH.on(events.ChatAction)
+# async def actions(e):
+#     me = await ABH.get_me()
+#     user_id = e.user_id
+#     if user_id and user_id != me.id:
+#         user = await ABH.get_entity(user_id)
+#         if isinstance(user, types.User) and not user.bot:
+#             m = await ment(user_id)
+#             un = await username(e)
+#             await e.reply(f'اهلا {m}, لا تنتظر احد يفتح وياك موضوع \n انت افتح موضوع وأخذ راحتك \n التزم بالقوانين(الكروب للكل) {un}')
+#             return
