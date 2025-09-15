@@ -595,7 +595,7 @@ async def actions(e):
     if user_id and user_id != me.id:
         user = await ABH.get_entity(user_id)
         if isinstance(user, types.User) and not user.bot:
-            m = await mention(event)
+            m = await mention(e|)
             un = await username(e)
             await e.reply(f'اهلا {m}, لا تنتظر احد يفتح وياك موضوع \n انت افتح موضوع وأخذ راحتك \n التزم بالقوانين(الكروب للكل) {un}')
             return
