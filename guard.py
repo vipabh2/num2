@@ -614,11 +614,29 @@ async def warn_user(event):
     )
     await try_forward(event)
     await event.delete()
-#@ABH.on(events.CallbackQuery)
+@ABH.on(events.CallbackQuery)
 async def warnssit(e):
-    dd = e.data
-    print(dd)
-    d = dd.decode('utf-8') if isinstance(dd, bytes) else dd
-    print(d)
-    if d.startswith("zerowarn"):
-        await e.edit(".")
+    النوع, target_id, chat_id = data.split(":")        
+    data = e.data.decode('utf-8') if isinstance(e.data, bytes) else e.data
+    if النوع == "zerowarn":
+        await e.edit(f" تم تصفير التحذيرات للعضو {target_id}")
+        msg = await e.get_message()
+        t = msg.text
+        match = re.search(r"\(3/(\d+)\)", t)
+        zerowarn
+@ABH.on(events.NewMessage(pattern='^(تحذيراتي|تحذيراتة|تحذيراته)$'))
+async def showwarns(e):
+    t = e.text
+    chat = e.chat
+    if t == 'تحذيراتي':
+        target_id = e.sender_id
+    else:
+        r = await e.get_reply_messag()
+        if not r:
+            await chs(e, '🤔')
+        target_id = r.sender_id
+    w = load_warns()
+    if chat in w and target_id in w[chat]:
+        العدد = w[chat][target_id]
+        await chs(e, f'تحذيراتك ( 3/{العدد} )')
+        return
