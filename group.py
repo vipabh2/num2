@@ -1,9 +1,9 @@
 from telethon.tl.functions.channels import GetParticipantRequest
 from db import save_date, get_saved_date #type: ignore
+import asyncio, os, json, time, random, num2words
 from top import points, delpoints, add_points
 from ABH import ABH, events #type: ignore
 from datetime import datetime, timedelta
-import asyncio, os, json, time, random
 from hijri_converter import Gregorian
 from googletrans import Translator
 from telethon import Button
@@ -579,3 +579,17 @@ async def my_date(event):
     participant = result.participant
     date_joined = participant.date.strftime("%Y-%m-%d %H:%M")
     await event.reply(f"تاريخ الانضمام ↞ {date_joined}")
+@ABH.on(events.NewMessage(pattern='^(اقرا|اقرأ|كم الرقم|اقرأ الرقم) (.+)$'))
+async def readnum(e):
+    num = e.pattern_match.group(1)
+    if not num:
+        await e.reply('لازم تكتب رقم مع الامر')
+        return
+    number = num2words(num, 'ar')
+    await chs(e, f'الرقم {num} يقرأ ك \n {number}')
+@ABH.on(events.ChatAction)
+async def actions(e):
+    user = await ABH.get_user()
+    anymous = await e.get_me()
+    if e.user_added or e.user.joined and not user.id == anymous.id:
+        await e.reply('اهلا وسهلا حياك الله')
