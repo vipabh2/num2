@@ -614,7 +614,7 @@ async def warn_user(event):
     )
     await try_forward(event)
     await event.delete()
-# @ABH.on(events.CallbackQuery)
+@ABH.on(events.CallbackQuery)
 async def warnssit(e):
     النوع, target_id, chat_id = data.split(":")        
     data = e.data.decode('utf-8') if isinstance(e.data, bytes) else e.data
