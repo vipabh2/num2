@@ -624,7 +624,7 @@ async def warnssit(e):
         t = msg.text
         match = re.search(r"\(3/(\d+)\)", t)
         zerowarn
-@ABH.on(events.NewMessage(pattern='^(تحذيراتي|تحذيراتة|تحذيراته)$'))
+@ABH.on(events.NewMessage(pattern=r'^(تحذيراتي|تحذيرات(ه|ة))$'))
 async def showwarns(e):
     t = e.text
     chat = e.chat_id
