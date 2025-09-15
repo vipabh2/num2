@@ -634,10 +634,11 @@ async def showwarns(e):
         r = await e.get_reply_message()
         if not r:
             await chs(e, '🤔')
+            return
         target_id = r.sender_id
-        معاون = is_assistant(chat_id, target_id)
+        معاون = is_assistant(chat_id=chat, user_id=target_id)
         if معاون:
             await chs(e, "لك شمعة ماكو تحذيرات")
             return
     w = count_warnings(int(target_id), int(chat))
-    await chs(e, f'تحذيراتك ( 3/{w} )')
+    await chs(e, f' ( 3/{w} )')
