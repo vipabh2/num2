@@ -635,7 +635,7 @@ async def showwarns(e):
         if not r:
             await chs(e, '🤔')
         target_id = r.sender_id
-    w = load_warns()
+    w = count_warnings(int(target_id), int(chat))
     if chat in w and target_id in w[chat]:
         العدد = w[chat][target_id]
         await chs(e, f'تحذيراتك ( 3/{العدد} )')
