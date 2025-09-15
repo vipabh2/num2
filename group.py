@@ -589,7 +589,7 @@ async def readnum(e):
     await chs(e, f'الرقم {num} يقرأ ك \n {number}')
 @ABH.on(events.ChatAction)
 async def actions(e):
-    user = await ABH.get_user()
-    anymous = await e.get_me()
-    if e.user_added or e.user.joined and not user.id == anymous.id:
+    me = await e.get_me()
+    user = await e.get_user()
+    if (e.user_added or e.user_joined) and user.id != me.id:
         await e.reply('اهلا وسهلا حياك الله')
