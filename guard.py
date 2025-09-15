@@ -618,12 +618,16 @@ async def warn_user(event):
 async def warnssit(e):
     النوع, target_id, chat_id = data.split(":")        
     data = e.data.decode('utf-8') if isinstance(e.data, bytes) else e.data
+    msg = await e.get_message()
+    t = msg.text
     if النوع == "zerowarn":
-        await e.edit(f" تم تصفير التحذيرات للعضو {target_id}")
-        msg = await e.get_message()
-        t = msg.text
+        await e.edit(f"{t} \n ```تم تصفير التحذيرات```")
+        zerowarn(target_id, chat_id)
+    elif النوع == 'delwarn':
+        d = del_warning(target_id, chat_id)
         match = re.search(r"\(3/(\d+)\)", t)
-        zerowarn
+        t.replace(match, d)
+        await e.edit(f"{t}")
 @ABH.on(events.NewMessage(pattern=r'^(تحذيراتي|تحذيرات(ه|ة))$'))
 async def showwarns(e):
     t = e.text
