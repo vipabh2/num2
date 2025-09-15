@@ -587,11 +587,11 @@ async def readnum(e):
         return
     number = num2words(num, 'ar')
     await chs(e, f'الرقم {num} يقرأ ك \n {number}')
-from telethon import events, types
 @ABH.on(events.ChatAction)
 async def actions(e):
     me = await ABH.get_me()
-    if e.user_joined or e.user_added:
-        user = await ABH.get_entity(e.user_id)
+    user_id = e.user_id
+    if user_id and user_id != me.id:
+        user = await ABH.get_entity(user_id)
         if isinstance(user, types.User) and not user.bot:
             await e.reply(f'اهلا وسهلا {user.first_name} حياك الله')
