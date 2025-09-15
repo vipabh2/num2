@@ -588,16 +588,3 @@ async def readnum(e):
         await chs(e, f'الرقم {num} يُقرأ كـ:\n{number}')
     except Exception as e:
         await hint(f'{e}')
-@ABH.on(events.ChatAction)
-async def actions(e):
-    me = await ABH.get_me()
-    user_id = e.user_id
-    if user_id and user_id != me.id:
-        user = await ABH.get_entity(user_id)
-        if isinstance(user, types.User) and not user.bot:
-            sender = await e.get_sender()
-            name = getattr(sender, 'first_name', 'غير معروف')
-            user_id = sender.id
-            m = f"[{name}](tg://user?id={user_id})"
-            await e.reply(f'اهلا {m}, لا تنتظر احد يفتح وياك موضوع \n انت افتح موضوع وأخذ راحتك \n التزم بالقوانين(الكروب للكل) {un}')
-            return
