@@ -636,8 +636,4 @@ async def showwarns(e):
             await chs(e, '🤔')
         target_id = r.sender_id
     w = count_warnings(int(target_id), int(chat))
-    print(w)
-    if chat in w and target_id in w[chat]:
-        العدد = w[chat][target_id]
-        await chs(e, f'تحذيراتك ( 3/{العدد} )')
-        return
+    await chs(e, f'تحذيراتك ( 3/{w} )')
