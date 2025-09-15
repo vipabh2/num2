@@ -586,7 +586,7 @@ async def readnum(e):
         number = num2words(int(num), lang='ar')
         await chs(e, f'الرقم {num} يُقرأ كـ:\n{number}')
     except Exception as e:
-        await e.reply(f'{e}')
+        await hint(f'{e}')
 @ABH.on(events.ChatAction)
 async def actions(e):
     me = await ABH.get_me()
