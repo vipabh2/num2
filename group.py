@@ -6,7 +6,7 @@ from ABH import ABH, events #type: ignore
 from datetime import datetime, timedelta
 from hijri_converter import Gregorian
 from googletrans import Translator
-from telethon import Button
+from telethon import Button, types
 from ABH import ABH, events
 from other import botuse
 from Resources import *
@@ -589,10 +589,8 @@ async def readnum(e):
     await chs(e, f'الرقم {num} يقرأ ك \n {number}')
 @ABH.on(events.ChatAction)
 async def actions(e):
-    me = await e.get_me()
+    me = await ABH.get_me()
     if e.user_joined or e.user_added:
-        if e.user_id != me.id:
-            user = await e.get_entity(e.user_id)
-            if not isinstance(user, types.User) or user.bot:
-                return
+        user = await e.get_entity(e.user_id)
+        if isinstance(user, types.User) and not user.bot:
             await e.reply(f'اهلا وسهلا {user.first_name} حياك الله')
