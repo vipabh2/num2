@@ -579,14 +579,17 @@ async def my_date(event):
     participant = result.participant
     date_joined = participant.date.strftime("%Y-%m-%d %H:%M")
     await event.reply(f"تاريخ الانضمام ↞ {date_joined}")
-@ABH.on(events.NewMessage(pattern='^(اقرا|اقرأ|كم الرقم|اقرأ الرقم) (.+)$'))
+@ABH.on(events.NewMessage(pattern=r'^(اقرا|اقرأ|كم الرقم|اقرأ الرقم) (\d+)$'))
 async def readnum(e):
-    num = e.pattern_match.group(1)
+    num = e.pattern_match.group(2)
     if not num:
         await e.reply('لازم تكتب رقم مع الامر')
         return
-    number = num2words(num, 'ar')
-    await chs(e, f'الرقم {num} يقرأ ك \n {number}')
+    try:
+        number = num2words(int(num), lang='ar')
+        await chs(e, f'الرقم {num} يُقرأ كـ:\n{number}')
+    except ValueError:
+        await e.reply('تأكد تكتب رقم صحيح')
 @ABH.on(events.ChatAction)
 async def actions(e):
     me = await ABH.get_me()
