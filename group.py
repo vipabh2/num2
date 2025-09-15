@@ -595,7 +595,9 @@ async def actions(e):
     if user_id and user_id != me.id:
         user = await ABH.get_entity(user_id)
         if isinstance(user, types.User) and not user.bot:
-            m = e.first_name
-            un = await username(e)
+            sender = await e.get_sender()
+            name = getattr(sender, 'first_name', 'غير معروف')
+            user_id = sender.id
+            m = f"[{name}](tg://user?id={user_id})"
             await e.reply(f'اهلا {m}, لا تنتظر احد يفتح وياك موضوع \n انت افتح موضوع وأخذ راحتك \n التزم بالقوانين(الكروب للكل) {un}')
             return
