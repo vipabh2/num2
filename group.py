@@ -590,6 +590,9 @@ async def readnum(e):
 @ABH.on(events.ChatAction)
 async def actions(e):
     me = await e.get_me()
-    user = await e.get_user()
-    if (e.user_added or e.user_joined) and user.id != me.id:
-        await e.reply('اهلا وسهلا حياك الله')
+    if e.user_joined or e.user_added:
+        if e.user_id != me.id:
+            user = await e.get_entity(e.user_id)
+            if not isinstance(user, types.User) or user.bot:
+                return
+            await e.reply(f'اهلا وسهلا {user.first_name} حياك الله')
