@@ -1,4 +1,4 @@
-from telethon import events
+from telethon import event
 from Resources import *
 from Program import *
 from ABH import *
