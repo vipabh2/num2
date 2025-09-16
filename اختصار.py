@@ -103,3 +103,56 @@ async def handle_shortcuts(event):
         main=shortcuts[text]
         if main in COMMANDS:
             await COMMANDS[main](event)
+import os, importlib, inspect
+from telethon import events
+from ABH import ABH
+
+async def send_functions_list(folder="."):
+    results = []
+    for file in os.listdir(folder):
+        if file.endswith(".py") and file != os.path.basename(__file__):
+            module_name = file[:-3]
+            try:
+                module = importlib.import_module(module_name)
+            except:
+                continue
+            for name, obj in inspect.getmembers(module, inspect.iscoroutinefunction):
+                func_type = "async"
+                sig = str(inspect.signature(obj))
+                func_name = f"{name}{sig}"
+                patterns = []
+                if hasattr(obj, "_events"):
+                    for e in getattr(obj, "_events"):
+                        if isinstance(e, events.NewMessage):
+                            patterns.append(str(e.pattern) if e.pattern else None)
+                if not patterns:
+                    patterns = [None]
+                for p in patterns:
+                    results.append([func_type, func_name, p])
+            for name, obj in inspect.getmembers(module, inspect.isfunction):
+                if not inspect.iscoroutinefunction(obj):
+                    func_type = "def"
+                    sig = str(inspect.signature(obj))
+                    func_name = f"{name}{sig}"
+                    patterns = []
+                    if hasattr(obj, "_events"):
+                        for e in getattr(obj, "_events"):
+                            if isinstance(e, events.NewMessage):
+                                patterns.append(str(e.pattern) if e.pattern else None)
+                    if not patterns:
+                        patterns = [None]
+                    for p in patterns:
+                        results.append([func_type, func_name, p])
+    return results
+@ABH.on(events.NewMessage(pattern="^قائمة_الدوال$", from_users=[wfffp]))
+async def show_functions(event):
+    funcs = await send_functions_list(".")
+    if not funcs:
+        await event.reply("لم يتم العثور على أي دوال.")
+        return
+    msg = "📝 قائمة الدوال:\n\n"
+    for i, f in enumerate(funcs, 1):
+        type_, name, pattern = f
+        pattern_text = pattern if pattern else "لا يوجد"
+        msg += f"{i}. {type_} {name} | pattern: {pattern_text}\n"
+    await event.reply(msg[:4000])
