@@ -65,7 +65,7 @@ async def list_restricted(event):
     for user_id in expired_users:
         restriction_end_times[chat_id].pop(user_id, None)
     if msg.strip() == "📋 قائمة المقيدين عام:":
-        msg = "✅ لا يوجد حالياً أي مستخدم مقيد."
+        msg = " لا يوجد حالياً أي مستخدم مقيد."
     await event.reply(msg, link_preview=False)
 async def notAssistantres(event):
     if not event.is_group:
@@ -136,7 +136,6 @@ async def restrict_user(event):
     try:
         participant = await ABH(GetParticipantRequest(channel=chat, participant=sender.id))
         if isinstance(participant.participant, (ChannelParticipantCreator, ChannelParticipantAdmin)):
-            
             return
     except:
         return
@@ -298,7 +297,7 @@ async def edited(event):
     if not uid in whitelist:
         await msg.delete()
         return
-@ABH.on(events.CallbackQuery(data=rb'^yes:(\d+)$'))
+@ABH.on(events.CallbackQuery(data=b'^yes:(\d+)$'))
 async def yes_callback(event):
     try:
         msg = await event.get_message()
@@ -316,7 +315,7 @@ async def yes_callback(event):
         await event.answer(' تم تسجيل المستخدم كملغّم.')
     except Exception as e:
         await hint(e)
-@ABH.on(events.CallbackQuery(data=rb'^no:(\d+)$'))
+@ABH.on(events.CallbackQuery(data=b'^no:(\d+)$'))
 async def no_callback(event):
     try:
         msg = await event.get_message()
