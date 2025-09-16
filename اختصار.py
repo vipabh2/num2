@@ -1,6 +1,7 @@
 import inspect, os, importlib
 from telethon import events
 from ABH import ABH
+from Resources import *
 def list_functions_in_folder(folder: str):
     results = []
     for filename in os.listdir(folder):
