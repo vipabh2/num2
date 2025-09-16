@@ -619,10 +619,9 @@ async def warnssit(e):
         return await e.answer('🌚')
     data = e.data.decode('utf-8') if isinstance(e.data, bytes) else e.data
     parts = data.split(':')
-    if len(parts) == 3:
-        النوع, target_id, chat_id = parts       
-    else:
-        await hint(f'خطا في التقسيم {data}')
+    if not len(parts) == 3:
+        return
+    النوع, target_id, chat_id = parts
     msg = await e.get_message()
     t = msg.text
     if النوع == "zerowarn":
