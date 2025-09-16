@@ -189,7 +189,6 @@ async def list_secondary_devs(event):
     devs = [await ment(await ABH.get_entity(int(user_id))) for user_id in x[chat_id]]
     await chs(event, f"المطورين الثانويين في هذه المجموعة:\n" + "\n".join(devs))
 lol = {}
-@ABH.on(events.NewMessage(from_users=[wfffp]))
 async def som(e):
     g = str(e.chat_id)
     b = [Button.inline('اي', data='y'), Button.inline('لا', data='n')]
