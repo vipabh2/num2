@@ -626,8 +626,8 @@ async def warnssit(e):
         zerowarn(target_id, chat_id)
     elif النوع == 'delwarn':
         d = del_warning(target_id, chat_id)
-        match = re.search(r"\(3/(\d+)\)", tt)
         tt = count_warnings(target_id, chat_id)
+        match = re.search(r"\(3/(\d+)\)", tt)
         t.replace(match, d)
         await e.edit(f"{t}.")
 @ABH.on(events.NewMessage(pattern=r'^(تحذيراتي|تحذيرات(ه|ة))$'))
