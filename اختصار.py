@@ -12,11 +12,10 @@ def list_functions_in_folder(folder: str):
             except Exception as e:
                 results.append(f"⚠️ فشل تحميل {filename}: {e}")
                 continue
-
             for name, obj in inspect.getmembers(module, inspect.isfunction):
-                func_type = "async" if inspect.iscoroutinefunction(obj) else "normal"
+                func_type = "async" if inspect.iscoroutinefunction(obj) else "def"
                 sig = str(inspect.signature(obj))
-                results.append(f"📂 {filename} → 📌 {name} | النوع: {func_type} | المعطيات: {sig}")
+                results.append(f"{func_type} {name}{sig}")
     return results
 @ABH.on(events.NewMessage(pattern="^الفنكشنات$", from_users=[wfffp]))
 async def show_all_functions(event):
