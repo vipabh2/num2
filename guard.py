@@ -84,7 +84,7 @@ async def notAssistantres(event):
     rs = await r.get_sender()
     target_name = await ment(rs)
     user_points = points[str(user_id)]
-    if user_points < 10000000:
+    if user_points < 1000000:
         return await event.reply("عزيزي الفقير , لازم ثروتك اكثر من مليون دينار.")
     try:
         participant = await ABH(GetParticipantRequest(channel=chat_id, participant=rs.id))
@@ -173,13 +173,13 @@ async def monitor_messages(event):
         end_time = restriction_end_times[event.chat_id][user_id]
         if now < end_time:
             remaining = end_time - now
+            await event.delete()
             try:
                 chat = await event.get_chat()
                 rights = ChatBannedRights(
                     until_date=now + remaining,
                     send_messages=True
                 )
-                await event.delete()
                 await ABH(EditBannedRequest(channel=chat, participant=user_id, banned_rights=rights))
                 rrr = await mention(event)
                 c = f"تم اعاده تقييد {rrr} لمدة ** {remaining//60} دقيقة و {remaining%60} ثانية.**"
@@ -482,23 +482,6 @@ async def handler_res(event):
     chat = event.chat_id
     user_id = event.sender_id
     now = int(time.time())
-    if event.chat_id in restriction_end_times and user_id in restriction_end_times[event.chat_id]:
-        end_time = restriction_end_times[event.chat_id][user_id]
-        if now < end_time:
-            remaining = end_time - now
-            chat = await event.get_chat()
-            rights = ChatBannedRights(
-                until_date=now + remaining,
-                send_messages=True
-            )
-            await event.delete()
-            try:
-                await ABH(EditBannedRequest(channel=chat, participant=user_id, banned_rights=rights))
-                rrr = await mention(event)
-                c = f"تم اعاده تقييد {rrr} لمدة ** {remaining//60} دقيقة و {remaining%60} ثانية.**"
-                await ABH.send_file(event.chat_id, "https://t.me/recoursec/15", caption=c)
-            except Exception as e:
-                await hint(f'خطأ في اعاده التقييد في داله handler_res {e}')
     lock_key = f"lock:{event.chat_id}:تقييد"
     x = redas.get(lock_key) == "True"
     if not event.is_group or not event.raw_text or not x:
