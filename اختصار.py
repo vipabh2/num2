@@ -47,27 +47,19 @@ async def show_all_patterns(event):
     else:
         msg = "🔍 قائمة الباترينات في المشروع:\n\n" + "\n".join(f"{i+1}. {p}" for i, p in enumerate(patterns))
         await event.reply(msg[:4000])
-SHORTCUTS_FILE = "shortcuts.json"
-async def امسح(event):
-    await event.reply("✅ تم تنفيذ أمر المسح!")
-async def بدء(event):
-    await event.reply("🎮 تم بدء اللعبة!")
-COMMANDS = {
-    "امسح": امسح,
-    "بدء": بدء
-}
+SHORTCUTS_FILE="shortcuts.json"
 def load_shortcuts():
     try:
-        with open(SHORTCUTS_FILE, "r", encoding="utf-8") as f:
+        with open(SHORTCUTS_FILE,"r",encoding="utf-8") as f:
             return json.load(f)
     except FileNotFoundError:
         return {}
 def save_shortcuts(data):
-    with open(SHORTCUTS_FILE, "w", encoding="utf-8") as f:
-        json.dump(data, f, ensure_ascii=False, indent=4)
-shortcuts = load_shortcuts()
-def add_shortcut(main_cmd, shortcut):
-    shortcuts[shortcut] = main_cmd
+    with open(SHORTCUTS_FILE,"w",encoding="utf-8") as f:
+        json.dump(data,f,ensure_ascii=False,indent=4)
+shortcuts=load_shortcuts()
+def add_shortcut(main,shortcut):
+    shortcuts[shortcut]=main
     save_shortcuts(shortcuts)
 def remove_shortcut(shortcut):
     if shortcut in shortcuts:
@@ -75,25 +67,39 @@ def remove_shortcut(shortcut):
         save_shortcuts(shortcuts)
         return True
     return False
+COMMANDS={}
+for file in os.listdir("."):
+    if file.endswith(".py") and file!="run.py":
+        module_name=file[:-3]
+        try:
+            module=importlib.import_module(module_name)
+        except:
+            continue
+        for name,obj in inspect.getmembers(module,inspect.iscoroutinefunction):
+            if hasattr(obj,"_events"):
+                for e in getattr(obj,"_events"):
+                    if isinstance(e,events.NewMessage):
+                        pattern=str(e.pattern) if e.pattern else name
+                        COMMANDS[pattern]=obj
 @ABH.on(events.NewMessage(pattern="^اضف_اختصار (.+?) (.+)$"))
 async def add_shortcut_cmd(event):
-    main_cmd, shortcut = event.pattern_match.group(1), event.pattern_match.group(2)
-    if main_cmd not in COMMANDS:
-        await event.reply(f"❌ لا يوجد أمر أساسي باسم {main_cmd}")
-        return
-    add_shortcut(main_cmd, shortcut)
-    await event.reply(f"✅ تم إضافة الاختصار: {shortcut} للأمر الأساسي: {main_cmd}")
+    main,shortcut=event.pattern_match.group(1),event.pattern_match.group(2)
+    if main in COMMANDS:
+        add_shortcut(main,shortcut)
+        await event.reply(f"تم إضافة الاختصار {shortcut} للأمر {main}")
+    else:
+        await event.reply(f"❌ لم يتم العثور على الأمر {main}")
 @ABH.on(events.NewMessage(pattern="^احذف_اختصار (.+)$"))
 async def remove_shortcut_cmd(event):
-    shortcut = event.pattern_match.group(1)
-    if remove_shortcut(shortcut):
-        await event.reply(f"✅ تم حذف الاختصار: {shortcut}")
+    s=event.pattern_match.group(1)
+    if remove_shortcut(s):
+        await event.reply(f"تم حذف الاختصار {s}")
     else:
-        await event.reply(f"❌ لم يتم العثور على الاختصار: {shortcut}")
+        await event.reply(f"❌ لم يتم العثور على الاختصار {s}")
 @ABH.on(events.NewMessage())
 async def handle_shortcuts(event):
-    text = event.raw_text.strip()
+    text=event.raw_text.strip()
     if text in shortcuts:
-        main_cmd = shortcuts[text]
-        if main_cmd in COMMANDS:
-            await COMMANDS[main_cmd](event)
+        main=shortcuts[text]
+        if main in COMMANDS:
+            await COMMANDS[main](event)
