@@ -1,5 +1,5 @@
 from Resources import *
-from program import *
+from Program import *
 from ABH import *
 @ABH.on(evnets.NewMessage)
 async def litsin_to_all(e):
