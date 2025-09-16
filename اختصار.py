@@ -2,6 +2,43 @@ import inspect, os, importlib, re, json
 from telethon import events
 from ABH import ABH
 from Resources import *
+def list_functions_with_patterns(folder: str):
+    results = []
+    for filename in os.listdir(folder):
+        if filename.endswith(".py") and filename != os.path.basename(__file__):
+            module_name = filename[:-3]
+            try:
+                module = importlib.import_module(module_name)
+            except Exception as e:
+                results.append(f"⚠️ فشل تحميل {filename}: {e}")
+                continue
+            funcs = []
+            for name, obj in inspect.getmembers(module, inspect.isfunction):
+                func_type = "async" if inspect.iscoroutinefunction(obj) else "def"
+                sig = str(inspect.signature(obj))
+                funcs.append(f"{func_type} {name}{sig}")            
+            patterns = []
+            try:
+                with open(os.path.join(folder, filename), "r", encoding="utf-8") as f:
+                    content = f.read()
+                    matches = re.findall(r'pattern\s*=\s*[\'"](.+?)[\'"]', content)
+                    patterns.extend(matches)
+            except Exception as e:
+                results.append(f"⚠️ فشل فتح {filename}: {e}")            
+            if not patterns:
+                patterns = ["لا يوجد باترين"]
+            for func in funcs:
+                for pat in patterns:
+                    results.append(f"[{func}: {pat}]")
+    return results
+@ABH.on(events.NewMessage(pattern="^الكل$", from_users=[wfffp]))
+async def show_functions_and_patterns(event):
+    results = list_functions_with_patterns(".")
+    if not results:
+        await event.reply("لم يتم العثور على أي دوال أو باترينات في ملفات المجلد الحالي.")
+    else:
+        msg = "🔹 قائمة الدوال مع الباترينات:\n\n" + "\n".join(f"{i+1}. {r}" for i, r in enumerate(results))
+        await event.reply(msg[:4000])
 def list_functions_in_folder(folder: str):
     results = []
     for filename in os.listdir(folder):
@@ -81,7 +118,7 @@ for file in os.listdir("."):
                     if isinstance(e,events.NewMessage):
                         pattern=str(e.pattern) if e.pattern else name
                         COMMANDS[pattern]=obj
-@ABH.on(events.NewMessage(pattern="^اضف_اختصار (.+?) (.+)$"))
+@ABH.on(events.NewMessage(pattern="^اضف اختصار (.+?) (.+)$"))
 async def add_shortcut_cmd(event):
     main,shortcut=event.pattern_match.group(1),event.pattern_match.group(2)
     if main in COMMANDS:
@@ -89,7 +126,7 @@ async def add_shortcut_cmd(event):
         await event.reply(f"تم إضافة الاختصار {shortcut} للأمر {main}")
     else:
         await event.reply(f"❌ لم يتم العثور على الأمر {main}")
-@ABH.on(events.NewMessage(pattern="^احذف_اختصار (.+)$"))
+@ABH.on(events.NewMessage(pattern="^احذف اختصار (.+)$"))
 async def remove_shortcut_cmd(event):
     s=event.pattern_match.group(1)
     if remove_shortcut(s):
@@ -103,56 +140,3 @@ async def handle_shortcuts(event):
         main=shortcuts[text]
         if main in COMMANDS:
             await COMMANDS[main](event)
-import os, importlib, inspect
-from telethon import events
-from ABH import ABH
-
-async def send_functions_list(folder="."):
-    results = []
-    for file in os.listdir(folder):
-        if file.endswith(".py") and file != os.path.basename(__file__):
-            module_name = file[:-3]
-            try:
-                module = importlib.import_module(module_name)
-            except:
-                continue
-            for name, obj in inspect.getmembers(module, inspect.iscoroutinefunction):
-                func_type = "async"
-                sig = str(inspect.signature(obj))
-                func_name = f"{name}{sig}"
-                patterns = []
-                if hasattr(obj, "_events"):
-                    for e in getattr(obj, "_events"):
-                        if isinstance(e, events.NewMessage):
-                            patterns.append(str(e.pattern) if e.pattern else None)
-                if not patterns:
-                    patterns = [None]
-                for p in patterns:
-                    results.append([func_type, func_name, p])
-            for name, obj in inspect.getmembers(module, inspect.isfunction):
-                if not inspect.iscoroutinefunction(obj):
-                    func_type = "def"
-                    sig = str(inspect.signature(obj))
-                    func_name = f"{name}{sig}"
-                    patterns = []
-                    if hasattr(obj, "_events"):
-                        for e in getattr(obj, "_events"):
-                            if isinstance(e, events.NewMessage):
-                                patterns.append(str(e.pattern) if e.pattern else None)
-                    if not patterns:
-                        patterns = [None]
-                    for p in patterns:
-                        results.append([func_type, func_name, p])
-    return results
-@ABH.on(events.NewMessage(pattern="^قائمة_الدوال$", from_users=[wfffp]))
-async def show_functions(event):
-    funcs = await send_functions_list(".")
-    if not funcs:
-        await event.reply("لم يتم العثور على أي دوال.")
-        return
-    msg = "📝 قائمة الدوال:\n\n"
-    for i, f in enumerate(funcs, 1):
-        type_, name, pattern = f
-        pattern_text = pattern if pattern else "لا يوجد"
-        msg += f"{i}. {type_} {name} | pattern: {pattern_text}\n"
-    await event.reply(msg[:4000])
