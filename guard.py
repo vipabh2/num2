@@ -399,7 +399,15 @@ def normalize_arabic(text):
         'ة': 'ه',
         'ى': '',
         'ـ': '',
-         'ؤ': 'و',
+        '/': '',
+        '\\': '',
+        '|': '',
+        '.': '',
+        ',': '',
+        '’': '',
+        '_': '',
+        '-': '',
+        '$': '',
     }
     for src, target in replace_map.items():
         text = text.replace(src, target)    
