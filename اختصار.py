@@ -1,4 +1,4 @@
-import inspect, os, importlib, re
+import inspect, os, importlib, re, json
 from telethon import events
 from ABH import ABH
 from Resources import *
@@ -47,3 +47,53 @@ async def show_all_patterns(event):
     else:
         msg = "🔍 قائمة الباترينات في المشروع:\n\n" + "\n".join(f"{i+1}. {p}" for i, p in enumerate(patterns))
         await event.reply(msg[:4000])
+SHORTCUTS_FILE = "shortcuts.json"
+async def امسح(event):
+    await event.reply("✅ تم تنفيذ أمر المسح!")
+async def بدء(event):
+    await event.reply("🎮 تم بدء اللعبة!")
+COMMANDS = {
+    "امسح": امسح,
+    "بدء": بدء
+}
+def load_shortcuts():
+    try:
+        with open(SHORTCUTS_FILE, "r", encoding="utf-8") as f:
+            return json.load(f)
+    except FileNotFoundError:
+        return {}
+def save_shortcuts(data):
+    with open(SHORTCUTS_FILE, "w", encoding="utf-8") as f:
+        json.dump(data, f, ensure_ascii=False, indent=4)
+shortcuts = load_shortcuts()
+def add_shortcut(main_cmd, shortcut):
+    shortcuts[shortcut] = main_cmd
+    save_shortcuts(shortcuts)
+def remove_shortcut(shortcut):
+    if shortcut in shortcuts:
+        del shortcuts[shortcut]
+        save_shortcuts(shortcuts)
+        return True
+    return False
+@ABH.on(events.NewMessage(pattern="^اضف_اختصار (.+?) (.+)$"))
+async def add_shortcut_cmd(event):
+    main_cmd, shortcut = event.pattern_match.group(1), event.pattern_match.group(2)
+    if main_cmd not in COMMANDS:
+        await event.reply(f"❌ لا يوجد أمر أساسي باسم {main_cmd}")
+        return
+    add_shortcut(main_cmd, shortcut)
+    await event.reply(f"✅ تم إضافة الاختصار: {shortcut} للأمر الأساسي: {main_cmd}")
+@ABH.on(events.NewMessage(pattern="^احذف_اختصار (.+)$"))
+async def remove_shortcut_cmd(event):
+    shortcut = event.pattern_match.group(1)
+    if remove_shortcut(shortcut):
+        await event.reply(f"✅ تم حذف الاختصار: {shortcut}")
+    else:
+        await event.reply(f"❌ لم يتم العثور على الاختصار: {shortcut}")
+@ABH.on(events.NewMessage())
+async def handle_shortcuts(event):
+    text = event.raw_text.strip()
+    if text in shortcuts:
+        main_cmd = shortcuts[text]
+        if main_cmd in COMMANDS:
+            await COMMANDS[main_cmd](event)
