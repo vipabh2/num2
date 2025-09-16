@@ -489,7 +489,7 @@ async def handler_res(event):
     if not event.is_group or not event.raw_text or not x:
         return
     x = contains_banned_word(message_text)
-    b = [Button.inline(f'الغاء التحذير', data=f'delwarn:{chat}|{user_id}'), Button.inline('تصفير التحذيرات', data=f'zerowarn:{chat}|{user_id}')]
+    b = [Button.inline(f'الغاء التحذير', data=f'delwarn:{chat}:{user_id}'), Button.inline('تصفير التحذيرات', data=f'zerowarn:{chat}:{user_id}')]
     الغاء = Button.inline('الغاء التقييد', data=f'unres:{chat}|{user_id}')
     xx = await event.get_sender()
     ء = await ment(xx)
