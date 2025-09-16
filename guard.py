@@ -617,7 +617,11 @@ async def warn_user(event):
 @ABH.on(events.CallbackQuery)
 async def warnssit(e):
     data = e.data.decode('utf-8') if isinstance(e.data, bytes) else e.data
-    النوع, target_id, chat_id = data.split(":")        
+    parts = data.split(':')
+    if len(parts) == 3:
+        النوع, target_id, chat_id = parts       
+    else:
+        await hint(f'خطا في التقسيم {data}')
     msg = await e.get_message()
     t = msg.text
     print(f'{t} \n\n {data}')
@@ -626,8 +630,8 @@ async def warnssit(e):
         zerowarn(target_id, chat_id)
     elif النوع == 'delwarn':
         d = del_warning(target_id, chat_id)
-        tt = count_warnings(target_id, chat_id)
         match = re.search(r"\(3/(\d+)\)", tt)
+        tt = count_warnings(target_id, chat_id)
         t.replace(match, d)
         await e.edit(f"{t}.")
 @ABH.on(events.NewMessage(pattern=r'^(تحذيراتي|تحذيرات(ه|ة))$'))
