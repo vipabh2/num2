@@ -1,8 +1,8 @@
-from telethon import event
+from telethon import events 
 from Resources import *
 from Program import *
 from ABH import *
-@ABH.on(evnets.NewMessage)
+@ABH.on(events.NewMessage)
 async def litsin_to_all(e):
   text = e.text
   await som(e)
