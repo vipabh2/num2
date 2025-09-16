@@ -616,6 +616,8 @@ async def warn_user(event):
     await event.delete()
 @ABH.on(events.CallbackQuery)
 async def warnssit(e):
+    if not is_assistant(e,chat_id, e.sender_id):
+        return await e.answer('🌚', alert=True)
     data = e.data.decode('utf-8') if isinstance(e.data, bytes) else e.data
     parts = data.split(':')
     if len(parts) == 3:
@@ -624,18 +626,13 @@ async def warnssit(e):
         await hint(f'خطا في التقسيم {data}')
     msg = await e.get_message()
     t = msg.text
-    print(f'{t} \n\n {data}')
     if النوع == "zerowarn":
         await e.edit(f"{t} \n ```تم تصفير التحذيرات```")
         zerowarn(target_id, chat_id)
     elif النوع == 'delwarn':
         d = del_warning(target_id, chat_id)
-        tt = count_warnings(target_id, chat_id)
-        t = str(tt)
-        match = re.search(r"\(3/(\d+)\)", t)
-        if match:
-            t = t.replace(match.group(0), str(d))
-        await e.edit(f"{t}.")
+        m = await mention(e)
+        await e.edit(f"تم تعديل التحذيرات بواسطه {m} \n التحذيرات صارت {d}")
 @ABH.on(events.NewMessage(pattern=r'^(تحذيراتي|تحذيرات(ه|ة))$'))
 async def showwarns(e):
     t = e.text
