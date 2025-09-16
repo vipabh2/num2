@@ -480,9 +480,25 @@ async def handler_res(event):
     message_text = event.raw_text
     user_id = event.sender_id
     chat = event.chat_id
-    if chat in restriction_end_times and user_id in restriction_end_times[chat]:
-        await event.delete()
-        return
+    user_id = event.sender_id
+    now = int(time.time())
+    if event.chat_id in restriction_end_times and user_id in restriction_end_times[event.chat_id]:
+        end_time = restriction_end_times[event.chat_id][user_id]
+        if now < end_time:
+            remaining = end_time - now
+            chat = await event.get_chat()
+            rights = ChatBannedRights(
+                until_date=now + remaining,
+                send_messages=True
+            )
+            await event.delete()
+            try:
+                await ABH(EditBannedRequest(channel=chat, participant=user_id, banned_rights=rights))
+                rrr = await mention(event)
+                c = f"تم اعاده تقييد {rrr} لمدة ** {remaining//60} دقيقة و {remaining%60} ثانية.**"
+                await ABH.send_file(event.chat_id, "https://t.me/recoursec/15", caption=c)
+            except Exception as e:
+                await hint(f'خطأ في اعاده التقييد في داله handler_res {e}')
     lock_key = f"lock:{event.chat_id}:تقييد"
     x = redas.get(lock_key) == "True"
     if not event.is_group or not event.raw_text or not x:
