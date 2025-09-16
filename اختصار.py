@@ -2,43 +2,6 @@ import inspect, os, importlib, re, json
 from telethon import events
 from ABH import ABH
 from Resources import *
-def list_functions_with_patterns(folder: str):
-    results = []
-    for filename in os.listdir(folder):
-        if filename.endswith(".py") and filename != os.path.basename(__file__):
-            module_name = filename[:-3]
-            try:
-                module = importlib.import_module(module_name)
-            except Exception as e:
-                results.append(f"⚠️ فشل تحميل {filename}: {e}")
-                continue
-            funcs = []
-            for name, obj in inspect.getmembers(module, inspect.isfunction):
-                func_type = "async" if inspect.iscoroutinefunction(obj) else "def"
-                sig = str(inspect.signature(obj))
-                funcs.append(f"{func_type} {name}{sig}")            
-            patterns = []
-            try:
-                with open(os.path.join(folder, filename), "r", encoding="utf-8") as f:
-                    content = f.read()
-                    matches = re.findall(r'pattern\s*=\s*[\'"](.+?)[\'"]', content)
-                    patterns.extend(matches)
-            except Exception as e:
-                results.append(f"⚠️ فشل فتح {filename}: {e}")            
-            if not patterns:
-                patterns = ["لا يوجد باترين"]
-            for func in funcs:
-                for pat in patterns:
-                    results.append(f"[{func}: {pat}]")
-    return results
-@ABH.on(events.NewMessage(pattern="^الكل$", from_users=[wfffp]))
-async def show_functions_and_patterns(event):
-    results = list_functions_with_patterns(".")
-    if not results:
-        await event.reply("لم يتم العثور على أي دوال أو باترينات في ملفات المجلد الحالي.")
-    else:
-        msg = "🔹 قائمة الدوال مع الباترينات:\n\n" + "\n".join(f"{i+1}. {r}" for i, r in enumerate(results))
-        await event.reply(msg[:4000])
 def list_functions_in_folder(folder: str):
     results = []
     for filename in os.listdir(folder):
