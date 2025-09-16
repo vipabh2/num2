@@ -1,6 +1,6 @@
 from telethon.tl.types import ChannelParticipantAdmin, ChannelParticipantCreator, ChatAdminRights
 from telethon.tl.functions.channels import GetParticipantRequest, EditAdminRequest
-from top import points, add_user, save_points#type: ignore
+from top import points, save_points#type: ignore
 from other import * #type: ignore
 from Program import chs #type: ignore
 from telethon import events, Button
