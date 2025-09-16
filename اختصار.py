@@ -23,5 +23,5 @@ async def show_all_functions(event):
     if not funcs:
         await event.reply("لم يتم العثور على أي دوال في ملفات المجلد الحالي.")
     else:
-        msg = "📝 قائمة الدوال في المشروع:\n\n" + "\n".join(funcs)
+        msg = "📝 قائمة الدوال في المشروع:\n\n" + "\n".join(f"{i+1}. {f}" for i, f in enumerate(funcs))
         await event.reply(msg[:4000])
