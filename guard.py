@@ -616,7 +616,7 @@ async def warn_user(event):
     await event.delete()
 @ABH.on(events.CallbackQuery)
 async def warnssit(e):
-    if not is_assistant(e,chat_id, e.sender_id):
+    if not is_assistant(e.chat_id, e.sender_id):
         return await e.answer('🌚', alert=True)
     data = e.data.decode('utf-8') if isinstance(e.data, bytes) else e.data
     parts = data.split(':')
