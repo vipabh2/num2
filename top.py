@@ -22,18 +22,18 @@ def add_points(uid, gid, points, amount=0):
         points[uid] = 0
     points[uid] += amount
     save_points(points)
-def add_user(uid, gid, name, rose, amount):
-    uid, gid = str(uid), str(gid)
-    if gid not in rose:
-        rose[gid] = {}
-    if uid not in rose[gid]:
-        rose[gid][uid] = {
-            "name": name,
-            "status": "عادي",
-            "giver": None,
-            "m": amount,
-            "promote_value": 0
-        }
+# def add_user(uid, gid, name, rose, amount):
+#     uid, gid = str(uid), str(gid)
+#     if gid not in rose:
+#         rose[gid] = {}
+#     if uid not in rose[gid]:
+#         rose[gid][uid] = {
+#             "name": name,
+#             "status": "عادي",
+#             "giver": None,
+#             "m": amount,
+#             "promote_value": 0
+#         }
 def delpoints(uid, gid, points, amount):
     uid = str(uid)
     if uid not in points:
