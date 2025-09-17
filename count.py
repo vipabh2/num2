@@ -170,7 +170,7 @@ async def his_res(event):
     unm1 = str(r.sender_id)
     guid1 = str(event.chat_id)
     if guid1 in uinfo and unm1 in uinfo[guid1]:
-        msg_count = uinfo[uinfo]
+        msg_count = uinfo[guid1][unm1]
         await react(event, "👍")
         await chs(event, f'{event.text} {msg_count}')
 @ABH.on(events.NewMessage(pattern='^اوامر التوب$'))
