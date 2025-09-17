@@ -303,6 +303,7 @@ async def yes_callback(event):
         msg = await event.get_message()
         uid, الرابط, mention_text, date_posted, date_edited = report_data.get(msg.id, (None, None, None, None, None))
         if uid and الرابط and mention_text:
+            print(uid, الرابط)
             m = await mention(event)
             await event.edit(
                 f"""تم تأكيد أن المستخدم {mention_text} ملغم.
