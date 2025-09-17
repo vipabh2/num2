@@ -204,7 +204,6 @@ async def som(e):
             await e.edit(f' يلا نضحك على {name} \n شنو تحب تشوف', buttons=b)
         else:
             await e.reply('رد على رسالة الشخص اللي تريد تضحك عليه أولًا.')
-@ABH.on(events.CallbackQuery)
 async def callback_handler(event):
     if event.sender_id != wfffp:
         return
@@ -284,7 +283,6 @@ async def myhandlers(event):
         ]
     ]
     await event.reply('شتريد من الاوامر متكلي ', buttons=buttons)
-@ABH.on(events.CallbackQuery)
 async def callbacklist(event):
     await botuse("اوامري")
     b = Button.inline('الرجوع', data='ret'),
