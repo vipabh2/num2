@@ -297,7 +297,7 @@ async def edited(event):
     if not uid in whitelist:
         await msg.delete()
         return
-@ABH.on(events.CallbackQuery(data=b'^yes:(\d+)$'))
+@ABH.on(events.CallbackQuery(data=rb'^yes:(\d+)$'))
 async def yes_callback(event):
     try:
         msg = await event.get_message()
@@ -316,7 +316,7 @@ async def yes_callback(event):
         await event.answer(' تم تسجيل المستخدم كملغّم.')
     except Exception as e:
         await hint(e)
-@ABH.on(events.CallbackQuery(data=b'^no:(\d+)$'))
+@ABH.on(events.CallbackQuery(data=rb'^no:(\d+)$'))
 async def no_callback(event):
     try:
         msg = await event.get_message()
