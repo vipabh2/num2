@@ -120,19 +120,19 @@ async def اليومي(event):
         top_users.append(f"{idx}. {fname} - {msg_count} رسالة")
     x = await event.reply("\n".join(top_users))
     await react(event, "🌚")
-@ABH.on(events.NewMessage(pattern="^توب اليومي|المتفاعلين$"))
-async def اليومي(event):
+@ABH.on(events.NewMessage(pattern="^توب الاسبوعي|تفاعل$"))
+async def الاسبوعي(event):
     if not event.is_group:
         return
-    type = "المتفاعلين"
+    type = "تفاعل"
     await botuse(type)
     guid = str(event.chat_id)
-    if guid not in uinfo or not uinfo[guid]:
+    if guid not in WEAK or not WEAK[guid]:
         await event.reply("لا توجد بيانات لعرضها.")
         await react(event, "💔")
         return
     sorted_users = sorted(
-        uinfo[guid].items(),
+        WEAK[guid].items(),
         key=lambda x: x[1],
         reverse=True
     )[:10]
@@ -145,7 +145,7 @@ async def اليومي(event):
             fname = "مجهول"
         top_users.append(f"{idx}. {fname} - {msg_count} رسالة")
     x = await event.reply("\n".join(top_users))
-    await react(event, "🌚")
+    await react(event, "👍")
 @ABH.on(events.NewMessage(pattern='رسائلي'))
 async def show_my_res(event):
     type = "رسائلي"
