@@ -1,9 +1,10 @@
 from ABH import ABH #type: ignore
-import asyncio, os, json, pytz
 from datetime import datetime
 from telethon import events
 from other import botuse
+import os, json, pytz
 from Resources import *
+from Program import *
 DATA_FILE = "uinfo.json"
 DATA_FILE_WEAK = "uinfoWEAK.json"
 DAILY_RESET_FILE = "daily_reset.json"
@@ -146,34 +147,32 @@ async def الاسبوعي(event):
         top_users.append(f"{idx}. {fname} - {msg_count} رسالة")
     x = await event.reply("\n".join(top_users))
     await react(event, "👍")
-@ABH.on(events.NewMessage(pattern='رسائلي'))
 async def show_my_res(event):
     type = "رسائلي"
     await botuse(type)
-    await asyncio.sleep(2)
-    uid1 = event.sender.first_name
     unm1 = str(event.sender_id)
     guid1 = str(event.chat_id)
-    if unm1 in uinfo and guid1 in uinfo[unm1]:
+    if guid1 in uinfo and unm1 in uinfo[guid1]:
         await react(event, "👍")
-        msg_count = uinfo[unm1][guid1]["msg"]
-        await event.reply(f"المستخدم [{uid1}](tg://user?id={unm1}) أرسلت {msg_count} رسالة في هذه المجموعة.")
-@ABH.on(events.NewMessage(pattern=r'^(رسائله|رسائلة|رسائل)$'))
+        msg_count = uinfo[guid1][unm1]
+        await chs(event, f'رسائلك {msg_count}')
+@ABH.on(events.NewMessage(pattern=r'^(رسائله|رسائلة|رسائل|رسائلي)$'))
 async def his_res(event):
+    if event .text == 'رسائلي':
+        await show_my_res(event)
+        return
     type = "رسائله"
     await botuse(type)
     r = await event.get_reply_message()  
-    await asyncio.sleep(1)
     if not r:
         await react(event, "🤔")
         return
-    uid1 = r.sender.first_name
     unm1 = str(r.sender_id)
     guid1 = str(event.chat_id)
-    if unm1 in uinfo and guid1 in uinfo[unm1]:
-        msg_count = uinfo[unm1][guid1]["msg"]
-        await event.reply(f"المستخدم [{uid1}](tg://user?id={unm1}) أرسل {msg_count} رسالة في هذه المجموعة.")
+    if guid1 in uinfo and unm1 in uinfo[guid1]:
+        msg_count = uinfo[uinfo][unm1]
         await react(event, "👍")
+        await chs(event, f'{event.text} {msg_count}')
 @ABH.on(events.NewMessage(pattern='^اوامر التوب$'))
 async def title(event):
     if not event.is_group:
