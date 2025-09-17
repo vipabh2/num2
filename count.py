@@ -60,7 +60,6 @@ def try_fix_json_file(file_path):
         except json.JSONDecodeError:
             fixed_lines.append(lines[i])
     return {}
-@ABH.on(events.NewMessage)
 async def unified_handler(event):
     global uinfo, WEAK
     if not event.is_group:
