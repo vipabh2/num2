@@ -8,7 +8,6 @@ async def litsin_to_all(e):
   text = e.text
   await unified_handler(e)
   await som(e)
-  await unified_handler(e)
   # if text == '':
 @ABH.on(events.CallbackQuery)
 async def litson(e):
