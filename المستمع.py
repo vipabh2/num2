@@ -7,7 +7,6 @@ from ABH import *
 @ABH.on(events.NewMessage)
 async def litsin_to_all(e):
   text = e.text
-  await unified_handler(e)
   await som(e)
   await unified_handler(e)
   await check_math_answer(e)
