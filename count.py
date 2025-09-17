@@ -101,47 +101,51 @@ async def اليومي(event):
     type = "المتفاعلين"
     await botuse(type)
     guid = str(event.chat_id)
+    if guid not in uinfo or not uinfo[guid]:
+        await event.reply("لا توجد بيانات لعرضها.")
+        await react(event, "💔")
+        return
     sorted_users = sorted(
-        uinfo.items(), 
-        key=lambda x: x[1].get(guid, {}).get('msg', 0), 
+        uinfo[guid].items(),
+        key=lambda x: x[1],
         reverse=True
     )[:10]
     top_users = []
-    for user, data in sorted_users:
-        if guid in data:
-            first_name = data[guid].get('fname', 'مجهول')
-            msg_count = data[guid]["msg"]
-            top_users.append(f"المستخدم {first_name} رسائله -> {msg_count}")
-    if top_users:
-        x = await event.reply("\n".join(top_users))
-        await react(event, "🌚")
-    else:
-        await event.reply("لا توجد بيانات لعرضها.")
-        await react(event, "💔")
-@ABH.on(events.NewMessage(pattern="^توب الاسبوعي|تفاعل$"))
-async def الاسبوعي(event):
+    for idx, (uid, msg_count) in enumerate(sorted_users, 1):
+        try:
+            user = await event.client.get_entity(int(uid))
+            fname = user.first_name or "مجهول"
+        except:
+            fname = "مجهول"
+        top_users.append(f"{idx}. {fname} - {msg_count} رسالة")
+    x = await event.reply("\n".join(top_users))
+    await react(event, "🌚")
+@ABH.on(events.NewMessage(pattern="^توب اليومي|المتفاعلين$"))
+async def اليومي(event):
     if not event.is_group:
         return
-    type = "تفاعل"
+    type = "المتفاعلين"
     await botuse(type)
     guid = str(event.chat_id)
+    if guid not in uinfo or not uinfo[guid]:
+        await event.reply("لا توجد بيانات لعرضها.")
+        await react(event, "💔")
+        return
     sorted_users = sorted(
-        WEAK.items(),
-        key=lambda x: x[1].get(guid, {}).get('msg', 0),
+        uinfo[guid].items(),
+        key=lambda x: x[1],
         reverse=True
     )[:10]
     top_users = []
-    for idx, (user, data) in enumerate(sorted_users, 1):
-        if guid in data:
-            fname = data[guid].get('fname', 'مجهول')
-            msg_count = data[guid]["msg"]
-            top_users.append(f"{idx}. {fname} - {msg_count} رسالة")
-    if top_users:
-        x = await event.reply("\n".join(top_users))
-        await react(event, "👍")
-    else:
-        await event.reply("لا توجد بيانات لعرضها.")
-        await react(event, "💔")
+    for idx, (uid, msg_count) in enumerate(sorted_users, 1):
+        try:
+            user = await event.client.get_entity(int(uid))
+            fname = user.first_name or "مجهول"
+        except:
+            fname = "مجهول"
+        top_users.append(f"{idx}. {fname} - {msg_count} رسالة")
+    x = await event.reply("\n".join(top_users))
+    await react(event, "🌚")
 @ABH.on(events.NewMessage(pattern='رسائلي'))
 async def show_my_res(event):
     type = "رسائلي"
