@@ -336,7 +336,7 @@ async def no_callback(event):
         await ads(group, uid)
     except Exception as e:
         await hint(e)
-@ABH.on(events.CallbackQuery(data=rb'^yes:(\d+)$'))
+@ABH.on(events.CallbackQuery(data=rb'^ye$'))
 async def handler_yes(event):
     user_id = int(event.pattern_match.group(1))
     await event.answer("✅ تم اختيار نعم")
