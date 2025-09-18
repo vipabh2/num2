@@ -242,25 +242,7 @@ async def LC(group_id: int) -> int | None:
             if group_config and "hint_gid" in group_config:
                 return int(group_config["hint_gid"])
         return None
-report_data = {}
-@ABH.on(events.MessageEdited)
-async def edited(event):
-    if not event.is_group or not event.message.edit_date:
-        return
-    msg = event.message
-    chat_id = event.chat_id
-    has_media = msg.media
-    has_document = msg.document
-    chat_dest = await LC(chat_id)
-    if not chat_dest:
-        return
-    has_url = any(isinstance(entity, MessageEntityUrl) for entity in (msg.entities or []))
-    if not (has_media or has_document or has_url):
-        return
-    uid = event.sender_id
-    perms = await ABH.get_permissions(chat_id, uid)
-    if perms.is_admin:
-        return
+
     whitelist = await lw(chat_id)
     if event.sender_id in whitelist:
         return
@@ -273,15 +255,13 @@ async def edited(event):
         رابط = f"https://t.me/c/{clean_id}/{event.id}"
     buttons = [
         [
-            # Button.inline(' نعم', data=f"yes:{uid}"),
-            # Button.inline(' لا', data=f"no:{uid}")
-            Button.inline(' نعم', data=f"ye:"),
-            Button.inline(' لا', data=f"no:")
+            Button.inline(' نعم', data=f"yes:{uid}"),
+            Button.inline(' لا', data=f"no:{uid}")
         ]
     ]
     date_posted = event.message.date.strftime('%Y-%m-%d %H:%M')
     date_edited = event.message.edit_date.strftime('%Y-%m-%d %H:%M')
-    await ABH.send_message(
+    sent_msg = await ABH.send_message(
         int(chat_dest),
         f"""تم تعديل رسالة مشتبه بها:
 المستخدم: {mention_text}  
@@ -294,30 +274,30 @@ async def edited(event):
         buttons=buttons,
         link_preview=True
     )
-    report_data[msg.id] = (uid, رابط, mention_text, date_posted, date_edited)
+    report_data[sent_msg.id] = (uid, رابط, mention_text, date_posted, date_edited)
     await asyncio.sleep(60)
-    if not uid in whitelist:
-        await msg.delete()
+    if uid in whitelist:
+        await sent_msg.delete()
         return
-# @ABH.on(events.CallbackQuery(data=rb'^yes:(\d+)$'))
-@ABH.on(events.CallbackQuery(data=rb'^ye:$'))
+@ABH.on(events.CallbackQuery(pattern=r'^yes:(\d+)$'))
 async def yes_callback(event):
-      # uid=event.data_match.group(1)
-      msg=await event.get_message()
-      uid2,الرابط,mention_text,date_posted,date_edited=report_data.get(msg.id,(None,None,None,None,None))
-      print(uid2)
-      print(msg)
-      if uid2 and الرابط and mention_text:
-          m=await mention(event)
-          await event.edit(f"""تم تأكيد أن المستخدم {mention_text} ملغم.
-[رابط الرسالة]({الرابط})
-معرفه: `{uid2}`
-تاريخ النشر - {date_posted}
-تاريخ التعديل - {date_edited}
-بواسطة {m}
-""")
-      await event.answer(" تم تسجيل المستخدم كملغّم.")
-@ABH.on(events.CallbackQuery(data=rb'^no:(\d+)$'))
+    try:
+        msg = await event.get_message()
+        uid, الرابط, mention_text, date_posted, date_edited = report_data.get(msg.id, (None, None, None, None, None))
+        if uid and الرابط and mention_text:
+            m = await mention(event)
+            await event.edit(
+                f"""تم تأكيد أن المستخدم {mention_text} ملغم.
+                [رابط الرسالة]({الرابط})
+                معرفه: `{uid}`
+                تاريخ النشر - {date_posted}
+                تاريخ التعديل - {date_edited}
+                بواسطه {m}
+    """)
+        await event.answer(' تم تسجيل المستخدم كملغّم.')
+    except Exception as e:
+        await hint(e)
+@ABH.on(events.CallbackQuery(pattern=r'^no:(\d+)$'))
 async def no_callback(event):
     try:
         msg = await event.get_message()
@@ -336,16 +316,6 @@ async def no_callback(event):
         await ads(group, uid)
     except Exception as e:
         await hint(e)
-@ABH.on(events.CallbackQuery(data=rb'^ye$'))
-async def handler_yes(event):
-    user_id = int(event.pattern_match.group(1))
-    await event.answer("✅ تم اختيار نعم")
-    await event.edit(f"اخترت نعم (ID: {user_id})")
-@ABH.on(events.CallbackQuery(data=rb'^no:(\d+)$'))
-async def handler_no(event):
-    user_id = int(event.pattern_match.group(1))
-    await event.answer("❌ تم اختيار لا")
-    await event.edit(f"اخترت لا (ID: {user_id})")
 @ABH.on(events.NewMessage(pattern='اضف قناة التبليغات'))
 async def add_hintchannel(event):
     chat_id = event.chat_id
