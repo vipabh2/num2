@@ -300,7 +300,7 @@ async def edited(event):
 @ABH.on(events.CallbackQuery(data=rb'^yes:(\d+)$'))
 async def yes_callback(event):
     try:
-        uid=int(event.data_match.group(1)
+        uid=int(event.data_match.group(1))
         print(uid)
         msg=await event.get_message()
         uid2,الرابط,mention_text,date_posted,date_edited=report_data.get(msg.id,(None,None,None,None,None))
