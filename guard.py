@@ -302,24 +302,21 @@ async def edited(event):
 # @ABH.on(events.CallbackQuery(data=rb'^yes:(\d+)$'))
 @ABH.on(events.CallbackQuery(data=rb'^yes:$'))
 async def yes_callback(event):
-    try:
-        # uid=event.data_match.group(1)
-        msg=await event.get_message()
-        uid2,الرابط,mention_text,date_posted,date_edited=report_data.get(msg.id,(None,None,None,None,None))
-        print(uid2)
-        print(msg)
-        if uid2 and الرابط and mention_text:
-            m=await mention(event)
-            await event.edit(f"""تم تأكيد أن المستخدم {mention_text} ملغم.
+      # uid=event.data_match.group(1)
+      msg=await event.get_message()
+      uid2,الرابط,mention_text,date_posted,date_edited=report_data.get(msg.id,(None,None,None,None,None))
+      print(uid2)
+      print(msg)
+      if uid2 and الرابط and mention_text:
+          m=await mention(event)
+          await event.edit(f"""تم تأكيد أن المستخدم {mention_text} ملغم.
 [رابط الرسالة]({الرابط})
 معرفه: `{uid2}`
 تاريخ النشر - {date_posted}
 تاريخ التعديل - {date_edited}
 بواسطة {m}
 """)
-        await event.answer(" تم تسجيل المستخدم كملغّم.")
-    except Exception as e:
-        await hint(e)
+      await event.answer(" تم تسجيل المستخدم كملغّم.")
 @ABH.on(events.CallbackQuery(data=rb'^no:(\d+)$'))
 async def no_callback(event):
     try:
