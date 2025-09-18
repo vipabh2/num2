@@ -273,8 +273,10 @@ async def edited(event):
         رابط = f"https://t.me/c/{clean_id}/{event.id}"
     buttons = [
         [
-            Button.inline(' نعم', data=f"yes:{uid}"),
-            Button.inline(' لا', data=f"no:{uid}")
+            # Button.inline(' نعم', data=f"yes:{uid}"),
+            # Button.inline(' لا', data=f"no:{uid}")
+            Button.inline(' نعم', data=f"yes:"),
+            Button.inline(' لا', data=f"no:")
         ]
     ]
     date_posted = event.message.date.strftime('%Y-%m-%d %H:%M')
@@ -297,13 +299,15 @@ async def edited(event):
     if not uid in whitelist:
         await msg.delete()
         return
-@ABH.on(events.CallbackQuery(data=rb'^yes:(\d+)$'))
+# @ABH.on(events.CallbackQuery(data=rb'^yes:(\d+)$'))
+@ABH.on(events.CallbackQuery(data=rb'^yes:$'))
 async def yes_callback(event):
     try:
-        uid=event.data_match.group(1)
-        print(uid)
+        # uid=event.data_match.group(1)
         msg=await event.get_message()
         uid2,الرابط,mention_text,date_posted,date_edited=report_data.get(msg.id,(None,None,None,None,None))
+        print(uid2)
+        print(msg)
         if uid2 and الرابط and mention_text:
             m=await mention(event)
             await event.edit(f"""تم تأكيد أن المستخدم {mention_text} ملغم.
