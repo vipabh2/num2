@@ -1,51 +1,19 @@
 from telethon.tl.types import ChannelParticipantCreator, ChannelParticipantAdmin, ChatBannedRights
-from telethon.tl.types import ChannelParticipantBanned, ChatBannedRights, MessageEntityUrl
 from telethon.tl.functions.channels import EditBannedRequest, GetParticipantRequest
+from telethon.tl.types import ChatBannedRights, MessageEntityUrl
+from Resources import group, mention, ment, hint, react
 from other import is_assistant, botuse, is_owner
 from telethon import events, Button
 from Program import r as redas, chs
 import os, asyncio, re, json, time
 from top import points, delpoints
-from Resources import *
 from ABH import ABH
-@ABH.on(events.NewMessage(pattern="الغاء تقييد عام"))
-async def delres(e):
-    id = e.sender_id
-    x = save(None, filename="secondary_devs.json")
-    a = await is_owner(e.chat_id, id)
-    z = await can_ban_users(e.chat_id, id)
-    s = save(None, "secondary_devs.json")
-    k = str(e.chat_id) in s and str(id) in s[str(e.chat_id)]
-    if not (
-        a
-        or z
-        or k
-    ):
-        await e.reply("ليس لديك صلاحيات كافية.")
-        return
-    r = await e.get_reply_message()
-    if not r or not r.sender_id:
-        await e.reply("الرجاء الرد على رسالة المستخدم المراد إلغاء تقييده.")
-        return    
-    participant = await ABH(GetParticipantRequest(e.chat_id, r.sender_id))
-    if not isinstance(participant.participant, ChannelParticipantBanned):
-        await e.reply("المستخدم غير مقيد.")
-        return
-    del restriction_end_times[e.chat_id][r.sender_id]
-    await ABH(EditBannedRequest(
-        e.chat_id,
-        r.sender_id,
-        ChatBannedRights(until_date=None)
-    ))
-    x = await r.get_sender()
-    m = await ment(x)
-    await e.reply(f"تم إلغاء التقييد العام عن {m}")
 @ABH.on(events.NewMessage(pattern=r"^المقيدين عام$"))
 async def list_restricted(event):
     chat_id = event.chat_id
     now = int(time.time())
-    if not restriction_end_times.get(chat_id):
-        await event.reply(" لا يوجد حالياً أي مستخدم مقيد.")
+    if chat_id not in restriction_end_times or not restriction_end_times[chat_id]:
+        await event.reply("لا يوجد أي مستخدم مقيد حالياً.")
         return
     msg = "📋 قائمة المقيدين عام:\n\n"
     expired_users = []
@@ -63,9 +31,9 @@ async def list_restricted(event):
             msg += f"مستخدم غير معروف — `{user_id}`\n"
             await hint(e)
     for user_id in expired_users:
-        restriction_end_times[chat_id].pop(user_id, None)
+        del restriction_end_times[chat_id][user_id]
     if msg.strip() == "📋 قائمة المقيدين عام:":
-        msg = " لا يوجد حالياً أي مستخدم مقيد."
+        msg = "✅ لا يوجد حالياً أي مستخدم مقيد."
     await event.reply(msg, link_preview=False)
 async def notAssistantres(event):
     if not event.is_group:
@@ -83,7 +51,7 @@ async def notAssistantres(event):
         return await event.reply("يجب الرد على رسالة العضو الذي تريد تقييده.")    
     rs = await r.get_sender()
     target_name = await ment(rs)
-    user_points = points[str(user_id)]
+    user_points = points.get(str(user_id), {}).get(str(chat_id), {}).get("points", 0)
     if user_points < 1000000:
         return await event.reply("عزيزي الفقير , لازم ثروتك اكثر من مليون دينار.")
     try:
@@ -95,7 +63,7 @@ async def notAssistantres(event):
     user_to_restrict = await r.get_sender()
     user_id = user_to_restrict.id
     now = int(time.time())
-    restriction_duration = 60
+    restriction_duration = 30
     rights = ChatBannedRights(
         until_date=now + restriction_duration,
         send_messages=True
@@ -107,11 +75,11 @@ async def notAssistantres(event):
         await hint(e)
     await botuse("تقييد ميم")
     sender_name = await ment(sender)
-    delpoints(event.sender_id, chat_id, points, 10000000)
-    caption = f"تم تقييد {target_name} لمدة 30 ثانية. \n بطلب من {sender_name} \n\n **ملاحظة:** تم خصم 10000000 دينار من ثروتك."
+    delpoints(event.sender_id, chat_id, points, 1000000)
+    caption = f"تم تقييد {target_name} لمدة 30 ثانية. \n بطلب من {sender_name} \n\n **ملاحظة:** تم خصم 1000000 دينار من ثروتك."
     await ABH.send_file(chat_id, "https://t.me/VIPABH/592", caption=caption)
 restriction_end_times = {}
-@ABH.on(events.NewMessage(pattern=r'^(تقييد عام|مخفي قيده|تقييد ميم|مخفي قيدة)'))
+@ABH.on(events.NewMessage(pattern='^تقييد عام|مخفي قيده|مخفي قيدة$'))
 async def restrict_user(event):
     if not event.is_group:
         return
@@ -123,8 +91,7 @@ async def restrict_user(event):
     chat = await event.get_chat()
     chat_id = str(event.chat_id)
     user_id = event.sender_id
-    text = event.text
-    if not is_assistant(chat_id, user_id) or text == "تقييد ميم":
+    if not is_assistant(chat_id, user_id):
         await notAssistantres(event)
         # await chs(event, 'شني خالي كبينه انت مو معاون')
         return
@@ -136,7 +103,7 @@ async def restrict_user(event):
     try:
         participant = await ABH(GetParticipantRequest(channel=chat, participant=sender.id))
         if isinstance(participant.participant, (ChannelParticipantCreator, ChannelParticipantAdmin)):
-            return
+            return await event.reply(f"لا يمكنك تقييد {name} لانه مشرف ")
     except:
         return
     now = int(time.time())
@@ -147,7 +114,9 @@ async def restrict_user(event):
         until_date=now + restriction_duration,
         send_messages=True
     )
-    restriction_end_times.setdefault(event.chat_id, {})[user_id] = now + restriction_duration
+    if event.chat_id in restriction_end_times and user_id in restriction_end_times[event.chat_id]:
+        restriction_end_times[event.chat_id][user_id] = now + restriction_duration
+        return
     try:
         await ABH(EditBannedRequest(channel=chat, participant=user_id, banned_rights=rights))
         type = "تقييد عام"
@@ -173,13 +142,13 @@ async def monitor_messages(event):
         end_time = restriction_end_times[event.chat_id][user_id]
         if now < end_time:
             remaining = end_time - now
-            await event.delete()
             try:
                 chat = await event.get_chat()
                 rights = ChatBannedRights(
                     until_date=now + remaining,
                     send_messages=True
                 )
+                await event.delete()
                 await ABH(EditBannedRequest(channel=chat, participant=user_id, banned_rights=rights))
                 rrr = await mention(event)
                 c = f"تم اعاده تقييد {rrr} لمدة ** {remaining//60} دقيقة و {remaining%60} ثانية.**"
@@ -242,7 +211,25 @@ async def LC(group_id: int) -> int | None:
             if group_config and "hint_gid" in group_config:
                 return int(group_config["hint_gid"])
         return None
-
+report_data = {}
+@ABH.on(events.MessageEdited)
+async def edited(event):
+    if not event.is_group or not event.message.edit_date:
+        return
+    msg = event.message
+    chat_id = event.chat_id
+    has_media = msg.media
+    has_document = msg.document
+    chat_dest = await LC(chat_id)
+    if not chat_dest:
+        return
+    has_url = any(isinstance(entity, MessageEntityUrl) for entity in (msg.entities or []))
+    if not (has_media or has_document or has_url):
+        return
+    uid = event.sender_id
+    perms = await ABH.get_permissions(chat_id, uid)
+    if perms.is_admin:
+        return
     whitelist = await lw(chat_id)
     if event.sender_id in whitelist:
         return
@@ -353,21 +340,20 @@ async def show_hintchannel(event):
     else:
         await event.reply("︙لم يتم تعيين قناة تبليغات لهذه المجموعة بعد.")
 banned_words = [
-    "كس امك", "طيز", "طيزك", "فرخ", "كواد", "اخلكحبة", "اينيج", "بربوك", "زب", "انيجمك", "الكواد",
-    "الفرخ", "تيز", "كسم", "سكسي", "كحاب", "مناويج", "منيوج", "عيورة","انزع", "انزعي", "خرب الله",
-    "احط رجلي", "عاهرات", "عواهر", "عاهره", "عاهرة", "ناكك", "اشتعل دينه", "احترك دينك", "الجبة",
-    "فريخ", "فريخة", "فريخه", "فرخي", "قضيب", "مايا", "ماية", "مايه", "بكسمك", "تيل بيك", "كومبي",
-    "طيزها", "عيري", "خرب الله", "العير", "بعيري", "كحبه", "برابيك", "نيجني", "العريض", "الجبه",
-    "تيز", "التيز", "الديوث", "كسمج", "بلبولك", "صدرج", "كسعرضك" , "الخنيث", "انزعو", "انزعوا",
-    "بكسختك", "🍑", "نغل", "نغولة", "نغوله", "ينغل", "كس", "عير", "كسمك", "كسختك", "خرب ابربك", 
-    "ارقة جاي", "انيجك", "نيجك", "كحبة", "ابن الكحبة", "ابن الكحبه", "تنيج", "كسين", "مدوده",
     "كمبي", "كوم بي", "قوم بي", "قم بي", "قوم به", "كومت", "قومت", "الطيازه", "دوده", 'دودة',
-    "خرب بربك", "خربربج", "خربربها", "خرب بربها", "خرب بربة", "خرب بربكم", "كومبي", "مدودة",
-    "نيچني", "نودز", "نتلاوط", "لواط", "لوطي", "فروخ", "منيوك", "خربدينه", "خربدينك", "مدود",
-    "عيورتكم", "انيجة", "انيچة", "انيجه", "انيچه", "أناج", "اناج", "انيج", "أنيج", "منيوك",
+    "احط رجلي", "عاهرات", "عواهر", "عاهره", "عاهرة", "ناكك", "اشتعل دينه", "احترك دينك",
+    "طيزها", "عيري", "خرب الله", "العير", "بعيري", "كحبه", "برابيك", "نيجني", "العريض",
+    "نيچني", "نودز", "نتلاوط", "لواط", "لوطي", "فروخ", "منيوك", "خربدينه", "خربدينك", 
+    "خرب بربك", "خربربج", "خربربها", "خرب بربها", "خرب بربة", "خرب بربكم", "كومبي", 
+    "ارقة جاي", "انيجك", "نيجك", "كحبة", "ابن الكحبة", "ابن الكحبه", "تنيج", "كسين"
+    "عيورتكم", "انيجة", "انيچة", "انيجه", "انيچه", "أناج", "اناج", "انيج", "أنيج", 
+    "بكسختك", "🍑", "نغل", "نغولة", "نغوله", "ينغل", "كس", "عير", "كسمك", "كسختك", 
     "اتنيج", "ينيج", "طيرك", "ارقه جاي", "يموط", "تموط", "موطلي", "اموط", "بورن", 
     "خربدينة", "خربدينج", "خربدينكم", "خربدينها", "خربربه", "خربربة", "خربربك", 
     "خرب دينه", "كسك", "كسه", "كسة", "اكحاب", "أكحاب", "زنا", "كوم بي", "كمبي", 
+    "فريخ", "فريخة", "فريخه", "فرخي", "قضيب", "مايا", "ماية", "مايه", "بكسمك", 
+    "كس امك", "طيز", "طيزك", "فرخ", "كواد", "اخلكحبة", "اينيج", "بربوك", "زب", 
+    "الفرخ", "تيز", "كسم", "سكسي", "كحاب", "مناويج", "منيوج", "عيورة",
 ]
 def normalize_arabic(text):
     text = re.sub(r'[\u064B-\u0652\u0640]', '', text)
@@ -379,19 +365,6 @@ def normalize_arabic(text):
         'ؤ': 'و',
         'ئ': 'ي',
         'ة': 'ه',
-        'ى': '',
-        'ـ': '',
-        'ض': '',
-        '/': '',
-        '\\': '',
-        '|': '',
-        '.': '',
-        ',': '',
-        '’': '',
-        '_': '',
-        '-': '',
-        '$': '',
-        'ال': '',
     }
     for src, target in replace_map.items():
         text = text.replace(src, target)    
@@ -401,8 +374,7 @@ normalized_banned_words = set(normalize_arabic(word) for word in banned_words)
 async def is_admin(chat, user_id):
     try:
         participant = await ABH(GetParticipantRequest(chat, user_id))
-        x = isinstance(participant.participant, (ChannelParticipantAdmin, ChannelParticipantCreator))
-        return x
+        return isinstance(participant.participant, (ChannelParticipantAdmin, ChannelParticipantCreator))
     except:
         return False
 def contains_banned_word(message):
@@ -417,226 +389,117 @@ def load_warns():
     if os.path.exists(WARN_FILE):
         with open(WARN_FILE, "r", encoding="utf-8") as f:
             return json.load(f)
-    return {}
+    else:
+        return {}
 def save_warns(warns_data):
     with open(WARN_FILE, "w", encoding="utf-8") as f:
         json.dump(warns_data, f, ensure_ascii=False, indent=2)
 def add_warning(user_id: int, chat_id: int) -> int:
     warns = load_warns()
-    chat_id_str = str(chat_id)
     user_id_str = str(user_id)
-    if chat_id_str not in warns:
-        warns[chat_id_str] = {}
-    if user_id_str not in warns[chat_id_str]:
-        warns[chat_id_str][user_id_str] = 0
-    warns[chat_id_str][user_id_str] += 1
-    current_warns = warns[chat_id_str][user_id_str]
+    chat_id_str = str(chat_id)
+    if user_id_str not in warns:
+        warns[user_id_str] = {}
+    if chat_id_str not in warns[user_id_str]:
+        warns[user_id_str][chat_id_str] = 0
+    warns[user_id_str][chat_id_str] += 1
+    current_warns = warns[user_id_str][chat_id_str]
     if current_warns >= 3:
-        warns[chat_id_str][user_id_str] = 0
+        warns[user_id_str][chat_id_str] = 0
+        save_warns(warns)
     save_warns(warns)
     return current_warns
-def del_warning(user_id: int, chat_id: int) -> int:
-    warns = load_warns()
-    chat_id_str = str(chat_id)
-    user_id_str = str(user_id)
-    if chat_id_str in warns and user_id_str in warns[chat_id_str]:
-        if warns[chat_id_str][user_id_str] > 0:
-            warns[chat_id_str][user_id_str] -= 1
-            save_warns(warns)
-            return warns[chat_id_str][user_id_str]
-    return 0
-def zerowarn(user_id: int, chat_id: int) -> int:
-    warns = load_warns()
-    chat_id_str = str(chat_id)
-    user_id_str = str(user_id)
-    if chat_id_str in warns and user_id_str in warns[chat_id_str]:
-        warns[chat_id_str][user_id_str] = 0
-        save_warns(warns)
-        return 0
-    return 0
-def count_warnings(user_id: int, chat_id: int) -> int:
-    warns = load_warns()
-    chat_id_str = str(chat_id)
-    user_id_str = str(user_id)
-    if chat_id_str in warns and user_id_str in warns[chat_id_str]:
-        return warns[chat_id_str][user_id_str]
-    return 0
-async def send(e, m):
-    c = e.chat_id
-    l = await LC(str(c))
-    if not l:
-        return
-    await ABH.send_message(l, m)
 @ABH.on(events.NewMessage)
 async def handler_res(event):
-    message_text = event.raw_text
-    user_id = event.sender_id
-    chat = event.chat_id
-    user_id = event.sender_id
-    now = int(time.time())
     lock_key = f"lock:{event.chat_id}:تقييد"
     x = redas.get(lock_key) == "True"
     if not event.is_group or not event.raw_text or not x:
         return
+    message_text = event.raw_text.strip()
     x = contains_banned_word(message_text)
-    b = [Button.inline(f'الغاء التحذير', data=f'delwarn:{chat}:{user_id}'), Button.inline('تصفير التحذيرات', data=f'zerowarn:{chat}:{user_id}')]
-    الغاء = Button.inline('الغاء التقييد', data=f'unres:{chat}|{user_id}')
-    xx = await event.get_sender()
-    ء = await ment(xx)
-    l = await link(event)
-    if not x:
-        return
-    await botuse('تحذير بسبب الفشار')
-    assis = is_assistant(chat, user_id)
-    if assis:
-        await send(
-            event,
-            f"⚠️ تم رصد مخالفة:\n"
-            f"👤 #المعاون: {ء} │ 🆔 `{user_id}`\n"
-            f"📝 الكلمة الممنوعة: `{x}`\n"
-            f"🔗 الرابط: {l}"
-        )
-        await try_forward(event)
-        await event.delete()
-        return
-    w = add_warning(user_id, chat)
-    now = int(time.time())
-    restriction_duration = 600
-    if w == 3:
+    user_id = event.sender_id
+    chat = event.chat_id
+    if x:
         if await is_admin(chat, user_id):
-            restriction_end_times.setdefault(event.chat_id, {})[user_id] = now + restriction_duration
-            await event.respond(
-                f"🔇 تم كتم المشرف {ء}\n🆔 الايدي: `{user_id}`\n📑 السبب: تكرار إرسال الكلمات المحظورة.",
-                buttons=الغاء
-                )
-            await try_forward(event)       
-            await send(
-                event,
-                f"🔇 تم كتم #المشرف:\n👤 {ء} │ 🆔 `{user_id}`\n📑 السبب: كثرة المخالفات\n✉️ أرسل: {x}\n🔗 الرابط: {l}",
-            )
+            await event.delete()
             return
-        else:
+        await event.delete()
+        w = add_warning(user_id, chat)
+        await botuse("تحذير مستخدمين")
+        s = await mention(event)
+        if w == 3:
+            hint_channel = await LC(chat)
+            if hint_channel:
+                await ABH.send_message(
+                    int(hint_channel),
+                    f"""🔒 تم تقييد المستخدم
+                👤 {s}
+                ❗️بسبب تكرار استخدام كلمات محظورة.
+                 سيتم رفع التقييد تلقائيًا بعد 20 دقيقة.
+                 عدد التحذيرات: {w} / 3
+                """
+            )
+            now = int(time.time())
+            restriction_duration = 20 * 60
+            restriction_end_times[event.chat_id][user_id] = now + restriction_duration
             rights = ChatBannedRights(
-            until_date=now + restriction_duration,
-            send_messages=True)
-            await ABH(EditBannedRequest(channel=chat, participant=event.sender_id, banned_rights=rights))
-            restriction_end_times.setdefault(event.chat_id, {})[event.sender_id] = now + restriction_duration
-            await event.respond(
-                f"⛔ تم تقييد العضو:\n👤 {ء} │ 🆔 `{user_id}`\n📑 السبب: تكرار إرسال الكلمات المحظورة",
-                buttons=الغاء
-            )
-            await send(
-                event,
-                f"🔇 تم كتم العضو:\n👤 {ء} │ 🆔 `{user_id}`\n⚠️ السبب: كثرة المخالفات\n📝 أرسل: {x}\n🔗 الرابط: {l}",
-            )
-            return
-    else:
-        await event.respond(
-            f"⚠️ تم توجيه تحذير للعضو:\n👤 {ء} │ 🆔 `{user_id}`\n🚫 السبب: إرسال كلمة محظورة\n🔢 عدد التحذيرات: (3/{w})",
-            buttons=b
-            )
-        await send(
-            event,
-            f"""كلمة محظورة!
-            👤 من: {ء}
+                until_date=now + restriction_duration,
+                send_messages=True
+            )     
+            await ABH(EditBannedRequest(channel=chat, participant=user_id, banned_rights=rights))
+        else:
+            hint_channel = await LC(chat)
+            await ABH.send_message(
+                int(hint_channel),
+                f"""كلمة محظورة!
+            👤 من: {s}
             🆔 ايديه: `{user_id}`
             ❗ الكلمة المحظورة: `{x}`
-            تم حذف الرسالة وتحذيره.
-            عدد التحذيرات: ( {w} / 3 )
-            """, 
-        )
-    await try_forward(event)
-    await event.delete()
+             تم حذف الرسالة وتحذيره.
+             عدد التحذيرات: {w} / 3
+            """
+            )
+            type = "تقييد بسبب الفشار"
+            await botuse(type)
 @ABH.on(events.NewMessage(pattern='^تحذير$'))
 async def warn_user(event):
     if not event.is_group:
         return
-    lc = await LC(event.chat_id)
     chat_id = event.chat_id
     user_id = event.sender_id
-    x = save(None, filename="secondary_devs.json")
-    a = await is_owner(event.chat_id, user_id)
-    if user_id != wfffp and (str(event.chat_id) not in x or str(user_id) not in x[str(chat_id)]) and not a and not is_assistant(chat_id, user_id):
-        await chs(event, 'شني خالي كبينه ')
+    if not is_assistant(chat_id, user_id):
         return
     r = await event.get_reply_message()
     if not r:
         return await event.reply("يجب الرد على رسالة العضو الذي تريد تحذيره.")
     target_id = r.sender_id
-    if is_assistant(chat_id, target_id) and is_assistant(chat_id, user_id):
-        await chs(event, 'غراب يكول لغراب وجهك اسود')
-        return
-    if is_assistant(chat_id, target_id):
-        await chs(event, 'هييييييه متكدر تحذر المعاون')
-        return
-    w = add_warning(str(target_id), str(chat_id))
-    p = await r.get_sender()
-    x = await ment(p)
-    b = [Button.inline("الغاء التحذير", data=f"delwarn:{target_id}:{chat_id}"), Button.inline("تصفير التحذيرات", data=f"zerowarn:{target_id}:{chat_id}")]
-    l = await link(event)
-    await event.respond(
-        f'تم تحذير المستخدم {x} ( `{target_id}` ) \n تحذيراته صارت ( 3/{w} )',
-        buttons=b
-    )
-    restriction_duration = 900
-    await r.delete()
-    if w == 3 and await is_admin(chat_id, target_id):
-        now = int(time.time())
-        restriction_end_times.setdefault(event.chat_id, {})[target_id] = now + restriction_duration
-    elif w == 3 and not await is_admin(chat_id, target_id):
-        now = int(time.time())
-        rights = ChatBannedRights(
-            until_date=now + restriction_duration,
-            send_messages=True)
-        await ABH(EditBannedRequest(channel=chat_id, participant=target_id, banned_rights=rights))
-        restriction_end_times.setdefault(event.chat_id, {})[target_id] = now + restriction_duration
-        return
-    await botuse("تحذير مستخدمين")
-    المحذر= await mention(event)
-    await send(
-        event, 
-        f"🚨 ┇ #تـحـذيـر ┇ 🚨\n"
-        f"👤 المُحَذِّر:   {المحذر}\n"
-        f"👤 المُحَذَّر:   {x}\n"
-        f"🆔 الآيـدي:   `{target_id}`\n"
-        f"⚠️ التحذيرات:   {w} / 3\n"
-        f"🔗 رابط الرسالة:   {l}"
-    )
-    await try_forward(event)
+    if is_admin(chat_id, target_id) or is_assistant(chat_id, target_id):
+        return await event.reply("لا يمكنك تحذير المشرفين أو المساعدين.")
     await event.delete()
-@ABH.on(events.CallbackQuery)
-async def warnssit(e):
-    data = e.data.decode('utf-8') if isinstance(e.data, bytes) else e.data
-    parts = data.split(':')
-    if len(parts) == 3:
-        if not is_assistant(e.chat_id, e.sender_id):
-            return await e.answer('🌚')
-            النوع, target_id, chat_id = parts
-            msg = await e.get_message()
-            t = msg.text
-            if النوع == "zerowarn":
-                await e.edit(f"{t} \n ```تم تصفير التحذيرات```")
-                zerowarn(target_id, chat_id)
-            elif النوع == 'delwarn':
-                d = del_warning(target_id, chat_id)
-                m = await mention(e)
-                await e.edit(f"تم تعديل التحذيرات بواسطه {m} \n التحذيرات صارت {d}")
-@ABH.on(events.NewMessage(pattern=r'^(تحذيراتي|تحذيرات(ه|ة))$'))
-async def showwarns(e):
-    t = e.text
-    chat = e.chat_id
-    target_id = None
-    if t == 'تحذيراتي':
-        target_id = e.sender_id
-    else:
-        r = await e.get_reply_message()
-        if not r:
-            await chs(e, "⚠️ لازم ترد على رسالة الشخص")
-            return
-        target_id = r.sender_id
-    معاون = is_assistant(chat, target_id)
-    if معاون:
-        await chs(e, "لك شمعة ماكو تحذيرات")
+    await r.delete()
+    w = add_warning(target_id, chat_id)
+    p = await r.get_sender()
+    x = await mention(p)
+    await event.respond(
+        f"🚨 تم تحذير المستخدم:\n"
+        f"👤 الاسم: {x}\n"
+        f"🆔 الايدي: `{target_id}`\n"
+        f"⚠️ عدد التحذيرات: {w} / 3"
+    )
+@ABH.on(events.NewMessage(pattern='!تجربة'))
+async def test_broadcast(event):
+    chat_id = event.chat_id
+    user_id = event.sender_id
+    if not is_assistant(chat_id, user_id) or not event.is_group:
         return
-    w = count_warnings(int(target_id), int(chat))
-    await chs(e, f' ( 3/{w} )')
+    type = "تجربة"
+    await botuse(type)
+    hint_channel = await LC(chat_id)
+    if not hint_channel:
+        return await event.reply("↯︙لم يتم تعيين قناة تبليغات لهذه المجموعة بعد. استخدم الأمر 'اضف قناة التبليغات' أولاً.")
+    try:
+        hint_channel_id = int(hint_channel)
+        await ABH.send_message(hint_channel_id, f"هذه رسالة تجربة من المجموعة: {chat_id}")
+        await event.reply("✔︙تم إرسال رسالة التجربة إلى قناة التبليغات بنجاح.")
+    except Exception as e:
+        await event.reply(f"︙حدث خطأ أثناء إرسال الرسالة: {e}")
