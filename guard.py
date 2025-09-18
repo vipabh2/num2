@@ -275,7 +275,7 @@ async def edited(event):
         [
             # Button.inline(' نعم', data=f"yes:{uid}"),
             # Button.inline(' لا', data=f"no:{uid}")
-            Button.inline(' نعم', data=f"yes:"),
+            Button.inline(' نعم', data=f"ye:"),
             Button.inline(' لا', data=f"no:")
         ]
     ]
@@ -300,7 +300,7 @@ async def edited(event):
         await msg.delete()
         return
 # @ABH.on(events.CallbackQuery(data=rb'^yes:(\d+)$'))
-@ABH.on(events.CallbackQuery(data=rb'^yes:$'))
+@ABH.on(events.CallbackQuery(data=rb'^ye:$'))
 async def yes_callback(event):
       # uid=event.data_match.group(1)
       msg=await event.get_message()
