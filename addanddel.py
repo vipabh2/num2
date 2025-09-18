@@ -193,8 +193,8 @@ async def promoti(event):
         del session[chat_id]
         del promot[chat_id][target_user_id]
         return
-    if data not in rights:
-        return
+    #if data not in rights:
+        #return
     rights[data] = True
     await event.answer(f' تم تفعيل: {data}', alert=False)
 # @ABH.on(events.NewMessage(pattern=r'رفع سمب(?:\s+(\d+))?'))
