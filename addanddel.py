@@ -1,3 +1,4 @@
+
 from telethon.tl.types import ChannelParticipantAdmin, ChannelParticipantCreator, ChatAdminRights
 from telethon.tl.functions.channels import GetParticipantRequest, EditAdminRequest
 from top import points, save_points#type: ignore
@@ -155,7 +156,7 @@ async def promoteADMIN(event):
         caption=c,
         reply_to=event.id,
         buttons=buttons)
-# @ABH.on(events.CallbackQuery)
+@ABH.on(events.CallbackQuery)
 async def promoti(event):
     data = event.data.decode('utf-8')
     if data == 'empty':
