@@ -300,7 +300,7 @@ async def edited(event):
 @ABH.on(events.CallbackQuery(data=rb'^yes:(\d+)$'))
 async def yes_callback(event):
     try:
-        uid=int(event.data_match.group(1))
+        uid=event.data_match.group(1)
         print(uid)
         msg=await event.get_message()
         uid2,الرابط,mention_text,date_posted,date_edited=report_data.get(msg.id,(None,None,None,None,None))
@@ -335,6 +335,16 @@ async def no_callback(event):
         await ads(group, uid)
     except Exception as e:
         await hint(e)
+@ABH.on(events.CallbackQuery(data=rb'^yes:(\d+)$'))
+async def handler_yes(event):
+    user_id = int(event.pattern_match.group(1))
+    await event.answer("✅ تم اختيار نعم")
+    await event.edit(f"اخترت نعم (ID: {user_id})")
+@ABH.on(events.CallbackQuery(data=rb'^no:(\d+)$'))
+async def handler_no(event):
+    user_id = int(event.pattern_match.group(1))
+    await event.answer("❌ تم اختيار لا")
+    await event.edit(f"اخترت لا (ID: {user_id})")
 @ABH.on(events.NewMessage(pattern='اضف قناة التبليغات'))
 async def add_hintchannel(event):
     chat_id = event.chat_id
