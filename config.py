@@ -1,21 +1,21 @@
 from ABH import ABH, events, bot_token
 from datetime import datetime
 import os, json, pytz
-from Resources import * 
-from addanddel import * 
-from Program import * 
-from count import *
-from games import * 
-from group import * 
+# from Resources import * 
+# from addanddel import * 
+# from Program import * 
+# from count import *
+# from games import * 
+# from group import * 
 from guard import * 
-from reply import * 
-from other import * 
-from اختصار import * 
-from الايدي import * 
-from mem import * 
-from top import * 
-from امسح import * 
-from يوت import * 
+# from reply import * 
+# from other import * 
+# from اختصار import * 
+# from الايدي import * 
+# from mem import * 
+# from top import * 
+# from امسح import * 
+# from يوت import * 
 baghdad_tz = pytz.timezone('Asia/Baghdad')
 now = datetime.now(baghdad_tz)
 hour = now.strftime("%y\\%m\\%d--%I:%M%p")
